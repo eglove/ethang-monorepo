@@ -5,5 +5,5 @@
     "noEmit": true,
     "types": ["node", "serviceworker"]
   },
-  "extends": "../../packages/tsconfig/tsconfig.base.json"
+  "extends": ["../tsconfig/tsconfig.base.json"]
 }

@@ -1,6 +1,10 @@
 # @ethang/store
 
-A lightweight, reactive state management library for React applications. Uses `Immer` for immutable state updates and `useSyncExternalStore` for efficient React integration.
+A tiny pub/sub state container built on [Immer](https://immerjs.github.io/immer/)
+drafts and [Effect](https://effect.website/) primitives (`PubSub` + `Stream`).
+Works the same on Cloudflare Workers and the browser. The React adapter bridges
+the store to `useSyncExternalStore` so React components can subscribe to
+selected slices of state.
 
 ```shell
 pnpm i @ethang/store
@@ -8,170 +12,146 @@ pnpm i @ethang/store
 
 ## API
 
-### `BaseStore<State>` (abstract class)
+### `makeStore<T>(initial: T): Store<T>`
 
-Extend `BaseStore` to create your own reactive store. The constructor takes the initial state as its only argument.
-
-```ts
-import { BaseStore } from "@ethang/store";
-
-type CounterState = { count: number; isOnline: boolean };
-
-class CounterStore extends BaseStore<CounterState> {
-  public constructor() {
-    super({ count: 0, isOnline: navigator.onLine });
-  }
-
-  public increment() {
-    this.update((draft) => {
-      draft.count += 1;
-    });
-  }
-
-  public decrement() {
-    this.update((draft) => {
-      draft.count -= 1;
-    });
-  }
-}
-
-export const counterStore = new CounterStore();
-```
-
-### Public API
-
-#### `state` (getter)
-
-Returns the current immutable state.
-
-#### `destroyed` (getter)
-
-Returns `true` if the store has been destroyed.
-
-#### `subscribe(callback: (state: State) => void): () => void`
-
-Subscribe to state changes. Returns an unsubscribe function.
-
-After `destroy()`, returns a no-op function (preserves the `useSyncExternalStore` contract).
-
-#### `destroy(): void`
-
-Permanently tears down the store. Aborts the `cleanupSignal`, clears all subscribers. Subsequent `update` calls are silent no-ops, `subscribe` returns a no-op, and `waitFor` returns an error result.
-
-Double `destroy()` is a no-op.
-
-#### `reset(initialState?: State): void`
-
-Resets the store to its initial state and notifies subscribers. If `initialState` is provided, that becomes the new initial state for future `reset()` calls.
-
-Reentrant-safe: if called during a notification drain, the reset is queued and applied after the current drain completes.
-
-After `destroy()`, `reset()` is a no-op. Does not abort `cleanupSignal`.
-
-#### `waitFor(predicate: (state: State) => boolean, signal?: AbortSignal): Promise<Result>`
-
-Returns a promise that resolves when `predicate(state)` returns `true`.
-
-- If the predicate is already satisfied, resolves immediately.
-- Uses the store's `cleanupSignal` by default. If an explicit `AbortSignal` is provided, both signals are combined via `AbortSignal.any()`.
-- On abort, returns `{ ok: false, error: Error }` (not a rejected promise).
-- On destroy while waiting, returns an error result.
-- If the predicate throws, returns an error result.
-- Cleans up its internal subscription after resolving.
+Build a store. The store is created synchronously — no `Effect` wrapping at
+the call site. The result is a plain object you can hold in module scope.
 
 ```ts
-const result = await store.waitFor((state) => state.count >= 10);
-if (result.ok) {
-  console.log("Count reached:", result.value.count);
-}
+import { makeStore, type Store } from "@ethang/store/store.ts";
+
+type CounterState = { count: number };
+
+const counterStore: Store<CounterState> = makeStore<CounterState>({
+  count: 0
+});
 ```
 
-### Protected API
+### `Store<T>`
 
-#### `update(updater: (draft: State) => void, shouldNotify?: boolean): void`
+| Field | Type | Description |
+| --- | --- | --- |
+| `get` | `T` | Synchronous getter for the current state. |
+| `state` | `T` | Same as `get` — exposed for ergonomic reads in components. |
+| `set` | `(value: T) => T` | Replace the state. Synchronous. Returns the new value. |
+| `update` | `(recipe: (draft: Draft<T>) => void \| T) => T` | Mutate the draft (Immer style) or return a new value. Synchronous. Returns the new value. |
+| `reset` | `(value?: T) => T` | Reset to the most recent `initial` (or the most recent `reset(value)`). Synchronous. Returns the new value. |
+| `subscribe` | `(listener: () => void) => () => void` | Synchronous listener shim for React. Returns an unsubscribe function. |
+| `changes` | `Stream.Stream<T>` | Every new state, including the factory-time initial value. |
+| `waitFor` | `(predicate: (state: T) => boolean) => Effect.Effect<void>` | Wait for a predicate to be true. |
 
-The primary method for modifying state. The `updater` receives an Immer draft. If `shouldNotify` is `false`, subscribers are not notified.
+### Immer draft style
 
-Reentrant-safe: if a subscriber or `onPropertyChange` triggers another `update`, the mutation is applied immediately but notification is batched. A depth guard at 100 prevents infinite loops and surfaces the overflow via `queueMicrotask`.
-
-After `destroy()`, `update` is a silent no-op.
-
-#### `cleanupSignal` (getter)
-
-An `AbortSignal` for automatic cleanup of event listeners and resources. Aborted when the last subscriber unsubscribes or when `destroy()` is called.
-
-A new `AbortController` is created when the first subscriber joins after a cleanup.
-
-#### `onFirstSubscriber?(): void`
-
-Called when the first subscriber registers. Use this to set up event listeners with `this.cleanupSignal`.
+`update` accepts an Immer recipe. You can mutate the draft:
 
 ```ts
-protected onFirstSubscriber() {
-  window.addEventListener("online", this.handleOnline, {
-    signal: this.cleanupSignal,
-  });
-}
+counterStore.update((draft) => {
+  draft.count += 1;
+});
 ```
 
-#### `onLastSubscriberRemoved?(): void`
+…or return a new value (any non-undefined return replaces the state):
 
-Called when the last subscriber unsubscribes. The `cleanupSignal` is aborted at this point.
+```ts
+counterStore.update((current) => ({ count: current.count + 1 }));
+```
 
-#### `onPropertyChange?(patch: StorePatch<State>): void`
+If the recipe makes no observable change, `update` returns the original state
+and skips notifying subscribers (identity check via `Object.is`).
 
-Called for each Immer patch before subscriber notification begins. Fires within the batched drain loop. Calling `update` with `shouldNotify: false` from here applies the mutation without triggering notification or incrementing reentrant depth.
+### Reading state
 
-### Batched Notification Model
+`get` and `state` are both synchronous — no `Effect` wrapper:
 
-When `update` is called, the store enters a drain loop:
+```ts
+const current: CounterState = counterStore.state;
+```
 
-1. Apply the mutation via Immer.
-2. Fire `onPropertyChange` for each patch.
-3. Notify all subscribers.
-4. If any subscriber triggered a reentrant `update`, apply its mutation and repeat from step 2.
-5. Continue until the queue is empty or `destroy()` is called.
+### `useStore<T, S>(store, selector, isEqual?)`
 
-The `_destroyed` flag is checked before each subscriber callback and before applying queued patches.
-
-### Error Handling
-
-Subscriber errors are caught via `attempt` (lodash) and re-thrown via `queueMicrotask`. This means:
-
-- All subscribers are notified even if one throws.
-- Errors surface as uncaught exceptions (visible in browser console and error monitoring).
-- Errors are **not** caught by React error boundaries (they escape the synchronous call stack via microtask).
-
-This is a deliberate trade-off: reliable subscriber notification is prioritized over error boundary integration.
-
-Convention: `attempt` (lodash) for synchronous error handling, `attemptAsync` (`@ethang/toolbelt`) for async.
-
-## `useStore` Hook
-
-Integrates `BaseStore` with React via `useSyncExternalStore`.
+React hook that subscribes a component to a derived slice of state using
+`useSyncExternalStoreWithSelector`. Re-renders only when the selected value
+changes (per the optional `isEqual`).
 
 ```tsx
-import { useStore } from "@ethang/store/use-store";
-import { counterStore } from "../stores/counterStore";
+import { useStore } from "@ethang/store/use-store.ts";
+import { counterStore } from "./counter-store.ts";
 
 export const CounterDisplay = () => {
-  const { count, isOnline } = useStore(counterStore, (state) => ({
-    count: state.count,
-    isOnline: state.isOnline,
-  }));
-
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <p>Status: {isOnline ? "Online" : "Offline"}</p>
-      <button onClick={() => counterStore.increment()}>Increment</button>
-    </div>
-  );
+  const count = useStore(counterStore, (state) => state.count);
+  return <p>Count: {count}</p>;
 };
 ```
 
-### Parameters
+A custom equality function can be supplied to override the default `===`:
 
-- `store` -- The `BaseStore` instance.
-- `selector` -- Extracts the data your component needs. The component only re-renders when the selector's return value changes.
-- `isEqual` (optional) -- Custom equality function for the selected data.
+```tsx
+const { count, isOnline } = useStore(
+  counterStore,
+  (state) => ({ count: state.count, isOnline: state.isOnline }),
+  shallow
+);
+```
+
+## Errors and lifecycle
+
+- `set`, `update`, and `reset` are all synchronous and non-blocking.
+- `update` uses Immer under the hood; mutations to `Map` and `Set` are
+  supported (the `MapSet` plugin is enabled at module load).
+- `waitFor` returns an `Effect` that resolves on the next matching state.
+  Run with `Effect.runPromise` or compose into another `Effect` program.
+- The store has no `destroy()` step. Subscriber cleanup is via the
+  `subscribe`/`unsubscribe` shim for React, and `Stream` scoped `Effect`s
+  for `waitFor`.
+
+## Pattern: action objects
+
+Consumers usually pair the store with an `actions` object so the rest of the
+app talks to typed functions:
+
+```ts
+export const counterStore: Store<CounterState> = makeStore({ count: 0 });
+
+export const counterActions = {
+  increment: () => {
+    counterStore.update((draft) => {
+      draft.count += 1;
+    });
+  },
+  reset: (value = 0) => {
+    counterStore.set({ count: value });
+  }
+};
+```
+
+For async work (network calls, etc.), wrap the body in an `async` function and
+call the sync `update` between awaits:
+
+```ts
+export const authActions = {
+  signIn: async (email: string, password: string) => {
+    authStore.update((draft) => {
+      draft.isPending = true;
+      draft.error = null;
+    });
+
+    const user = await fetchUser(email, password);
+
+    authStore.update((draft) => {
+      draft.isPending = false;
+      draft.user = user;
+    });
+  }
+};
+```
+
+## Conventions
+
+- `immer` and `effect` are the runtime dependencies. `use-sync-external-store`
+  is a devDependency for the React adapter tests.
+- `lodash` is preferred for tiny sync helpers (`forEach`, etc.).
+- The package is published without a barrel file. Import from the explicit
+  subpath: `@ethang/store/store` and `@ethang/store/use-store`.
+- The store is intentionally minimal: no reentrancy counter, no patches, no
+  `onPropertyChange`. If you need derived state, compose the `Stream` or
+  listen to `changes` directly.

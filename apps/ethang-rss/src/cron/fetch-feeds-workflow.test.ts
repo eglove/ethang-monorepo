@@ -1,7 +1,6 @@
 import noop from "lodash/noop.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MockLoggerClient } from "../test-utilities/mock-logger-client.ts";
 import { MockWorkflowEntrypoint } from "../test-utilities/mock-workflow-entrypoint.ts";
 import {
   ALTERNATE,
@@ -26,7 +25,6 @@ import {
   REL_ATTR,
   SELF,
   SUMMARY_TEXT,
-  TEST_LOGGER_KEY,
   TEXT_HTML,
   TEXT_KEY,
   TYPE_ATTR
@@ -52,12 +50,6 @@ vi.mock("drizzle-orm/d1", () => {
         update: mockUpdate
       };
     }
-  };
-});
-
-vi.mock("@ethang/logger-sdk", () => {
-  return {
-    LoggerClient: MockLoggerClient
   };
 });
 
@@ -224,8 +216,7 @@ describe("FetchFeedsWorkflow", () => {
 
     const mockEnvironment = {
       ENVIRONMENT: ENVIRONMENT_TEST,
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
@@ -304,8 +295,7 @@ describe("FetchFeedsWorkflow", () => {
     });
 
     const mockEnvironment = {
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
@@ -363,8 +353,7 @@ describe("FetchFeedsWorkflow", () => {
     });
 
     const mockEnvironment = {
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
@@ -417,8 +406,7 @@ describe("FetchFeedsWorkflow", () => {
     });
 
     const mockEnvironment = {
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
@@ -469,8 +457,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
 
     const mockEnvironment = {
       ENVIRONMENT: ENVIRONMENT_TEST,
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error(NETWORK_ERROR));
@@ -518,8 +505,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
 
     const mockEnvironment = {
       ENVIRONMENT: ENVIRONMENT_TEST,
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({
@@ -593,8 +579,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
 
     const mockEnvironment = {
       ENVIRONMENT: ENVIRONMENT_TEST,
-      ethang_rss: {},
-      LOGGER_API_KEY: TEST_LOGGER_KEY
+      ethang_rss: {}
     };
 
     vi.spyOn(globalThis, "fetch").mockResolvedValue({

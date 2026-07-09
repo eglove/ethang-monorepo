@@ -23,6 +23,7 @@
     "node": ">=24"
   },
   "license": "ISC",
+  "main": "./src/compile.ts",
   "name": "@ethang/agents-build",
   "private": true,
   "scripts": {

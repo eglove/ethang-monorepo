@@ -1,0 +1,56 @@
+import { LogLevel } from "effect";
+import noop from "lodash/noop.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { defaultLogLevel, installCloudflareLogger } from "./logger.js";
+
+describe("installCloudflareLogger", () => {
+  it("should run without throwing", () => {
+    expect.assertions(1);
+    expect(() => {
+      installCloudflareLogger();
+    }).not.toThrow();
+  });
+
+  it("should be idempotent when called twice", () => {
+    expect.assertions(1);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(noop);
+
+    installCloudflareLogger();
+    installCloudflareLogger();
+
+    expect(logSpy).toBeDefined();
+    logSpy.mockRestore();
+  });
+});
+
+describe("defaultLogLevel", () => {
+  const originalEnvironment = process.env["ENVIRONMENT"];
+
+  beforeEach(() => {
+    delete process.env["ENVIRONMENT"];
+  });
+
+  afterEach(() => {
+    if (originalEnvironment === undefined) {
+      delete process.env["ENVIRONMENT"];
+    } else {
+      process.env["ENVIRONMENT"] = originalEnvironment;
+    }
+  });
+
+  it("should return LogLevel.Debug outside of production", () => {
+    delete process.env["ENVIRONMENT"];
+    expect(defaultLogLevel()).toBe(LogLevel.Debug);
+  });
+
+  it("should return LogLevel.Debug for any non-production environment", () => {
+    process.env["ENVIRONMENT"] = "staging";
+    expect(defaultLogLevel()).toBe(LogLevel.Debug);
+  });
+
+  it("should return LogLevel.Info in production", () => {
+    process.env["ENVIRONMENT"] = "production";
+    expect(defaultLogLevel()).toBe(LogLevel.Info);
+  });
+});

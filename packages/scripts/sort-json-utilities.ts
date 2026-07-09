@@ -1,3 +1,4 @@
+import { installCloudflareLogger } from "@ethang/telemetry";
 import { parseJson } from "@ethang/toolbelt/json/json.ts";
 import { Effect, Schema } from "effect";
 import get from "lodash/get.js";
@@ -10,6 +11,8 @@ import map from "lodash/map.js";
 import startsWith from "lodash/startsWith.js";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
+installCloudflareLogger();
 
 export const recursiveSort = (value: unknown): unknown => {
   if (isArray(value)) {
@@ -50,7 +53,9 @@ export const sortJson = (filePath: string) => {
   );
 
   if ("Left" === result._tag) {
-    globalThis.console.error("Failed to parse JSON", result.left);
+    Effect.runSync(
+      Effect.logError(`Failed to parse JSON ${String(result.left)}`)
+    );
     return;
   }
 
@@ -58,7 +63,7 @@ export const sortJson = (filePath: string) => {
 
   writeFileSync(absolutePath, JSON.stringify(sortedJson, null, 2), "utf8");
 
-  globalThis.console.log("Sorted JSON");
+  Effect.runSync(Effect.logInfo("Sorted JSON"));
 };
 
 export const findFilesRecursively = (

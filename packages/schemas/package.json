@@ -4,9 +4,7 @@
   "type": "module",
   "author": "Ethan Glover",
   "license": "ISC",
-  "publishConfig": {
-    "access": "public"
-  },
+  "private": true,
   "exports": {
     "./*": "./src/*"
   },

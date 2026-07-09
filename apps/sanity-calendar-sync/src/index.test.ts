@@ -100,4 +100,27 @@ describe("sanity-calendar-sync worker", () => {
       })
     );
   });
+
+  it("should drop events with an invalid start date", async () => {
+    const mockEvents = [
+      {
+        _id: "id-3",
+        description: undefined,
+        endsAt: "2026-06-14T13:00:00Z",
+        startsAt: "not-a-real-date",
+        title: "Broken Event"
+      }
+    ];
+
+    mockSanityFetch.mockResolvedValueOnce(mockEvents);
+
+    const response = await worker.fetch();
+    expect(response).toBeInstanceOf(Response);
+
+    expect(generateIcsCalendar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        events: []
+      })
+    );
+  });
 });

@@ -9,13 +9,7 @@ const mockEnvironment = {
   ADMIN_PASS: "adminpass",
   ADMIN_USER: "admin@test.com",
   ethang_courses: {} as any,
-  ethang_rss: {} as any,
-  LOGGER_CLIENT_API_KEY: {
-    // eslint-disable-next-line lodash/prefer-constant
-    get: async () => {
-      return "test-api-key";
-    }
-  }
+  ethang_rss: {} as any
 };
 
 describe("worker/auto-authenticate", () => {

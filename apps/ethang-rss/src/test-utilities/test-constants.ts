@@ -1,7 +1,6 @@
 import { urls } from "@ethang/intl/en/urls.ts";
 
 export const SOME_OTHER_D1_ERROR = "Some other D1 error";
-export const LOGGER_KEY = "logger-key";
 export const SOME_NON_ERROR_OBJECT = "Some non-Error object";
 
 export const FALLBACK = "fallback";
@@ -10,7 +9,6 @@ export const HREF_ATTR = "@_href";
 export const TYPE_ATTR = "@_type";
 export const TEXT_KEY = "#text";
 export const { EXAMPLE_URL } = urls;
-export const TEST_LOGGER_KEY = "test-logger-key";
 export const ALTERNATE = "alternate";
 export const SELF = "self";
 export const { EXAMPLE_ALTERNATE_URL } = urls;

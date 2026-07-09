@@ -1,6 +1,5 @@
 import { auth } from "@ethang/intl/en/auth.ts";
-import { BaseStore } from "@ethang/store";
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
+import { makeStore, type Store } from "@ethang/store/store.ts";
 import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
@@ -14,49 +13,58 @@ export type User = {
   username: string;
 };
 
-const initialState = {
-  error: null as null | string,
-  isPending: false,
-  user: null as null | User
+const USER_KEY = "ethang-user" as const;
+
+export type AuthState = {
+  error: null | string;
+  isPending: boolean;
+  user: null | User;
 };
 
-export class AuthStore extends BaseStore<typeof initialState> {
-  private static readonly USER_KEY = "ethang-user" as const;
-
-  public constructor() {
-    const storedUser = localStorage.getItem(AuthStore.USER_KEY);
-    let initialUser: null | User = null;
-    if (null !== storedUser) {
-      const parsed: unknown = attempt(() => {
-        return JSON.parse(storedUser);
-      });
-      if (!isError(parsed) && isObject(parsed)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        const data = parsed as Record<string, unknown>;
-        const { email, sessionToken, username } = data;
-        if (isString(email) && isString(sessionToken) && isString(username)) {
-          initialUser = {
-            email,
-            sessionToken,
-            username
-          };
-        }
-      }
-    }
-    super({
-      ...initialState,
-      user: initialUser
-    });
+const readStoredUser = (): null | User => {
+  const storedUser = localStorage.getItem(USER_KEY);
+  if (null === storedUser) {
+    return null;
   }
+  const parsed: unknown = attempt(() => {
+    return JSON.parse(storedUser);
+  });
+  if (isError(parsed) || !isObject(parsed)) {
+    return null;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  const data = parsed as Record<string, unknown>;
+  const { email, sessionToken, username } = data;
+  if (!isString(email) || !isString(sessionToken) || !isString(username)) {
+    return null;
+  }
+  return { email, sessionToken, username };
+};
 
-  public signIn = async (email: string, password: string): Promise<void> => {
-    this.update((draft) => {
-      draft.isPending = true;
-      draft.error = null;
-    });
+export { readStoredUser };
 
-    const result = await Effect.runPromise(
-      attemptAsync(async () => {
+const initialState: AuthState = {
+  error: null,
+  isPending: false,
+  user: readStoredUser()
+};
+
+const signIn = async (
+  store: Store<AuthState>,
+  email: string,
+  password: string
+) => {
+  store.update((draft) => {
+    draft.error = null;
+    draft.isPending = true;
+  });
+
+  const result = await Effect.runPromise(
+    Effect.tryPromise({
+      catch: (error: unknown) => {
+        return Error.isError(error) ? error : new Error("failed");
+      },
+      try: async () => {
         const response = await fetch("https://auth.ethang.dev/sign-in", {
           body: JSON.stringify({ email, password }),
           headers: {
@@ -100,42 +108,51 @@ export class AuthStore extends BaseStore<typeof initialState> {
           username: usernameValue
         };
 
-        localStorage.setItem(AuthStore.USER_KEY, JSON.stringify(user));
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
 
-        this.update((draft) => {
-          draft.user = user;
-          draft.isPending = false;
-          draft.error = null;
-        });
-      })
-    ).catch((error: unknown) => {
-      if (isError(error)) {
-        return error;
+        return user;
       }
+    }).pipe(
+      Effect.catchAll((error: Error) => {
+        return Effect.succeed(error);
+      })
+    )
+  );
 
-      return new Error("failed");
-    });
-
-    if (isError(result)) {
-      this.update((draft) => {
-        draft.error =
-          "failed" === trim(result.message)
-            ? auth.UNEXPECTED_ERROR
-            : result.message;
-
-        draft.isPending = false;
-      });
-    }
-  };
-
-  public signOut = (): void => {
-    localStorage.removeItem(AuthStore.USER_KEY);
-    this.update((draft) => {
-      draft.user = null;
-      draft.error = null;
+  if (isError(result)) {
+    const trimmed = trim(result.message);
+    const message =
+      "failed" === trimmed ? auth.UNEXPECTED_ERROR : result.message;
+    store.update((draft) => {
+      draft.error = message;
       draft.isPending = false;
     });
-  };
-}
+    return;
+  }
 
-export const authStore = new AuthStore();
+  store.update((draft) => {
+    draft.error = null;
+    draft.isPending = false;
+    draft.user = result;
+  });
+};
+
+const signOut = (store: Store<AuthState>) => {
+  localStorage.removeItem(USER_KEY);
+  store.update((draft) => {
+    draft.error = null;
+    draft.isPending = false;
+    draft.user = null;
+  });
+};
+
+export const authStore: Store<AuthState> = makeStore(initialState);
+
+export const authStoreActions = {
+  signIn: async (email: string, password: string) => {
+    return signIn(authStore, email, password);
+  },
+  signOut: () => {
+    signOut(authStore);
+  }
+};

@@ -1,12 +1,12 @@
 import type { PropsWithChildren } from "react";
 
 import { navigation } from "@ethang/intl/en/navigation.ts";
-import { useStore } from "@ethang/store/use-store";
+import { useStore } from "@ethang/store/use-store.ts";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import map from "lodash/map";
 import { NavigationMenu } from "radix-ui";
 
-import { authStore } from "../auth/auth-store.ts";
+import { authStore, authStoreActions } from "../auth/auth-store.ts";
 import { InternalLink } from "../internal-link.tsx";
 
 const links = [
@@ -21,10 +21,6 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
   const { user } = useStore(authStore, (state) => {
     return { user: state.user };
   });
-
-  const handleLogout = () => {
-    authStore.signOut();
-  };
 
   return (
     <>
@@ -64,8 +60,10 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
                 size="2"
                 color="red"
                 variant="soft"
-                onClick={handleLogout}
                 className="cursor-pointer font-semibold"
+                onClick={() => {
+                  authStoreActions.signOut();
+                }}
               >
                 {navigation.LOGOUT}
               </Button>

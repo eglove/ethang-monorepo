@@ -1,7 +1,6 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { MockLoggerClient } from "./test-utilities/mock-logger-client.ts";
 import { MockWorkflowEntrypoint } from "./test-utilities/mock-workflow-entrypoint.ts";
 
 vi.mock("cloudflare:workers", () => {
@@ -11,12 +10,6 @@ vi.mock("cloudflare:workers", () => {
       public env: Record<string, unknown> = {};
     },
     WorkflowEntrypoint: MockWorkflowEntrypoint
-  };
-});
-
-vi.mock("@ethang/logger-sdk", () => {
-  return {
-    LoggerClient: MockLoggerClient
   };
 });
 

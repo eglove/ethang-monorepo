@@ -121,14 +121,14 @@ describe("sort-json utilities", () => {
       vi.mocked(existsSync).mockReturnValueOnce(true);
       vi.mocked(readFileSync).mockReturnValueOnce("malformed-json");
 
-      const consoleErrorSpy = vi
-        .spyOn(globalThis.console, "error")
+      const consoleLogSpy = vi
+        .spyOn(globalThis.console, "log")
         .mockImplementation(noop);
 
       sortJson("malformed.json");
 
-      expect(consoleErrorSpy).toHaveBeenCalled();
-      consoleErrorSpy.mockRestore();
+      expect(consoleLogSpy).toHaveBeenCalled();
+      consoleLogSpy.mockRestore();
     });
 
     it("should successfully sort and write JSON to file", () => {
@@ -169,7 +169,7 @@ describe("sort-json utilities", () => {
   describe("sortJson entrypoint script", () => {
     let originalArgv: string[];
     let exitSpy: MockInstance<typeof process.exit>;
-    let consoleErrorSpy: MockInstance<typeof console.error>;
+    let consoleLogSpy: MockInstance<typeof console.log>;
 
     beforeEach(() => {
       originalArgv = globalThis.process.argv;
@@ -178,15 +178,15 @@ describe("sort-json utilities", () => {
         .mockImplementation((code) => {
           throw new Error(`exit:${code}`);
         });
-      consoleErrorSpy = vi
-        .spyOn(globalThis.console, "error")
+      consoleLogSpy = vi
+        .spyOn(globalThis.console, "log")
         .mockImplementation(noop);
     });
 
     afterEach(() => {
       globalThis.process.argv = originalArgv;
       exitSpy.mockRestore();
-      consoleErrorSpy.mockRestore();
+      consoleLogSpy.mockRestore();
     });
 
     it("should exit with 1 if no file path is provided", () => {
@@ -194,7 +194,9 @@ describe("sort-json utilities", () => {
         run(["node", SORT_JSON_SCRIPT]);
       }).toThrow(`exit:${EXIT_1}`);
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith("No file path provided");
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining("No file path provided")
+      );
     });
 
     it("should exit with 1 if path is outside workspace", () => {
@@ -202,8 +204,8 @@ describe("sort-json utilities", () => {
         run(["node", SORT_JSON_SCRIPT, "../../../outside.json"]);
       }).toThrow(`exit:${EXIT_1}`);
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "Path is outside the repository workspace"
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Path is outside the repository workspace")
       );
     });
 
@@ -214,9 +216,8 @@ describe("sort-json utilities", () => {
         run(["node", SORT_JSON_SCRIPT, "non-existent.json"]);
       }).toThrow(`exit:${EXIT_1}`);
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        "File does not exist:",
-        expect.any(String)
+      expect(consoleLogSpy).toHaveBeenCalledWith(
+        expect.stringContaining("File does not exist:")
       );
     });
 

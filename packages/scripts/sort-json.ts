@@ -1,3 +1,5 @@
+import { installCloudflareLogger } from "@ethang/telemetry";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";
 import { existsSync } from "node:fs";
@@ -5,11 +7,13 @@ import path from "node:path";
 
 import { sortJson } from "./sort-json-utilities.ts";
 
+installCloudflareLogger();
+
 export const run = (argv: string[]): void => {
   const { 2: filePath } = argv;
 
   if (isNil(filePath)) {
-    globalThis.console.error("No file path provided");
+    Effect.runSync(Effect.logError("No file path provided"));
     globalThis.process.exit(1);
   }
 
@@ -17,12 +21,12 @@ export const run = (argv: string[]): void => {
   const absolutePath = path.resolve(workspaceRoot, filePath);
 
   if (!startsWith(absolutePath, workspaceRoot)) {
-    globalThis.console.error("Path is outside the repository workspace");
+    Effect.runSync(Effect.logError("Path is outside the repository workspace"));
     globalThis.process.exit(1);
   }
 
   if (!existsSync(absolutePath)) {
-    globalThis.console.error("File does not exist:", absolutePath);
+    Effect.runSync(Effect.logError(`File does not exist: ${absolutePath}`));
     globalThis.process.exit(1);
   }
 

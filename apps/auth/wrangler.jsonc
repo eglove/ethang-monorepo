@@ -15,9 +15,7 @@
   ],
   "main": "src/index.ts",
   "name": "auth",
-  "observability": {
-    "enabled": true
-  },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
   "placement": {
     "mode": "smart"
   },
@@ -28,3 +26,4 @@
     }
   ]
 }
+

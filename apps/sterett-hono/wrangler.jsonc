@@ -8,9 +8,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/index.tsx",
   "name": "sterett-hono",
-  "observability": {
-    "enabled": true
-  },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
   "placement": {
     "mode": "smart"
   },
@@ -25,3 +23,4 @@
     }
   ]
 }
+

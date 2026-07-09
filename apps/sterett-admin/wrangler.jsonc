@@ -7,9 +7,7 @@
   "compatibility_date": "2026-07-09",
   "main": "src/index.ts",
   "name": "sterett-admin",
-  "observability": {
-    "enabled": true
-  },
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
   "routes": [
     {
       "custom_domain": true,
@@ -17,3 +15,4 @@
     }
   ]
 }
+

@@ -5,6 +5,15 @@ This document outlines the global rules, development principles, and tool-usage 
 
 ---
 
+## CRITICAL: Read the README First
+
+Before starting any task, AI agents **must** read [`README.md`](README.md) to understand the layout of the monorepo —
+the active apps, packages, technologies, and tooling. The README is the source of truth for *what* exists in this
+repo; this `AGENTS.md` focuses on *how* to work within it. Re-read the README after pulling if you are unsure which
+workspaces, frameworks, or scripts are current.
+
+---
+
 ## CRITICAL: Agent Operational Notes
 
 **These notes are non-negotiable and MUST always be followed for every task:**
@@ -31,6 +40,10 @@ This document outlines the global rules, development principles, and tool-usage 
    // ✅ Prefer – inferred return type
    const getUsers = async () => db.select().from(users);
    ```
+
+7. **Full Monorepo Ownership**: AI agents are responsible for the **entire** monorepo. Nothing in the repository should be skipped, ignored, or left untouched as a "preexisting issue", "out of scope", "unrelated problem", or "pre-existing drift". Every failure surfaced by lint, type-check, tests, coverage thresholds, audits, or any other verification gate MUST be fixed as part of the work. Do not defer to a follow-up issue, do not suppress with `// eslint-disable` / `@ts-expect-error` / `it.skip` / threshold bumps unless that *is* the root-cause fix; investigate the failure, design a real solution, and ship it green. When a verification command fails for any reason in any workspace, the task is not complete until it passes — including coverage thresholds, dependency audits, build commands, and any custom script wired into the workspace's `package.json`.
+
+8. **No Barrel Files**: Do not use barrel files. A barrel is an `index.ts` that re-exports from multiple sibling files (e.g. `export { foo } from "./foo.js"; export { bar } from "./bar.js";`). Always import directly from the source file (e.g. `import { foo } from "./foo.js"` and `import { bar } from "./bar.js"`). This applies to package entry points, route segments, component folders, and any other folder boundary. Barrels hide the dependency graph, defeat tree-shaking, make code review harder, and create circular import hazards. The `@ethang/store` package exposes its files via `package.json` `"exports"` subpaths (`./*` mapping to `./src/*`); consumers must import from `@ethang/store/store` and `@ethang/store/use-store`, never from `@ethang/store`.
 
 ---
 

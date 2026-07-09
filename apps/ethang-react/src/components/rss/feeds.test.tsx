@@ -5,7 +5,7 @@ import "@testing-library/jest-dom/vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Feeds } from "./feeds.tsx";
-import { rssStore } from "./rss-store.ts";
+import { rssStoreActions } from "./rss-store.ts";
 
 const mockFeedsStore = {
   isFetchingNextPage: false,
@@ -96,11 +96,19 @@ vi.mock("@ethang/store/use-store", () => {
 vi.mock("./rss-store.ts", () => {
   return {
     rssStore: {
-      cancelUnsubscribe: vi.fn(),
-      requestUnsubscribe: vi.fn((feedId: string, title: string) => {
-        mockFeedsStore.pendingUnsubscribe = { feedId, title };
-      }),
-      setSelectedFeedId: vi.fn()
+      state: {
+        pendingUnsubscribe: null as { feedId: string; title: string } | null,
+        selectedFeedId: null as null | string
+      }
+    },
+    rssStoreActions: {
+      cancelUnsubscribe: vi.fn().mockResolvedValue(undefined),
+      requestUnsubscribe: vi
+        .fn()
+        .mockImplementation(async (feedId: string, title: string) => {
+          mockFeedsStore.pendingUnsubscribe = { feedId, title };
+        }),
+      setSelectedFeedId: vi.fn().mockResolvedValue(undefined)
     }
   };
 });
@@ -129,7 +137,7 @@ describe("Feeds", () => {
     mockFetchNextPage.mockClear();
     mockRemoveSubscription.mockClear();
     mockInvalidateQueries.mockClear();
-    vi.mocked(rssStore.setSelectedFeedId).mockClear();
+    vi.mocked(rssStoreActions.setSelectedFeedId).mockClear();
   });
 
   it("renders a loading skeleton when loading and data is nil", () => {
@@ -178,7 +186,7 @@ describe("Feeds", () => {
     const allFeedsButton = screen.getByRole("button", { name: "All Feeds" });
     fireEvent.click(allFeedsButton);
 
-    expect(rssStore.setSelectedFeedId).toHaveBeenCalledWith(null);
+    expect(rssStoreActions.setSelectedFeedId).toHaveBeenCalledWith(null);
   });
 
   it("calls setSelectedFeedId(feed.id) when a feed button is clicked", () => {
@@ -196,7 +204,7 @@ describe("Feeds", () => {
     const feedButton = screen.getByRole("button", { name: ALPHA_FEED_TITLE });
     fireEvent.click(feedButton);
 
-    expect(rssStore.setSelectedFeedId).toHaveBeenCalledWith(FEED_A_ID);
+    expect(rssStoreActions.setSelectedFeedId).toHaveBeenCalledWith(FEED_A_ID);
   });
 
   it("renders a Load More button when hasNextPage is true", () => {
@@ -247,9 +255,9 @@ describe("Feeds - Unsubscribe", () => {
     mockFeedsStore.pendingUnsubscribe = null;
     mockRemoveSubscription.mockClear();
     mockInvalidateQueries.mockClear();
-    vi.mocked(rssStore.setSelectedFeedId).mockClear();
-    vi.mocked(rssStore.requestUnsubscribe).mockClear();
-    vi.mocked(rssStore.cancelUnsubscribe).mockClear();
+    vi.mocked(rssStoreActions.setSelectedFeedId).mockClear();
+    vi.mocked(rssStoreActions.requestUnsubscribe).mockClear();
+    vi.mocked(rssStoreActions.cancelUnsubscribe).mockClear();
   });
 
   it("renders an unsubscribe button for each feed", () => {
@@ -264,7 +272,7 @@ describe("Feeds - Unsubscribe", () => {
     const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
     fireEvent.click(unsubscribeButton);
 
-    expect(rssStore.requestUnsubscribe).toHaveBeenCalledWith(
+    expect(rssStoreActions.requestUnsubscribe).toHaveBeenCalledWith(
       FEED_A_ID,
       ALPHA_FEED_TITLE
     );
@@ -363,7 +371,7 @@ describe("Feeds - Unsubscribe", () => {
     fireEvent.click(screen.getByTestId(UNSUBSCRIBE_CONFIRM_TESTID));
 
     await vi.waitFor(() => {
-      expect(rssStore.setSelectedFeedId).toHaveBeenCalledWith(null);
+      expect(rssStoreActions.setSelectedFeedId).toHaveBeenCalledWith(null);
     });
   });
 
@@ -382,7 +390,7 @@ describe("Feeds - Unsubscribe", () => {
     await vi.waitFor(() => {
       expect(mockRemoveSubscription).toHaveBeenCalled();
     });
-    expect(rssStore.setSelectedFeedId).not.toHaveBeenCalledWith(null);
+    expect(rssStoreActions.setSelectedFeedId).not.toHaveBeenCalledWith(null);
   });
 
   it("does NOT call removeSubscription when the user cancels the dialog", () => {
@@ -406,7 +414,9 @@ describe("Feeds - Unsubscribe", () => {
     const unsubscribeButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
     fireEvent.click(unsubscribeButton);
 
-    expect(rssStore.setSelectedFeedId).not.toHaveBeenCalledWith(FEED_A_ID);
+    expect(rssStoreActions.setSelectedFeedId).not.toHaveBeenCalledWith(
+      FEED_A_ID
+    );
   });
 });
 

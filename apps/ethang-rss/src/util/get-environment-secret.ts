@@ -1,5 +1,3 @@
-import { Effect } from "effect";
-import constant from "lodash/constant.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 
@@ -14,21 +12,4 @@ export const getEnvironmentString = (
     return "string" === typeof value ? value : undefined;
   }
   return undefined;
-};
-
-export const getSecretValue = (
-  secret: SecretsStoreSecret
-): Effect.Effect<string | undefined> => {
-  return Effect.gen(function* () {
-    return yield* Effect.tryPromise({
-      catch: constant(undefined),
-      try: async () => {
-        return secret.get();
-      }
-    }).pipe(
-      Effect.catchAll(() => {
-        return Effect.succeed(undefined);
-      })
-    );
-  });
 };

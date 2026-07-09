@@ -1,5 +1,3 @@
-import { LoggerClient } from "@ethang/logger-sdk";
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import {
   WorkflowEntrypoint,
   type WorkflowEvent,
@@ -12,18 +10,12 @@ import { XMLParser } from "fast-xml-parser";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
-import convertToString from "lodash/toString.js";
 
 import { articlesTable, feedsTable } from "../db/schema.ts";
-import {
-  getEnvironmentString,
-  getSecretValue
-} from "../util/get-environment-secret.ts";
 import { normalizeDate } from "../util/normalize-date.ts";
 import { parseFeedMetadata } from "../util/parse-feed-metadata.ts";
 
@@ -135,17 +127,6 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     _event: WorkflowEvent<unknown>,
     step: WorkflowStep
   ): Promise<void> {
-    const apiKey = convertToString(
-      await Effect.runPromise(getSecretValue(this.env.LOGGER_API_KEY))
-    );
-    const environmentName =
-      getEnvironmentString(this.env, "ENVIRONMENT") ?? "production";
-    const logger = new LoggerClient({
-      apiKey,
-      environment: environmentName,
-      serviceName: "ethang-rss-workflow"
-    });
-
     const database = drizzle(this.env.ethang_rss);
 
     const feeds = await step.do("get-feeds", async () => {
@@ -155,85 +136,96 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     for (const feed of feeds) {
       // eslint-disable-next-line no-await-in-loop
       await step.do(`fetch-feed-${feed.id}`, async () => {
-        const fetchError = await Effect.runPromise(
-          attemptAsync(async () => {
-            const response = await fetch(feed.xmlAddress);
-            const xml = await response.text();
-            const parsedMeta = parseFeedMetadata(xml);
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-            const parseResult = parser.parse(xml) as unknown as FeedResult;
+        const fetchError: Error | undefined = await Effect.runPromise(
+          Effect.tryPromise({
+            catch: (error: unknown) => {
+              return Error.isError(error) ? error : new Error(String(error));
+            },
+            try: async (): Promise<void> => {
+              const response = await fetch(feed.xmlAddress);
+              const xml = await response.text();
+              const parsedMeta = parseFeedMetadata(xml);
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+              const parseResult = parser.parse(xml) as unknown as FeedResult;
 
-            const rawItems =
-              parseResult.rss?.channel?.item ?? parseResult.feed?.entry ?? [];
-            const items = isArray(rawItems) ? rawItems : [rawItems];
+              const rawItems =
+                parseResult.rss?.channel?.item ?? parseResult.feed?.entry ?? [];
+              const items = isArray(rawItems) ? rawItems : [rawItems];
 
-            const normalizedItems = map(items, (item) => {
-              const link = normalizeLink(item);
-              const guid = normalizeGuid(item, link);
-              const content = normalizeContent(item);
-              const title = normalizeTitle(item);
+              const normalizedItems = map(items, (item) => {
+                const link = normalizeLink(item);
+                const guid = normalizeGuid(item, link);
+                const content = normalizeContent(item);
+                const title = normalizeTitle(item);
 
-              const publishedAt = normalizeDate(
-                item.pubDate ?? item.published ?? item.updated
-              );
+                const publishedAt = normalizeDate(
+                  item.pubDate ?? item.published ?? item.updated
+                );
 
-              return {
-                content,
-                feedId: feed.id,
-                guid,
-                link,
-                publishedAt,
-                title
+                return {
+                  content,
+                  feedId: feed.id,
+                  guid,
+                  link,
+                  publishedAt,
+                  title
+                };
+              });
+
+              const filteredItems = filter(normalizedItems, (item) => {
+                return !YOUTUBE_SHORTS_REGEX.test(item.link);
+              });
+
+              const insertPromises = map(filteredItems, async (item) => {
+                if (isNil(item.guid) || "" === item.guid) {
+                  return;
+                }
+
+                return database
+                  .insert(articlesTable)
+                  .values(item)
+                  .onConflictDoNothing();
+              });
+
+              await Promise.all(insertPromises);
+
+              const updateFields: Partial<typeof feedsTable.$inferInsert> = {
+                lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
               };
-            });
 
-            const filteredItems = filter(normalizedItems, (item) => {
-              return !YOUTUBE_SHORTS_REGEX.test(item.link);
-            });
-
-            const insertPromises = map(filteredItems, async (item) => {
-              if (isNil(item.guid) || "" === item.guid) {
-                return;
+              if ("" !== parsedMeta.title) {
+                updateFields.title = parsedMeta.title;
               }
 
-              return database
-                .insert(articlesTable)
-                .values(item)
-                .onConflictDoNothing();
-            });
+              if ("" !== parsedMeta.website) {
+                updateFields.website = parsedMeta.website;
+              }
 
-            await Promise.all(insertPromises);
-
-            const updateFields: Partial<typeof feedsTable.$inferInsert> = {
-              lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
-            };
-
-            if ("" !== parsedMeta.title) {
-              updateFields.title = parsedMeta.title;
+              await database
+                .update(feedsTable)
+                .set(updateFields)
+                .where(eq(feedsTable.id, feed.id));
             }
+          }).pipe(
+            Effect.matchEffect({
+              onFailure: (error: Error) => {
+                return Effect.succeed(error);
+              },
+              onSuccess: () => {
+                return Effect.succeed(undefined as Error | undefined);
+              }
+            })
+          )
+        );
 
-            if ("" !== parsedMeta.website) {
-              updateFields.website = parsedMeta.website;
-            }
-
-            await database
-              .update(feedsTable)
-              .set(updateFields)
-              .where(eq(feedsTable.id, feed.id));
-          })
-        ).catch((error: unknown) => {
-          if (isError(error)) {
-            return error;
-          }
-
-          return new Error("failed");
-        });
-
-        if (isError(fetchError)) {
-          logger.error(
-            `Failed to fetch feed ${feed.xmlAddress}`,
-            undefined,
-            fetchError.stack
+        if (fetchError !== undefined) {
+          Effect.runSync(
+            Effect.logError(`Failed to fetch feed ${feed.xmlAddress}`, {
+              error: fetchError.message,
+              feedId: feed.id,
+              feedUrl: feed.xmlAddress,
+              stack: fetchError.stack
+            })
           );
           throw fetchError; // Rethrow so Workflow can retry if configured
         }

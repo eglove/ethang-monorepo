@@ -1,35 +1,55 @@
-import { BaseStore } from "@ethang/store";
+import { makeStore, type Store } from "@ethang/store/store.ts";
 
-const initialState = {
-  pendingUnsubscribe: null as {
-    feedId: string;
-    title: string;
-  } | null,
-  selectedFeedId: null as null | string
+export type PendingUnsubscribe = {
+  feedId: string;
+  title: string;
 };
 
-class RssStore extends BaseStore<typeof initialState> {
-  public constructor() {
-    super(initialState);
-  }
+export type RssState = {
+  pendingUnsubscribe: null | PendingUnsubscribe;
+  selectedFeedId: null | string;
+};
 
-  public cancelUnsubscribe() {
-    this.update((draft) => {
-      draft.pendingUnsubscribe = null;
-    });
-  }
+const initialState: RssState = {
+  pendingUnsubscribe: null,
+  selectedFeedId: null
+};
 
-  public requestUnsubscribe(feedId: string, title: string) {
-    this.update((draft) => {
-      draft.pendingUnsubscribe = { feedId, title };
-    });
-  }
+const cancelUnsubscribe = (store: Store<RssState>) => {
+  return store.update((draft) => {
+    draft.pendingUnsubscribe = null;
+  });
+};
 
-  public setSelectedFeedId(selectedFeedId: null | string) {
-    this.update((draft) => {
-      draft.selectedFeedId = selectedFeedId;
-    });
-  }
-}
+const requestUnsubscribe = (
+  store: Store<RssState>,
+  feedId: string,
+  title: string
+) => {
+  return store.update((draft) => {
+    draft.pendingUnsubscribe = { feedId, title };
+  });
+};
 
-export const rssStore = new RssStore();
+const setSelectedFeedId = (
+  store: Store<RssState>,
+  selectedFeedId: null | string
+) => {
+  return store.update((draft) => {
+    draft.selectedFeedId = selectedFeedId;
+  });
+};
+
+export const rssStore: Store<RssState> = makeStore(initialState);
+
+export const rssStoreActions = {
+  cancelUnsubscribe: () => {
+    return cancelUnsubscribe(rssStore);
+  },
+  requestUnsubscribe: (feedId: string, title: string) => {
+    return requestUnsubscribe(rssStore, feedId, title);
+  },
+  setSelectedFeedId: (selectedFeedId: null | string) => {
+    return setSelectedFeedId(rssStore, selectedFeedId);
+  }
+};

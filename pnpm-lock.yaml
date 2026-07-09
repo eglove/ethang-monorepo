@@ -254,9 +254,6 @@ importers:
       '@ethang/intl':
         specifier: workspace:*
         version: link:../../packages/intl
-      '@ethang/logger-sdk':
-        specifier: workspace:*
-        version: link:../../packages/logger-sdk
       '@ethang/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -384,9 +381,9 @@ importers:
       '@ethang/intl':
         specifier: workspace:*
         version: link:../../packages/intl
-      '@ethang/logger-sdk':
+      '@ethang/telemetry':
         specifier: workspace:*
-        version: link:../../packages/logger-sdk
+        version: link:../../packages/telemetry
       '@ethang/toolbelt':
         specifier: workspace:*
         version: link:../../packages/toolbelt
@@ -438,64 +435,6 @@ importers:
         version: 6.0.3
       vitest:
         specifier: ~4.1.10
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
-      wrangler:
-        specifier: ^4.108.0
-        version: 4.108.0(@cloudflare/workers-types@5.20260708.1)
-
-  apps/logger-service:
-    dependencies:
-      '@ethang/schemas':
-        specifier: workspace:*
-        version: link:../../packages/schemas
-      '@ethang/toolbelt':
-        specifier: workspace:*
-        version: link:../../packages/toolbelt
-      drizzle-orm:
-        specifier: ^0.45.2
-        version: 0.45.2(@cloudflare/workers-types@5.20260708.1)(@opentelemetry/api@1.9.1)
-      effect:
-        specifier: ^3.21.4
-        version: 3.21.4
-      hono:
-        specifier: ^4.12.28
-        version: 4.12.28
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
-    devDependencies:
-      '@cloudflare/workers-types':
-        specifier: ^5.20260708.1
-        version: 5.20260708.1
-      '@ethang/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@total-typescript/ts-reset':
-        specifier: ^0.6.1
-        version: 0.6.1
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
-      '@types/node':
-        specifier: ^26.1.1
-        version: 26.1.1
-      '@vitest/coverage-v8':
-        specifier: ^4.1.10
-        version: 4.1.10(vitest@4.1.10)
-      browserslist-config-baseline:
-        specifier: ^0.5.0
-        version: 0.5.0
-      drizzle-kit:
-        specifier: ^0.31.10
-        version: 0.31.10
-      eslint:
-        specifier: ^10.6.0
-        version: 10.6.0(jiti@2.7.0)
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-      vitest:
-        specifier: ^4.1.10
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
       wrangler:
         specifier: ^4.108.0
@@ -832,6 +771,9 @@ importers:
       '@ethang/markdown-generator':
         specifier: workspace:*
         version: link:../markdown-generator
+      '@ethang/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
       '@ethang/toolbelt':
         specifier: workspace:*
         version: link:../toolbelt
@@ -1058,49 +1000,6 @@ importers:
         specifier: ^4.1.10
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
 
-  packages/logger-sdk:
-    dependencies:
-      '@ethang/schemas':
-        specifier: workspace:*
-        version: link:../schemas
-      lodash:
-        specifier: ^4.18.1
-        version: 4.18.1
-    devDependencies:
-      '@ethang/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@total-typescript/ts-reset':
-        specifier: ^0.6.1
-        version: 0.6.1
-      '@types/lodash':
-        specifier: ^4.17.24
-        version: 4.17.24
-      '@types/node':
-        specifier: ^26.1.1
-        version: 26.1.1
-      '@vitest/coverage-v8':
-        specifier: ^4.1.10
-        version: 4.1.10(vitest@4.1.10)
-      browserslist-config-baseline:
-        specifier: ^0.5.0
-        version: 0.5.0
-      eslint:
-        specifier: ^10.6.0
-        version: 10.6.0(jiti@2.7.0)
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
-      typescript:
-        specifier: ^6.0.3
-        version: 6.0.3
-      vitest:
-        specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
-
   packages/markdown-generator:
     dependencies:
       lodash:
@@ -1125,12 +1024,6 @@ importers:
       eslint:
         specifier: ^10.6.0
         version: 10.6.0(jiti@2.7.0)
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1174,6 +1067,9 @@ importers:
 
   packages/scripts:
     dependencies:
+      '@ethang/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
       '@ethang/toolbelt':
         specifier: workspace:*
         version: link:../toolbelt
@@ -1211,6 +1107,9 @@ importers:
 
   packages/service-worker:
     dependencies:
+      '@ethang/telemetry':
+        specifier: workspace:*
+        version: link:../telemetry
       esbuild:
         specifier: ^0.28.1
         version: 0.28.1
@@ -1257,9 +1156,6 @@ importers:
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
-      use-sync-external-store:
-        specifier: ^1.6.0
-        version: 1.6.0(react@19.2.7)
     devDependencies:
       '@ethang/eslint-config':
         specifier: workspace:*
@@ -1288,23 +1184,42 @@ importers:
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1(@noble/hashes@2.2.0)
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
-      type-fest:
-        specifier: ^5.8.0
-        version: 5.8.0
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+      use-sync-external-store:
+        specifier: ^1.6.0
+        version: 1.6.0(react@19.2.7)
       vite:
         specifier: ^8.1.4
         version: 8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
       vitest:
         specifier: ^4.1.10
+        version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
+
+  packages/telemetry:
+    dependencies:
+      effect:
+        specifier: ^3.21.4
+        version: 3.21.4
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^5.20260708.1
+        version: 5.20260708.1
+      '@ethang/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@total-typescript/ts-reset':
+        specifier: ^0.6.1
+        version: 0.6.1
+      '@types/node':
+        specifier: ^26.1.1
+        version: 26.1.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ~4.1.10
         version: 4.1.10(@opentelemetry/api@1.9.1)(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(@vitest/ui@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.1.4(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
 
   packages/toolbelt:
@@ -1349,12 +1264,6 @@ importers:
       happy-dom:
         specifier: ^20.10.6
         version: 20.10.6
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
