@@ -24,17 +24,16 @@
     "node": ">=24"
   },
   "exports": {
-    "./build": "./src/build.ts"
+    "./build": "./src/build.ts",
+    "./sw": "./src/sw.ts"
   },
   "license": "ISC",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
   "name": "@ethang/service-worker",
+  "private": true,
   "scripts": {
     "build": "tsx src/build.ts",
     "lint": "eslint . --fix && pnpm tsc --noEmit"
   },
   "type": "module",
-  "types": "dist/index.d.ts",
   "version": "1.0.0"
 }

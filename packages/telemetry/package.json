@@ -3,14 +3,12 @@
     ".": "./src/index.ts",
     "./*": "./src/*"
   },
-  "files": ["dist", "src"],
   "main": "./src/index.ts",
   "name": "@ethang/telemetry",
   "private": true,
   "type": "module",
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc -b",
     "lint": "eslint src --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage"
   },

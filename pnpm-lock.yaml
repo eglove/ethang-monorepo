@@ -1024,12 +1024,6 @@ importers:
       eslint:
         specifier: ^10.6.0
         version: 10.6.0(jiti@2.7.0)
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -1193,12 +1187,6 @@ importers:
       jsdom:
         specifier: ^29.1.1
         version: 29.1.1(@noble/hashes@2.2.0)
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
       type-fest:
         specifier: ^5.8.0
         version: 5.8.0
@@ -1279,12 +1267,6 @@ importers:
       happy-dom:
         specifier: ^20.10.6
         version: 20.10.6
-      tsc-prog:
-        specifier: ^2.3.0
-        version: 2.3.0(typescript@6.0.3)
-      tsup:
-        specifier: ^8.5.1
-        version: 8.5.1(jiti@2.7.0)(postcss@8.5.16)(tsx@4.23.0)(typescript@6.0.3)(yaml@2.9.0)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
