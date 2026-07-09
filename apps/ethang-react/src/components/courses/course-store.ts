@@ -1,21 +1,26 @@
-import { BaseStore } from "@ethang/store";
+import { makeStore, type Store } from "@ethang/store/store.ts";
 
-const initialState = {
+export type CourseState = {
+  courseIndex: number;
+  coursesIndexes: Map<string, number>;
+};
+
+const initialState: CourseState = {
   courseIndex: 0,
   coursesIndexes: new Map<string, number>()
 };
 
-class CourseStore extends BaseStore<typeof initialState> {
-  public constructor() {
-    super(initialState);
-  }
+const addCourseOrder = (store: Store<CourseState>, id: string) => {
+  return store.update((draft) => {
+    draft.coursesIndexes.set(id, draft.courseIndex + 1);
+    draft.courseIndex += 1;
+  });
+};
 
-  public addCourseOrder(id: string) {
-    this.update((draft) => {
-      draft.courseIndex += 1;
-      draft.coursesIndexes.set(id, draft.courseIndex);
-    });
-  }
-}
+export const courseStore: Store<CourseState> = makeStore(initialState);
 
-export const courseStore = new CourseStore();
+export const courseStoreActions = {
+  addCourseOrder: (id: string) => {
+    return addCourseOrder(courseStore, id);
+  }
+};

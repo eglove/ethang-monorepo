@@ -1,5 +1,5 @@
 import { rss } from "@ethang/intl/en/rss.ts";
-import { useStore } from "@ethang/store/use-store";
+import { useStore } from "@ethang/store/use-store.ts";
 import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import {
   useInfiniteQuery,

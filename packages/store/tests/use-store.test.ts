@@ -1,19 +1,31 @@
 import { act, renderHook } from "@testing-library/react";
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BaseStore } from "../src/index.js";
+import { makeStore, type Store } from "../src/store.js";
 import { useStore } from "../src/use-store.js";
 
 vi.mock("use-sync-external-store/with-selector", async (importOriginal) => {
-  const actual = await importOriginal<object>();
+  const actual = (await importOriginal()) as {
+    useSyncExternalStoreWithSelector: (
+      subscribe: (onStoreChange: () => void) => () => void,
+      getSnapshot: () => State,
+      getServerSnapshot: () => State,
+      selector: (snapshot: State) => unknown,
+      isEqual?: (a: unknown, b: unknown) => boolean
+    ) => unknown;
+  };
 
   return {
     ...actual,
     useSyncExternalStoreWithSelector: vi.fn(
-      (subscribe, getSnapshot, getServerSnapshot, selector, isEqual) => {
-        // @ts-expect-error for test
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return,@typescript-eslint/no-unsafe-call
+      (
+        subscribe: (onStoreChange: () => void) => () => void,
+        getSnapshot: () => State,
+        getServerSnapshot: () => State,
+        selector: (snapshot: State) => unknown,
+        isEqual?: (a: unknown, b: unknown) => boolean
+      ) => {
         return actual.useSyncExternalStoreWithSelector(
           subscribe,
           getSnapshot,
@@ -26,61 +38,47 @@ vi.mock("use-sync-external-store/with-selector", async (importOriginal) => {
   };
 });
 
-type TestState = {
-  count: number;
-  name: string;
-};
+type State = { count: number; name: string };
 
-class TestStore extends BaseStore<TestState> {
-  public constructor(state: TestState) {
-    super(state);
-  }
+let store: Store<State>;
 
-  public increment() {
-    this.update((draft) => {
-      draft.count += 1;
-    });
-  }
-
-  public override update(updater: (draft: TestState) => void) {
-    super.update(updater);
-  }
-}
+beforeEach(() => {
+  store = makeStore({ count: 0, name: "Initial" });
+});
 
 describe("useStore", () => {
-  it("should return the selected state", () => {
-    const store = new TestStore({ count: 0, name: "Initial" });
+  it("returns the selected state", () => {
     const { result } = renderHook(() => {
-      return useStore(store, (state) => {
-        return state.count;
+      return useStore(store, (s) => {
+        return s.count;
       });
     });
 
     expect(result.current).toBe(0);
   });
 
-  it("should update when the selected state changes", () => {
-    const store = new TestStore({ count: 0, name: "Initial" });
+  it("updates when the selected state changes", () => {
     const { result } = renderHook(() => {
-      return useStore(store, (state) => {
-        return state.count;
+      return useStore(store, (s) => {
+        return s.count;
       });
     });
 
     act(() => {
-      store.increment();
+      store.update((draft) => {
+        draft.count += 1;
+      });
     });
 
     expect(result.current).toBe(1);
   });
 
-  it("should not update when an unselected part of the state changes", () => {
-    const store = new TestStore({ count: 0, name: "Initial" });
+  it("does not re-render when an unselected part of the state changes", () => {
     let renderCount = 0;
     const { result } = renderHook(() => {
       renderCount += 1;
-      return useStore(store, (state) => {
-        return state.count;
+      return useStore(store, (s) => {
+        return s.count;
       });
     });
 
@@ -96,15 +94,14 @@ describe("useStore", () => {
     expect(result.current).toBe(0);
   });
 
-  it("should use the isEqual function for comparison", () => {
-    const store = new TestStore({ count: 0, name: "Initial" });
+  it("uses the isEqual function for comparison", () => {
     let renderCount = 0;
     const { result } = renderHook(() => {
       renderCount += 1;
       return useStore(
         store,
-        (state) => {
-          return { count: state.count };
+        (s) => {
+          return { count: s.count };
         },
         (a, b) => {
           return a.count === b.count;
@@ -115,7 +112,9 @@ describe("useStore", () => {
     expect(renderCount).toBe(1);
 
     act(() => {
-      store.increment();
+      store.update((draft) => {
+        draft.count += 1;
+      });
     });
 
     expect(renderCount).toBe(2);
@@ -130,23 +129,21 @@ describe("useStore", () => {
     expect(renderCount).toBe(2);
   });
 
-  it("should provide getServerSnapshot to useSyncExternalStoreWithSelector", () => {
-    const store = new TestStore({ count: 0, name: "Initial" });
+  it("provides getServerSnapshot to useSyncExternalStoreWithSelector", () => {
     renderHook(() => {
-      return useStore(store, (state) => {
-        return state.count;
+      return useStore(store, (s) => {
+        return s.count;
       });
     });
 
-    const mockFunction = useSyncExternalStoreWithSelector;
-    expect(mockFunction).toHaveBeenCalled();
-    // @ts-expect-error for test
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+    const mockFunction = (
+      useSyncExternalStoreWithSelector as unknown as {
+        mock: { calls: unknown[][] };
+      }
+    );
     const lastCall = mockFunction.mock.calls.at(-1);
-    // eslint-disable-next-line @typescript-eslint/prefer-destructuring,@typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
-    const getServerSnapshot = lastCall[2];
+    const getServerSnapshot = lastCall?.[2] as () => State;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     expect(getServerSnapshot()).toEqual({ count: 0, name: "Initial" });
   });
 });

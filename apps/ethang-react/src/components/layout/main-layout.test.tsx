@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authStore } from "../auth/auth-store.ts";
+import { authStore, authStoreActions } from "../auth/auth-store.ts";
 import { MainLayout } from "./main-layout.tsx";
 
 // Mock the TanStack Router hooks and components
@@ -18,7 +18,7 @@ vi.mock("@tanstack/react-router", () => {
 describe("MainLayout Navigation", () => {
   beforeEach(() => {
     localStorage.clear();
-    authStore.reset();
+    authStoreActions.signOut();
     vi.restoreAllMocks();
   });
 
@@ -37,17 +37,17 @@ describe("MainLayout Navigation", () => {
     expect(screen.queryByText(/logged in as/iu)).toBeNull();
   });
 
-  it("should render user welcome and logout button when authenticated", () => {
+  it("should render user welcome and logout button when authenticated", async () => {
     const mockUser = {
       email: "test@ethang.email",
       sessionToken: "mock-session-token",
       username: "testuser"
     };
 
-    authStore.reset({
-      error: null,
-      isPending: false,
-      user: mockUser
+    authStore.update((draft) => {
+      draft.error = null;
+      draft.isPending = false;
+      draft.user = mockUser;
     });
 
     render(
@@ -61,20 +61,20 @@ describe("MainLayout Navigation", () => {
     expect(screen.queryByRole("link", { name: "Login" })).toBeNull();
   });
 
-  it("should trigger signOut when logout button is clicked", () => {
+  it("should trigger signOut when logout button is clicked", async () => {
     const mockUser = {
       email: "test@ethang.email",
       sessionToken: "mock-session-token",
       username: "testuser"
     };
 
-    authStore.reset({
-      error: null,
-      isPending: false,
-      user: mockUser
+    authStore.update((draft) => {
+      draft.error = null;
+      draft.isPending = false;
+      draft.user = mockUser;
     });
 
-    const signOutSpy = vi.spyOn(authStore, "signOut");
+    const signOutSpy = vi.spyOn(authStoreActions, "signOut");
 
     render(
       <MainLayout>

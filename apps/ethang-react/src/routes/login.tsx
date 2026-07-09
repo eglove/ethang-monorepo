@@ -1,5 +1,5 @@
 import { forms } from "@ethang/intl/en/forms.ts";
-import { useStore } from "@ethang/store/use-store";
+import { useStore } from "@ethang/store/use-store.ts";
 import {
   Box,
   Button,
@@ -20,7 +20,7 @@ import noop from "lodash/noop.js";
 import trim from "lodash/trim.js";
 import { type SyntheticEvent, useEffect, useState } from "react";
 
-import { authStore } from "../components/auth/auth-store.ts";
+import { authStore, authStoreActions } from "../components/auth/auth-store.ts";
 import { MainLayout } from "../components/layout/main-layout.tsx";
 
 const Login = () => {
@@ -51,7 +51,7 @@ const Login = () => {
     const hasEmail = 0 < trim(email).length;
     const hasPassword = 0 < trim(password).length;
     if (hasEmail && hasPassword) {
-      authStore.signIn(email, password).catch(noop);
+      authStoreActions.signIn(email, password).catch(noop);
     }
   };
 

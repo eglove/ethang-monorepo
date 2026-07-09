@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { rssStore } from "./rss-store.ts";
+import { rssStore, rssStoreActions } from "./rss-store.ts";
 
 describe("RssStore", () => {
   beforeEach(() => {
-    rssStore.reset();
+    rssStoreActions.setSelectedFeedId(null);
+    rssStoreActions.cancelUnsubscribe();
   });
 
   it("should initialize with null selectedFeedId", () => {
@@ -12,10 +13,10 @@ describe("RssStore", () => {
   });
 
   it("should set selectedFeedId correctly", () => {
-    rssStore.setSelectedFeedId("test-feed-id-123");
+    rssStoreActions.setSelectedFeedId("test-feed-id-123");
     expect(rssStore.state.selectedFeedId).toBe("test-feed-id-123");
 
-    rssStore.setSelectedFeedId(null);
+    rssStoreActions.setSelectedFeedId(null);
     expect(rssStore.state.selectedFeedId).toBeNull();
   });
 
@@ -24,7 +25,7 @@ describe("RssStore", () => {
   });
 
   it("should set pendingUnsubscribe when requestUnsubscribe is called", () => {
-    rssStore.requestUnsubscribe("feed-1", "My Feed");
+    rssStoreActions.requestUnsubscribe("feed-1", "My Feed");
     expect(rssStore.state.pendingUnsubscribe).toEqual({
       feedId: "feed-1",
       title: "My Feed"
@@ -32,8 +33,8 @@ describe("RssStore", () => {
   });
 
   it("should clear pendingUnsubscribe when cancelUnsubscribe is called", () => {
-    rssStore.requestUnsubscribe("feed-1", "My Feed");
-    rssStore.cancelUnsubscribe();
+    rssStoreActions.requestUnsubscribe("feed-1", "My Feed");
+    rssStoreActions.cancelUnsubscribe();
     expect(rssStore.state.pendingUnsubscribe).toBeNull();
   });
 });

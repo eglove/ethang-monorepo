@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authStore, AuthStore } from "./auth-store.ts";
+import { authStore, authStoreActions, readStoredUser } from "./auth-store.ts";
 
 const USER_KEY = "ethang-user";
 const TEST_EMAIL = "test@ethang.email";
@@ -9,7 +9,7 @@ const STORED_EMAIL = "stored@ethang.email";
 describe("AuthStore", () => {
   beforeEach(() => {
     localStorage.clear();
-    authStore.reset();
+    authStoreActions.signOut();
     vi.restoreAllMocks();
   });
 
@@ -19,7 +19,7 @@ describe("AuthStore", () => {
     expect(authStore.state.isPending).toBe(false);
   });
 
-  it("should initialize with user from localStorage if present", () => {
+  it("should read user from localStorage if present", () => {
     const mockUser = {
       email: STORED_EMAIL,
       sessionToken: "stored-token",
@@ -27,20 +27,17 @@ describe("AuthStore", () => {
     };
     localStorage.setItem(USER_KEY, JSON.stringify(mockUser));
 
-    const storeInstance = new AuthStore();
-    expect(storeInstance.state.user).toEqual(mockUser);
+    expect(readStoredUser()).toEqual(mockUser);
   });
 
   it("should handle JSON parse error in localStorage during initialization", () => {
     localStorage.setItem(USER_KEY, "{invalid-json}");
-    const storeInstance = new AuthStore();
-    expect(storeInstance.state.user).toBeNull();
+    expect(readStoredUser()).toBeNull();
   });
 
   it("should handle invalid user schema in localStorage during initialization", () => {
     localStorage.setItem(USER_KEY, JSON.stringify({ email: 123 }));
-    const storeInstance = new AuthStore();
-    expect(storeInstance.state.user).toBeNull();
+    expect(readStoredUser()).toBeNull();
   });
 
   it("should successfully sign in and update store/localStorage", async () => {
@@ -54,9 +51,8 @@ describe("AuthStore", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(Response.json(mockUser, { status: 200 }));
 
-    const signInPromise = authStore.signIn(TEST_EMAIL, "password123");
+    const signInPromise = authStoreActions.signIn(TEST_EMAIL, "password123");
 
-    // The store should be in pending state while the request is in-flight
     expect(authStore.state.isPending).toBe(true);
 
     await signInPromise;
@@ -85,7 +81,7 @@ describe("AuthStore", () => {
       )
     );
 
-    await authStore.signIn(TEST_EMAIL, "wrongpassword");
+    await authStoreActions.signIn(TEST_EMAIL, "wrongpassword");
 
     expect(authStore.state.user).toBeNull();
     expect(authStore.state.isPending).toBe(false);
@@ -98,7 +94,7 @@ describe("AuthStore", () => {
       Response.json({}, { status: 400 })
     );
 
-    await authStore.signIn(TEST_EMAIL, "wrongpassword");
+    await authStoreActions.signIn(TEST_EMAIL, "wrongpassword");
 
     expect(authStore.state.error).toBe("Failed to sign in");
   });
@@ -106,7 +102,7 @@ describe("AuthStore", () => {
   it("should handle sign in error when request throws exception without message", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue({});
 
-    await authStore.signIn(TEST_EMAIL, "password");
+    await authStoreActions.signIn(TEST_EMAIL, "password");
 
     expect(authStore.state.error).toBe("An unexpected error occurred");
   });
@@ -116,7 +112,7 @@ describe("AuthStore", () => {
       Response.json({ email: 123 }, { status: 200 })
     );
 
-    await authStore.signIn(TEST_EMAIL, "password123");
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
 
     expect(authStore.state.user).toBeNull();
     expect(authStore.state.isPending).toBe(false);
@@ -131,21 +127,21 @@ describe("AuthStore", () => {
       username: "testuser"
     };
 
-    // Simulate pre-logged in state by setting in localStorage and resetting store
     localStorage.setItem(USER_KEY, JSON.stringify(mockUser));
 
-    // Instantiate new store state reflection
-    authStore.reset({
-      error: null,
-      isPending: false,
-      user: mockUser
+    authStore.update((draft) => {
+      draft.error = null;
+      draft.isPending = false;
+      draft.user = mockUser;
     });
 
     expect(authStore.state.user).toEqual(mockUser);
 
-    authStore.signOut();
+    authStoreActions.signOut();
 
     expect(authStore.state.user).toBeNull();
+    expect(authStore.state.isPending).toBe(false);
+    expect(authStore.state.error).toBeNull();
     expect(localStorage.getItem(USER_KEY)).toBeNull();
   });
 });

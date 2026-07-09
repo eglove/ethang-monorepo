@@ -3,7 +3,7 @@ import type { ComponentType, ReactNode } from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authStore } from "../components/auth/auth-store.ts";
+import { authStoreActions } from "../components/auth/auth-store.ts";
 import { Route } from "./login.tsx";
 
 const TEST_EMAIL = "test@ethang.email";
@@ -52,7 +52,7 @@ vi.mock("@tanstack/react-router", async () => {
 describe("Login Integration", () => {
   beforeEach(() => {
     localStorage.clear();
-    authStore.reset();
+    authStoreActions.signOut();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
     mockSearchStore.search = { redirect: undefined as string | undefined };
@@ -159,7 +159,7 @@ describe("Login Integration", () => {
   });
 
   it("should not call signIn if email or password are empty or whitespace", () => {
-    const signInSpy = vi.spyOn(authStore, "signIn");
+    const signInSpy = vi.spyOn(authStoreActions, "signIn");
 
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
@@ -173,7 +173,7 @@ describe("Login Integration", () => {
   });
 
   it("should not call signIn if email is filled but password is empty", () => {
-    const signInSpy = vi.spyOn(authStore, "signIn");
+    const signInSpy = vi.spyOn(authStoreActions, "signIn");
 
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);
@@ -188,7 +188,7 @@ describe("Login Integration", () => {
   });
 
   it("should not call signIn if email is empty but password is filled", () => {
-    const signInSpy = vi.spyOn(authStore, "signIn");
+    const signInSpy = vi.spyOn(authStoreActions, "signIn");
 
     const LoginComponent = Route.options.component as ComponentType;
     render(<LoginComponent />);

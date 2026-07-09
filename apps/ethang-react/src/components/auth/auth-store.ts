@@ -1,5 +1,5 @@
 import { auth } from "@ethang/intl/en/auth.ts";
-import { BaseStore } from "@ethang/store";
+import { makeStore, type Store } from "@ethang/store/store.ts";
 import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
@@ -14,128 +14,144 @@ export type User = {
   username: string;
 };
 
-const initialState = {
-  error: null as null | string,
-  isPending: false,
-  user: null as null | User
+const USER_KEY = "ethang-user" as const;
+
+export type AuthState = {
+  error: null | string;
+  isPending: boolean;
+  user: null | User;
 };
 
-export class AuthStore extends BaseStore<typeof initialState> {
-  private static readonly USER_KEY = "ethang-user" as const;
-
-  public constructor() {
-    const storedUser = localStorage.getItem(AuthStore.USER_KEY);
-    let initialUser: null | User = null;
-    if (null !== storedUser) {
-      const parsed: unknown = attempt(() => {
-        return JSON.parse(storedUser);
-      });
-      if (!isError(parsed) && isObject(parsed)) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        const data = parsed as Record<string, unknown>;
-        const { email, sessionToken, username } = data;
-        if (isString(email) && isString(sessionToken) && isString(username)) {
-          initialUser = {
-            email,
-            sessionToken,
-            username
-          };
-        }
-      }
-    }
-    super({
-      ...initialState,
-      user: initialUser
-    });
+const readStoredUser = (): null | User => {
+  const storedUser = localStorage.getItem(USER_KEY);
+  if (null === storedUser) {
+    return null;
   }
+  const parsed: unknown = attempt(() => {
+    return JSON.parse(storedUser);
+  });
+  if (isError(parsed) || !isObject(parsed)) {
+    return null;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+  const data = parsed as Record<string, unknown>;
+  const { email, sessionToken, username } = data;
+  if (!isString(email) || !isString(sessionToken) || !isString(username)) {
+    return null;
+  }
+  return { email, sessionToken, username };
+};
 
-  public signIn = async (email: string, password: string): Promise<void> => {
-    this.update((draft) => {
-      draft.isPending = true;
-      draft.error = null;
-    });
+export { readStoredUser };
 
-    const result = await Effect.runPromise(
-      attemptAsync(async () => {
-        const response = await fetch("https://auth.ethang.dev/sign-in", {
-          body: JSON.stringify({ email, password }),
-          headers: {
-            "Content-Type": "application/json"
-          },
-          method: "POST"
-        });
+const initialState: AuthState = {
+  error: null,
+  isPending: false,
+  user: readStoredUser()
+};
 
-        const data: {
-          email: string;
-          error: string;
-          sessionToken: string;
-          username: string;
-        } = await response.json();
+const signIn = async (
+  store: Store<AuthState>,
+  email: string,
+  password: string
+) => {
+  store.update((draft) => {
+    draft.error = null;
+    draft.isPending = true;
+  });
 
-        const {
-          email: emailValue,
-          error: errorValue,
-          sessionToken: sessionTokenValue,
-          username: usernameValue
-        } = data;
+  const result = await Effect.runPromise(
+    attemptAsync(async () => {
+      const response = await fetch("https://auth.ethang.dev/sign-in", {
+        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST"
+      });
 
-        if (!response.ok) {
-          const errorMessage = isString(errorValue)
-            ? errorValue
-            : auth.FAILED_TO_SIGN_IN;
-          throw new Error(errorMessage);
-        }
+      const data: {
+        email: string;
+        error: string;
+        sessionToken: string;
+        username: string;
+      } = await response.json();
 
-        if (
-          !isString(emailValue) ||
-          !isString(sessionTokenValue) ||
-          !isString(usernameValue)
-        ) {
-          throw new TypeError(auth.INVALID_RESPONSE);
-        }
+      const {
+        email: emailValue,
+        error: errorValue,
+        sessionToken: sessionTokenValue,
+        username: usernameValue
+      } = data;
 
-        const user: User = {
-          email: emailValue,
-          sessionToken: sessionTokenValue,
-          username: usernameValue
-        };
-
-        localStorage.setItem(AuthStore.USER_KEY, JSON.stringify(user));
-
-        this.update((draft) => {
-          draft.user = user;
-          draft.isPending = false;
-          draft.error = null;
-        });
-      })
-    ).catch((error: unknown) => {
-      if (isError(error)) {
-        return error;
+      if (!response.ok) {
+        const errorMessage = isString(errorValue)
+          ? errorValue
+          : auth.FAILED_TO_SIGN_IN;
+        throw new Error(errorMessage);
       }
 
-      return new Error("failed");
-    });
+      if (
+        !isString(emailValue) ||
+        !isString(sessionTokenValue) ||
+        !isString(usernameValue)
+      ) {
+        throw new TypeError(auth.INVALID_RESPONSE);
+      }
 
-    if (isError(result)) {
-      this.update((draft) => {
-        draft.error =
-          "failed" === trim(result.message)
-            ? auth.UNEXPECTED_ERROR
-            : result.message;
+      const user: User = {
+        email: emailValue,
+        sessionToken: sessionTokenValue,
+        username: usernameValue
+      };
 
-        draft.isPending = false;
-      });
-    }
-  };
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
 
-  public signOut = (): void => {
-    localStorage.removeItem(AuthStore.USER_KEY);
-    this.update((draft) => {
-      draft.user = null;
-      draft.error = null;
+      return user;
+    }).pipe(
+      // `attemptAsync` always wraps thrown values in a JS `Error` (see
+      // `@ethang/toolbelt/functional/attempt-async`), so the only thing
+      // this catch can see is a real `Error` instance.
+      Effect.catchAll((error: Error) => {
+        return Effect.succeed(error);
+      })
+    )
+  );
+
+  if (isError(result)) {
+    const trimmed = trim(result.message);
+    const message =
+      "failed" === trimmed ? auth.UNEXPECTED_ERROR : result.message;
+    store.update((draft) => {
+      draft.error = message;
       draft.isPending = false;
     });
-  };
-}
+    return;
+  }
 
-export const authStore = new AuthStore();
+  store.update((draft) => {
+    draft.error = null;
+    draft.isPending = false;
+    draft.user = result;
+  });
+};
+
+const signOut = (store: Store<AuthState>) => {
+  localStorage.removeItem(USER_KEY);
+  store.update((draft) => {
+    draft.error = null;
+    draft.isPending = false;
+    draft.user = null;
+  });
+};
+
+export const authStore: Store<AuthState> = makeStore(initialState);
+
+export const authStoreActions = {
+  signIn: async (email: string, password: string) => {
+    return signIn(authStore, email, password);
+  },
+  signOut: () => {
+    signOut(authStore);
+  }
+};

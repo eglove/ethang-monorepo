@@ -1,12 +1,11 @@
 import type { ComponentType, ReactNode } from "react";
 
 import { render } from "@testing-library/react";
-import { Effect, pipe } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authStore } from "../components/auth/auth-store.ts";
+import { authStore, authStoreActions } from "../components/auth/auth-store.ts";
 import {
   decodeHtmlEntities,
   parseXmlUrl
@@ -91,7 +90,7 @@ vi.mock("../components/rss/rss-container.tsx", () => {
 describe("RSS Feature", () => {
   beforeEach(() => {
     localStorage.clear();
-    authStore.reset();
+    authStoreActions.signOut();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
     redirectStore.redirectMock = null;
@@ -118,9 +117,9 @@ describe("RSS Feature", () => {
   });
 
   describe("RSS Route Protection", () => {
-    it("redirects unauthenticated user to login route with redirect parameter", () => {
+    it("redirects unauthenticated user to login route with redirect parameter", async () => {
       // Setup state where no user is logged in
-      authStore.signOut();
+      authStoreActions.signOut();
 
       attempt(() => {
         // @ts-expect-error for test
@@ -135,8 +134,7 @@ describe("RSS Feature", () => {
       });
     });
 
-    it("does not redirect when user is authenticated", () => {
-      // @ts-expect-error for test
+    it("does not redirect when user is authenticated", async () => {
       authStore.update((draft) => {
         draft.user = {
           email: "a@a.com",
@@ -185,17 +183,12 @@ describe("RSS Feature", () => {
         }
       };
 
-      const runTest = Effect.sync(() => {
+      try {
         expect(decodeHtmlEntities("some text")).toBe("some text");
-      });
-
-      const cleanupDOMParser = Effect.sync(() => {
+      } finally {
         // eslint-disable-next-line unicorn/no-global-object-property-assignment
         globalThis.DOMParser = originalDOMParser;
-      });
-
-      const testWorkflow = pipe(runTest, Effect.ensuring(cleanupDOMParser));
-      Effect.runSync(testWorkflow);
+      }
     });
   });
 

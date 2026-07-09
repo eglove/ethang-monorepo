@@ -1,10 +1,10 @@
 import { useSyncExternalStoreWithSelector } from "use-sync-external-store/with-selector";
 
-import type { BaseStore } from "./index.js";
+import type { Store } from "./store.js";
 
-export const useStore = <State extends object, Selection>(
-  store: BaseStore<State>,
-  selector: (snapshot: BaseStore<State>["state"]) => Selection,
+export const useStore = <T, Selection>(
+  store: Store<T>,
+  selector: (snapshot: T) => Selection,
   isEqual?: (a: Selection, b: Selection) => boolean
 ) => {
   return useSyncExternalStoreWithSelector(

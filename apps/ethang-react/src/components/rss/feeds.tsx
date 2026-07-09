@@ -1,5 +1,7 @@
+import type { MouseEvent } from "react";
+
 import { rss } from "@ethang/intl/en/rss.ts";
-import { useStore } from "@ethang/store/use-store";
+import { useStore } from "@ethang/store/use-store.ts";
 import { Box, Button, Card, Flex, Heading, Skeleton } from "@radix-ui/themes";
 import {
   useInfiniteQuery,
@@ -17,7 +19,7 @@ import {
   removeSubscriptionMutationFunction,
   subscriptionsOptions
 } from "./queries.ts";
-import { rssStore } from "./rss-store.ts";
+import { rssStore, rssStoreActions } from "./rss-store.ts";
 import { SourceIcon } from "./source-icon.tsx";
 import { UnsubscribeDialog } from "./unsubscribe-dialog.tsx";
 import { decodeHtmlEntities } from "./utilities.ts";
@@ -33,6 +35,13 @@ type SubscriptionEdge = {
 };
 
 const PLACEHOLDER_WEBSITE = "about:blank";
+
+const handleUnsubscribeButton = (feed: SubscriptionEdge["node"]) => {
+  return (event: MouseEvent) => {
+    event.stopPropagation();
+    rssStoreActions.requestUnsubscribe(feed.id, decodeHtmlEntities(feed.title));
+  };
+};
 
 export const Feeds = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending } =
@@ -62,7 +71,7 @@ export const Feeds = () => {
           queryKey: feedArticlesOptions(variables.feedId).queryKey
         });
         if (variables.feedId === selectedFeedId) {
-          rssStore.setSelectedFeedId(null);
+          rssStoreActions.setSelectedFeedId(null);
         }
       }
     });
@@ -81,20 +90,12 @@ export const Feeds = () => {
     fetchNextPage().catch(noop);
   };
 
-  const handleRequestUnsubscribe = (feedId: string, title: string) => {
-    rssStore.requestUnsubscribe(feedId, title);
-  };
-
-  const handleCancelUnsubscribe = () => {
-    rssStore.cancelUnsubscribe();
-  };
-
   const handleConfirmUnsubscribe = async () => {
     if (isNil(pendingUnsubscribe)) {
       return;
     }
     const { feedId } = pendingUnsubscribe;
-    rssStore.cancelUnsubscribe();
+    rssStoreActions.cancelUnsubscribe();
     await removeSubscription({ feedId });
   };
 
@@ -111,7 +112,7 @@ export const Feeds = () => {
               variant={isNil(selectedFeedId) ? "solid" : "ghost"}
               className="w-full cursor-pointer justify-start text-left"
               onClick={() => {
-                rssStore.setSelectedFeedId(null);
+                rssStoreActions.setSelectedFeedId(null);
               }}
             >
               {rss.ALL_FEEDS}
@@ -136,7 +137,7 @@ export const Feeds = () => {
                     className="min-w-0 cursor-pointer justify-start"
                     variant={selectedFeedId === feed.id ? "solid" : "ghost"}
                     onClick={() => {
-                      rssStore.setSelectedFeedId(feed.id);
+                      rssStoreActions.setSelectedFeedId(feed.id);
                     }}
                   >
                     <span className="block w-full min-w-0 text-left wrap-break-word">
@@ -150,13 +151,7 @@ export const Feeds = () => {
                     aria-label={rss.UNSUBSCRIBE}
                     data-testid={`unsubscribe-${feed.id}`}
                     className="shrink-0 cursor-pointer p-1"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleRequestUnsubscribe(
-                        feed.id,
-                        decodeHtmlEntities(feed.title)
-                      );
-                    }}
+                    onClick={handleUnsubscribeButton(feed)}
                   >
                     <Trash size={14} focusable="false" aria-hidden="true" />
                   </Button>
@@ -179,9 +174,11 @@ export const Feeds = () => {
       </Card>
       <UnsubscribeDialog
         isPending={isUnsubscribing}
-        onClose={handleCancelUnsubscribe}
         isOpen={!isNil(pendingUnsubscribe)}
         feedTitle={pendingUnsubscribe?.title ?? ""}
+        onClose={() => {
+          rssStoreActions.cancelUnsubscribe();
+        }}
         onConfirm={() => {
           handleConfirmUnsubscribe().catch(noop);
         }}

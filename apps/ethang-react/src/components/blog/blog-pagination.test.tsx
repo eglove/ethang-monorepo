@@ -3,9 +3,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
 import { BlogPagination } from "./blog-pagination.tsx";
-import { blogStore } from "./blog-store.ts";
+import { blogStoreActions } from "./blog-store.ts";
 
-vi.mock("@ethang/store/use-store", () => {
+vi.mock("@ethang/store/use-store.ts", () => {
   return {
     useStore: vi.fn().mockImplementation((_store, selector) => {
       return selector({ paginationPage: 2 });
@@ -50,16 +50,22 @@ vi.mock("../../models/blog-model.ts", () => {
 });
 
 describe("BlogPagination", () => {
-  it("renders pagination buttons and handles clicks", () => {
+  it("renders pagination buttons and handles clicks", async () => {
     mockUseQuery.mockReturnValue({
       data: { maxPages: 3 },
       isPending: false,
       isPlaceholderData: false
     });
 
-    vi.spyOn(blogStore, "decrementPage");
-    vi.spyOn(blogStore, "incrementPage");
-    vi.spyOn(blogStore, "setPage");
+    const decrementSpy = vi
+      .spyOn(blogStoreActions, "decrementPage")
+      .mockResolvedValue({ paginationPage: 1 });
+    const incrementSpy = vi
+      .spyOn(blogStoreActions, "incrementPage")
+      .mockResolvedValue({ paginationPage: 1 });
+    const setPageSpy = vi
+      .spyOn(blogStoreActions, "setPage")
+      .mockResolvedValue({ paginationPage: 1 });
 
     render(<BlogPagination />);
 
@@ -69,15 +75,21 @@ describe("BlogPagination", () => {
 
     const nextButton = screen.getByText("›");
     fireEvent.click(nextButton);
-    expect(blogStore.incrementPage).toHaveBeenCalled();
+    await vi.waitFor(() => {
+      expect(incrementSpy).toHaveBeenCalled();
+    });
 
     const previousButton = screen.getByText("‹");
     fireEvent.click(previousButton);
-    expect(blogStore.decrementPage).toHaveBeenCalled();
+    await vi.waitFor(() => {
+      expect(decrementSpy).toHaveBeenCalled();
+    });
 
     const page2Button = screen.getByText("2");
     fireEvent.click(page2Button);
-    expect(blogStore.setPage).toHaveBeenCalledWith(2);
+    await vi.waitFor(() => {
+      expect(setPageSpy).toHaveBeenCalledWith(2);
+    });
   });
 
   it("disables buttons when loading", () => {

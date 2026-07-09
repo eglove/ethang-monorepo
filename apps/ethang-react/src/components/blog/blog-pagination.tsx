@@ -1,11 +1,11 @@
-import { useStore } from "@ethang/store/use-store";
+import { useStore } from "@ethang/store/use-store.ts";
 import { Button, Flex } from "@radix-ui/themes";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import map from "lodash/map";
 import range from "lodash/range";
 
 import { getPaginatedBlogs } from "../../models/blog-model.ts";
-import { blogStore } from "./blog-store.ts";
+import { blogStore, blogStoreActions } from "./blog-store.ts";
 
 export const BlogPagination = () => {
   const { page } = useStore(blogStore, (state) => {
@@ -28,7 +28,7 @@ export const BlogPagination = () => {
         variant="soft"
         disabled={isLoading || 1 === page}
         onClick={() => {
-          blogStore.decrementPage();
+          blogStoreActions.decrementPage();
         }}
       >
         ‹
@@ -40,7 +40,7 @@ export const BlogPagination = () => {
             disabled={isLoading}
             variant={p === page ? "solid" : "soft"}
             onClick={() => {
-              blogStore.setPage(p);
+              blogStoreActions.setPage(p);
             }}
           >
             {p}
@@ -51,7 +51,7 @@ export const BlogPagination = () => {
         variant="soft"
         disabled={isLoading || page === maxPages}
         onClick={() => {
-          blogStore.incrementPage();
+          blogStoreActions.incrementPage();
         }}
       >
         ›
