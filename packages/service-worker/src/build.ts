@@ -1,6 +1,9 @@
+import { Effect, installCloudflareLogger } from "@ethang/telemetry";
 import { build } from "esbuild";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
+
+installCloudflareLogger();
 
 const directoryName = import.meta.dirname;
 
@@ -22,7 +25,9 @@ export const buildServiceWorker = async (outfile: string) => {
     conditions: ["worker", "browser"]
   });
 
-  globalThis.console.info(
-    `Service worker built to ${outfile} with version ${swVersion}`
+  Effect.runSync(
+    Effect.logInfo(
+      `Service worker built to ${outfile} with version ${swVersion}`
+    )
   );
 };

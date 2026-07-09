@@ -5,6 +5,7 @@
     "current node"
   ],
   "dependencies": {
+    "@ethang/telemetry": "workspace:*",
     "@ethang/toolbelt": "workspace:*",
     "effect": "^3.21.4",
     "lodash": "^4.18.1"

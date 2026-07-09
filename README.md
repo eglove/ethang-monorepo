@@ -26,7 +26,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[ethang-courses](apps/ethang-courses)**: Course tracking service using Cloudflare Workers RPC and Drizzle ORM on Cloudflare Workers.
 - **[ethang-react](apps/ethang-react)**: The main personal website front-end built with React, TanStack, Radix UI, Tailwind CSS, and Sanity.
 - **[ethang-rss](apps/ethang-rss)**: RSS aggregator service with Cloudflare Workers RPC and Drizzle ORM.
-- **[logger-service](apps/logger-service)**: Hono-based logging service deployed to Cloudflare Workers using Drizzle ORM.
 - **[sanity-calendar-sync](apps/sanity-calendar-sync)**: Utility application for synchronizing calendar events between Sanity CMS and external calendar services.
 - **[sterett-admin](apps/sterett-admin)**: Administrative interface for the Sterett Creek Village Trustees, providing content management capabilities for the sterett-hono website.
 - **[sterett-hono](apps/sterett-hono)**: Sterett Creek community web application built with Hono and Tailwind CSS on Cloudflare Workers.
@@ -38,7 +37,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[hono-middleware](packages/hono-middleware)**: Shared middleware utilities for Hono applications.
 - **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for applications.
 - **[leetcode](packages/leetcode)**: Collection of LeetCode solutions.
-- **[logger-sdk](packages/logger-sdk)**: Client SDK for sending logs to the Hono-based logger service.
 - **[markdown-generator](packages/markdown-generator)**: Utility for programmatically generating structured markdown content for documentation and other text-based outputs.
 - **[schemas](packages/schemas)**: Shared data schemas and validation utilities used across applications.
 - **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks.
