@@ -1021,8 +1021,8 @@ importers:
   packages/leetcode:
     dependencies:
       '@ethang/toolbelt':
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: workspace:*
+        version: link:../toolbelt
       lodash:
         specifier: ^4.18.1
         version: 4.18.1
@@ -3157,10 +3157,6 @@ packages:
   '@eslint/plugin-kit@0.7.2':
     resolution: {integrity: sha512-+CNAzxglkrpNf/kKywqQfk74QjtceuOE7Qm+AF8miRvPF/wmmK5+OJOgVh3AVTT3RP2mH3+FOaxlE5v72owk0A==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
-
-  '@ethang/toolbelt@5.0.2':
-    resolution: {integrity: sha512-gbP8B8hI8dDmOy9hSRwGzbnTkxyWulQjGzvUGsDaI5VLRjmO16om6O23RKnY5cFaAtCa6QxxMx4xDJRc3Yok9w==}
-    engines: {node: '>=24'}
 
   '@exodus/bytes@1.15.1':
     resolution: {integrity: sha512-S6mL0yNB/Abt9Ei4tq8gDhcczc4S3+vQ4ra7vxnAf+YHC02srtqxKKZghx2Dq6p0e66THKwR6r8N6P95wEty7Q==}
@@ -13344,15 +13340,6 @@ snapshots:
     dependencies:
       '@eslint/core': 1.2.1
       levn: 0.4.1
-
-  '@ethang/toolbelt@5.0.2':
-    dependencies:
-      '@ethang/intl': link:packages/intl
-      '@total-typescript/ts-reset': 0.6.1
-      effect: 3.21.4
-      lodash: 4.18.1
-      uuid: 14.0.1
-      zod: 4.4.3
 
   '@exodus/bytes@1.15.1(@noble/hashes@2.2.0)':
     optionalDependencies:
