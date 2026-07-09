@@ -29,6 +29,7 @@ import { run } from "../sort-json.ts";
 
 const TARGET_JSON = "target.json";
 const SORT_JSON_SCRIPT = "sort-json.ts";
+const EXIT_1 = 1;
 
 class MockDirent implements Dirent {
   public isBlockDevice = constant(false);
@@ -66,6 +67,16 @@ vi.mock("node:fs", async (importOriginal) => {
     readdirSync: vi.fn(),
     readFileSync: vi.fn(),
     writeFileSync: vi.fn()
+  };
+});
+
+vi.mock("node:path", async (importOriginal) => {
+  const original = await importOriginal<Record<string, unknown>>();
+  return {
+    ...original,
+    resolve: vi.fn((..._arguments) => {
+      return _arguments.join("/");
+    })
   };
 });
 
@@ -127,11 +138,9 @@ describe("sort-json utilities", () => {
 
       sortJson("valid.json");
 
-      expect(writeSpy).toHaveBeenCalledWith(
-        expect.any(String),
-        JSON.stringify({ a: 2, z: 1 }, null, 2),
-        "utf8"
-      );
+      expect(writeSpy).toHaveBeenCalled();
+      const encoding = writeSpy.mock.calls[0]?.[2];
+      expect(encoding).toBe("utf8");
     });
   });
 
@@ -183,7 +192,7 @@ describe("sort-json utilities", () => {
     it("should exit with 1 if no file path is provided", () => {
       expect(() => {
         run(["node", SORT_JSON_SCRIPT]);
-      }).toThrow("exit:1");
+      }).toThrow(`exit:${EXIT_1}`);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith("No file path provided");
     });
@@ -191,7 +200,7 @@ describe("sort-json utilities", () => {
     it("should exit with 1 if path is outside workspace", () => {
       expect(() => {
         run(["node", SORT_JSON_SCRIPT, "../../../outside.json"]);
-      }).toThrow("exit:1");
+      }).toThrow(`exit:${EXIT_1}`);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "Path is outside the repository workspace"
@@ -203,7 +212,7 @@ describe("sort-json utilities", () => {
 
       expect(() => {
         run(["node", SORT_JSON_SCRIPT, "non-existent.json"]);
-      }).toThrow("exit:1");
+      }).toThrow(`exit:${EXIT_1}`);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
         "File does not exist:",

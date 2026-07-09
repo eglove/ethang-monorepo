@@ -11,7 +11,7 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.5",
+    "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
     "@types/node": "^26.1.1",
@@ -31,19 +31,19 @@
     "node": ">=24"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*"
+    ".": "./src/markdown-generator.ts",
+    "./fetch/*": "./src/fetch/*",
+    "./*": "./src/*"
   },
   "license": "ISC",
-  "main": "./dist/index.js",
   "name": "@ethang/toolbelt",
+  "private": true,
   "scripts": {
-    "build": "bun build.ts",
     "lint": "eslint src --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:ui": "vitest --ui --coverage --open=false",
     "test:watch": "vitest"
   },
   "type": "module",
-  "version": "5.0.2"
+  "version": "0.0.0"
 }

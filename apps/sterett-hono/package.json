@@ -18,7 +18,7 @@
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.5",
+    "@ethang/eslint-config": "workspace:*",
     "@faker-js/faker": "^10.5.0",
     "@portabletext/types": "^4.0.2",
     "@tailwindcss/typography": "^0.5.20",

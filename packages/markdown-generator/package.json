@@ -10,7 +10,7 @@
   },
   "description": "Markdown Generator following GitHub syntax.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.5",
+    "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
     "@vitest/coverage-v8": "^4.1.10",
@@ -25,17 +25,21 @@
   "engines": {
     "node": ">=24"
   },
+  "exports": {
+    ".": "./src/markdown-generator.ts",
+    "./*": "./src/*"
+  },
   "peerDependencies": {
     "lodash": "^4.17.21"
   },
+  "private": true,
   "repository": {
     "url": "git+https://github.com/eglove/markdown-generator.git"
   },
   "scripts": {
-    "build": "bun build.ts",
     "lint": "eslint src --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage"
   },
   "type": "module",
-  "version": "2.0.2"
+  "version": "0.0.0"
 }

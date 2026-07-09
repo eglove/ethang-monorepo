@@ -22,7 +22,7 @@
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.5",
+    "@ethang/eslint-config": "workspace:*",
     "@sanity/eslint-config-studio": "^6.0.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",

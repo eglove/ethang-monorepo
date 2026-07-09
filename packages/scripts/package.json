@@ -5,13 +5,13 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "^5.0.2",
+    "@ethang/toolbelt": "workspace:*",
     "effect": "^3.21.4",
     "lodash": "^4.18.1"
   },
   "description": "",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.5",
+    "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
     "@types/node": "^26.1.1",

@@ -10,7 +10,7 @@ I/O; everything here is unit-testable without side effects.
 import {
   generateMarkdown,
   type MarkdownBlock
-} from "@ethang/markdown-generator/markdown-generator.js";
+} from "@ethang/markdown-generator";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 

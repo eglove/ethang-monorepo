@@ -1,4 +1,4 @@
-import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.js";
+import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.ts";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect } from "effect";

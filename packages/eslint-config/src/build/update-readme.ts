@@ -4,7 +4,7 @@ import {
   link,
   type ListItem,
   type MarkdownBlock
-} from "@ethang/markdown-generator/markdown-generator.js";
+} from "@ethang/markdown-generator";
 import compact from "lodash/compact.js";
 import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
