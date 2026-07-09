@@ -6,7 +6,7 @@
   ],
   "description": "Generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions.",
   "devDependencies": {
-    "@ethang/eslint-config": "^25.25.5",
+    "@ethang/eslint-config": "workspace:*",
     "@ethang/markdown-generator": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
@@ -16,7 +16,7 @@
     "eslint": "^10.6.0",
     "lodash": "^4.18.1",
     "typescript": "^6.0.3",
-    "vite": "^8.1.3",
+    "vite": "^8.1.4",
     "vitest": "^4.1.10"
   },
   "engines": {
