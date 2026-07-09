@@ -26,7 +26,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[ethang-courses](apps/ethang-courses)**: Course tracking service implemented as a Cloudflare Workers RPC `WorkerEntrypoint` backed by Drizzle ORM on D1, reading content from the Sanity client.
 - **[ethang-react](apps/ethang-react)**: The main personal site front-end — React 19, TanStack Router, TanStack Query, Radix UI Themes, Radix Icons, lucide-react, Tailwind CSS v4, PortableText rendering, and Sanity.
 - **[ethang-rss](apps/ethang-rss)**: RSS aggregator implemented as a Cloudflare Workers RPC `WorkerEntrypoint` that parses feeds with `fast-xml-parser` and persists data via Drizzle ORM on D1.
-- **[logger-service](apps/logger-service)**: Planned Cloudflare Worker that ingests log events (scaffolded workspace, no source yet).
 - **[modlist](apps/modlist)**: Cloudflare Workers RPC `WorkerEntrypoint` that manages game modification lists, mods, conflicts, patches, and requirements using Drizzle ORM on D1.
 - **[sanity-calendar-sync](apps/sanity-calendar-sync)**: Cloudflare Worker that synchronizes Sanity CMS calendar entries into ICS via `ts-ics` and PortableText.
 - **[sterett-admin](apps/sterett-admin)**: Sanity Studio v6 administrative interface for the Sterett Creek Village Trustees site.
@@ -39,7 +38,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities reused across the Workers-based apps.
 - **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends.
 - **[leetcode](packages/leetcode)**: Collection of LeetCode solutions with Vitest bench support.
-- **[logger-sdk](packages/logger-sdk)**: Planned client SDK for emitting log events to the `logger-service` (scaffolded workspace, no source yet).
 - **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by `agents-build` and other tooling.
 - **[schemas](packages/schemas)**: Shared data schemas and validation utilities (Effect Schema) used across apps, including JWT helpers built on `jose`.
 - **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks.
