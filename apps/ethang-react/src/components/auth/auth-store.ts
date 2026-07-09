@@ -1,6 +1,5 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { makeStore, type Store } from "@ethang/store/store.ts";
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
@@ -61,57 +60,59 @@ const signIn = async (
   });
 
   const result = await Effect.runPromise(
-    attemptAsync(async () => {
-      const response = await fetch("https://auth.ethang.dev/sign-in", {
-        body: JSON.stringify({ email, password }),
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      });
+    Effect.tryPromise({
+      catch: (error: unknown) => {
+        return Error.isError(error) ? error : new Error("failed");
+      },
+      try: async () => {
+        const response = await fetch("https://auth.ethang.dev/sign-in", {
+          body: JSON.stringify({ email, password }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST"
+        });
 
-      const data: {
-        email: string;
-        error: string;
-        sessionToken: string;
-        username: string;
-      } = await response.json();
+        const data: {
+          email: string;
+          error: string;
+          sessionToken: string;
+          username: string;
+        } = await response.json();
 
-      const {
-        email: emailValue,
-        error: errorValue,
-        sessionToken: sessionTokenValue,
-        username: usernameValue
-      } = data;
+        const {
+          email: emailValue,
+          error: errorValue,
+          sessionToken: sessionTokenValue,
+          username: usernameValue
+        } = data;
 
-      if (!response.ok) {
-        const errorMessage = isString(errorValue)
-          ? errorValue
-          : auth.FAILED_TO_SIGN_IN;
-        throw new Error(errorMessage);
+        if (!response.ok) {
+          const errorMessage = isString(errorValue)
+            ? errorValue
+            : auth.FAILED_TO_SIGN_IN;
+          throw new Error(errorMessage);
+        }
+
+        if (
+          !isString(emailValue) ||
+          !isString(sessionTokenValue) ||
+          !isString(usernameValue)
+        ) {
+          throw new TypeError(auth.INVALID_RESPONSE);
+        }
+
+        const user: User = {
+          email: emailValue,
+          sessionToken: sessionTokenValue,
+          username: usernameValue
+        };
+
+        localStorage.setItem(USER_KEY, JSON.stringify(user));
+
+        return user;
       }
-
-      if (
-        !isString(emailValue) ||
-        !isString(sessionTokenValue) ||
-        !isString(usernameValue)
-      ) {
-        throw new TypeError(auth.INVALID_RESPONSE);
-      }
-
-      const user: User = {
-        email: emailValue,
-        sessionToken: sessionTokenValue,
-        username: usernameValue
-      };
-
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-
-      return user;
     }).pipe(
-      // `attemptAsync` always wraps thrown values in a JS `Error` (see
-      // `@ethang/toolbelt/functional/attempt-async`), so the only thing
-      // this catch can see is a real `Error` instance.
       Effect.catchAll((error: Error) => {
         return Effect.succeed(error);
       })

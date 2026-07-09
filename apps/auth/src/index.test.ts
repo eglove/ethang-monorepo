@@ -72,6 +72,11 @@ vi.mock("./infrastructure/user/token-service.js", () => {
 });
 
 const SET_COOKIE = "Set-Cookie";
+const VALIDATION_ERROR_MESSAGE = "Validation failed";
+const INVALID_BODY = JSON.stringify({ notAValidField: "boom" });
+const JSON_CONTENT_TYPE_HEADERS = {
+  "Content-Type": "application/json"
+} as const;
 
 describe("POST /sign-up", () => {
   it("should return success when sign up is valid", async () => {
@@ -412,5 +417,50 @@ describe("auth API", () => {
   it("should respond to OPTIONS or handle CORS", async () => {
     const response = await app.request("/", { method: "OPTIONS" });
     expect(response.status).toBe(204);
+  });
+
+  it("should return 400 when /sign-up body is invalid", async () => {
+    const response = await app.request(
+      "/sign-up",
+      {
+        body: INVALID_BODY,
+        headers: JSON_CONTENT_TYPE_HEADERS,
+        method: "POST"
+      },
+      { "token-auth": TEST_SECRET }
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
+  });
+
+  it("should return 400 when /sign-in body is invalid", async () => {
+    const response = await app.request(
+      "/sign-in",
+      {
+        body: INVALID_BODY,
+        headers: JSON_CONTENT_TYPE_HEADERS,
+        method: "POST"
+      },
+      { "token-auth": TEST_SECRET }
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
+  });
+
+  it("should return 400 when POST /verify body is invalid", async () => {
+    const response = await app.request(
+      "/verify",
+      {
+        body: INVALID_BODY,
+        headers: JSON_CONTENT_TYPE_HEADERS,
+        method: "POST"
+      },
+      { "token-auth": TEST_SECRET }
+    );
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
   });
 });

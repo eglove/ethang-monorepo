@@ -10,6 +10,7 @@ export default defineConfig({
         "*.d.ts",
         "*.bench.ts",
         "*.gen.ts",
+        "*.config.ts",
         "**/.wrangler/**",
         "**/build.ts",
         "apps/sterett-admin",
@@ -19,11 +20,11 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
-        autoUpdate: false,
-        branches: 95.22,
-        functions: 97.06,
-        lines: 98.11,
-        statements: 98.07
+        autoUpdate: true,
+        branches: 95.98,
+        functions: 98.13,
+        lines: 98.87,
+        statements: 98.86
       }
     },
     projects: [

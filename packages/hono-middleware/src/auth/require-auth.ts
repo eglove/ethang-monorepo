@@ -1,4 +1,3 @@
-import { attemptAsync } from "@ethang/toolbelt/functional/attempt-async.js";
 import { Effect } from "effect";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
@@ -35,7 +34,14 @@ export const requireAuth = (config?: AuthConfig) => {
       c.set("user", data);
     };
 
-    const exit = await Effect.runPromiseExit(attemptAsync(verify));
+    const exit = await Effect.runPromiseExit(
+      Effect.tryPromise({
+        catch: (error: unknown) => {
+          return Error.isError(error) ? error : new Error(String(error));
+        },
+        try: verify
+      })
+    );
 
     if ("Failure" === exit._tag) {
       return c.json({ error: "Unauthorized" }, 401);
