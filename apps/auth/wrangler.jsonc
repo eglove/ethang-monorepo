@@ -1,9 +1,5 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "assets": {
-    "binding": "ASSETS",
-    "directory": "./public"
-  },
   "compatibility_date": "2026-07-09",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [

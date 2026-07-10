@@ -1,19 +1,13 @@
 import { RuleTester } from "eslint";
 import { readFileSync, writeFileSync } from "node:fs";
-import os from "node:os";
 import path from "node:path";
 import { parser as tsParser } from "typescript-eslint";
 import { afterAll } from "vitest";
 
 import { noRedundantExplicitReturnTypeRule } from "./no-redundant-explicit-return-type.ts";
 
-const pluginDirectory = path.join(
-  os.homedir(),
-  "projects",
-  "ethang-monorepo",
-  "packages",
-  "eslint-plugin"
-);
+const pluginDirectory = import.meta.dirname;
+const packageRoot = path.resolve(pluginDirectory, "..", "..");
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -21,15 +15,15 @@ const ruleTester = new RuleTester({
     parserOptions: {
       ecmaFeatures: { jsx: true },
       ecmaVersion: 2024,
-      project: [path.join(pluginDirectory, "tsconfig.test.json")],
+      project: [path.join(packageRoot, "tsconfig.test.json")],
       sourceType: "module",
-      tsconfigRootDir: pluginDirectory,
+      tsconfigRootDir: packageRoot,
       warnOnUnsupportedTypeScriptVersion: false
     }
   }
 });
 
-const fixturePath = path.join(pluginDirectory, "src", "rules", "fixture.ts");
+const fixturePath = path.join(pluginDirectory, "fixture.ts");
 const original = readFileSync(fixturePath, "utf8");
 
 const restore = () => {
