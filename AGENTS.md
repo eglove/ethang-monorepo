@@ -102,3 +102,9 @@ To optimize resource usage, latency, and token consumption:
 
 When installing and using packages in this repository, **do not assume the `workspace:*` convention**. Many packages are published and installed via the registry. Always look at how other apps/packages use them before adding a new dependency.
 
+## CRITICAL: Monorepo Quality Checks
+
+When validating code in this monorepo, **AI agents should prefer `./repo-ai-check.ps1` over running `pnpm -r lint` / `pnpm test` / `pnpm -r tsc` individually.** The script runs eslint, tsc, and vitest in parallel across every workspace and emits a single JSON object on stdout, so you can see *all* failures (lint + tsc + test) at once instead of fixing one class of error, rerunning, and discovering the next. Human-readable progress is on stderr; stdout is reserved for the JSON. See the script's comment-based help (`Get-Help ./repo-ai-check.ps1`) and the README "AI-assisted check script" section for the JSON shape.
+
+To narrow scope while iterating, pass `-Workspace <name1,name2,...` and/or `-File <relative-or-absolute-path>` (comma-separated). eslint is fully targeted to the given files; tsc still type-checks the whole workspace but only surfaces diagnostics for the targeted files; vitest runs the co-located `*.test.ts`/`*.test.tsx` siblings of each file (or the full workspace vitest if none exist). Both flags are combinable and intersect: `-File foo.ts -Workspace auth,store` only runs files inside the listed workspaces.
+
