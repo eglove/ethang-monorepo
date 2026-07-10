@@ -86,6 +86,7 @@ export const outputConfigs: OutputConfig[] = [
       "**/*.spec.{ts,tsx,js,jsx,mjs,cjs}"
     ],
     rules: {
+      "@ethang/no-try-catch": "off",
       "@typescript-eslint/consistent-type-imports": "off",
       "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/no-explicit-any": "off",
@@ -95,9 +96,19 @@ export const outputConfigs: OutputConfig[] = [
       "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unsafe-type-assertion": "off",
+      "@typescript-eslint/only-throw-error": "off",
+      "@typescript-eslint/prefer-promise-reject-errors": "off",
       "@typescript-eslint/require-await": "off",
       "@typescript-eslint/strict-void-return": "off",
-      "@typescript-eslint/unbound-method": "off"
+      "@typescript-eslint/unbound-method": "off",
+      "no-restricted-syntax": "off",
+      "no-undefined": "off",
+      "sonar/function-name": "off",
+      "sonar/variable-name": "off",
+      "unicorn/consistent-function-scoping": "off",
+      "unicorn/max-nested-calls": "off",
+      "unicorn/no-global-object-property-assignment": "off",
+      "unicorn/no-immediate-mutation": "off"
     }
   }`
     ],
