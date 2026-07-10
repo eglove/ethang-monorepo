@@ -35,29 +35,29 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 - **[agents-build](packages/agents-build)**: Compiler that generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions (driven by Bun + `@ethang/markdown-generator`).
 - **[eslint-config](packages/eslint-config)**: Shared ESLint configuration supporting React, Angular, Astro, Solid, TanStack Query/Router, Storybook, Playwright, Tailwind, and more.
-- **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities reused across the Workers-based apps.
-- **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends.
-- **[leetcode](packages/leetcode)**: Collection of LeetCode solutions with Vitest bench support.
+- **[eslint-plugin](packages/eslint-plugin)**: Custom ESLint plugin encoding monorepo standards — 18 custom rules including `prefer-effect`, `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, `matches-shorthand`, `identity-shorthand`, `import-scope`, and auto-fixers for redundant explicit return types.
+- **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities (auth, caching, last-modified) reused across the Workers-based apps.
+- **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends (no barrel file; import from subpaths).
 - **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by `agents-build` and other tooling.
 - **[schemas](packages/schemas)**: Shared data schemas and validation utilities (Effect Schema) used across apps, including JWT helpers built on `jose`.
-- **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks.
+- **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks (CI workflow validation, JSON sorting, rule generation).
 - **[service-worker](packages/service-worker)**: Shared Workbox-based service worker (with esbuild build step) used by the frontends.
-- **[store](packages/store)**: Fine-grained state management built on Immer, Effect, `use-sync-external-store`, and lodash for the React frontends.
-- **[telemetry](packages/telemetry)**: Telemetry primitives built on Effect for instrumentation across services.
+- **[store](packages/store)**: Fine-grained state management built on Immer (`Producer<T>`), Effect, `use-sync-external-store`, and lodash for the React frontends.
+- **[telemetry](packages/telemetry)**: Telemetry primitives built on Effect for instrumentation across services (no barrel file; import from subpaths like `@ethang/telemetry/logger.ts`).
 - **[toolbelt](packages/toolbelt)**: Comprehensive utility library covering collections, fetch helpers, functional programming, type checking, and more, shared across applications.
 - **[tsconfig](packages/tsconfig)**: Shared TypeScript configuration presets (`@tsconfig/node-lts`, `@tsconfig/strictest`, `@tsconfig/vite-react`).
 
 ## Technologies
 
-- **Frontend & UI**: React 19, Radix UI Themes, Radix Icons, lucide-react, styled-components, Tailwind CSS v4, PortableText for React
-- **Routing & State**: TanStack Router, TanStack Router Plugin, TanStack Query, RxJS, `@ethang/store` (Immer + Effect)
-- **Backend & APIs**: Cloudflare Workers RPC (`WorkerEntrypoint`), Hono, Sanity client, `ts-ics`
+- **Frontend & UI**: React 19, Radix UI Themes, Radix Icons, lucide-react, styled-components, Tailwind CSS v4, PortableText for React, react-lite-youtube-embed, react-syntax-highlighter, tailwind-merge
+- **Routing & State**: TanStack Router, TanStack Router Plugin, TanStack Query, RxJS, `@ethang/store` (Immer `Producer<T>` + Effect)
+- **Backend & APIs**: Cloudflare Workers RPC (`WorkerEntrypoint`), Hono, Sanity client, `ts-ics`, `calendar-link`
 - **Data & Databases**: Sanity CMS, Drizzle ORM on Cloudflare D1, `drizzle-kit`
-- **Auth & Validation**: `jose` (JWT), `bcryptjs`, Effect Schema, `@hono/zod-validator`
-- **Build & Tooling**: Vite, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`, Wrangler, tsup, esbuild, tsx
-- **Testing**: Vitest, `@cloudflare/vitest-pool-workers`, Testing Library, jsdom, happy-dom, `@faker-js/faker`, Vitest UI
-- **Code Quality**: TypeScript v6, ESLint 10, MegaLinter, SonarCloud, cspell
-- **Functional & Utility**: Effect 3, lodash, uuid, Immer
+- **Auth & Validation**: `jose` (JWT), `bcryptjs`, Effect Schema, `@hono/zod-validator`, `uuid`
+- **Build & Tooling**: Vite 8, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`, `@vitejs/plugin-react`, Wrangler, tsx, `@tailwindcss/vite`
+- **Testing**: Vitest 4, `@vitest/coverage-v8`, Testing Library, jsdom, happy-dom, `@faker-js/faker`, Vitest UI, `@effect/vitest`
+- **Code Quality**: TypeScript 6, ESLint 10, `@ethang/eslint-config`, `@ethang/eslint-plugin` (custom rules: `prefer-effect`, `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, shorthand variants), MegaLinter, SonarCloud, cspell, `typescript-eslint`
+- **Functional & Utility**: Effect 3, lodash, Immer, `@total-typescript/ts-reset`
 - **Workspace Management**: pnpm workspaces (Node `>=24`)
 
 ## Tooling & Quality Gates
