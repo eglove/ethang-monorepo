@@ -29,13 +29,13 @@
   "engines": {
     "node": ">=24"
   },
+  "exports": {
+    "./*": "./src/*",
+    "./use-store": "./src/use-store.ts"
+  },
   "license": "ISC",
   "main": "src/store.ts",
   "name": "@ethang/store",
-  "exports": {
-    "./use-store": "./src/use-store.ts",
-    "./*": "./src/*"
-  },
   "private": true,
   "scripts": {
     "lint": "eslint ./src --fix && pnpm tsc --noEmit",

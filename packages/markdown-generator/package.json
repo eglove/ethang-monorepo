@@ -1,5 +1,4 @@
 {
-  "name": "@ethang/markdown-generator",
   "author": "Ethan Glover",
   "browserslist": [
     "current node",
@@ -28,6 +27,7 @@
     ".": "./src/markdown-generator.ts",
     "./*": "./src/*"
   },
+  "name": "@ethang/markdown-generator",
   "peerDependencies": {
     "lodash": "^4.17.21"
   },

@@ -1,16 +1,9 @@
 {
-  "name": "@ethang/schemas",
-  "version": "1.0.1",
-  "type": "module",
   "author": "Ethan Glover",
-  "license": "ISC",
-  "private": true,
-  "exports": {
-    "./*": "./src/*"
-  },
-  "scripts": {
-    "lint": "eslint src --fix && pnpm tsc --noEmit"
-  },
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "effect": "^3.21.4",
     "jose": "^6.2.3"
@@ -24,11 +17,18 @@
     "eslint": "^10.6.0",
     "typescript": "^6.0.3"
   },
-  "browserslist": [
-    "extends browserslist-config-baseline",
-    "current node"
-  ],
   "engines": {
     "node": ">=24"
-  }
+  },
+  "exports": {
+    "./*": "./src/*"
+  },
+  "license": "ISC",
+  "name": "@ethang/schemas",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src --fix && pnpm tsc --noEmit"
+  },
+  "type": "module",
+  "version": "1.0.1"
 }

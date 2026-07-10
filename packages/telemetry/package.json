@@ -1,15 +1,4 @@
 {
-  "exports": {
-    "./*": "./src/*"
-  },
-  "name": "@ethang/telemetry",
-  "private": true,
-  "type": "module",
-  "version": "0.0.0",
-  "scripts": {
-    "lint": "eslint src --fix && pnpm tsc --noEmit",
-    "test": "vitest run --coverage"
-  },
   "dependencies": {
     "effect": "^3.21.4"
   },
@@ -23,5 +12,16 @@
   },
   "engines": {
     "node": ">=24"
-  }
+  },
+  "exports": {
+    "./*": "./src/*"
+  },
+  "name": "@ethang/telemetry",
+  "private": true,
+  "scripts": {
+    "lint": "eslint src --fix && pnpm tsc --noEmit",
+    "test": "vitest run --coverage"
+  },
+  "type": "module",
+  "version": "0.0.0"
 }

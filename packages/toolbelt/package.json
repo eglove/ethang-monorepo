@@ -30,8 +30,8 @@
   },
   "exports": {
     ".": "./src/markdown-generator.ts",
-    "./fetch/*": "./src/fetch/*",
-    "./*": "./src/*"
+    "./*": "./src/*",
+    "./fetch/*": "./src/fetch/*"
   },
   "license": "ISC",
   "name": "@ethang/toolbelt",
