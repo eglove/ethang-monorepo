@@ -1,19 +1,24 @@
-import { Effect } from "effect";
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { parseFetchJson } from "../../src/fetch/json.ts";
 
-const testUrl = "https://example.com";
+const TEST_URL = "https://example.com";
+const JSON_STRING_SCHEMA = Schema.Struct({ json: Schema.String });
+const FAIL_STRING_SCHEMA = Schema.Struct({ fail: Schema.String });
+const FAIL_STRING_ARRAY_SCHEMA = Schema.Array(
+  Schema.Struct({ fail: Schema.String })
+);
+const STRING_FAILURE = "string-failure";
 
 describe("fetch json", () => {
   it("should parse request body correctly", async () => {
-    const request = new Request(testUrl, {
+    const request = new Request(TEST_URL, {
       body: JSON.stringify({ json: "stuff" }),
       method: "POST"
     });
     const results = await Effect.runPromise(
-      parseFetchJson(request, Schema.Struct({ json: Schema.String }))
+      parseFetchJson(request, JSON_STRING_SCHEMA)
     );
 
     expect(results).toStrictEqual({ json: "stuff" });
@@ -24,7 +29,7 @@ describe("fetch json", () => {
       json: "stuff"
     });
     const results = await Effect.runPromise(
-      parseFetchJson(response, Schema.Struct({ json: Schema.String }))
+      parseFetchJson(response, JSON_STRING_SCHEMA)
     );
 
     expect(results).toStrictEqual({ json: "stuff" });
@@ -33,14 +38,12 @@ describe("fetch json", () => {
 
 describe("error cases", () => {
   it("should fail with Error when validation is incorrect", async () => {
-    const request = new Request(testUrl, {
+    const request = new Request(TEST_URL, {
       body: JSON.stringify({ fail: 0 }),
       method: "POST"
     });
     const result = await Effect.runPromise(
-      parseFetchJson(request, Schema.Struct({ fail: Schema.String })).pipe(
-        Effect.flip
-      )
+      parseFetchJson(request, FAIL_STRING_SCHEMA).pipe(Effect.flip)
     );
 
     expect(result).toBeInstanceOf(Error);
@@ -48,15 +51,12 @@ describe("error cases", () => {
   });
 
   it("should fail with Error when validation is incorrect with array", async () => {
-    const request = new Request(testUrl, {
+    const request = new Request(TEST_URL, {
       body: JSON.stringify({ fail: 0 }),
       method: "POST"
     });
     const result = await Effect.runPromise(
-      parseFetchJson(
-        request,
-        Schema.Array(Schema.Struct({ fail: Schema.String }))
-      ).pipe(Effect.flip)
+      parseFetchJson(request, FAIL_STRING_ARRAY_SCHEMA).pipe(Effect.flip)
     );
 
     expect(result).toBeInstanceOf(Error);
@@ -64,15 +64,12 @@ describe("error cases", () => {
   });
 
   it("should fail with Error with invalid JSON", async () => {
-    const request = new Request(testUrl, {
+    const request = new Request(TEST_URL, {
       body: "",
       method: "POST"
     });
     const result = await Effect.runPromise(
-      parseFetchJson(
-        request,
-        Schema.Array(Schema.Struct({ fail: Schema.String }))
-      ).pipe(Effect.flip)
+      parseFetchJson(request, FAIL_STRING_ARRAY_SCHEMA).pipe(Effect.flip)
     );
 
     expect(result).toBeInstanceOf(Error);
@@ -81,17 +78,16 @@ describe("error cases", () => {
 
   it("wraps non-Error json() rejections in an Error", async () => {
     const fakeResponse = {
-      json: () => Promise.reject("string-failure")
+      json: async () => {
+        throw STRING_FAILURE;
+      }
     } as unknown as Response;
 
     const result = await Effect.runPromise(
-      parseFetchJson(
-        fakeResponse,
-        Schema.Array(Schema.Struct({ fail: Schema.String }))
-      ).pipe(Effect.flip)
+      parseFetchJson(fakeResponse, FAIL_STRING_ARRAY_SCHEMA).pipe(Effect.flip)
     );
 
     expect(result).toBeInstanceOf(Error);
-    expect(result.message).toBe("string-failure");
+    expect(result.message).toBe(STRING_FAILURE);
   });
 });

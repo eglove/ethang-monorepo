@@ -1,5 +1,4 @@
-import { Effect } from "effect";
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 import create from "lodash/create.js";
 import { describe, expect, it } from "vitest";
 
@@ -7,6 +6,8 @@ import { createSearchParameters } from "../../src/fetch/create-search-parameters
 
 describe("create search parameters", () => {
   it("should create url with params", async () => {
+    const filterSchema = Schema.Array(Schema.String);
+    const numbersSchema = Schema.Array(Schema.Number);
     const result = await Effect.runPromise(
       createSearchParameters(
         {
@@ -17,9 +18,9 @@ describe("create search parameters", () => {
           to: "tomorrow"
         },
         Schema.Struct({
-          filter: Schema.Array(Schema.String),
+          filter: filterSchema,
           max: Schema.Number,
-          numbers: Schema.Array(Schema.Number),
+          numbers: numbersSchema,
           otherValue: Schema.Null,
           to: Schema.String
         })
@@ -40,14 +41,13 @@ describe("create search parameters", () => {
   });
 
   it("skips nil values within an array parameter", async () => {
+    const tagsSchema = Schema.Array(Schema.NullOr(Schema.String));
     const result = await Effect.runPromise(
       createSearchParameters(
-        // @ts-expect-error testing nil guard in array
-        { tags: [null, "a", undefined, "b"] },
+        // @ts-expect-error testing nil values in array parameter
+        { tags: [null, "a", null, "b"] },
         Schema.Struct({
-          // @ts-expect-error for test
-          // eslint-disable-next-line unicorn/max-nested-calls
-          tags: Schema.Array(Schema.optional(Schema.NullOr(Schema.String)))
+          tags: tagsSchema
         })
       )
     );
@@ -60,13 +60,14 @@ describe("create search parameters", () => {
   });
 
   it("should fail with error when validation fails", async () => {
+    const filterSchema = Schema.Array(Schema.Number);
     const result = await Effect.runPromise(
       createSearchParameters(
         {
           filter: ["done", "recent", "expired"]
         },
         Schema.Struct({
-          filter: Schema.Array(Schema.Number)
+          filter: filterSchema
         })
       ).pipe(Effect.flip)
     );
@@ -76,15 +77,15 @@ describe("create search parameters", () => {
 
   it("should ignore inherited properties", async () => {
     const parent = { a: "parent" };
-    const child = create(parent);
-    // @ts-expect-error for test
+    const child: { a?: string; b?: string } = create(parent);
     child.b = "child";
 
+    const inheritedSchema = Schema.Struct({
+      a: Schema.optional(Schema.String),
+      b: Schema.String
+    });
     const result = await Effect.runPromise(
-      createSearchParameters(
-        child,
-        Schema.Struct({ a: Schema.optional(Schema.String), b: Schema.String })
-      )
+      createSearchParameters(child, inheritedSchema)
     );
 
     const expected = new URLSearchParams();
@@ -95,13 +96,17 @@ describe("create search parameters", () => {
 
   it("should return error when schema is nil or invalid", async () => {
     const resultNil = await Effect.runPromise(
-      createSearchParameters({ max: 100 }, null as any).pipe(Effect.flip)
+      createSearchParameters({ max: 100 }, null as unknown as never).pipe(
+        Effect.flip
+      )
     );
     expect(resultNil).toBeInstanceOf(Error);
     expect(resultNil.message).toBe("must provide a valid schema");
 
     const resultInvalid = await Effect.runPromise(
-      createSearchParameters({ max: 100 }, {} as any).pipe(Effect.flip)
+      createSearchParameters({ max: 100 }, {} as unknown as never).pipe(
+        Effect.flip
+      )
     );
     expect(resultInvalid).toBeInstanceOf(Error);
     expect(resultInvalid.message).toBe("Validation failed");

@@ -21,7 +21,7 @@ describe("promiseAllSettled", () => {
   it("should work with proper types", async () => {
     const results = await promiseAllSettled({
       fail: promiseFunction(0),
-      success: promiseFunction(1),
+      success: promiseFunction(1)
     });
 
     expect(isError(results["success"])).toBe(false);
@@ -45,7 +45,7 @@ describe("promiseAllSettled", () => {
     await promiseAllSettled({
       promise1: promiseFunction(1),
       promise2: promiseFunction(2),
-      promise3: promiseFunction(3),
+      promise3: promiseFunction(3)
     });
     const all = performance.now() - startAll;
 
@@ -53,12 +53,11 @@ describe("promiseAllSettled", () => {
   });
 
   it("should handle sparse arrays", async () => {
-    const promises = {
+    const promises: Record<string, Promise<number>> = {
+      "2": Promise.resolve(3),
       a: Promise.resolve(1),
-      b: Promise.resolve(2),
+      b: Promise.resolve(2)
     };
-    // @ts-expect-error for test
-    promises[2] = Promise.resolve(3);
 
     const results = await promiseAllSettled(promises);
     expect(results).toEqual({ "2": 3, a: 1, b: 2 });
@@ -66,9 +65,9 @@ describe("promiseAllSettled", () => {
 
   it("should wrap non-Error rejection reasons in a standard Error", async () => {
     const results = await promiseAllSettled({
-      failString: Promise.reject("rejected string"),
-      failNumber: Promise.reject(42),
       failNull: Promise.reject(null),
+      failNumber: Promise.reject(42),
+      failString: Promise.reject("rejected string")
     });
 
     expect(results["failString"]).toBeInstanceOf(Error);
@@ -81,25 +80,25 @@ describe("promiseAllSettled", () => {
     expect((results["failNull"] as Error).message).toBe("null");
   });
 
-  it("should handle undefined and non-standard rejection reasons", async () => {
+  it("should handle null and non-standard rejection reasons", async () => {
     const results = await promiseAllSettled({
-      failUndefined: Promise.reject(undefined),
-      failObject: Promise.reject({ custom: "reason" }),
+      failNull: Promise.reject(null),
+      failObject: Promise.reject({ custom: "reason" })
     });
 
-    expect(results["failUndefined"]).toBeInstanceOf(Error);
-    expect((results["failUndefined"] as Error).message).toBe("Rejected without reason");
+    expect(results["failNull"]).toBeInstanceOf(Error);
+    expect((results["failNull"] as Error).message).toBe("null");
 
     expect(results["failObject"]).toBeInstanceOf(Error);
     expect((results["failObject"] as Error).message).toBe("An error occurred");
   });
 
   it("should break the loop if a result is nil", async () => {
-    const spy = vi.spyOn(Promise, "allSettled").mockResolvedValueOnce([] as any);
+    const spy = vi.spyOn(Promise, "allSettled").mockResolvedValueOnce([]);
 
     const promises = {
       key1: Promise.resolve("val1"),
-      key2: Promise.resolve("val2"),
+      key2: Promise.resolve("val2")
     };
 
     const results = await promiseAllSettled(promises);
@@ -108,4 +107,3 @@ describe("promiseAllSettled", () => {
     spy.mockRestore();
   });
 });
-

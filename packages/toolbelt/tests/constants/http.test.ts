@@ -6,7 +6,7 @@ describe("http_status", () => {
   it.each([
     ["ACCEPTED", 202],
     ["CONFLICT", 409],
-    ["PAYMENT_REQUIRED", 402],
+    ["PAYMENT_REQUIRED", 402]
   ])("should return correct values", (key, value) => {
     // @ts-expect-error allow for tests
     expect(HTTP_STATUS[key]).toBe(value);

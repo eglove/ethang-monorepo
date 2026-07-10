@@ -1,9 +1,10 @@
+import constant from "lodash/constant.js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { workify } from "../../src/worker/workify.ts";
 
 const makeWorkerMock = () => {
-  let messageHandler: ((event: { data: unknown }) => void) | undefined;
+  let messageHandler: ((event: { data: unknown }) => void) | null = null;
   const terminate = vi.fn();
 
   const worker = {
@@ -14,18 +15,18 @@ const makeWorkerMock = () => {
           if ("message" === type) {
             messageHandler = handler;
           }
-        },
+        }
       ),
     postMessage: vi.fn().mockImplementation(() => {
       messageHandler?.({ data: "pong" });
     }),
-    terminate,
+    terminate
   };
 
   return { terminate, worker };
 };
 
-describe(workify, () => {
+describe("workify", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
   });
@@ -36,14 +37,14 @@ describe(workify, () => {
       "Worker",
       vi.fn().mockImplementation(function () {
         return worker;
-      }),
+      })
     );
     vi.stubGlobal("URL", {
-      createObjectURL: vi.fn().mockReturnValue("blob:x"),
+      createObjectURL: vi.fn().mockReturnValue("blob:x")
     });
 
-    const fn = workify(() => "pong");
-    const result = await fn();
+    const run = workify(constant("pong"));
+    const result = await run();
 
     expect(result).toBe("pong");
   });
@@ -54,14 +55,14 @@ describe(workify, () => {
       "Worker",
       vi.fn().mockImplementation(function () {
         return worker;
-      }),
+      })
     );
     vi.stubGlobal("URL", {
-      createObjectURL: vi.fn().mockReturnValue("blob:x"),
+      createObjectURL: vi.fn().mockReturnValue("blob:x")
     });
 
     const controller = new AbortController();
-    workify(() => 0, controller.signal);
+    workify(constant(0), controller.signal);
     controller.abort();
 
     expect(terminate).toHaveBeenCalledOnce();

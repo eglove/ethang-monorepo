@@ -5,9 +5,9 @@ import { appendSearchParameters } from "../../src/url/append-search-parameters.t
 describe(appendSearchParameters, () => {
   it("appends all parameters to the url", () => {
     const url = new URL("https://example.com");
-    const params = new URLSearchParams({ a: "1", b: "2" });
+    const parameters = new URLSearchParams({ a: "1", b: "2" });
 
-    appendSearchParameters(url, params);
+    appendSearchParameters(url, parameters);
 
     expect(url.searchParams.get("a")).toBe("1");
     expect(url.searchParams.get("b")).toBe("2");

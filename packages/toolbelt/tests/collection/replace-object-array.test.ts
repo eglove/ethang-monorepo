@@ -14,13 +14,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ];
 
     const result = replaceObjectArray(
@@ -28,20 +28,20 @@ describe("replaceObjectArray", () => {
       (item) => {
         return 1 === item.id;
       },
-      { age: 26 },
+      { age: 26 }
     );
 
     expect(result).toEqual([
       {
         age: 26,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ]);
   });
 
@@ -50,13 +50,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ];
 
     const result = replaceObjectArray(collection, ["name", "Bob"], { age: 31 });
@@ -65,13 +65,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 31,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ]);
   });
 
@@ -80,13 +80,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ];
 
     const result = replaceObjectArray(
@@ -94,20 +94,20 @@ describe("replaceObjectArray", () => {
       (item) => {
         return 3 === item.id;
       },
-      { age: 35 },
+      { age: 35 }
     );
 
     expect(result).toEqual([
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ]);
   });
 
@@ -116,13 +116,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ];
 
     const result = replaceObjectArray(
@@ -130,7 +130,7 @@ describe("replaceObjectArray", () => {
       (item) => {
         return 2 === item.id;
       },
-      { name: "Bobby" },
+      { name: "Bobby" }
     );
 
     expect(result).not.toBe(collection);
@@ -138,13 +138,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bobby",
-      },
+        name: "Bobby"
+      }
     ]);
   });
 
@@ -153,13 +153,13 @@ describe("replaceObjectArray", () => {
       {
         age: 25,
         id: 1,
-        name: "Alice",
+        name: "Alice"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ];
 
     const result = replaceObjectArray(
@@ -167,7 +167,7 @@ describe("replaceObjectArray", () => {
       (item) => {
         return 1 === item.id;
       },
-      { nickname: "Ally" } as Partial<TestObject>,
+      { nickname: "Ally" } as Partial<TestObject>
     );
 
     expect(result).toEqual([
@@ -175,13 +175,13 @@ describe("replaceObjectArray", () => {
         age: 25,
         id: 1,
         name: "Alice",
-        nickname: "Ally",
+        nickname: "Ally"
       },
       {
         age: 30,
         id: 2,
-        name: "Bob",
-      },
+        name: "Bob"
+      }
     ]);
   });
 });

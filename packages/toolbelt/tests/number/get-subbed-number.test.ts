@@ -8,43 +8,43 @@ describe("getSubbedNumber", () => {
       {
         options: {
           currency: "USD",
-          style: "currency",
+          style: "currency"
         },
-        value: `${Number.MAX_SAFE_INTEGER}.000000${Number.MAX_SAFE_INTEGER}`,
+        value: `${Number.MAX_SAFE_INTEGER}.000000${Number.MAX_SAFE_INTEGER}`
       },
-      ["$9,007,199,254,740,991.00"],
+      ["$9,007,199,254,740,991.00"]
     ],
     [
       {
         options: {
           currency: "USD",
-          style: "currency",
+          style: "currency"
         },
-        value: `${Number.MAX_SAFE_INTEGER}.000${Number.MAX_SAFE_INTEGER}`,
+        value: `${Number.MAX_SAFE_INTEGER}.000${Number.MAX_SAFE_INTEGER}`
       },
-      ["$9,007,199,254,740,991.00"],
+      ["$9,007,199,254,740,991.00"]
     ],
     [
       {
         options: {
           currency: "USD",
-          style: "currency",
+          style: "currency"
         },
-        value: 0.000_000_001,
+        value: 0.000000001
       },
-      ["$0.0", "7", "10"],
+      ["$0.0", "7", "10"]
     ],
     [
       {
         options: {
           currency: "USD",
           maximumFractionDigits: 10,
-          style: "currency",
+          style: "currency"
         },
-        value: 0.0001,
+        value: 0.0001
       },
-      ["$0.0001"],
-    ],
+      ["$0.0001"]
+    ]
   ])("should work", (input, expected) => {
     // @ts-expect-error for test
     const value = getSubbedNumber(input);
@@ -54,7 +54,7 @@ describe("getSubbedNumber", () => {
 
   it("falls back to Number(value) when isNumber returns false (NaN input)", () => {
     // NaN is typeof "number" but isNumber(NaN) === false
-    const result = getSubbedNumber({ value: Number.NaN });
+    const result = getSubbedNumber({ value: NaN });
 
     expect(result).toBeDefined();
   });

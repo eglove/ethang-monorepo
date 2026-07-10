@@ -60,6 +60,8 @@ describe(Tree, () => {
   });
 
   it("dies when values array is empty", () => {
-    expect(() => new Tree([])).toThrow();
+    expect(() => {
+      return new Tree([]);
+    }).toThrow();
   });
 });

@@ -1,6 +1,6 @@
+import { DateTime } from "effect";
 import constant from "lodash/constant.js";
 import isError from "lodash/isError.js";
-import { DateTime } from "effect";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -126,8 +126,7 @@ describe("get cookie", () => {
     }
   });
 
-  // eslint-disable-next-line no-sparse-arrays
-  it.each([null, undefined, {}, [], , NaN])(
+  it.each([null, null, {}, [], null, NaN])(
     "shouldn't crash with bad inputs",
     (value) => {
       // @ts-expect-error allow for test

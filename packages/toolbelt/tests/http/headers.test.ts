@@ -7,7 +7,7 @@ describe("headers", () => {
   it.each([
     [
       new Headers({ "accept-language": "en-US" }),
-      [{ country: "US", language: "en", name: "en-US", quality: 1 }],
+      [{ country: "US", language: "en", name: "en-US", quality: 1 }]
     ],
     [
       "en-US,en;q=0.9",
@@ -16,15 +16,15 @@ describe("headers", () => {
           country: "US",
           language: "en",
           name: "en-US",
-          quality: 1,
+          quality: 1
         },
         {
           country: null,
           language: "en",
           name: "en",
-          quality: 0.9,
-        },
-      ],
+          quality: 0.9
+        }
+      ]
     ],
     [
       "en-US,en;q=0.9,fr;q=0.8,de;q=0.7",
@@ -33,27 +33,27 @@ describe("headers", () => {
           country: "US",
           language: "en",
           name: "en-US",
-          quality: 1,
+          quality: 1
         },
         {
           country: null,
           language: "en",
           name: "en",
-          quality: 0.9,
+          quality: 0.9
         },
         {
           country: null,
           language: "fr",
           name: "fr",
-          quality: 0.8,
+          quality: 0.8
         },
         {
           country: null,
           language: "de",
           name: "de",
-          quality: 0.7,
-        },
-      ],
+          quality: 0.7
+        }
+      ]
     ],
     [
       new Headers({ "accept-language": "en-US,en;q=0.9" }),
@@ -62,16 +62,16 @@ describe("headers", () => {
           country: "US",
           language: "en",
           name: "en-US",
-          quality: 1,
+          quality: 1
         },
         {
           country: null,
           language: "en",
           name: "en",
-          quality: 0.9,
-        },
-      ],
-    ],
+          quality: 0.9
+        }
+      ]
+    ]
   ] as const)("should get accept language", (header, result) => {
     const value = getAcceptLanguage(header);
 

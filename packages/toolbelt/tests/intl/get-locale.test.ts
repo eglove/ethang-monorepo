@@ -37,19 +37,19 @@ describe("getLocale", () => {
 
   it("should get value from localStorage", () => {
     // @ts-expect-error set for test
-    // eslint-disable-next-line unicorn/no-global-object-property-assignment
+
     globalThis.localStorage = {
       getItem: constant("value")
     };
 
-    const locale = getLocale(["localStorage"], undefined, "key");
+    const locale = getLocale(["localStorage"], null, "key");
 
     expect(locale).toBe("value");
   });
 
   it("should return null if pulling from localStorage and no name provided", () => {
     // @ts-expect-error set for test
-    // eslint-disable-next-line unicorn/no-global-object-property-assignment
+
     globalThis.localStorage = {
       getItem: constant("value")
     };
@@ -61,12 +61,12 @@ describe("getLocale", () => {
 
   it("should return null when localStorage key does not exist", () => {
     // @ts-expect-error set for test
-    // eslint-disable-next-line unicorn/no-global-object-property-assignment
+
     globalThis.localStorage = {
       getItem: constant(null)
     };
 
-    const locale = getLocale(["localStorage"], undefined, "missing-key");
+    const locale = getLocale(["localStorage"], null, "missing-key");
 
     expect(locale).toBeNull();
   });

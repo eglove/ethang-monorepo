@@ -18,6 +18,7 @@ const initialState: TestState = {
 let store: Store<TestState>;
 
 beforeEach(() => {
+  // eslint-disable-next-line unicorn/no-top-level-assignment-in-function
   store = makeStore(initialState);
 });
 
@@ -37,12 +38,16 @@ describe("makeStore", () => {
 });
 
 describe("set", () => {
-  it("replaces the state and notifies subscribers", () => {
+  it("replaces the state and notifies subscribers", async () => {
     return Effect.runPromise(
       Effect.gen(function* () {
         const subscriber = vi.fn();
         const fiber = yield* store.changes.pipe(
-          Stream.tap((v) => Effect.sync(() => subscriber(v))),
+          Stream.tap((v) => {
+            return Effect.sync(() => {
+              return subscriber(v);
+            });
+          }),
           Stream.take(2),
           Stream.runDrain,
           Effect.fork
@@ -71,12 +76,16 @@ describe("set", () => {
 });
 
 describe("update", () => {
-  it("supports immer draft mutations and notifies subscribers", () => {
+  it("supports immer draft mutations and notifies subscribers", async () => {
     return Effect.runPromise(
       Effect.gen(function* () {
         const subscriber = vi.fn();
         const fiber = yield* store.changes.pipe(
-          Stream.tap((v) => Effect.sync(() => subscriber(v))),
+          Stream.tap((v) => {
+            return Effect.sync(() => {
+              return subscriber(v);
+            });
+          }),
           Stream.take(2),
           Stream.runDrain,
           Effect.fork
@@ -132,7 +141,7 @@ describe("update", () => {
     store.subscribe(listener);
     const next = store.update((draft) => {
       // Touching nothing: Immer returns the same reference.
-      void draft;
+      return draft;
     });
     expect(next).toBe(initialState);
     expect(store.state).toBe(initialState);
@@ -141,19 +150,16 @@ describe("update", () => {
 });
 
 describe("changes stream", () => {
-  it("emits the initial value", () => {
+  it("emits the initial value", async () => {
     return Effect.runPromise(
-      store.changes.pipe(
-        Stream.take(1),
-        Stream.runCollect
-      )
+      store.changes.pipe(Stream.take(1), Stream.runCollect)
     ).then((chunk) => {
-      const values = Array.from(chunk);
+      const values = [...chunk];
       expect(values[0]).toEqual(initialState);
     });
   });
 
-  it("emits subsequent updates", () => {
+  it("emits subsequent updates", async () => {
     return Effect.runPromise(
       Effect.gen(function* () {
         const fiber = yield* store.changes.pipe(
@@ -172,7 +178,7 @@ describe("changes stream", () => {
         });
 
         const chunk = yield* Fiber.join(fiber);
-        const values = Array.from(chunk);
+        const values = [...chunk];
         expect(values).toHaveLength(3);
         expect(values[0]).toEqual(initialState);
         expect(values[1]?.count).toBe(1);

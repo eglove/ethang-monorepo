@@ -10,28 +10,34 @@ const initial: State = { count: 0, name: "Initial" };
 let store: Store<State>;
 
 beforeEach(() => {
+  // eslint-disable-next-line unicorn/no-top-level-assignment-in-function
   store = makeStore(initial);
 });
 
 describe("waitFor", () => {
-  it("resolves immediately when predicate is already true", () => {
-    return Effect.runPromise(
+  it("resolves immediately when predicate is already true", async () => {
+    await Effect.runPromise(
       Effect.gen(function* () {
-        yield* store.waitFor((s) => s.count === 0);
+        yield* store.waitFor((s) => {
+          return 0 === s.count;
+        });
       })
     );
+    expect(store.state.count).toBe(0);
   });
 
-  it("resolves after a state change satisfies the predicate", () => {
+  it("resolves after a state change satisfies the predicate", async () => {
     return Effect.runPromise(
       Effect.gen(function* () {
-        const fiber = yield* store.waitFor((s) => s.count === 5).pipe(
-          Effect.fork
-        );
+        const fiber = yield* store
+          .waitFor((s) => {
+            return 5 === s.count;
+          })
+          .pipe(Effect.fork);
 
         yield* Effect.yieldNow();
 
-        for (let index = 0; index < 5; index += 1) {
+        for (let index = 0; 5 > index; index += 1) {
           store.update((draft) => {
             draft.count += 1;
           });
@@ -43,15 +49,19 @@ describe("waitFor", () => {
     );
   });
 
-  it("handles multiple concurrent waitFor calls with different predicates", () => {
+  it("handles multiple concurrent waitFor calls with different predicates", async () => {
     return Effect.runPromise(
       Effect.gen(function* () {
-        const fiber1 = yield* store.waitFor((s) => s.count === 3).pipe(
-          Effect.fork
-        );
-        const fiber2 = yield* store.waitFor((s) => s.name === "Changed").pipe(
-          Effect.fork
-        );
+        const fiber1 = yield* store
+          .waitFor((s) => {
+            return 3 === s.count;
+          })
+          .pipe(Effect.fork);
+        const fiber2 = yield* store
+          .waitFor((s) => {
+            return "Changed" === s.name;
+          })
+          .pipe(Effect.fork);
 
         yield* Effect.yieldNow();
 
@@ -70,8 +80,10 @@ describe("waitFor", () => {
     );
   });
 
-  it("runs the predicate against every state change", () => {
-    const predicate = vi.fn((s: State) => s.count === 2);
+  it("runs the predicate against every state change", async () => {
+    const predicate = vi.fn((s: State) => {
+      return 2 === s.count;
+    });
     return Effect.runPromise(
       Effect.gen(function* () {
         const fiber = yield* store.waitFor(predicate).pipe(Effect.fork);

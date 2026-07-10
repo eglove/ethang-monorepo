@@ -1,14 +1,19 @@
-import { Effect } from "effect";
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 import { describe, expect, it } from "vitest";
 
 import { parseJson } from "../../src/json/json.ts";
+
+const NAME_STRING_SCHEMA = Schema.Struct({ name: Schema.String });
+const EMPTY_OBJECT = "{}";
+const JSON_STRING_SCHEMA = Schema.Struct({ json: Schema.String });
+const FAIL_STRING_SCHEMA = Schema.Struct({ fail: Schema.String });
+const STRING_FAILURE = "string-failure";
 
 describe("parse json", () => {
   it("should parse json string correctly", async () => {
     const json = JSON.stringify({ json: "stuff" });
     const results = await Effect.runPromise(
-      parseJson(json, Schema.Struct({ json: Schema.String }))
+      parseJson(json, JSON_STRING_SCHEMA)
     );
 
     expect(results).toStrictEqual({ json: "stuff" });
@@ -17,7 +22,7 @@ describe("parse json", () => {
   it("should fail with Error when validation is incorrect", async () => {
     const json = JSON.stringify({ fail: 0 });
     const result = await Effect.runPromise(
-      parseJson(json, Schema.Struct({ fail: Schema.String })).pipe(Effect.flip)
+      parseJson(json, FAIL_STRING_SCHEMA).pipe(Effect.flip)
     );
 
     expect(result).toBeInstanceOf(Error);
@@ -26,7 +31,7 @@ describe("parse json", () => {
 
   it("should fail with Error for invalid JSON", async () => {
     const result = await Effect.runPromise(
-      parseJson("", Schema.Struct({ name: Schema.String })).pipe(Effect.flip)
+      parseJson("", NAME_STRING_SCHEMA).pipe(Effect.flip)
     );
 
     expect(result).toBeInstanceOf(Error);
@@ -35,34 +40,19 @@ describe("parse json", () => {
 
   it("wraps non-Error parser rejections in an Error", async () => {
     const original = JSON.parse;
-    (JSON as { parse: typeof JSON.parse }).parse = (() => {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
-      throw "string-failure";
-    }) as typeof JSON.parse;
+    function throwingParser() {
+      throw STRING_FAILURE;
+    }
+    (JSON as { parse: typeof JSON.parse }).parse =
+      throwingParser as typeof JSON.parse;
     try {
       const result = await Effect.runPromise(
-        parseJson("{}", Schema.Struct({ name: Schema.String })).pipe(Effect.flip)
+        parseJson(EMPTY_OBJECT, NAME_STRING_SCHEMA).pipe(Effect.flip)
       );
       expect(result).toBeInstanceOf(Error);
-      expect(result.message).toBe("string-failure");
+      expect(result.message).toBe(STRING_FAILURE);
     } finally {
       (JSON as { parse: typeof JSON.parse }).parse = original;
-    }
-  });
-
-  it("should wrap non-Error parser rejections in an Error", async () => {
-    const original = JSON.parse;
-    JSON.parse = () => {
-      throw "string-failure";
-    };
-    try {
-      const result = await Effect.runPromise(
-        parseJson("{}", Schema.Struct({ name: Schema.String })).pipe(Effect.flip)
-      );
-      expect(result).toBeInstanceOf(Error);
-      expect(result.message).toBe("string-failure");
-    } finally {
-      JSON.parse = original;
     }
   });
 });

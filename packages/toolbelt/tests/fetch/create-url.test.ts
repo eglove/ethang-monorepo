@@ -1,40 +1,59 @@
-import { Effect } from "effect";
-import { describe, expect, it } from "vitest";
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
+import { describe, expect, it, vi } from "vitest";
 
 import { createUrl } from "../../src/fetch/create-url.ts";
-import { vi } from "vitest";
 
-vi.mock("../../src/fetch/create-search-parameters.ts", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/fetch/create-search-parameters.ts")>();
-  return {
-    ...actual,
-    createSearchParameters: vi.fn().mockImplementation((params, schema) => {
-      if (params && params["mockNil"] === true) {
-        return Effect.succeed(null as any);
-      }
-      return actual.createSearchParameters(params, schema);
-    }),
-  };
+vi.mock(
+  "../../src/fetch/create-search-parameters.ts",
+  async (importOriginal) => {
+    const actual =
+      await importOriginal<
+        typeof import("../../src/fetch/create-search-parameters.ts")
+      >();
+    return {
+      ...actual,
+      createSearchParameters: vi
+        .fn()
+        .mockImplementation((parameters, schema) => {
+          if (true === parameters?.mockNil) {
+            return Effect.succeed(null as any);
+          }
+          return actual.createSearchParameters(parameters, schema);
+        })
+    };
+  }
+);
+
+const TYPICODE_URL = "https://jsonplaceholder.typicode.com";
+const TYPICODE_TODO_2_URL =
+  "https://jsonplaceholder.typicode.com/todos/2?filter=done&orderBy=due";
+const EXAMPLE_URL = "https://example.com";
+const STRING_FAILURE = "string-failure";
+const DONE = "done";
+const DUE = "due";
+const PATH_VARIABLES_SCHEMA = Schema.Struct({ id: Schema.String });
+const SEARCH_PARAMS_SCHEMA = Schema.Struct({
+  filter: Schema.String,
+  orderBy: Schema.String
 });
+const SCHEMA_NAME_STRING = Schema.Struct({ name: Schema.String });
 
-const typicode = "https://jsonplaceholder.typicode.com";
+function createStringFailureUrlThrower() {
+  throw STRING_FAILURE;
+}
 
 describe("url builder", () => {
   it("build the url", async () => {
     const url = await Effect.runPromise(
       createUrl("todos/:id", {
         pathVariables: { id: "2" },
-        pathVariablesSchema: Schema.Struct({ id: Schema.String }),
+        pathVariablesSchema: PATH_VARIABLES_SCHEMA,
         searchParams: {
-          filter: "done",
-          orderBy: "due",
+          filter: DONE,
+          orderBy: DUE
         },
-        searchParamsSchema: Schema.Struct({
-          filter: Schema.String,
-          orderBy: Schema.String,
-        }),
-        urlBase: typicode,
+        searchParamsSchema: SEARCH_PARAMS_SCHEMA,
+        urlBase: TYPICODE_URL
       })
     );
 
@@ -43,25 +62,23 @@ describe("url builder", () => {
     if (url instanceof URL) {
       expect(url.searchParams).toStrictEqual(
         new URLSearchParams({
-          filter: "done",
-          orderBy: "due",
-        }),
+          filter: DONE,
+          orderBy: DUE
+        })
       );
 
-      expect(url.toString()).toBe(
-        "https://jsonplaceholder.typicode.com/todos/2?filter=done&orderBy=due",
-      );
+      expect(url.href).toBe(TYPICODE_TODO_2_URL);
     }
   });
 
   it("should build url with an array of search params", async () => {
     const url = await Effect.runPromise(
       createUrl("todos/:id", {
-        searchParams: { filter: ["done", "recent", "expired"] },
+        searchParams: { filter: [DONE, "recent", "expired"] },
         searchParamsSchema: Schema.Struct({
-          filter: Schema.Union(Schema.String, Schema.Array(Schema.String)),
+          filter: Schema.Union(Schema.String, Schema.Array(Schema.String))
         }),
-        urlBase: typicode,
+        urlBase: TYPICODE_URL
       })
     );
 
@@ -69,7 +86,7 @@ describe("url builder", () => {
 
     if (url instanceof URL) {
       const searchParameters = new URLSearchParams();
-      searchParameters.append("filter", "done");
+      searchParameters.append("filter", DONE);
       searchParameters.append("filter", "recent");
       searchParameters.append("filter", "expired");
 
@@ -83,14 +100,11 @@ describe("url builder", () => {
         pathVariables: { id: "invalid" },
         pathVariablesSchema: Schema.Struct({ id: Schema.Number }),
         searchParams: {
-          filter: "done",
-          orderBy: "due",
+          filter: DONE,
+          orderBy: DUE
         },
-        searchParamsSchema: Schema.Struct({
-          filter: Schema.String,
-          orderBy: Schema.String,
-        }),
-        urlBase: typicode,
+        searchParamsSchema: SEARCH_PARAMS_SCHEMA,
+        urlBase: TYPICODE_URL
       }).pipe(Effect.flip)
     );
 
@@ -101,7 +115,7 @@ describe("url builder", () => {
     const result = await Effect.runPromise(
       createUrl("todos", {
         pathVariables: { id: "2" },
-        urlBase: "https://example.com",
+        urlBase: EXAMPLE_URL
       }).pipe(Effect.flip)
     );
 
@@ -111,9 +125,9 @@ describe("url builder", () => {
 
   it("should return error for invalid url", async () => {
     const result = await Effect.runPromise(
-      // @ts-expect-error testing invalid urlBase
       createUrl("todos", {
-        urlBase: undefined
+        // @ts-expect-error testing invalid urlBase
+        urlBase: null
       }).pipe(Effect.flip)
     );
 
@@ -123,24 +137,16 @@ describe("url builder", () => {
 
   it("should wrap non-Error url constructor rejections in an Error", async () => {
     const original = URL;
-    class ThrowingURL {
-      public searchParams: URLSearchParams = new URLSearchParams();
-      public toString(): string {
-        return "throwing";
-      }
-    }
-    (globalThis as unknown as { URL: unknown }).URL = function () {
-      throw "string-failure";
-    };
+    (globalThis as unknown as { URL: unknown }).URL =
+      createStringFailureUrlThrower;
     try {
       const result = await Effect.runPromise(
-        createUrl("todos", { urlBase: "https://example.com" }).pipe(Effect.flip)
+        createUrl("todos", { urlBase: EXAMPLE_URL }).pipe(Effect.flip)
       );
       expect(result).toBeInstanceOf(Error);
-      expect(result.message).toBe("string-failure");
+      expect(result.message).toBe(STRING_FAILURE);
     } finally {
       (globalThis as unknown as { URL: unknown }).URL = original;
-      void ThrowingURL;
     }
   });
 
@@ -148,8 +154,8 @@ describe("url builder", () => {
     const result = await Effect.runPromise(
       createUrl("todos", {
         searchParams: { id: 1 },
-        searchParamsSchema: Schema.Struct({ name: Schema.String }),
-        urlBase: "https://example.com",
+        searchParamsSchema: SCHEMA_NAME_STRING,
+        urlBase: EXAMPLE_URL
       }).pipe(Effect.flip)
     );
 
@@ -160,7 +166,7 @@ describe("url builder", () => {
     const result = await Effect.runPromise(
       createUrl("todos", {
         searchParams: { id: 1 },
-        urlBase: "https://example.com",
+        urlBase: EXAMPLE_URL
       }).pipe(Effect.flip)
     );
 
@@ -174,27 +180,28 @@ describe("url builder", () => {
         pathVariables: { userId: "3" },
         pathVariablesSchema: Schema.Struct({
           dashboardId: Schema.optional(Schema.String),
-          userId: Schema.String,
+          userId: Schema.String
         }),
-        urlBase: "https://example.com",
+        urlBase: EXAMPLE_URL
       })
     );
 
     expect(url).toBeInstanceOf(URL);
 
     if (url instanceof URL) {
-      expect(url.toString()).toBe("https://example.com/user/3/dashboard/");
+      expect(url.href).toBe(`${EXAMPLE_URL}/user/3/dashboard/`);
     }
   });
 
   it("should return error from createSearchParameters", async () => {
+    const filterNumberSchema = Schema.Struct({
+      filter: Schema.Number
+    });
     const result = await Effect.runPromise(
       createUrl("todos", {
-        searchParams: { filter: "done" },
-        searchParamsSchema: Schema.Struct({
-          filter: Schema.Number,
-        }),
-        urlBase: typicode,
+        searchParams: { filter: DONE },
+        searchParamsSchema: filterNumberSchema,
+        urlBase: TYPICODE_URL
       }).pipe(Effect.flip)
     );
 
@@ -208,7 +215,7 @@ describe("url builder", () => {
           pathVariables: { id: "2" },
           // @ts-expect-error for testing
           pathVariablesSchema: {},
-          urlBase: "https://example.com",
+          urlBase: EXAMPLE_URL
         }).pipe(Effect.flip)
       );
 
@@ -221,7 +228,7 @@ describe("url builder", () => {
           searchParams: { id: 1 },
           // @ts-expect-error for testing
           searchParamsSchema: {},
-          urlBase: "https://example.com",
+          urlBase: EXAMPLE_URL
         }).pipe(Effect.flip)
       );
 
@@ -232,8 +239,10 @@ describe("url builder", () => {
       const url = await Effect.runPromise(
         createUrl("todos", {
           searchParams: { mockNil: true } as any,
-          searchParamsSchema: Schema.Struct({ mockNil: Schema.optional(Schema.Boolean) }),
-          urlBase: typicode,
+          searchParamsSchema: Schema.Struct({
+            mockNil: Schema.optional(Schema.Boolean)
+          }),
+          urlBase: TYPICODE_URL
         })
       );
 
@@ -244,4 +253,3 @@ describe("url builder", () => {
     });
   });
 });
-
