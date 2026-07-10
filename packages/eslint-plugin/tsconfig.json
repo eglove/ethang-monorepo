@@ -1,0 +1,4 @@
+{
+  "extends": ["../tsconfig/tsconfig.base.json"],
+  "exclude": ["src/rules/fixture.ts"]
+}

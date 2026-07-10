@@ -14,6 +14,7 @@
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^2.0.1",
     "@eslint/markdown": "^8.0.3",
+    "@ethang/eslint-plugin": "workspace:*",
     "@ethang/markdown-generator": "workspace:*",
     "@ethang/telemetry": "workspace:*",
     "@ethang/toolbelt": "workspace:*",

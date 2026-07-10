@@ -83,14 +83,7 @@ const handleRpcRequest = async (
   environment: Env
 ): Promise<Response> => {
   const sessionTokenResult = await Effect.runPromise(
-    Effect.tryPromise({
-      catch: () => {
-        return new Error("Unauthorized");
-      },
-      try: async () => {
-        return getSessionToken(request, environment);
-      }
-    }).pipe(
+    getSessionToken(request, environment).pipe(
       Effect.catchAll(() => {
         return Effect.succeed(null as null | string);
       })

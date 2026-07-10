@@ -1,0 +1,552 @@
+import type { RuleFix } from "@typescript-eslint/utils/ts-eslint";
+
+import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
+import includes from "lodash/includes.js";
+import isObject from "lodash/isObject.js";
+import keys from "lodash/keys.js";
+import map from "lodash/map.js";
+import some from "lodash/some.js";
+import startsWith from "lodash/startsWith.js";
+
+import { effectApi, isEffectApiMethod } from "./effect-api.ts";
+import { isLodashFunction, lodashApi } from "./lodash-api.ts";
+import { isCallExpression } from "./type-guards.ts";
+
+type RuleFixer = {
+  insertTextAfter: (
+    nodeOrToken: TSESTree.Node | TSESTree.Token,
+    text: string
+  ) => RuleFix;
+  insertTextAfterRange: (
+    range: Readonly<[number, number]>,
+    text: string
+  ) => RuleFix;
+  insertTextBefore: (
+    nodeOrToken: TSESTree.Node | TSESTree.Token,
+    text: string
+  ) => RuleFix;
+  insertTextBeforeRange: (
+    range: Readonly<[number, number]>,
+    text: string
+  ) => RuleFix;
+  remove: (nodeOrToken: TSESTree.Node | TSESTree.Token) => RuleFix;
+  removeRange: (range: Readonly<[number, number]>) => RuleFix;
+  replaceText: (
+    nodeOrToken: TSESTree.Node | TSESTree.Token,
+    text: string
+  ) => RuleFix;
+  replaceTextRange: (
+    range: Readonly<[number, number]>,
+    text: string
+  ) => RuleFix;
+};
+
+const isLodashDefaultImport = (name: string): boolean => {
+  return "lodash" === name || startsWith(name, "lodash/");
+};
+
+const isLodashNamespaceReceiver = (
+  callee: TSESTree.MemberExpression
+): boolean => {
+  return (
+    AST_NODE_TYPES.Identifier === callee.object.type &&
+    ("_" === callee.object.name || "lodash" === callee.object.name)
+  );
+};
+
+const BUILTIN_NAMESPACES = new Set([
+  "Array",
+  "Boolean",
+  "console",
+  "Date",
+  "Error",
+  "JSON",
+  "Map",
+  "Math",
+  "Number",
+  "Object",
+  "Promise",
+  "Proxy",
+  "Reflect",
+  "RegExp",
+  "Set",
+  "String",
+  "Symbol",
+  "WeakMap",
+  "WeakSet"
+]);
+
+const isEffectSource = (name: string): boolean => {
+  return "effect" === name || startsWith(name, "effect/");
+};
+
+export type ImportedKind = "effect" | "lodash" | "none";
+
+const classifyImport = (node: TSESTree.Node): ImportedKind => {
+  if (AST_NODE_TYPES.ImportDeclaration !== node.type) {
+    return "none";
+  }
+
+  const source = node.source.value;
+
+  if (isEffectSource(source)) {
+    return "effect";
+  }
+
+  if (isLodashDefaultImport(source)) {
+    return "lodash";
+  }
+
+  return "none";
+};
+
+const detectImportKind = (program: TSESTree.Program): ImportedKind => {
+  const kinds = map(program.body, classifyImport);
+
+  if (includes(kinds, "effect")) {
+    return "effect";
+  }
+
+  if (includes(kinds, "lodash")) {
+    return "lodash";
+  }
+
+  return "none";
+};
+
+export const getImportedKind = (context: {
+  readonly sourceCode: { readonly ast: TSESTree.Program };
+}): ImportedKind => {
+  return detectImportKind(context.sourceCode.ast);
+};
+
+const isEffectImportNode = (node: TSESTree.Node): boolean => {
+  return (
+    AST_NODE_TYPES.ImportDeclaration === node.type &&
+    "effect" === node.source.value
+  );
+};
+
+const hasEffectImport = (program: TSESTree.Program): boolean => {
+  return some(program.body, isEffectImportNode);
+};
+
+const isLodashDeepImportNode = (
+  node: TSESTree.Node,
+  importName: string
+): boolean => {
+  if (AST_NODE_TYPES.ImportDeclaration !== node.type) {
+    return false;
+  }
+  return node.source.value === `lodash/${importName}.js`;
+};
+
+const hasLodashDeepImport = (
+  program: TSESTree.Program,
+  importName: string
+): boolean => {
+  return some(program.body, (node) => {
+    return isLodashDeepImportNode(node, importName);
+  });
+};
+
+const insertImportAfterLastStatement = (
+  program: TSESTree.Program,
+  fixer: RuleFixer,
+  text: string
+): RuleFix => {
+  const lastNode = program.body.at(-1);
+  const anchor = lastNode ?? program;
+
+  return fixer.insertTextAfter(anchor, text);
+};
+
+export const ensureEffectImport = (
+  program: TSESTree.Program,
+  fixer: RuleFixer
+): null | RuleFix => {
+  if (hasEffectImport(program)) {
+    return null;
+  }
+
+  return insertImportAfterLastStatement(
+    program,
+    fixer,
+    '\nimport { Array } from "effect";'
+  );
+};
+
+export const ensureLodashImport = (
+  program: TSESTree.Program,
+  importName: string,
+  fixer: RuleFixer
+): null | RuleFix => {
+  if (hasLodashDeepImport(program, importName)) {
+    return null;
+  }
+
+  return insertImportAfterLastStatement(
+    program,
+    fixer,
+    `\nimport ${importName} from "lodash/${importName}.js";`
+  );
+};
+
+export type CallKind =
+  | "array"
+  | "effect-array"
+  | "effect-core"
+  | "lodash"
+  | "other"
+  | "unknown-member";
+
+export type ResolvedCall = {
+  readonly effectImportName?: string;
+  readonly kind: CallKind;
+  readonly lodashImportName?: string;
+  readonly methodName: string;
+  readonly node: TSESTree.CallExpression;
+  readonly receiver: null | TSESTree.Expression;
+};
+
+const isIdentifierNamed = (
+  node: TSESTree.Expression,
+  names: readonly string[]
+): boolean => {
+  return AST_NODE_TYPES.Identifier === node.type && includes(names, node.name);
+};
+
+const isArrayLiteralReceiver = (callee: TSESTree.MemberExpression): boolean => {
+  return AST_NODE_TYPES.ArrayExpression === callee.object.type;
+};
+
+const resolveMemberMethod = (node: TSESTree.MemberExpression): string => {
+  if (AST_NODE_TYPES.Identifier === node.property.type) {
+    return node.property.name;
+  }
+  return "";
+};
+
+const EFFECT_ARRAY_IDENTIFIERS = ["Array", "Effects", "Array$"];
+const EFFECT_ARRAY_IMPORT = "Array";
+const KIND_EFFECT_ARRAY = "effect-array";
+
+const resolveEffectArray = (
+  node: TSESTree.CallExpression,
+  callee: TSESTree.MemberExpression,
+  methodName: string
+): null | ResolvedCall => {
+  if (AST_NODE_TYPES.Identifier !== callee.object.type) {
+    return null;
+  }
+  if (!isIdentifierNamed(callee.object, EFFECT_ARRAY_IDENTIFIERS)) {
+    return null;
+  }
+  return {
+    effectImportName: EFFECT_ARRAY_IMPORT,
+    kind: KIND_EFFECT_ARRAY,
+    methodName,
+    node,
+    receiver: callee.object
+  };
+};
+
+const resolveEffectCore = (
+  node: TSESTree.CallExpression,
+  callee: TSESTree.MemberExpression,
+  methodName: string
+): null | ResolvedCall => {
+  if (AST_NODE_TYPES.Identifier !== callee.object.type) {
+    return null;
+  }
+  if (!isIdentifierNamed(callee.object, ["Effect", "Effect$"])) {
+    return null;
+  }
+  return {
+    effectImportName: "Effect",
+    kind: "effect-core",
+    methodName,
+    node,
+    receiver: callee.object
+  };
+};
+
+export const NATIVE_EQUIVALENT_METHODS = new Set([
+  "add",
+  "at",
+  "clone",
+  "delete",
+  "each",
+  "endsWith",
+  "entries",
+  "eq",
+  "find",
+  "findLast",
+  "flat",
+  "flatMap",
+  "forEach",
+  "get",
+  "has",
+  "includes",
+  "join",
+  "keys",
+  "make",
+  "max",
+  "min",
+  "orderBy",
+  "set",
+  "slice",
+  "startsWith",
+  "toArray",
+  "toString",
+  "update",
+  "values"
+]);
+
+// Methods that are NOT on Array.prototype but exist on other native objects
+// (Map, Set, Headers, drizzle query builders, etc.). These should be treated
+// as unknown-member rather than array to avoid false positives.
+const NON_ARRAY_NATIVE_METHOD_NAMES = new Set([
+  "add",
+  "clone",
+  "delete",
+  "each",
+  "endsWith",
+  "entries",
+  "eq",
+  "get",
+  "has",
+  "join",
+  "keys",
+  "make",
+  "max",
+  "min",
+  "orderBy",
+  "set",
+  "startsWith",
+  "toArray",
+  "toString",
+  "update",
+  "values"
+]);
+
+export const isEffectImportedIdentifier = (
+  node: TSESTree.Node,
+  program: TSESTree.Program
+): boolean => {
+  if (AST_NODE_TYPES.Identifier !== node.type) {
+    return false;
+  }
+  const { name } = node;
+  return some(program.body, (statement) => {
+    if (AST_NODE_TYPES.ImportDeclaration !== statement.type) {
+      return false;
+    }
+    if (!isEffectSource(statement.source.value)) {
+      return false;
+    }
+    return some(statement.specifiers, (spec) => {
+      if (AST_NODE_TYPES.ImportSpecifier !== spec.type) {
+        return false;
+      }
+      return includes([name], spec.local.name);
+    });
+  });
+};
+
+const resolveArrayCall = (
+  node: TSESTree.CallExpression,
+  callee: TSESTree.MemberExpression,
+  methodName: string,
+  program?: TSESTree.Program
+): ResolvedCall => {
+  // If the receiver is _ or lodash, this is already a lodash call
+  if (isLodashNamespaceReceiver(callee)) {
+    return {
+      kind: "lodash",
+      lodashImportName: methodName,
+      methodName,
+      node,
+      receiver: callee.object
+    };
+  }
+
+  // If the receiver is an identifier imported from "effect" (e.g. Schema,
+  // Stream, DateTime, Chunk, Option, etc.), this is an Effect namespace call
+  // — not an array call — so it should not trigger prefer-effect/lodash.
+  if (
+    program !== undefined &&
+    AST_NODE_TYPES.Identifier === callee.object.type &&
+    isEffectImportedIdentifier(callee.object, program)
+  ) {
+    return {
+      effectImportName: callee.object.name,
+      kind: KIND_EFFECT_ARRAY,
+      methodName,
+      node,
+      receiver: callee.object
+    };
+  }
+
+  // Math.* and JSON.* etc. are built-in namespaces, not array receivers
+  const isBuiltinNamespace = (): boolean => {
+    return (
+      AST_NODE_TYPES.Identifier === callee.object.type &&
+      BUILTIN_NAMESPACES.has(callee.object.name)
+    );
+  };
+
+  // Methods like `get`, `set`, `has`, `update`, `orderBy`, `eq` etc. exist on
+  // native objects (Map, Set, drizzle query builders, etc.) AND in lodash/effect.
+  // When the receiver is not an array literal, classify as unknown-member to
+  // avoid false positives on non-array receivers.
+  const isNonArrayNativeMethod = NON_ARRAY_NATIVE_METHOD_NAMES.has(methodName);
+  const isNativeMethod = isNonArrayNativeMethod;
+  const isLodashOrEffectMethod =
+    !isNativeMethod &&
+    (isLodashFunction(methodName) || isEffectApiMethod(methodName));
+  const isArrayLike = isArrayLiteralReceiver(callee) || isLodashOrEffectMethod;
+
+  if (!isBuiltinNamespace() && isArrayLike) {
+    return { kind: "array", methodName, node, receiver: callee.object };
+  }
+  return {
+    kind: "unknown-member",
+    methodName,
+    node,
+    receiver: callee.object
+  };
+};
+
+export const resolveMemberExpressionCall = (
+  node: TSESTree.CallExpression,
+  program?: TSESTree.Program
+): ResolvedCall => {
+  const { callee } = node;
+  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
+    return { kind: "other", methodName: "", node, receiver: null };
+  }
+  const methodName = resolveMemberMethod(callee);
+
+  return (
+    resolveEffectArray(node, callee, methodName) ??
+    resolveEffectCore(node, callee, methodName) ??
+    resolveArrayCall(node, callee, methodName, program)
+  );
+};
+
+const resolveIdentifierCall = (node: TSESTree.CallExpression): ResolvedCall => {
+  const { callee } = node;
+
+  if (AST_NODE_TYPES.Identifier !== callee.type) {
+    return { kind: "other", methodName: "", node, receiver: null };
+  }
+
+  if (isLodashFunction(callee.name)) {
+    return {
+      kind: "lodash",
+      lodashImportName: callee.name,
+      methodName: callee.name,
+      node,
+      receiver: null
+    };
+  }
+
+  if (isEffectApiMethod(callee.name)) {
+    const entry = effectApi[callee.name];
+
+    return {
+      effectImportName: entry.import,
+      kind: KIND_EFFECT_ARRAY,
+      methodName: callee.name,
+      node,
+      receiver: null
+    };
+  }
+
+  return { kind: "other", methodName: callee.name, node, receiver: null };
+};
+
+export const resolveCall = (
+  node: TSESTree.CallExpression,
+  program: TSESTree.Program
+): ResolvedCall => {
+  if (AST_NODE_TYPES.MemberExpression === node.callee.type) {
+    return resolveMemberExpressionCall(node, program);
+  }
+  return resolveIdentifierCall(node);
+};
+
+export const isLodashCall = (
+  node: TSESTree.CallExpression,
+  program: TSESTree.Program
+): boolean => {
+  return "lodash" === resolveCall(node, program).kind;
+};
+
+export const lodashDeepImport = (name: string): string => {
+  return `lodash/${name}.js`;
+};
+
+export const lookupLodashEntry = (name: string) => {
+  if (isLodashFunction(name)) {
+    return lodashApi[name];
+  }
+  return null;
+};
+
+export const markInnerCallExpressions = (
+  node: TSESTree.Node,
+  set: WeakSet<TSESTree.CallExpression>
+): void => {
+  if (isCallExpression(node)) {
+    set.add(node);
+  }
+
+  for (const child of getChildNodes(node)) {
+    markInnerCallExpressions(child, set);
+  }
+};
+
+const SKIP_KEYS = new Set(["loc", "parent", "range"]);
+
+const isNodeLike = (value: unknown): value is TSESTree.Node => {
+  return isObject(value) && "type" in value;
+};
+
+const collectFromArray = (
+  value: unknown[],
+  children: TSESTree.Node[]
+): void => {
+  for (const item of value) {
+    if (isNodeLike(item)) {
+      children.push(item);
+    }
+  }
+};
+
+const getChildNodes = (node: TSESTree.Node): TSESTree.Node[] => {
+  const children: TSESTree.Node[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- AST nodes are record-like
+  const record = node as unknown as Record<string, unknown>;
+  const allKeys = filter(keys(record), (key) => {
+    return !SKIP_KEYS.has(key);
+  });
+
+  for (const key of allKeys) {
+    const value = record[key];
+    if (isNodeLike(value)) {
+      children.push(value);
+    }
+
+    if (isArray(value)) {
+      collectFromArray(value, children);
+    }
+  }
+
+  return children;
+};
+
+export { getParserServices } from "@typescript-eslint/utils/eslint-utils";
+import filter from "lodash/filter.js";
+import isArray from "lodash/isArray.js";

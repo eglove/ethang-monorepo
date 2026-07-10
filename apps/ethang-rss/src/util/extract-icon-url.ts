@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+import constant from "lodash/constant.js";
 import endsWith from "lodash/endsWith.js";
 import isNil from "lodash/isNil.js";
 import some from "lodash/some.js";
@@ -40,25 +42,38 @@ const parseSizeValue = (sizes: string | undefined) => {
   return Number(match[1]) * Number(match[2]);
 };
 
+const returnUndefined = constant(undefined);
+
 const resolveHref = (href: string, baseUrl: string) => {
-  let resolvedHref: string | undefined;
-  try {
-    const resolved = new URL(href, baseUrl);
-    resolvedHref = resolved.href;
-  } catch {
-    /* invalid href or baseUrl */
-  }
-  return resolvedHref;
+  return Effect.runSync(
+    Effect.try({
+      catch: returnUndefined,
+      try: () => {
+        const resolved = new URL(href, baseUrl);
+        return resolved.href;
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(undefined);
+      })
+    )
+  );
 };
 
 const buildFaviconFallback = (baseUrl: string) => {
-  let originValue: string | undefined;
-  try {
-    const parsedBase = new URL(baseUrl);
-    originValue = parsedBase.origin;
-  } catch {
-    /* invalid baseUrl */
-  }
+  const originValue = Effect.runSync(
+    Effect.try({
+      catch: returnUndefined,
+      try: () => {
+        const parsedBase = new URL(baseUrl);
+        return parsedBase.origin;
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(undefined);
+      })
+    )
+  );
   if (isNil(originValue)) {
     return;
   }

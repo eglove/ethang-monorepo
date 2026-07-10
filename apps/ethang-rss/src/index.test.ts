@@ -187,6 +187,29 @@ describe("ethang-rss WorkerEntrypoint", () => {
       ).rejects.toThrow("Unauthorized");
     });
 
+    it("rejects with unauthorized when fetch throws", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockRejectedValue(new Error("Network error"))
+      );
+      const instance = createInstance({ ethang_rss: {} });
+      await expect(
+        instance.allArticles({ sessionToken: "any-token" })
+      ).rejects.toThrow("Unauthorized");
+    });
+
+    it("rejects with unauthorized when response.json throws", async () => {
+      const jsonMock = vi.fn().mockRejectedValue(new Error("Invalid JSON"));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({ json: jsonMock, ok: true })
+      );
+      const instance = createInstance({ ethang_rss: {} });
+      await expect(
+        instance.allArticles({ sessionToken: "any-token" })
+      ).rejects.toThrow("Unauthorized");
+    });
+
     it("allArticles returns paginated articles", async () => {
       const instance = createInstance({ ethang_rss: {} });
       const result = await instance.allArticles({

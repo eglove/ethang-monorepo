@@ -1,0 +1,392 @@
+import {
+  AST_NODE_TYPES,
+  ESLintUtils,
+  type TSESTree
+} from "@typescript-eslint/utils";
+
+import { isLodashCall, resolveCall } from "../utils/ast.ts";
+import { isMatchesShorthandMethod } from "../utils/method-data.ts";
+import { isExpression } from "../utils/type-guards.ts";
+
+const createRule = ESLintUtils.RuleCreator((name) => {
+  return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
+});
+
+type MessageIds = "noMatchesShorthand" | "preferMatchesShorthand";
+
+type Mode = "always" | "never";
+
+type Options = [Mode?, number?, boolean?, { onlyLiterals?: boolean }?];
+
+const DEFAULT_MAX_PROPERTY_PATH_LENGTH = 3;
+
+export const getValueReturnedInFirstStatement = (
+  node: TSESTree.Expression
+): TSESTree.Expression | undefined => {
+  if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
+    if (node.body.type === AST_NODE_TYPES.BlockStatement) {
+      const [first] = node.body.body;
+
+      if (first?.type === AST_NODE_TYPES.ReturnStatement) {
+        return first.argument ?? undefined;
+      }
+
+      return undefined;
+    }
+
+    return node.body;
+  }
+
+  /* v8 ignore next 7 -- isFunctionReturningConjunction ensures node is FunctionExpression when ArrowFunctionExpression is already handled above */
+  if (node.type === AST_NODE_TYPES.FunctionExpression) {
+    const [first] = node.body.body;
+
+    if (first?.type === AST_NODE_TYPES.ReturnStatement) {
+      return first.argument ?? undefined;
+    }
+  }
+
+  return undefined;
+};
+
+export const getFirstParameterName = (
+  node: TSESTree.Expression | undefined
+): string | undefined => {
+  if (
+    node === undefined ||
+    (node.type !== AST_NODE_TYPES.FunctionExpression &&
+      node.type !== AST_NODE_TYPES.ArrowFunctionExpression)
+  ) {
+    return undefined;
+  }
+
+  const [firstParameter] = node.params;
+
+  return firstParameter?.type === AST_NODE_TYPES.Identifier
+    ? firstParameter.name
+    : undefined;
+};
+
+// Checks if a node is a strict equality comparison (===).
+const isStrictEquality = (
+  node: TSESTree.Expression | undefined
+): node is TSESTree.BinaryExpression => {
+  return (
+    node?.type === AST_NODE_TYPES.BinaryExpression && "===" === node.operator
+  );
+};
+
+// Checks if a node is a conjunction (LogicalExpression with &&).
+const isConjunction = (
+  node: TSESTree.Expression | undefined
+): node is TSESTree.LogicalExpression => {
+  return (
+    node?.type === AST_NODE_TYPES.LogicalExpression && "&&" === node.operator
+  );
+};
+
+// Checks if the expression is a member expression of the parameter name,
+// up to maxLength depth, non-computed only (unless isAllowComputed is true).
+export const isMemberExpressionOf = (
+  node: TSESTree.Expression | undefined,
+  parameterName: string | undefined,
+  maxLength: number,
+  isAllowComputed: boolean
+): boolean => {
+  if (parameterName === undefined || node === undefined) {
+    return false;
+  }
+
+  let current: TSESTree.Expression = node;
+  let depth = maxLength;
+
+  while (0 < depth) {
+    if (current.type === AST_NODE_TYPES.MemberExpression) {
+      if (!isAllowComputed && current.computed) {
+        return false;
+      }
+
+      if (
+        current.object.type === AST_NODE_TYPES.Identifier &&
+        current.object.name === parameterName
+      ) {
+        return true;
+      }
+
+      current = current.object;
+      depth -= 1;
+    } else {
+      return false;
+    }
+  }
+
+  return false;
+};
+
+// Checks if a node is a literal.
+const isLiteral = (node: TSESTree.Expression | undefined): boolean => {
+  return node?.type === AST_NODE_TYPES.Literal;
+};
+
+// Checks if the expression is `===` where one side is a member expression of
+// the parameter and the other side is a literal (or any value if onlyLiterals
+// is false).
+export const isEqualityToMemberOf = (
+  expression: TSESTree.Expression | undefined,
+  parameterName: string | undefined,
+  maxLength: number,
+  isAllowComputed: boolean,
+  isOnlyLiterals: boolean
+): boolean => {
+  if (!isStrictEquality(expression) || parameterName === undefined) {
+    return false;
+  }
+
+  const { left, right } = expression;
+  const leftExpression = isExpression(left) ? left : undefined;
+  const rightExpression = isExpression(right) ? right : undefined;
+  const isLeftMember = isMemberExpressionOf(
+    leftExpression,
+    parameterName,
+    maxLength,
+    isAllowComputed
+  );
+  const isRightMember = isMemberExpressionOf(
+    rightExpression,
+    parameterName,
+    maxLength,
+    isAllowComputed
+  );
+
+  // Exactly one side must be a member expression of the parameter
+  if (isLeftMember === isRightMember) {
+    return false;
+  }
+
+  if (isOnlyLiterals) {
+    return isLiteral(leftExpression) || isLiteral(rightExpression);
+  }
+
+  return true;
+};
+
+// Recursively checks if a conjunction tree consists entirely of === comparisons
+// to members of the parameter.
+export const isConjunctionOfEqualitiesToMemberOf = (
+  expression: TSESTree.Expression | undefined,
+  parameterName: string | undefined,
+  maxLength: number,
+  isAllowComputed: boolean,
+  isOnlyLiterals: boolean
+): boolean => {
+  if (parameterName === undefined) {
+    return false;
+  }
+
+  // A single === comparison also counts
+  if (isStrictEquality(expression)) {
+    return isEqualityToMemberOf(
+      expression,
+      parameterName,
+      maxLength,
+      isAllowComputed,
+      isOnlyLiterals
+    );
+  }
+
+  if (!isConjunction(expression)) {
+    return false;
+  }
+
+  return (
+    isConjunctionOfEqualitiesToMemberOf(
+      expression.left,
+      parameterName,
+      maxLength,
+      isAllowComputed,
+      isOnlyLiterals
+    ) &&
+    isConjunctionOfEqualitiesToMemberOf(
+      expression.right,
+      parameterName,
+      maxLength,
+      isAllowComputed,
+      isOnlyLiterals
+    )
+  );
+};
+
+// Checks if the iteratee is a function returning a conjunction of === comparisons.
+export const isFunctionReturningConjunction = (
+  iteratee: TSESTree.Expression | undefined,
+  maxPropertyPathLength: number,
+  isAllowComputed: boolean,
+  isOnlyLiterals: boolean
+): boolean => {
+  if (
+    iteratee === undefined ||
+    (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
+      iteratee.type !== AST_NODE_TYPES.ArrowFunctionExpression)
+  ) {
+    return false;
+  }
+
+  const parameterName = getFirstParameterName(iteratee);
+
+  if (parameterName === undefined) {
+    return false;
+  }
+
+  const returned = getValueReturnedInFirstStatement(iteratee);
+
+  return isConjunctionOfEqualitiesToMemberOf(
+    returned,
+    parameterName,
+    maxPropertyPathLength,
+    isAllowComputed,
+    isOnlyLiterals
+  );
+};
+
+// Checks if the iteratee is _.matches({...}) or lodash.matches({...}).
+export const isLodashMatchesCall = (
+  iteratee: TSESTree.Expression | undefined
+): boolean => {
+  if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
+    return false;
+  }
+
+  const { callee } = iteratee;
+
+  if (callee.type !== AST_NODE_TYPES.MemberExpression) {
+    return false;
+  }
+
+  const { object, property } = callee;
+
+  if (
+    object.type !== AST_NODE_TYPES.Identifier ||
+    property.type !== AST_NODE_TYPES.Identifier
+  ) {
+    return false;
+  }
+
+  return (
+    ("_" === object.name || "lodash" === object.name) &&
+    "matches" === property.name
+  );
+};
+
+// Checks if the iteratee is an object literal (matches shorthand usage).
+const isObjectLiteral = (
+  iteratee: TSESTree.Expression | undefined
+): boolean => {
+  return iteratee?.type === AST_NODE_TYPES.ObjectExpression;
+};
+
+export const matchesShorthandRule = createRule<Options, MessageIds>({
+  create(context) {
+    const [
+      mode = "always",
+      maxPropertyPathLength = DEFAULT_MAX_PROPERTY_PATH_LENGTH,
+      isAllowComputed = false,
+      onlyLiteralsOption
+    ] = context.options;
+    const program = context.sourceCode.ast;
+    const isNeverMode = "never" === mode;
+    const isOnlyLiterals = Boolean(onlyLiteralsOption?.onlyLiterals);
+
+    const checkNeverMode = (iteratee: TSESTree.CallExpressionArgument) => {
+      if (
+        iteratee.type !== AST_NODE_TYPES.SpreadElement &&
+        isObjectLiteral(iteratee)
+      ) {
+        context.report({
+          messageId: "noMatchesShorthand",
+          node: iteratee
+        });
+      }
+    };
+
+    const checkAlwaysMode = (iteratee: TSESTree.CallExpressionArgument) => {
+      if (
+        iteratee.type !== AST_NODE_TYPES.SpreadElement &&
+        (isFunctionReturningConjunction(
+          iteratee,
+          maxPropertyPathLength,
+          isAllowComputed,
+          isOnlyLiterals
+        ) ||
+          isLodashMatchesCall(iteratee))
+      ) {
+        context.report({
+          messageId: "preferMatchesShorthand",
+          node: iteratee
+        });
+      }
+    };
+
+    const checkNode = (node: TSESTree.CallExpression): void => {
+      if (!isLodashCall(node, program)) {
+        return;
+      }
+
+      const { methodName } = resolveCall(node, program);
+
+      if (!isMatchesShorthandMethod(methodName)) {
+        return;
+      }
+
+      const [, iteratee] = node.arguments;
+
+      if (iteratee === undefined) {
+        return;
+      }
+
+      if (isNeverMode) {
+        checkNeverMode(iteratee);
+        return;
+      }
+
+      checkAlwaysMode(iteratee);
+    };
+
+    return {
+      CallExpression: checkNode
+    };
+  },
+  defaultOptions: ["always", DEFAULT_MAX_PROPERTY_PATH_LENGTH, false, {}],
+  meta: {
+    docs: {
+      description:
+        "Prefer matches shorthand syntax (e.g. _.filter(xs, { active: true }) over _.filter(xs, x => x.active === true))."
+    },
+    messages: {
+      noMatchesShorthand: "Do not use the matches shorthand syntax.",
+      preferMatchesShorthand: "Prefer matches shorthand syntax."
+    },
+    schema: [
+      {
+        enum: ["always", "never"],
+        type: "string"
+      },
+      {
+        minimum: 1,
+        type: "integer"
+      },
+      {
+        type: "boolean"
+      },
+      {
+        properties: {
+          onlyLiterals: {
+            type: "boolean"
+          }
+        },
+        type: "object"
+      }
+    ],
+    type: "problem"
+  },
+  name: "matches-shorthand"
+});
