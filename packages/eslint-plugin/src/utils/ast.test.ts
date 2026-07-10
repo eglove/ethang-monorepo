@@ -272,6 +272,13 @@ describe("resolveCall", () => {
     const resolved = resolveCall(call, program);
     expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
   });
+
+  it("returns 'unknown-member' for performance.now()", () => {
+    const { call, program } = firstCallExpression("performance.now();");
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
+    expect(resolved.methodName).toBe("now");
+  });
 });
 
 describe("resolveMemberExpressionCall", () => {

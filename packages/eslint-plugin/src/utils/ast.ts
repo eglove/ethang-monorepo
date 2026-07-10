@@ -75,6 +75,7 @@ const BUILTIN_NAMESPACES = new Set([
   "Math",
   "Number",
   "Object",
+  "performance",
   "Promise",
   "Proxy",
   "Reflect",

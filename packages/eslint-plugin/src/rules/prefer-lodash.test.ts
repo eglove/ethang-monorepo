@@ -743,6 +743,11 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       // CSS.escape() is a browser API, not a lodash method
       code: "CSS.escape('foo');"
+    },
+    {
+      // performance.now() is a Web API, not Array.prototype.now — lodash's
+      // `now` is an alias for Date.now() and would silently break timing code.
+      code: "const t = performance.now();"
     }
   ]
 });
