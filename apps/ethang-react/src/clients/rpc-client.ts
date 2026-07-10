@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isNil from "lodash/isNil";
 import isObject from "lodash/isObject";
@@ -33,7 +34,9 @@ export const rpcRequest = async <TResult>(
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! Status: ${response.status}`);
+    Effect.runSync(
+      Effect.die(new Error(`HTTP error! Status: ${response.status}`))
+    );
   }
 
   return response.json();

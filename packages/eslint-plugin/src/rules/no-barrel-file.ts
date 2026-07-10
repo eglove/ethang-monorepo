@@ -5,6 +5,7 @@ import {
 } from "@typescript-eslint/utils";
 import every from "lodash/every.js";
 import filter from "lodash/filter.js";
+import isNil from "lodash/isNil.js";
 import split from "lodash/split.js";
 
 import { isBarrelFilename, isInsideNodeModules } from "../utils/file.ts";
@@ -70,7 +71,7 @@ export const noBarrelFileRule = createRule<Options, MessageIds>({
 
     const [firstStatement] = statements;
     /* v8 ignore next -- unreachable: statements.length > 0 checked above */
-    if (firstStatement === undefined) {
+    if (isNil(firstStatement)) {
       return {};
     }
 

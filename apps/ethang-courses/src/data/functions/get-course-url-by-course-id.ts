@@ -1,7 +1,6 @@
 import { courses } from "@ethang/intl/en/courses.ts";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
-import isError from "lodash/isError.js";
 
 import type { Database } from "../types.ts";
 
@@ -13,23 +12,23 @@ export const getCourseUrlByCourseId = (
   database: Database,
   courseId: string
 ) => {
-  return Effect.tryPromise({
-    catch: (cause) => {
-      if (isError(cause) && courses.COURSE_NOT_FOUND === cause.message) {
-        return new NotFoundError(cause.message);
+  return Effect.gen(function* () {
+    const course = yield* Effect.tryPromise({
+      catch: (cause) => {
+        return new FetchError(String(cause));
+      },
+      try: () => {
+        return database
+          .select({ url: coursesTable.url })
+          .from(coursesTable)
+          .where(eq(coursesTable.id, courseId))
+          .limit(1);
       }
-      return new FetchError(String(cause));
-    },
-    try: async () => {
-      const course = await database
-        .select({ url: coursesTable.url })
-        .from(coursesTable)
-        .where(eq(coursesTable.id, courseId))
-        .limit(1);
-      if (0 === course.length || undefined === course[0]) {
-        throw new Error(courses.COURSE_NOT_FOUND);
-      }
-      return course[0].url;
+    });
+    const [row] = course;
+    if (!row) {
+      return yield* Effect.fail(new NotFoundError(courses.COURSE_NOT_FOUND));
     }
+    return row.url;
   });
 };

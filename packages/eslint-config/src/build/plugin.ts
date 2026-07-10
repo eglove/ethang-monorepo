@@ -1,62 +1,75 @@
 import type { Linter } from "eslint";
 
 import filter from "lodash/filter.js";
+import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
 import values from "lodash/values.js";
 
 export type PluginOptions = {
-  auxiliaryImport?: string | undefined;
-  extraOptions?: string | undefined;
-  extraRules?: Record<string, string> | undefined;
+  auxiliaryImport?: null | string;
+  extraOptions?: null | string;
+  extraRules?: null | Record<string, string>;
   files: string;
-  importString?: string | undefined;
-  includeAngularLanguageOptions?: boolean | undefined;
-  language?: string | undefined;
+  importString?: null | string;
+  includeAngularLanguageOptions?: boolean | null;
+  language?: null | string;
   name: string;
-  order?: number | undefined;
-  pluginName?: string | undefined;
-  pluginValue?: string | undefined;
-  processor?: string | undefined;
+  order?: null | number;
+  pluginName?: null | string;
+  pluginValue?: null | string;
+  processor?: null | string;
   rules: Linter.RulesRecord;
   url: string;
 };
 
 export class Plugin {
-  public readonly auxiliaryImport?: string | undefined;
-  public readonly extraOptions?: string | undefined;
-  public readonly extraRules?: Record<string, string> | undefined;
+  public readonly auxiliaryImport: null | string;
+  public readonly extraOptions: null | string;
+  public readonly extraRules: null | Record<string, string>;
   public readonly files: string;
-  public readonly importString?: string | undefined;
-  public readonly includeAngularLanguageOptions?: boolean | undefined;
-  public readonly language?: string | undefined;
+  public readonly importString: null | string;
+  public readonly includeAngularLanguageOptions: boolean | null;
+  public readonly language: null | string;
   public readonly name: string;
-  public readonly order?: number | undefined;
-  public readonly pluginName?: string | undefined;
-  public readonly pluginValue?: string | undefined;
-  public readonly processor?: string | undefined;
+  public readonly order: null | number;
+  public readonly pluginName: null | string;
+  public readonly pluginValue: null | string;
+  public readonly processor: null | string;
   public readonly rules: Linter.RulesRecord;
   public readonly url: string;
 
-  public get ruleCount(): number {
+  public get ruleCount() {
     return filter(values(this.rules), (value) => {
-      const severity = isArray(value) ? value[0] : value;
-      return "off" !== severity && 0 !== severity;
+      return !includes(["off", 0], isArray(value) ? value[0] : value);
     }).length;
   }
 
   public constructor(options: PluginOptions) {
-    this.auxiliaryImport = options.auxiliaryImport;
-    this.extraOptions = options.extraOptions;
-    this.extraRules = options.extraRules;
+    const {
+      auxiliaryImport = null,
+      extraOptions = null,
+      extraRules = null,
+      importString = null,
+      includeAngularLanguageOptions = null,
+      language = null,
+      order = null,
+      pluginName = null,
+      pluginValue = null,
+      processor = null
+    } = options;
+
+    this.auxiliaryImport = auxiliaryImport;
+    this.extraOptions = extraOptions;
+    this.extraRules = extraRules;
     this.files = options.files;
-    this.importString = options.importString;
-    this.includeAngularLanguageOptions = options.includeAngularLanguageOptions;
-    this.language = options.language;
+    this.importString = importString;
+    this.includeAngularLanguageOptions = includeAngularLanguageOptions;
+    this.language = language;
     this.name = options.name;
-    this.order = options.order;
-    this.pluginName = options.pluginName;
-    this.pluginValue = options.pluginValue;
-    this.processor = options.processor;
+    this.order = order;
+    this.pluginName = pluginName;
+    this.pluginValue = pluginValue;
+    this.processor = processor;
     this.rules = options.rules;
     this.url = options.url;
   }

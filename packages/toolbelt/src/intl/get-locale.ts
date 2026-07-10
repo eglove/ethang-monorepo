@@ -8,29 +8,29 @@ import { getCookieValue } from "../http/cookie.ts";
 import { getAcceptLanguage } from "../http/headers.ts";
 
 type LocaleHandler = (
-  source?: Readonly<Headers> | string,
-  valueName?: string
-) => null | string | undefined;
+  source?: null | Readonly<Headers> | string,
+  valueName?: null | string
+) => null | string;
 
 type LocaleSource = "accept-language" | "cookie" | "localStorage" | "navigator";
 
 const acceptLanguageHandler: LocaleHandler = (source) => {
-  return isNil(source) ? undefined : getFromAcceptLanguage(source);
+  return isNil(source) ? null : getFromAcceptLanguage(source);
 };
 
 const cookieHandler: LocaleHandler = (source, valueName) => {
   return isNil(source) || isNil(valueName)
-    ? undefined
+    ? null
     : getFromCookie(valueName, source);
 };
 
 const navigatorHandler: LocaleHandler = () => {
-  return "undefined" === typeof navigator ? undefined : navigator.language;
+  return isNil(navigator) ? null : navigator.language;
 };
 
 const localStorageHandler: LocaleHandler = (_, valueName) => {
   return isNil(valueName) || "undefined" === typeof localStorage
-    ? undefined
+    ? null
     : getFromLocalStorage(valueName);
 };
 
@@ -43,13 +43,13 @@ const SOURCE_HANDLERS: Record<LocaleSource, LocaleHandler> = {
 
 export const getLocale = (
   sourceTypes: readonly LocaleSource[],
-  source?: Readonly<Headers> | string,
-  valueName?: string
+  source?: null | Readonly<Headers> | string,
+  valueName?: null | string
 ): null | string => {
   for (const sourceType of sourceTypes) {
     const result = SOURCE_HANDLERS[sourceType](source, valueName);
 
-    if (undefined !== result) {
+    if (!isNil(result)) {
       return result;
     }
   }
@@ -57,19 +57,18 @@ export const getLocale = (
   return null;
 };
 
-const getFromAcceptLanguage = (source: Readonly<Headers> | string) => {
+export const getFromAcceptLanguage = (source: Readonly<Headers> | string) => {
   const value = getAcceptLanguage(source);
 
   if (isError(value)) {
     return null;
   }
 
-  let language = get(value, [0, "language"]);
-  const country = get(value, [0, "country"]);
+  const { country, language } = get(value, [0]);
 
   if (!isEmpty(language)) {
     if (!isEmpty(country)) {
-      language += `-${country}`;
+      return `${language}-${country}`;
     }
 
     return language;
@@ -91,8 +90,10 @@ const getFromCookie = (
   return null;
 };
 
-const getFromLocalStorage = (valueName: string) => {
-  const value = attempt(localStorage.getItem.bind(localStorage), valueName);
+const getFromLocalStorage = (valueName: string): null | string => {
+  const value = attempt((name: string): null | string => {
+    return localStorage.getItem(name);
+  }, valueName);
 
   if (!isNil(value) && !isError(value)) {
     return value;

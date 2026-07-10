@@ -20,7 +20,7 @@ const makeEvent = (
   return {
     _id: id,
     _updatedAt: NOW_ISO,
-    description: undefined,
+    description: null,
     endsAt,
     startsAt,
     title: id

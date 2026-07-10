@@ -20,9 +20,9 @@ import { Code as CodeBlock } from "./code.tsx";
 import { HybridLink } from "./hybrid-link.tsx";
 
 type BlockquoteFooterProperties = {
-  author: string | undefined;
-  source: string | undefined;
-  sourceUrl: string | undefined;
+  author: null | string;
+  source: null | string;
+  sourceUrl: null | string;
 };
 
 const BlockquoteFooter = ({
@@ -60,16 +60,19 @@ const BlockquoteFooter = ({
 const BlockStyleComponents: PortableTextComponents["block"] = {
   blockquote: ({ children, value }) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const node = value as
-      { author?: string; source?: string; sourceUrl?: string } | undefined;
+    const node = value as {
+      author?: string;
+      source?: string;
+      sourceUrl?: string;
+    } | null;
 
     return (
       <Blockquote>
         {children}
         <BlockquoteFooter
-          author={node?.author}
-          source={node?.source}
-          sourceUrl={node?.sourceUrl}
+          author={node?.author ?? null}
+          source={node?.source ?? null}
+          sourceUrl={node?.sourceUrl ?? null}
         />
       </Blockquote>
     );
@@ -113,7 +116,7 @@ const MarkComponents: PortableTextComponents["marks"] = {
   },
   link: ({ children, value }) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const link = get(value, ["href"]) as string | undefined;
+    const link = get(value, ["href"]) as null | string;
     const href = isString(link) ? link : "";
 
     return <HybridLink href={href}>{children}</HybridLink>;
@@ -137,9 +140,9 @@ const QuoteRenderer = ({ value }: { value: unknown }) => {
       <Blockquote>
         {node.quote}
         <BlockquoteFooter
-          author={node.author}
-          source={node.source}
-          sourceUrl={node.sourceUrl}
+          author={node.author ?? null}
+          source={node.source ?? null}
+          sourceUrl={node.sourceUrl ?? null}
         />
       </Blockquote>
     </Box>

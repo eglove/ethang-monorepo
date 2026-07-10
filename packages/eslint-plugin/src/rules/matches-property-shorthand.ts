@@ -3,6 +3,7 @@ import {
   ESLintUtils,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import { isLodashCall, resolveCall } from "../utils/ast.ts";
 import { isMatchesShorthandMethod } from "../utils/method-data.ts";
@@ -26,7 +27,7 @@ const DEFAULT_MAX_PROPERTY_PATH_LENGTH = 3;
 
 // Checks if the iteratee is _.matchesProperty(path, value) or lodash.matchesProperty(path, value).
 export const isLodashMatchesPropertyCall = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
     return false;
@@ -55,20 +56,20 @@ export const isLodashMatchesPropertyCall = (
 
 // Checks if the iteratee is an array literal (matches-prop shorthand usage).
 export const isArrayLiteral = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   return iteratee?.type === AST_NODE_TYPES.ArrayExpression;
 };
 
 // Checks if the iteratee is a function returning a single === comparison to a member of the parameter.
 export const isFunctionReturningEqualityToMember = (
-  iteratee: TSESTree.Expression | undefined,
+  iteratee: null | TSESTree.Expression,
   maxPropertyPathLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
 ): boolean => {
   if (
-    iteratee === undefined ||
+    isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
       iteratee.type !== AST_NODE_TYPES.ArrowFunctionExpression)
   ) {
@@ -77,7 +78,7 @@ export const isFunctionReturningEqualityToMember = (
 
   const parameterName = getFirstParameterName(iteratee);
 
-  if (parameterName === undefined) {
+  if (isNil(parameterName)) {
     return false;
   }
 
@@ -142,7 +143,7 @@ export const matchesPropertyShorthandRule = createRule<Options, MessageIds>({
 
       const [, iteratee] = node.arguments;
 
-      if (iteratee === undefined) {
+      if (isNil(iteratee)) {
         return;
       }
 

@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { Effect } from "effect";
 import some from "lodash/some.js";
 import { describe, expect, it } from "vitest";
 import "@testing-library/jest-dom/vitest";
@@ -59,8 +60,9 @@ describe("SourceIcon", () => {
   ])("$label", ({ expected, link }) => {
     const { container } = render(<SourceIcon link={link} />);
     const svg = container.querySelector(SVG_TAG);
-    if (!svg) {
-      throw new Error(EXPECTED_SVG_ERROR);
+    if (null === svg) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
+      return;
     }
     if (EXPECTED_YOUTUBE === expected) {
       expect(hasYouTubeRedFill(svg)).toBe(true);
@@ -77,8 +79,9 @@ describe("SourceIcon", () => {
       <SourceIcon link={link} className={SIZE_4_CLASS} />
     );
     const svg = container.querySelector(SVG_TAG);
-    if (!svg) {
-      throw new Error(EXPECTED_SVG_ERROR);
+    if (null === svg) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
+      return;
     }
     expect(svg.getAttribute("class")).toContain(SIZE_4_CLASS);
   });
@@ -104,8 +107,9 @@ describe("SourceIcon with iconUrl", () => {
   ])("$label", ({ iconUrl, link }) => {
     const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const img = container.querySelector(IMG_TAG);
-    if (!img) {
-      throw new Error(EXPECTED_IMG_ERROR);
+    if (null === img) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_IMG_ERROR)));
+      return;
     }
     expect(img.getAttribute("src")).toBe(iconUrl);
     expect(img.getAttribute("alt")).toBe("");
@@ -125,8 +129,9 @@ describe("SourceIcon with iconUrl", () => {
   ])("$label", ({ iconUrl, link }) => {
     const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const svg = container.querySelector(SVG_TAG);
-    if (!svg) {
-      throw new Error(EXPECTED_SVG_ERROR);
+    if (null === svg) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
+      return;
     }
     expect(hasYouTubeRedFill(svg)).toBe(true);
     expect(container.querySelector(IMG_TAG)).toBeNull();
@@ -134,7 +139,7 @@ describe("SourceIcon with iconUrl", () => {
 
   it.each([
     {
-      iconUrl: undefined,
+      iconUrl: null,
       label:
         "renders YoutubeIcon when iconUrl is undefined and link is YouTube",
       link: YOUTUBE_WATCH_LINK
@@ -150,19 +155,18 @@ describe("SourceIcon with iconUrl", () => {
       link: YOUTUBE_WATCH_LINK
     }
   ])("$label", ({ iconUrl, link }) => {
-    const { container } = render(
-      <SourceIcon link={link} iconUrl={iconUrl as null | string} />
-    );
+    const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const svg = container.querySelector(SVG_TAG);
-    if (!svg) {
-      throw new Error(EXPECTED_SVG_ERROR);
+    if (null === svg) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
+      return;
     }
     expect(hasYouTubeRedFill(svg)).toBe(true);
   });
 
   it.each([
     {
-      iconUrl: undefined,
+      iconUrl: null,
       label:
         "renders Newspaper when iconUrl is undefined and link is non-YouTube",
       link: HACKER_NEWS_LINK
@@ -178,14 +182,13 @@ describe("SourceIcon with iconUrl", () => {
       link: HACKER_NEWS_LINK
     }
   ])("$label", ({ iconUrl, link }) => {
-    const { container } = render(
-      <SourceIcon link={link} iconUrl={iconUrl as null | string} />
-    );
+    const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const img = container.querySelector(IMG_TAG);
     expect(img).toBeNull();
     const svg = container.querySelector(SVG_TAG);
-    if (!svg) {
-      throw new Error(EXPECTED_SVG_ERROR);
+    if (null === svg) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
+      return;
     }
     expect(hasYouTubeRedFill(svg)).toBe(false);
   });
@@ -199,8 +202,9 @@ describe("SourceIcon with iconUrl", () => {
       />
     );
     const img = container.querySelector(IMG_TAG);
-    if (!img) {
-      throw new Error(EXPECTED_IMG_ERROR);
+    if (null === img) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_IMG_ERROR)));
+      return;
     }
     expect(img.getAttribute("class")).toContain("size-4");
     expect(img.getAttribute("class")).toContain("shrink-0");
@@ -214,8 +218,9 @@ describe("SourceIcon with iconUrl", () => {
       />
     );
     const img = container.querySelector(IMG_TAG);
-    if (!img) {
-      throw new Error(EXPECTED_IMG_ERROR);
+    if (null === img) {
+      Effect.runSync(Effect.die(new Error(EXPECTED_IMG_ERROR)));
+      return;
     }
     expect(img.getAttribute("alt")).toBe("");
   });

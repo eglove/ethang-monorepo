@@ -91,7 +91,7 @@ const signIn = async (
           const errorMessage = isString(errorValue)
             ? errorValue
             : auth.FAILED_TO_SIGN_IN;
-          throw new Error(errorMessage);
+          Effect.runSync(Effect.die(new Error(errorMessage)));
         }
 
         if (
@@ -99,7 +99,7 @@ const signIn = async (
           !isString(sessionTokenValue) ||
           !isString(usernameValue)
         ) {
-          throw new TypeError(auth.INVALID_RESPONSE);
+          Effect.runSync(Effect.die(new TypeError(auth.INVALID_RESPONSE)));
         }
 
         const user: User = {

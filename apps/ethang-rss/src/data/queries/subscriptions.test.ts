@@ -1,5 +1,6 @@
 import { Effect, pipe } from "effect";
 import isFunction from "lodash/isFunction.js";
+import isNil from "lodash/isNil.js";
 import { Buffer } from "node:buffer";
 import { describe, expect, it, vi } from "vitest";
 
@@ -323,9 +324,9 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
     const mockSubscriptions = [
       {
         feedId: FEED_ID_1,
-        id: undefined,
+        id: null,
         lastFetchedAt: null,
-        title: undefined,
+        title: null,
         website: "",
         xmlAddress: ""
       }
@@ -547,9 +548,9 @@ describe("subscriptionsQuery - sorting by PUBLISHED_AT", () => {
     const mockSubscriptions = [
       {
         feedId: FEED_ID_1,
-        id: undefined,
+        id: null,
         lastFetchedAt: null,
-        maxPublishedAt: undefined,
+        maxPublishedAt: null,
         title: "",
         website: "",
         xmlAddress: ""
@@ -624,13 +625,13 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
     });
 
     const cleanupPrototypes = Effect.sync(() => {
-      if (undefined === originalToBase64) {
+      if (isNil(originalToBase64)) {
         delete (Uint8Array.prototype as any).toBase64;
       } else {
         (Uint8Array.prototype as any).toBase64 = originalToBase64;
       }
 
-      if (undefined === originalFromBase64) {
+      if (isNil(originalFromBase64)) {
         delete (Uint8Array as any).fromBase64;
       } else {
         (Uint8Array as any).fromBase64 = originalFromBase64;

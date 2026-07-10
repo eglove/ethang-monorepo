@@ -18,7 +18,7 @@ describe("validateUrlUniqueness validation rule", () => {
     const validator = validateUrlUniqueness(mockRule, true, TEST_DOC_TYPE);
 
     // @ts-expect-error mock context
-    const result = await validator(undefined, {});
+    const result = await validator(null, {});
     expect(result).toBe("URL is required.");
   });
 
@@ -33,7 +33,7 @@ describe("validateUrlUniqueness validation rule", () => {
     const validator = validateUrlUniqueness(mockRule, false, TEST_DOC_TYPE);
 
     // @ts-expect-error mock context
-    const result = await validator(undefined, {});
+    const result = await validator(null, {});
     expect(result).toBe(true);
   });
 
@@ -49,7 +49,7 @@ describe("validateUrlUniqueness validation rule", () => {
 
     // @ts-expect-error mock context
     const result = await validator(TEST_URL, {
-      document: undefined
+      document: null
     });
     expect(result).toBe(true);
   });

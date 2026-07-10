@@ -3,6 +3,7 @@ import {
   ESLintUtils,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import { isLodashCall, resolveCall } from "../utils/ast.ts";
 import { isIdentityShorthandMethod } from "../utils/method-data.ts";
@@ -19,16 +20,16 @@ type Options = [Mode];
 
 const getValueReturnedInFirstStatement = (
   node: TSESTree.Expression
-): TSESTree.Expression | undefined => {
+): null | TSESTree.Expression => {
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
 
       if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-        return first.argument ?? undefined;
+        return first.argument ?? null;
       }
 
-      return undefined;
+      return null;
     }
 
     return node.body;
@@ -39,18 +40,18 @@ const getValueReturnedInFirstStatement = (
     const [first] = node.body.body;
 
     if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-      return first.argument ?? undefined;
+      return first.argument ?? null;
     }
   }
 
-  return undefined;
+  return null;
 };
 
 const isExplicitIdentityFunction = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   if (
-    iteratee === undefined ||
+    isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
       iteratee.type !== AST_NODE_TYPES.ArrowFunctionExpression)
   ) {
@@ -72,7 +73,7 @@ const isExplicitIdentityFunction = (
 };
 
 const isLodashIdentityMember = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   if (iteratee?.type !== AST_NODE_TYPES.MemberExpression) {
     return false;
@@ -93,9 +94,7 @@ const isLodashIdentityMember = (
   );
 };
 
-const isIdentityFunction = (
-  iteratee: TSESTree.Expression | undefined
-): boolean => {
+const isIdentityFunction = (iteratee: null | TSESTree.Expression): boolean => {
   return (
     isExplicitIdentityFunction(iteratee) || isLodashIdentityMember(iteratee)
   );
@@ -122,7 +121,7 @@ export const identityShorthandRule = createRule<Options, MessageIds>({
       const [, iteratee] = node.arguments;
 
       if (isNeverMode) {
-        if (iteratee === undefined) {
+        if (isNil(iteratee)) {
           context.report({
             messageId: "noIdentityShorthand",
             node
@@ -133,7 +132,7 @@ export const identityShorthandRule = createRule<Options, MessageIds>({
       }
 
       if (
-        iteratee !== undefined &&
+        !isNil(iteratee) &&
         iteratee.type !== AST_NODE_TYPES.SpreadElement &&
         isIdentityFunction(iteratee)
       ) {

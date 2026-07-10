@@ -4,6 +4,7 @@ import { parser as tsParser } from "typescript-eslint";
 import { preferLodashRule } from "./prefer-lodash.ts";
 
 const UNKNOWN_METHOD = "xs.unknownMethod();";
+const CHAIN_OUTPUT = "map(xs, (x) => x).filter((x) => x);";
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -43,7 +44,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
         { messageId: "preferLodash" }
       ],
       options: [{ chainStyle: "always" }],
-      output: "map(xs, (x) => x).filter((x) => x);"
+      output: CHAIN_OUTPUT
     },
     {
       code: "[1, 2, 3].map((x) => x * 2);",
@@ -58,7 +59,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
         { messageId: "preferLodashMethod" },
         { messageId: "preferLodash" }
       ],
-      output: "map(xs, (x) => x).filter((x) => x);"
+      output: CHAIN_OUTPUT
     },
     {
       code: "xs.map((x) => x);",
@@ -110,9 +111,9 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     },
     {
       code: "xs['map']((x) => x).filter((x) => x);",
-      errors: [{ messageId: "preferLodash" }],
+      errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
       options: [{ chainStyle: "always" }],
-      output: "filter(xs['map']((x) => x), (x) => x);"
+      output: CHAIN_OUTPUT
     },
 
     // --- prefer-is-nil: typeof x === 'undefined' || x === null ---
@@ -694,6 +695,10 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "database.select().from(table).orderBy(table.column);"
     },
     {
+      // drizzle ORM .groupBy on a query builder chain — should not flag
+      code: "database.select().from(table).where(condition).groupBy(table.id).as('sub');"
+    },
+    {
       // Array.prototype.join — should not flag
       code: "['a', 'b'].join(', ');"
     },
@@ -720,6 +725,24 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       // Non-effect import + Effect namespace — covers isEffectImportedIdentifier branches
       code: 'import { Schema } from "effect"; import { foo } from "other"; Schema.filter(stream, (x) => x);'
+    },
+    {
+      // Cloudflare Workflow binding .create() — should not flag as prefer-lodash
+      code: "workflowBinding.create({ id: workflowId });"
+    },
+    {
+      // lodash `create` is object-category; calling it on an arbitrary object
+      // should not trigger prefer-lodash (it's not an Array.prototype method)
+      code: "const binding = {}; binding.create({ id: 'foo' });"
+    },
+    {
+      // Computed member access with a variable — should not flag
+      // (the property is a variable reference, not a method name)
+      code: "const obj = { map: (x) => x }; const method = 'map'; obj[method](1);"
+    },
+    {
+      // CSS.escape() is a browser API, not a lodash method
+      code: "CSS.escape('foo');"
     }
   ]
 });

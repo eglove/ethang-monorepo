@@ -114,7 +114,7 @@ describe("createCurriculumRepo", () => {
       const { batchMock, curriculumReturningMock, database } =
         createMockDatabase();
       curriculumReturningMock.mockResolvedValue([CURRICULUM_ROW]);
-      batchMock.mockResolvedValue([[undefined]]);
+      batchMock.mockResolvedValue([[null]]);
 
       const repo = createCurriculumRepo(database);
       const result = await Effect.runPromise(
@@ -136,6 +136,21 @@ describe("createCurriculumRepo", () => {
 
       expect(result).toBeInstanceOf(SaveError);
       expect(result.message).toContain("DB write failed");
+    });
+
+    it("fails with SaveError on batch database error", async () => {
+      const { batchMock, curriculumReturningMock, database } =
+        createMockDatabase();
+      curriculumReturningMock.mockResolvedValue([CURRICULUM_ROW]);
+      batchMock.mockRejectedValue(new Error("Batch failed"));
+
+      const repo = createCurriculumRepo(database);
+      const result = await Effect.runPromise(
+        repo.save(CURRICULUM).pipe(Effect.flip)
+      );
+
+      expect(result).toBeInstanceOf(SaveError);
+      expect(result.message).toContain("Batch failed");
     });
   });
 

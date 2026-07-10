@@ -36,5 +36,5 @@ export const getPage = async (slug: string) => {
     slug
   });
 
-  return pages[0];
+  return pages.at(0) ?? null;
 };

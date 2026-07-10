@@ -18,11 +18,12 @@ describe("compile.ts error path", () => {
   it("handles CompileError and exits", async () => {
     const errorSpy = vi.spyOn(console, "error").mockImplementation(noop);
     const exitSpy = vi.spyOn(process, "exit").mockImplementation((code) => {
+      // eslint-disable-next-line @ethang/no-try-catch
       throw new Error(`process.exit: ${String(code)}`);
     });
     mockState.compileFn = () => {
-      // @ts-expect-error for test
-      throw new CompileError(["Failed to validate schema"]);
+      // eslint-disable-next-line @ethang/no-try-catch
+      throw new CompileError(["Failed to validate schema"], {});
     };
 
     await expect(import("./compile.ts")).rejects.toThrow("process.exit: 1");

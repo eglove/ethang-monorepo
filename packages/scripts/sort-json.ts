@@ -1,4 +1,4 @@
-import { installCloudflareLogger } from "@ethang/telemetry";
+import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";

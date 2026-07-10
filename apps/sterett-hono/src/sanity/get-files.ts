@@ -1,4 +1,5 @@
 import filter from "lodash/filter.js";
+import matches from "lodash/matches.js";
 
 import { NO_DRAFTS, sterettSanityClient } from "../clients/sanity-client.ts";
 
@@ -27,12 +28,8 @@ export const getFiles = async (): Promise<FilesResult> => {
   ]);
 
   return {
-    covenants: filter(generalCovenant, (f) => {
-      return "Covenant" === f.category;
-    }),
-    general: filter(generalCovenant, (f) => {
-      return "General" === f.category;
-    }),
+    covenants: filter(generalCovenant, matches({ category: "Covenant" })),
+    general: filter(generalCovenant, matches({ category: "General" })),
     meetingMinutes
   };
 };

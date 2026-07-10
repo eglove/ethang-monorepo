@@ -8,10 +8,22 @@ import { Plugin } from "../build/plugin.ts";
 
 const ruleNames = keys(ethangRulesRecord);
 
+const customRuleConfigs: Linter.RulesRecord = {
+  "@ethang/chain-style": ["error", "as-needed"],
+  "@ethang/consistent-compose": ["error", "flow"],
+  "@ethang/identity-shorthand": ["error", "always"],
+  "@ethang/import-scope": ["error", "method"],
+  "@ethang/matches-property-shorthand": ["error", "always"],
+  "@ethang/matches-shorthand": ["error", "always", 3],
+  "@ethang/path-style": ["error", "array"],
+  "@ethang/property-shorthand": ["error", "always"]
+};
+
 const ethangRules = reduce(
   ruleNames,
   (accumulator, name) => {
-    accumulator[`@ethang/${name}`] = "error";
+    const ruleKey = `@ethang/${name}`;
+    accumulator[ruleKey] = customRuleConfigs[ruleKey] ?? "error";
     return accumulator;
   },
   {} as Linter.RulesRecord

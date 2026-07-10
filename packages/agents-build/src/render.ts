@@ -11,6 +11,7 @@ import {
   generateMarkdown,
   type MarkdownBlock
 } from "@ethang/markdown-generator";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
@@ -18,13 +19,21 @@ import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
 export const ruleMarkdown = (rule: RuleDefinition): string => {
   if ("model_decision" === rule.trigger && isNil(rule.description)) {
-    throw new Error(
-      `Rule "${rule.filename}": trigger model_decision requires a description`
+    return Effect.runSync(
+      Effect.die(
+        new Error(
+          `Rule "${rule.filename}": trigger model_decision requires a description`
+        )
+      )
     );
   }
 
   if ("glob" === rule.trigger && isNil(rule.globs)) {
-    throw new Error(`Rule "${rule.filename}": trigger glob requires globs`);
+    return Effect.runSync(
+      Effect.die(
+        new Error(`Rule "${rule.filename}": trigger glob requires globs`)
+      )
+    );
   }
 
   const blocks: MarkdownBlock[] = isString(rule.content)
@@ -62,5 +71,5 @@ export const skillMarkdown = (skill: SkillDefinition) => {
 };
 
 export const renderJson = (value: unknown): string => {
-  return `${JSON.stringify(value, undefined, 2)}\n`;
+  return `${JSON.stringify(value, null, 2)}\n`;
 };

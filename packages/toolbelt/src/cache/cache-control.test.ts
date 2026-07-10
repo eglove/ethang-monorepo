@@ -125,8 +125,8 @@ describe("createCachedJsonResponse", () => {
     expect(await response.json()).toEqual({ hello: "world" });
   });
 
-  it("handles undefined data with no-store scope and 'null' body", async () => {
-    const response = createCachedJsonResponse(undefined, {
+  it("handles null data with no-store scope and 'null' body", async () => {
+    const response = createCachedJsonResponse(null, {
       cacheControl: { scope: "no-store" as const }
     });
     expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe("no-store");

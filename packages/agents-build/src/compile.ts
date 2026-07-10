@@ -21,8 +21,9 @@ const main = Effect.try({
       for (const failure of error.failures) {
         console.error(`FAIL: ${failure}`);
       }
-      return process.exit(1);
+      process.exit(1);
     }
+    // eslint-disable-next-line @ethang/no-try-catch -- re-throw unhandled errors for top-level crash
     throw error;
   },
   try: (): void => {

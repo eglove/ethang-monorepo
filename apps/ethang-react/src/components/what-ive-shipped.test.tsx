@@ -29,9 +29,12 @@ describe("WhatIveShipped", () => {
 
   it("renders projects in source order", () => {
     const { container } = render(<WhatIveShipped />);
-    const names = map(container.querySelectorAll("[data-name]"), (node) => {
-      return node.textContent;
-    });
+    const names = map(
+      container.querySelectorAll("[data-name]"),
+      ({ textContent }) => {
+        return textContent;
+      }
+    );
     expect(names[0]).toContain("Telecom provisioning platform");
     expect(names.at(-1)).toContain("Agent skills compiler");
   });

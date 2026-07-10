@@ -32,7 +32,7 @@ describe("calendarPage", () => {
       // @ts-expect-error for test
       vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
       // @ts-expect-error for test
-      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(undefined);
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(null);
 
       const html = await renderCalendarPage({
         date: DATE,

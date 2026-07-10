@@ -1,5 +1,6 @@
 import { BulbOutlineIcon } from "@sanity/icons/BulbOutline";
 import { DateTime } from "effect";
+import isNil from "lodash/isNil.js";
 import { defineType, type Rule } from "sanity";
 
 export default defineType({
@@ -30,12 +31,12 @@ export default defineType({
       title: "Stop Showing",
       type: "date",
       validation: (Rule): Rule => {
-        return Rule.custom((expireDate: string | undefined, context) => {
-          if (expireDate === undefined) {
+        return Rule.custom((expireDate, context) => {
+          if (isNil(expireDate)) {
             return "Value is required";
           }
 
-          if (context.document === undefined) {
+          if (isNil(context.document)) {
             return true;
           }
 

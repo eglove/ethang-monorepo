@@ -1,13 +1,12 @@
 import find from "lodash/find.js";
+import matches from "lodash/matches.js";
 import { describe, expect, it } from "vitest";
 
 import { GLOBAL_SKILLS } from "./global.ts";
 
 describe("GLOBAL_SKILLS verification", () => {
   it("should contain the swebok skill with resources", () => {
-    const swebok = find(GLOBAL_SKILLS, (skill) => {
-      return "swebok" === skill.name;
-    });
+    const swebok = find(GLOBAL_SKILLS, matches({ name: "swebok" }));
 
     expect(swebok).toBeDefined();
     expect(swebok?.name).toBe("swebok");
@@ -16,9 +15,7 @@ describe("GLOBAL_SKILLS verification", () => {
   });
 
   it("should contain the ddd skill with resources", () => {
-    const dddSkill = find(GLOBAL_SKILLS, (skill) => {
-      return "ddd" === skill.name;
-    });
+    const dddSkill = find(GLOBAL_SKILLS, matches({ name: "ddd" }));
 
     expect(dddSkill).toBeDefined();
     expect(dddSkill?.name).toBe("ddd");

@@ -6,13 +6,12 @@ import { type Database, databaseSchema } from "../../db/database-schema.ts";
 export const getReadStateFilter = (
   database: Database,
   userId: string,
-  options: { isRead?: boolean | undefined } = {}
+  options: { isRead?: boolean | null } = {}
 ) => {
   const { isRead } = options;
   if (isNil(isRead)) {
-    return;
+    return null;
   }
-
   const readArticleIds = database
     .select({
       articleId: databaseSchema.userItemStatesTable.articleId

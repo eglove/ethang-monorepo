@@ -6,6 +6,7 @@
   ],
   "dependencies": {
     "@ethang/telemetry": "workspace:*",
+    "effect": "^3.21.4",
     "esbuild": "^0.28.1",
     "workbox-broadcast-update": "^7.4.1",
     "workbox-core": "^7.4.1",

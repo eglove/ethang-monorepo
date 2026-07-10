@@ -3,6 +3,7 @@ import {
   ESLintUtils,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import { isLodashCall, resolveCall } from "../utils/ast.ts";
 import { isMatchesShorthandMethod } from "../utils/method-data.ts";
@@ -22,16 +23,16 @@ const DEFAULT_MAX_PROPERTY_PATH_LENGTH = 3;
 
 export const getValueReturnedInFirstStatement = (
   node: TSESTree.Expression
-): TSESTree.Expression | undefined => {
+): null | TSESTree.Expression => {
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
 
       if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-        return first.argument ?? undefined;
+        return first.argument ?? null;
       }
 
-      return undefined;
+      return null;
     }
 
     return node.body;
@@ -42,34 +43,34 @@ export const getValueReturnedInFirstStatement = (
     const [first] = node.body.body;
 
     if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-      return first.argument ?? undefined;
+      return first.argument ?? null;
     }
   }
 
-  return undefined;
+  return null;
 };
 
 export const getFirstParameterName = (
-  node: TSESTree.Expression | undefined
-): string | undefined => {
+  node: null | TSESTree.Expression
+): null | string => {
   if (
-    node === undefined ||
+    isNil(node) ||
     (node.type !== AST_NODE_TYPES.FunctionExpression &&
       node.type !== AST_NODE_TYPES.ArrowFunctionExpression)
   ) {
-    return undefined;
+    return null;
   }
 
   const [firstParameter] = node.params;
 
   return firstParameter?.type === AST_NODE_TYPES.Identifier
     ? firstParameter.name
-    : undefined;
+    : null;
 };
 
 // Checks if a node is a strict equality comparison (===).
 const isStrictEquality = (
-  node: TSESTree.Expression | undefined
+  node: null | TSESTree.Expression
 ): node is TSESTree.BinaryExpression => {
   return (
     node?.type === AST_NODE_TYPES.BinaryExpression && "===" === node.operator
@@ -78,7 +79,7 @@ const isStrictEquality = (
 
 // Checks if a node is a conjunction (LogicalExpression with &&).
 const isConjunction = (
-  node: TSESTree.Expression | undefined
+  node: null | TSESTree.Expression
 ): node is TSESTree.LogicalExpression => {
   return (
     node?.type === AST_NODE_TYPES.LogicalExpression && "&&" === node.operator
@@ -88,12 +89,12 @@ const isConjunction = (
 // Checks if the expression is a member expression of the parameter name,
 // up to maxLength depth, non-computed only (unless isAllowComputed is true).
 export const isMemberExpressionOf = (
-  node: TSESTree.Expression | undefined,
-  parameterName: string | undefined,
+  node: null | TSESTree.Expression,
+  parameterName: null | string,
   maxLength: number,
   isAllowComputed: boolean
 ): boolean => {
-  if (parameterName === undefined || node === undefined) {
+  if (isNil(parameterName) || isNil(node)) {
     return false;
   }
 
@@ -124,7 +125,7 @@ export const isMemberExpressionOf = (
 };
 
 // Checks if a node is a literal.
-const isLiteral = (node: TSESTree.Expression | undefined): boolean => {
+const isLiteral = (node: null | TSESTree.Expression): boolean => {
   return node?.type === AST_NODE_TYPES.Literal;
 };
 
@@ -132,19 +133,19 @@ const isLiteral = (node: TSESTree.Expression | undefined): boolean => {
 // the parameter and the other side is a literal (or any value if onlyLiterals
 // is false).
 export const isEqualityToMemberOf = (
-  expression: TSESTree.Expression | undefined,
-  parameterName: string | undefined,
+  expression: null | TSESTree.Expression,
+  parameterName: null | string,
   maxLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
 ): boolean => {
-  if (!isStrictEquality(expression) || parameterName === undefined) {
+  if (!isStrictEquality(expression) || isNil(parameterName)) {
     return false;
   }
 
   const { left, right } = expression;
-  const leftExpression = isExpression(left) ? left : undefined;
-  const rightExpression = isExpression(right) ? right : undefined;
+  const leftExpression = isExpression(left) ? left : null;
+  const rightExpression = isExpression(right) ? right : null;
   const isLeftMember = isMemberExpressionOf(
     leftExpression,
     parameterName,
@@ -173,13 +174,13 @@ export const isEqualityToMemberOf = (
 // Recursively checks if a conjunction tree consists entirely of === comparisons
 // to members of the parameter.
 export const isConjunctionOfEqualitiesToMemberOf = (
-  expression: TSESTree.Expression | undefined,
-  parameterName: string | undefined,
+  expression: null | TSESTree.Expression,
+  parameterName: null | string,
   maxLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
 ): boolean => {
-  if (parameterName === undefined) {
+  if (isNil(parameterName)) {
     return false;
   }
 
@@ -218,13 +219,13 @@ export const isConjunctionOfEqualitiesToMemberOf = (
 
 // Checks if the iteratee is a function returning a conjunction of === comparisons.
 export const isFunctionReturningConjunction = (
-  iteratee: TSESTree.Expression | undefined,
+  iteratee: null | TSESTree.Expression,
   maxPropertyPathLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
 ): boolean => {
   if (
-    iteratee === undefined ||
+    isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
       iteratee.type !== AST_NODE_TYPES.ArrowFunctionExpression)
   ) {
@@ -233,7 +234,7 @@ export const isFunctionReturningConjunction = (
 
   const parameterName = getFirstParameterName(iteratee);
 
-  if (parameterName === undefined) {
+  if (isNil(parameterName)) {
     return false;
   }
 
@@ -250,7 +251,7 @@ export const isFunctionReturningConjunction = (
 
 // Checks if the iteratee is _.matches({...}) or lodash.matches({...}).
 export const isLodashMatchesCall = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
     return false;
@@ -278,9 +279,7 @@ export const isLodashMatchesCall = (
 };
 
 // Checks if the iteratee is an object literal (matches shorthand usage).
-const isObjectLiteral = (
-  iteratee: TSESTree.Expression | undefined
-): boolean => {
+const isObjectLiteral = (iteratee: null | TSESTree.Expression): boolean => {
   return iteratee?.type === AST_NODE_TYPES.ObjectExpression;
 };
 
@@ -339,7 +338,7 @@ export const matchesShorthandRule = createRule<Options, MessageIds>({
 
       const [, iteratee] = node.arguments;
 
-      if (iteratee === undefined) {
+      if (isNil(iteratee)) {
         return;
       }
 

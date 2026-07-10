@@ -1,14 +1,13 @@
+import { Effect } from "effect";
 import find from "lodash/find.js";
 import { describe, expect, it, vi } from "vitest";
 
 import { blogType } from "./blog-type.ts";
 
 const getField = (name: string) => {
-  const field = find(blogType.fields, (candidate) => {
-    return candidate.name === name;
-  });
+  const field = find(blogType.fields, { name });
   if (!field) {
-    throw new Error(`field ${name} not found`);
+    return Effect.runSync(Effect.die(new Error(`field ${name} not found`)));
   }
   return field;
 };
@@ -44,7 +43,7 @@ describe("blogType schema", () => {
 
     expect(altField).toBeDefined();
     if (!altField) {
-      throw new Error("alt field should be defined");
+      return;
     }
     expect(altField.name).toBe("alt");
 

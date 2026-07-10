@@ -1,4 +1,4 @@
-import { installCloudflareLogger } from "@ethang/telemetry";
+import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
 import { parseJson } from "@ethang/toolbelt/json/json.ts";
 import { Effect, Schema } from "effect";
 import get from "lodash/get.js";
@@ -40,11 +40,13 @@ export const sortJson = (filePath: string) => {
   const absolutePath = path.resolve(workspaceRoot, filePath);
 
   if (!startsWith(absolutePath, workspaceRoot)) {
-    throw new Error("Path is outside of the workspace");
+    Effect.runSync(Effect.die(new Error("Path is outside of the workspace")));
   }
 
   if (!existsSync(absolutePath)) {
-    throw new Error(`File does not exist: ${absolutePath}`);
+    Effect.runSync(
+      Effect.die(new Error(`File does not exist: ${absolutePath}`))
+    );
   }
 
   const fileContent = readFileSync(absolutePath, "utf8");

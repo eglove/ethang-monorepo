@@ -5,6 +5,7 @@ import {
 } from "@typescript-eslint/utils";
 import every from "lodash/every.js";
 import includes from "lodash/includes.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
@@ -48,9 +49,9 @@ export const isMethodPackageImport = (source: string): boolean => {
 // Gets the imported module name from a CommonJS require() call
 export const getNameFromCjsRequire = (
   init: null | TSESTree.Expression
-): string | undefined => {
+): null | string => {
   if (init?.type !== AST_NODE_TYPES.CallExpression) {
-    return undefined;
+    return null;
   }
 
   const { callee } = init;
@@ -60,18 +61,18 @@ export const getNameFromCjsRequire = (
     REQUIRE !== callee.name ||
     1 !== init.arguments.length
   ) {
-    return undefined;
+    return null;
   }
 
   const [argument] = init.arguments;
 
   if (argument?.type !== AST_NODE_TYPES.Literal) {
-    return undefined;
+    return null;
   }
 
   const { value } = argument;
 
-  return isString(value) ? value : undefined;
+  return isString(value) ? value : null;
 };
 
 const importNodeTypes: Record<ImportType, string[]> = {
@@ -110,11 +111,11 @@ const reportFullImport = (
   }>,
   importType: ImportType,
   node: TSESTree.Node,
-  declaration?: TSESTree.ImportDeclaration
+  declaration: null | TSESTree.ImportDeclaration
 ): void => {
   if (
     isMethodOrMethodPackage(importType) ||
-    (declaration !== undefined &&
+    (null !== declaration &&
       !isAllImportsOfType(declaration, importNodeTypes[importType]))
   ) {
     context.report({ messageId: importType, node });
@@ -145,7 +146,7 @@ export const importScopeRule = createRule<Options, MessageIds>({
     ): void => {
       const name = getNameFromCjsRequire(node.init);
 
-      if (name === undefined) {
+      if (isNil(name)) {
         return;
       }
 

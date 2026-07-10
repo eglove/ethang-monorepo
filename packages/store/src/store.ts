@@ -1,5 +1,5 @@
 import { Chunk, Effect, PubSub, Stream } from "effect";
-import { type Draft, enableMapSet, produce } from "immer";
+import { enableMapSet, produce, type Producer } from "immer";
 import forEach from "lodash/forEach.js";
 
 enableMapSet();
@@ -42,7 +42,7 @@ export type Store<T> = {
   Recipes may also return a new value (which Immer will adopt as the next
   state if it differs from the draft). Synchronous. Returns the new value.
   */
-  readonly update: (recipe: Updater<T>) => T;
+  readonly update: (recipe: Producer<T>) => T;
   /**
   Effect that resolves the first time `isMatch(state)` is true. Resolves
   immediately if the predicate is already true. Use this for backend /
@@ -50,8 +50,6 @@ export type Store<T> = {
   */
   readonly waitFor: (isMatch: (state: T) => boolean) => Effect.Effect<void>;
 };
-
-export type Updater<T> = (draft: Draft<T>) => Draft<T> | undefined;
 
 /**
 Create a new `Store<T>` from an initial value.
@@ -148,7 +146,7 @@ export const makeStore = <T>(initial: T): Store<T> => {
         listeners.delete(listener);
       };
     },
-    update: (recipe: Updater<T>) => {
+    update: (recipe: Producer<T>) => {
       const next: T = produce(current, recipe);
       if (Object.is(next, current)) {
         // Immer returned the same reference: nothing changed, skip the
@@ -162,8 +160,10 @@ export const makeStore = <T>(initial: T): Store<T> => {
         if (isMatch(current)) {
           return;
         }
-        yield* // eslint-disable-next-line lodash/prefer-lodash-method
-        Stream.filter(changes, isMatch).pipe(Stream.take(1), Stream.runDrain);
+        yield* Stream.filter(changes, isMatch).pipe(
+          Stream.take(1),
+          Stream.runDrain
+        );
       });
     }
   };

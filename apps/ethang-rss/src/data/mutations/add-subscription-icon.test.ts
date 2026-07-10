@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import isString from "lodash/isString.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -181,7 +182,7 @@ describe("addSubscriptionMutation - icon URL extraction", () => {
           return rssResponse();
         }
         if (value === WEBSITE) {
-          throw new Error(NETWORK_ERROR);
+          Effect.runSync(Effect.die(new Error(NETWORK_ERROR)));
         }
         return new Response("", { status: 404 });
       });

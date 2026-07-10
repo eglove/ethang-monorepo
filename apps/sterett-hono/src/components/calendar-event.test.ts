@@ -15,7 +15,7 @@ const makeEvent = (
   return {
     _id: "e1",
 
-    description: undefined as never,
+    description: null as never,
     endsAt: "2024-06-15T14:00:00.000Z",
     startsAt: "2024-06-15T13:00:00.000Z",
     title: "Board Meeting",
@@ -121,7 +121,7 @@ describe("calendarEvent", () => {
     vi.setSystemTime(NOW_MS);
 
     const html = await renderCalendarEvent(
-      makeEvent({ description: undefined as never })
+      makeEvent({ description: null as never })
     );
 
     vi.useRealTimers();

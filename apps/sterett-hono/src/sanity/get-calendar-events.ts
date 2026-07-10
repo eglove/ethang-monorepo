@@ -13,7 +13,7 @@ export type CalendarEventRecord = {
 
 export const getLatestCalendarEventUpdatedAt = async () => {
   const query = `*[_type == "calendarEvent" && ${NO_DRAFTS}] | order(_updatedAt desc) [0]._updatedAt`;
-  return sterettSanityClient.fetch<string | undefined>(query);
+  return sterettSanityClient.fetch<null | string>(query);
 };
 
 export const getCalendarEvents = async (

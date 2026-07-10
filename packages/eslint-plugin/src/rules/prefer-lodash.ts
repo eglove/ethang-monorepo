@@ -4,6 +4,7 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 import join from "lodash/join.js";
 import map from "lodash/map.js";
 
@@ -12,7 +13,7 @@ import {
   NATIVE_EQUIVALENT_METHODS,
   resolveCall
 } from "../utils/ast.ts";
-import { isLodashFunction, lodashApi } from "../utils/lodash-api.ts";
+import { isLodashFunction } from "../utils/lodash-api.ts";
 import {
   isLodashIdentifierCall,
   resolvePreferImmutable,
@@ -110,7 +111,6 @@ const reportArray = (
     return;
   }
 
-  const entry = lodashApi[methodName];
   const target = "deep" === importStyle ? `lodash/${methodName}.js` : "lodash";
 
   context.report({
@@ -118,7 +118,7 @@ const reportArray = (
       method: methodName,
       target
     },
-    fix(fixer) {
+    fix: (fixer) => {
       /* v8 ignore next -- defensive guard: reportArray only receives MemberExpression callees */
       if (node.callee.type !== AST_NODE_TYPES.MemberExpression) {
         return null;
@@ -129,20 +129,16 @@ const reportArray = (
       const argumentsText = map(node.arguments, (argument) => {
         return context.sourceCode.getText(argument);
       });
-
       const callText =
         0 < argumentsText.length
           ? `(${sourceText}, ${join(argumentsText, ", ")})`
           : `(${sourceText})`;
-      const replacement = `${methodName}${callText}`;
 
-      return fixer.replaceText(node, replacement);
+      return fixer.replaceText(node, `${methodName}${callText}`);
     },
     messageId: "preferLodash",
     node
   });
-
-  return entry;
 };
 
 const reportCallExpression = (
@@ -291,7 +287,7 @@ const checkCallExpression = (
   if (shouldPreferInvokeMap(node)) {
     const iteratee = node.arguments.at(0);
     /* v8 ignore next -- defensive guard: shouldPreferInvokeMap ensures iteratee exists */
-    if (iteratee !== undefined) {
+    if (!isNil(iteratee)) {
       markInnerCallExpressions(iteratee, handledCallNodes);
     }
     context.report({ messageId: "preferInvokeMap", node });

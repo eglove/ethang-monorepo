@@ -1,5 +1,6 @@
 import { parseForESLint } from "@typescript-eslint/parser";
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
+import { Effect } from "effect";
 import constant from "lodash/constant.js";
 import { describe, expect, it } from "vitest";
 
@@ -14,6 +15,8 @@ import {
   resolveCall,
   resolveMemberExpressionCall
 } from "./ast.ts";
+
+const KIND_UNKNOWN_MEMBER = "unknown-member";
 
 const parseProgram = (code: string): TSESTree.Program => {
   return parseForESLint(code, {
@@ -48,7 +51,7 @@ const firstCallExpression = (code: string) => {
       return { call: expression, program };
     }
   }
-  throw new Error(`${NO_CALL_EXPRESSION_FOUND} ${code}`);
+  return Effect.runSync(Effect.die(`${NO_CALL_EXPRESSION_FOUND} ${code}`));
 };
 
 const IMPORT_KIND_EFFECT = "effect";
@@ -179,7 +182,7 @@ describe("resolveCall", () => {
 
   it("returns 'unknown-member' for unrelated member calls", () => {
     const { call, program } = firstCallExpression("someObj.weirdMethod();");
-    expect(resolveCall(call, program).kind).toBe("unknown-member");
+    expect(resolveCall(call, program).kind).toBe(KIND_UNKNOWN_MEMBER);
   });
 
   it("resolves lodash identifier calls to 'lodash'", () => {
@@ -204,6 +207,70 @@ describe("resolveCall", () => {
   it("resolves unknown identifier calls to 'other'", () => {
     const { call, program } = firstCallExpression("someUnknownFn();");
     expect(resolveCall(call, program).kind).toBe("other");
+  });
+
+  it("resolves computed literal member calls to 'array'", () => {
+    const { call, program } = firstCallExpression("xs['map'](fn);");
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe("array");
+    expect(resolved.methodName).toBe(METHOD_MAP);
+  });
+
+  it("resolves non-string literal member calls to 'unknown-member'", () => {
+    const { call, program } = firstCallExpression("xs[123](fn);");
+    expect(resolveCall(call, program).kind).toBe(KIND_UNKNOWN_MEMBER);
+  });
+
+  it("resolves template literal member calls to 'unknown-member'", () => {
+    const { call, program } = firstCallExpression("xs[`map`](fn);");
+    expect(resolveCall(call, program).kind).toBe(KIND_UNKNOWN_MEMBER);
+  });
+
+  it("resolves chained array method calls to 'array'", () => {
+    const { call, program } = firstCallExpression("xs.map(fn).filter(fn);");
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe("array");
+    expect(resolved.methodName).toBe("filter");
+  });
+
+  it("returns 'unknown-member' for groupBy on a non-array chain", () => {
+    const { call, program } = firstCallExpression(
+      "database.select().from(table).where(cond).groupBy(table.id);"
+    );
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
+    expect(resolved.methodName).toBe("groupBy");
+  });
+
+  it("returns 'unknown-member' for orderBy on a non-array chain", () => {
+    const { call, program } = firstCallExpression(
+      "database.select().from(table).orderBy(table.col);"
+    );
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
+  });
+
+  it("resolves array method on unknown function return to 'array'", () => {
+    const { call, program } = firstCallExpression(
+      "getArray().map(fn).filter(fn);"
+    );
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe("array");
+    expect(resolved.methodName).toBe("filter");
+  });
+
+  it("returns 'unknown-member' for computed access with a variable", () => {
+    const { call, program } = firstCallExpression(
+      "const method = 'map'; obj[method](1);"
+    );
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
+  });
+
+  it("returns 'unknown-member' for CSS.escape()", () => {
+    const { call, program } = firstCallExpression("CSS.escape('foo');");
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
   });
 });
 

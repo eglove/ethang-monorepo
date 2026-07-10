@@ -31,7 +31,7 @@ export const buildCacheControlHeader = (
   }
 
   const scope = options.scope ?? "public";
-  if (isPrivateNoStore(scope, options.maxAge)) {
+  if (isPrivateNoStore(scope, options.maxAge ?? null)) {
     return join([scope, "no-store"], ", ");
   }
 
@@ -45,7 +45,7 @@ export const buildCacheControlHeader = (
   return join(parts, ", ");
 };
 
-const isPrivateNoStore = (scope: CacheScope, maxAge: number | undefined) => {
+const isPrivateNoStore = (scope: CacheScope, maxAge: null | number) => {
   return "private" === scope && 0 === (maxAge ?? 0);
 };
 
@@ -139,7 +139,7 @@ export const createCachedJsonResponse = <T>(
   } = {}
 ): Response => {
   const init = options.init ?? {};
-  const body = undefined === data ? "null" : JSON.stringify(data);
+  const body = null === data ? "null" : JSON.stringify(data);
   const base = new Response(body, init);
   return withCacheHeaders(base, {
     cacheControl: options.cacheControl ?? {},

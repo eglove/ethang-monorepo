@@ -12,7 +12,7 @@ const makeUpdate = (
   return {
     _id: "n1",
     date: "2024-06-15",
-    description: undefined as never,
+    description: null as never,
     title: TITLE,
     ...overrides
   } as NewsUpdateReturn;
@@ -42,7 +42,7 @@ describe("newsUpdate", () => {
 
   it("renders without crashing when description is undefined", async () => {
     const html = await renderNewsUpdate(
-      makeUpdate({ description: undefined as never })
+      makeUpdate({ description: null as never })
     );
 
     expect(html).toContain(TITLE);

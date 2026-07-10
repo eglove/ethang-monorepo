@@ -3,6 +3,7 @@ import { Effect } from "effect";
 import constant from "lodash/constant.js";
 import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
+import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import {
@@ -86,7 +87,7 @@ const processMcpConfig = (
   config: CompilerConfig,
   write: (absolutePath: string, content: string) => void
 ): void => {
-  if (undefined === config.mcpPublicPath) {
+  if (isNil(config.mcpPublicPath)) {
     return;
   }
 
@@ -121,7 +122,7 @@ const processSkills = (
   write: (absolutePath: string, content: string) => void
 ): void => {
   const { skills, skillsDir } = config;
-  if (undefined === skills || undefined === skillsDir) {
+  if (isNil(skills) || isNil(skillsDir)) {
     return;
   }
   for (const skill of skills) {
@@ -163,7 +164,7 @@ const scanDirectory = (directory: string, failures: string[]): void => {
 const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   const directoriesToScan = [config.rulesDir];
   const { skills, skillsDir } = config;
-  if (undefined !== skills && undefined !== skillsDir) {
+  if (!isNil(skills) && !isNil(skillsDir)) {
     for (const skill of skills) {
       directoriesToScan.push(path.join(skillsDir, skill.name));
     }
@@ -176,7 +177,7 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
 
 const loadManifest = (config: CompilerConfig): string[] => {
   const { manifestPath } = config;
-  if (manifestPath === undefined) {
+  if (isNil(manifestPath)) {
     return [];
   }
   return Effect.try(() => {
@@ -231,7 +232,7 @@ const cleanFileAndEmptyParents = (
     path.resolve(config.rootDir),
     path.resolve(config.rulesDir)
   ]);
-  if (config.skillsDir !== undefined) {
+  if (!isNil(config.skillsDir)) {
     stopDirectories.add(path.resolve(config.skillsDir));
   }
 
@@ -273,10 +274,11 @@ export const compile = (config: CompilerConfig): void => {
   scanDirectories(config, failures);
 
   if (0 < failures.length) {
+    // eslint-disable-next-line @ethang/no-try-catch -- throw is correct for sync errors caught by Effect.try
     throw new CompileError(failures, {});
   }
 
-  if (config.manifestPath !== undefined) {
+  if (!isNil(config.manifestPath)) {
     fsProxy.mkdirSync(path.dirname(config.manifestPath), { recursive: true });
     fsProxy.writeFileSync(
       config.manifestPath,

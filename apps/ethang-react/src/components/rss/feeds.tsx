@@ -8,6 +8,7 @@ import {
   useMutation,
   useQueryClient
 } from "@tanstack/react-query";
+import flatMap from "lodash/flatMap";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 import noop from "lodash/noop";
@@ -78,9 +79,12 @@ export const Feeds = () => {
 
   const edges = isNil(data)
     ? []
-    : data.pages.flatMap((page: { edges: SubscriptionEdge[] }) => {
-        return page.edges;
-      });
+    : flatMap(
+        data.pages,
+        ({ edges: pageEdges }: { edges: SubscriptionEdge[] }) => {
+          return pageEdges;
+        }
+      );
 
   const sorted = edges.toSorted((a, b) => {
     return a.node.title.localeCompare(b.node.title);

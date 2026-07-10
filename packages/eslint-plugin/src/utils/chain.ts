@@ -190,7 +190,7 @@ export const isMethodCall = (
 // Returns true if the node is the object of a member-expression call.
 export const isObjectOfMethodCall = (node: TSESTree.Node): boolean => {
   const { parent } = node;
-  if (parent === undefined || !isMemberExpression(parent)) {
+  if (isNil(parent) || !isMemberExpression(parent)) {
     return false;
   }
   const { parent: grandParent } = parent;
@@ -240,18 +240,18 @@ export const isChainable = (node: TSESTree.CallExpression): boolean => {
 const getNextInChain = (
   current: TSESTree.CallExpression,
   isStillInChain: (node: TSESTree.CallExpression) => boolean
-): TSESTree.CallExpression | undefined => {
+): null | TSESTree.CallExpression => {
   const { parent: currentParent } = current;
   if (
     isNil(currentParent) ||
-    currentParent.parent === undefined ||
+    isNil(currentParent.parent) ||
     !isCallExpression(currentParent.parent)
   ) {
-    return undefined;
+    return null;
   }
   const next = currentParent.parent;
   if (getCaller(next) !== current || !isStillInChain(current)) {
-    return undefined;
+    return null;
   }
   return next;
 };
@@ -272,7 +272,7 @@ export const getEndOfChain = (
 
   if (
     isNil(parent) ||
-    parent.parent === undefined ||
+    isNil(parent.parent) ||
     !isCallExpression(parent.parent)
   ) {
     return startNode;
@@ -282,7 +282,7 @@ export const getEndOfChain = (
 
   for (;;) {
     const next = getNextInChain(current, isStillInChain);
-    if (next === undefined) {
+    if (isNil(next)) {
       break;
     }
     current = next;

@@ -254,8 +254,8 @@ describe(getNewsAndEvents, () => {
     const result = await getNewsAndEvents();
 
     expect(
-      map(result, (r) => {
-        return r._id;
+      map(result, ({ _id }) => {
+        return _id;
       })
     ).toStrictEqual(["evt-2", "upd-1", "evt-1", "upd-2"]);
   });

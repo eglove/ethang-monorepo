@@ -4,7 +4,7 @@ import constant from "lodash/constant.js";
 
 /**
 Fetches the latest React version from npm registry.
-Returns undefined if fetch fails or validation fails.
+Returns null if fetch fails or validation fails.
 */
 export const getLatestReact = async () => {
   const response = await globalThis
@@ -12,7 +12,7 @@ export const getLatestReact = async () => {
     .catch(constant(null));
 
   if (!response) {
-    return;
+    return null;
   }
 
   const result = await Effect.runPromiseExit(
@@ -20,7 +20,7 @@ export const getLatestReact = async () => {
   );
 
   if (Exit.isFailure(result)) {
-    return;
+    return null;
   }
 
   return result.value;

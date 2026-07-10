@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import { describe, expect, it } from "vitest";
 
 import type { CourseTrackingCommand } from "./commands.ts";
@@ -110,6 +111,14 @@ describe("apply", () => {
       userId: "new-user"
     });
   });
+
+  it("dies on unknown event kind", () => {
+    const state: CourseTrackingState = { ...EXISTING_STATE };
+    const invalidEvent = { kind: "Unknown" } as unknown as CourseTrackingEvent;
+    expect(() => {
+      return apply(state, invalidEvent);
+    }).toThrow();
+  });
 });
 
 describe("applyStatus", () => {
@@ -130,26 +139,29 @@ describe("state coverage \u{2014} full cycle is reachable", () => {
   it("reaches all three states starting from initialState", () => {
     const createdEvents = decide(COMMAND, initialState);
     const [createdEvent] = createdEvents;
-    if (!createdEvent) throw new Error(ERROR_NO_EVENT);
-    const stateAfterCreate = apply(initialState, createdEvent);
+    if (!createdEvent) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
+    const stateAfterCreate = apply(
+      initialState,
+      createdEvent as CourseTrackingEvent
+    );
     expect(stateAfterCreate.status).toBe("COMPLETE");
 
     const events1 = decide(COMMAND, stateAfterCreate);
     const [event1] = events1;
-    if (!event1) throw new Error(ERROR_NO_EVENT);
-    const state1 = apply(stateAfterCreate, event1);
+    if (!event1) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
+    const state1 = apply(stateAfterCreate, event1 as CourseTrackingEvent);
     expect(state1.status).toBe("REVISIT");
 
     const events2 = decide(COMMAND, state1);
     const [event2] = events2;
-    if (!event2) throw new Error(ERROR_NO_EVENT);
-    const state2 = apply(state1, event2);
+    if (!event2) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
+    const state2 = apply(state1, event2 as CourseTrackingEvent);
     expect(state2.status).toBe("INCOMPLETE");
 
     const events3 = decide(COMMAND, state2);
     const [event3] = events3;
-    if (!event3) throw new Error(ERROR_NO_EVENT);
-    const state3 = apply(state2, event3);
+    if (!event3) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
+    const state3 = apply(state2, event3 as CourseTrackingEvent);
     expect(state3.status).toBe("COMPLETE");
   });
 });

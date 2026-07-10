@@ -4,7 +4,7 @@ import type { TrusteeRecord } from "../sanity/get-trustees.ts";
 
 // @ts-expect-error mock
 vi.mock(import("../clients/sanity-client.ts"), () => {
-  // eslint-disable-next-line lodash/prefer-constant,unicorn/consistent-function-scoping
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   const mockUrl = () => {
     return "https://example.com/mock-128x128.webp";
   };

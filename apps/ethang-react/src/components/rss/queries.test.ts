@@ -58,7 +58,7 @@ describe("RSS Queries Options", () => {
       const options = subscriptionsOptions();
       // @ts-expect-error for test
       const result = await options.queryFn({
-        meta: undefined,
+        meta: {},
         pageParam: cursorAbc,
         queryKey: ["subscriptions"]
       });
@@ -98,7 +98,7 @@ describe("RSS Queries Options", () => {
       const options = feedArticlesOptions("feed-123");
       // @ts-expect-error for test
       const result = await options.queryFn({
-        meta: undefined,
+        meta: {},
         pageParam: cursorXyz,
         queryKey: ["feedArticles", "feed-123"]
       });
@@ -118,7 +118,7 @@ describe("RSS Queries Options", () => {
       const options = feedArticlesOptions(null);
       // @ts-expect-error for test
       const result = await options.queryFn({
-        meta: undefined,
+        meta: {},
         pageParam: null,
         queryKey: ["feedArticles", null]
       });
@@ -158,7 +158,7 @@ describe("RSS Queries Options", () => {
       const options = allArticlesOptions();
       // @ts-expect-error for test
       const result = await options.queryFn({
-        meta: undefined,
+        meta: {},
         pageParam: cursorXyz,
         queryKey: ["allArticles"]
       });

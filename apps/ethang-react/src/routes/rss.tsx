@@ -26,7 +26,7 @@ export const Route = createFileRoute("/rss")({
   beforeLoad: () => {
     const { user } = authStore.state;
     if (isNil(user)) {
-      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      // eslint-disable-next-line @typescript-eslint/only-throw-error, @ethang/no-try-catch
       throw redirect({
         search: {
           redirect: "/rss"

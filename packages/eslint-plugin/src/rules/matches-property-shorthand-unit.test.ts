@@ -99,8 +99,8 @@ const functionExpression = (
 };
 
 describe("isLodashMatchesPropertyCall", () => {
-  it("returns false for undefined iteratee", () => {
-    expect(isLodashMatchesPropertyCall(undefined)).toBe(false);
+  it("returns false for null iteratee", () => {
+    expect(isLodashMatchesPropertyCall(null)).toBe(false);
   });
 
   it("returns false for non-call expression", () => {
@@ -163,8 +163,8 @@ describe("isLodashMatchesPropertyCall", () => {
 });
 
 describe("isArrayLiteral", () => {
-  it("returns false for undefined iteratee in isArrayLiteral", () => {
-    expect(isArrayLiteral(undefined)).toBe(false);
+  it("returns false for null iteratee in isArrayLiteral", () => {
+    expect(isArrayLiteral(null)).toBe(false);
   });
 
   it("returns true for array expression", () => {
@@ -183,10 +183,10 @@ describe("isArrayLiteral", () => {
 });
 
 describe("isFunctionReturningEqualityToMember", () => {
-  it("returns false for undefined iteratee in isFunctionReturningEqualityToMember", () => {
-    expect(
-      isFunctionReturningEqualityToMember(undefined, 3, false, false)
-    ).toBe(false);
+  it("returns false for null iteratee in isFunctionReturningEqualityToMember", () => {
+    expect(isFunctionReturningEqualityToMember(null, 3, false, false)).toBe(
+      false
+    );
   });
 
   it("returns false for non-function iteratee", () => {

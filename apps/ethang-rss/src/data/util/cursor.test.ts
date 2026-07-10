@@ -1,5 +1,6 @@
 /* eslint-disable unicorn/prefer-uint8array-base64, unicorn/no-this-outside-of-class */
 import { Effect, pipe } from "effect";
+import isNil from "lodash/isNil.js";
 import { Buffer } from "node:buffer";
 import { describe, expect, it } from "vitest";
 
@@ -72,22 +73,22 @@ describe("cursor utilities", () => {
         Effect.flatMap(({ encoded, original }) => {
           return pipe(
             decodeCursor(encoded),
-            // eslint-disable-next-line lodash/prefer-lodash-method,array-callback-return
             Effect.map((decoded) => {
               expect(decoded).toEqual(original);
+              return decoded;
             })
           );
         })
       );
 
       const cleanupPrototypes = Effect.sync(() => {
-        if (undefined === originalToBase64) {
+        if (isNil(originalToBase64)) {
           delete (Uint8Array.prototype as any).toBase64;
         } else {
           (Uint8Array.prototype as any).toBase64 = originalToBase64;
         }
 
-        if (undefined === originalFromBase64) {
+        if (isNil(originalFromBase64)) {
           delete (Uint8Array as any).fromBase64;
         } else {
           (Uint8Array as any).fromBase64 = originalFromBase64;
@@ -104,21 +105,21 @@ describe("cursor utilities", () => {
       Object.defineProperty(Uint8Array, "fromBase64", {
         configurable: true,
         value: () => {
-          throw new Error("Invalid base64");
+          Effect.runSync(Effect.die(new Error("Invalid base64")));
         },
         writable: true
       });
 
       const runTest = pipe(
         decodeCursor("invalid!!"),
-        // eslint-disable-next-line lodash/prefer-lodash-method,array-callback-return
         Effect.map((decoded) => {
           expect(decoded).toBeNull();
+          return decoded;
         })
       );
 
       const cleanupPrototypes = Effect.sync(() => {
-        if (undefined === originalFromBase64) {
+        if (isNil(originalFromBase64)) {
           delete (Uint8Array as any).fromBase64;
         } else {
           (Uint8Array as any).fromBase64 = originalFromBase64;

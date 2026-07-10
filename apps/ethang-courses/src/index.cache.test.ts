@@ -115,11 +115,13 @@ const callRpc = async (
 ): Promise<Response> => {
   const worker = instance as Record<
     string,
-    ((arguments_: unknown) => Promise<Response>) | undefined
+    ((arguments_: unknown) => Promise<Response>) | null
   >;
   const rpcMethod = worker[method];
   if (!rpcMethod) {
-    throw new Error(`Missing RPC method: ${method}`);
+    return Effect.runSync(
+      Effect.die(new Error(`Missing RPC method: ${method}`))
+    );
   }
   return rpcMethod.call(instance, parameters);
 };

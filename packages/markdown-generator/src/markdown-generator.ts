@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
@@ -29,7 +30,7 @@ export type MarkdownBlock =
   | { text: string; type: "text" };
 
 export type MarkdownDocument = {
-  blocks: (MarkdownBlock | null | undefined)[];
+  blocks: (MarkdownBlock | null)[];
   frontmatter?: Record<string, boolean | number | string>;
 };
 
@@ -87,10 +88,16 @@ export const superscript = (text: string): string => {
   return `<sup>${text}</sup>`;
 };
 
+const die = (error: Error): never => {
+  return Effect.runSync(Effect.die(error));
+};
+
 const assertNoNewline = (value: string, key: string): void => {
   if (includes(value, "\n")) {
-    throw new Error(
-      `Frontmatter value for "${key}" contains a newline; multi-line values are not allowed: ${JSON.stringify(value)}`
+    die(
+      new Error(
+        `Frontmatter value for "${key}" contains a newline; multi-line values are not allowed: ${JSON.stringify(value)}`
+      )
     );
   }
 };
@@ -163,8 +170,10 @@ const renderTable = (block: TableBlock): string => {
 
   for (const row of block.rows) {
     if (row.length !== headerLength) {
-      throw new Error(
-        `Table row cell count (${String(row.length)}) does not match header count (${String(headerLength)})`
+      die(
+        new Error(
+          `Table row cell count (${String(row.length)}) does not match header count (${String(headerLength)})`
+        )
       );
     }
     rowLines.push(`| ${row.join(" | ")} |`);
@@ -271,7 +280,7 @@ const processBlock = (
   block: MarkdownBlock,
   state: {
     hasWrittenBlock: boolean;
-    lastBlockType: string | undefined;
+    lastBlockType: null | string;
     result: string;
   }
 ) => {
@@ -299,7 +308,7 @@ export const generateMarkdown = (document: MarkdownDocument): string => {
 
   const state = {
     hasWrittenBlock: false,
-    lastBlockType: undefined as string | undefined,
+    lastBlockType: null as null | string,
     result: ""
   };
 

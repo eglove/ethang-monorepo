@@ -63,13 +63,13 @@ export const normalizeLink = (item: FeedItem): string => {
           return "alternate" === l["@_rel"];
         }) ?? item.link[0];
 
-      return (
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        (alternate as Record<string, string> | undefined)?.["@_href"] ??
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        (alternate as unknown as string) ??
-        ""
-      );
+      if (isNil(alternate)) {
+        return "";
+      }
+
+      const href = alternate["@_href"];
+      const fallback = isString(alternate) ? alternate : "";
+      return href ?? fallback;
     }
 
     return (
@@ -136,7 +136,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     for (const feed of feeds) {
       // eslint-disable-next-line no-await-in-loop
       await step.do(`fetch-feed-${feed.id}`, async () => {
-        const fetchError: Error | undefined = await Effect.runPromise(
+        const fetchError: Error | null = await Effect.runPromise(
           Effect.tryPromise({
             catch: (error: unknown) => {
               return Error.isError(error) ? error : new Error(String(error));
@@ -176,11 +176,11 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
                 return !YOUTUBE_SHORTS_REGEX.test(item.link);
               });
 
-              const insertPromises = map(filteredItems, async (item) => {
-                if (isNil(item.guid) || "" === item.guid) {
-                  return;
-                }
+              const itemsToInsert = filter(filteredItems, (item) => {
+                return !isNil(item.guid) && "" !== item.guid;
+              });
 
+              const insertPromises = map(itemsToInsert, async (item) => {
                 return database
                   .insert(articlesTable)
                   .values(item)
@@ -212,13 +212,13 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
                 return Effect.succeed(error);
               },
               onSuccess: () => {
-                return Effect.succeed(undefined as Error | undefined);
+                return Effect.succeed(null as Error | null);
               }
             })
           )
         );
 
-        if (fetchError !== undefined) {
+        if (!isNil(fetchError)) {
           Effect.runSync(
             Effect.logError(`Failed to fetch feed ${feed.xmlAddress}`, {
               error: fetchError.message,
@@ -227,7 +227,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               stack: fetchError.stack
             })
           );
-          throw fetchError; // Rethrow so Workflow can retry if configured
+          Effect.runSync(Effect.die(fetchError));
         }
       });
     }

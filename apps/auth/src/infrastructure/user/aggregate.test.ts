@@ -480,3 +480,21 @@ describe("error propagation", () => {
     ).rejects.toThrow("Hash failed");
   });
 });
+
+describe("unexpected command kind", () => {
+  it("fails on unknown command kind", async () => {
+    const repo = createMockRepo();
+    const passwordService = createMockPasswordService();
+    const tokenService = createMockTokenService();
+    const command = { kind: "Unknown" } as unknown as UserCommand;
+
+    const result = await Effect.runPromise(
+      carryUserAuthCommand(command, repo, passwordService, tokenService).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toContain("Unexpected command");
+  });
+});

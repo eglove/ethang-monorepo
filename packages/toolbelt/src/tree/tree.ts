@@ -1,4 +1,4 @@
-import get from "lodash/get.js";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 import { TreeNode } from "./tree-node.js";
@@ -11,9 +11,13 @@ export class Tree<T> {
   }
 
   private buildTree(values: T[]): TreeNode<T> {
-    const firstValue = get(values, [0]);
+    const [firstValue] = values;
 
-    const root = new TreeNode(firstValue, null, null);
+    if (isNil(firstValue)) {
+      return Effect.runSync(Effect.die(new Error("values must not be empty")));
+    }
+
+    const root = new TreeNode<T>(firstValue, null, null);
     const queue = [root];
     let index = 1;
 

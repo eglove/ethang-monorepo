@@ -39,12 +39,12 @@ const getDefaultHeaders = () => {
     "Cross-Origin-Embedder-Policy": 'require-corp; report-to="default";',
     "Cross-Origin-Opener-Policy": 'same-site; report-to="default";',
     "Cross-Origin-Resource-Policy": "same-site",
-    "Public-Key-Pins": undefined,
+    "Public-Key-Pins": null,
     "Referrer-Policy": "same-origin",
-    "X-AspNet-Version": undefined,
+    "X-AspNet-Version": null,
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "SAMEORIGIN",
-    "X-Powered-By": undefined,
+    "X-Powered-By": null,
     "X-XSS-Protection": "1; mode=block"
   };
 };

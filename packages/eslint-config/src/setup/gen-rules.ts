@@ -1,6 +1,6 @@
 import type { Linter, Rule } from "eslint";
 
-import { installCloudflareLogger } from "@ethang/telemetry";
+import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
@@ -37,12 +37,12 @@ type CustomRule = (Record<string, unknown> | string)[] | string;
 const getRuleStrings = (
   ruleNames: string[],
   defaultOverride: string,
-  prefix?: string
+  prefix?: null | string
 ) => {
   const rules: Record<string, unknown> = {};
 
   for (const rule of ruleNames) {
-    if (prefix === undefined) {
+    if (isNil(prefix)) {
       rules[rule] = isNil(defaultOverride) ? "error" : defaultOverride;
     } else {
       rules[`${prefix}/${rule}`] = isNil(defaultOverride)
@@ -56,8 +56,8 @@ const getRuleStrings = (
 
 export const genRules = (
   ruleNames: string[],
-  customRules?: CustomRules,
-  prefix?: string,
+  customRules?: CustomRules | null,
+  prefix?: null | string,
   defaultOverride = "error"
 ) => {
   const rules = getRuleStrings(ruleNames, defaultOverride, prefix);
@@ -66,19 +66,18 @@ export const genRules = (
     for (const rule of customRules) {
       if (includes(ruleNames, rule.name) || true === rule.skipPrefix) {
         // eslint-disable-next-line sonar/nested-control-flow
-        if (prefix === undefined || true === rule.skipPrefix) {
+        if (isNil(prefix) || true === rule.skipPrefix) {
           rules[rule.name] = rule.rule;
         } else {
           rules[`${prefix}/${rule.name}`] = rule.rule;
         }
       } else {
         Effect.runSync(
-          Effect.logError(
-            `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`
+          Effect.die(
+            new Error(
+              `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`
+            )
           )
-        );
-        throw new Error(
-          `${rule.name} in ${prefix ?? "(unknown prefix)"} does not exist.`
         );
       }
     }

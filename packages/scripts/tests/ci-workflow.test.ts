@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
@@ -5,6 +6,7 @@ import map from "lodash/map.js";
 import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
 import trim from "lodash/trim.js";
+import trimStart from "lodash/trimStart.js";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -20,7 +22,9 @@ const getCiYamlPath = (): string => {
   if (existsSync(path2)) {
     return path2;
   }
-  throw new Error("Could not find .github/workflows/ci.yml");
+  return Effect.runSync(
+    Effect.die(new Error("Could not find .github/workflows/ci.yml"))
+  );
 };
 
 const getJobNames = (lines: string[]): string[] => {
@@ -30,7 +34,7 @@ const getJobNames = (lines: string[]): string[] => {
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
     const isEmptyOrComment = "" === trimmed || startsWith(trimmed, "#");
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if (!isEmptyOrComment) {
       if ("jobs:" === trimmed) {
@@ -55,7 +59,7 @@ const findJobStartLineIndex = (lines: string[], jobName: string): number => {
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
     const isEmptyOrComment = "" === trimmed || startsWith(trimmed, "#");
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if (!isEmptyOrComment) {
       if ("jobs:" === trimmed) {
@@ -87,7 +91,7 @@ const getJobLines = (lines: string[], jobName: string): string[] => {
   for (const rawLine of subsequentLines) {
     const trimmed = trim(rawLine);
     const isEmptyOrComment = "" === trimmed || startsWith(trimmed, "#");
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if (!isEmptyOrComment) {
       if (2 >= indent) {
@@ -205,7 +209,7 @@ const checkNoSecretsInEnvironment = (
 
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if ("env:" === trimmed && indent === startIndent) {
       isInEnvironment = true;
@@ -236,7 +240,7 @@ describe("CI Workflow Validation", () => {
 
     for (const rawLine of yamlLines) {
       const line = trim(rawLine);
-      const indent = rawLine.length - rawLine.trimStart().length;
+      const indent = rawLine.length - trimStart(rawLine).length;
 
       if ("permissions:" === line) {
         isInPermissions = true;

@@ -58,4 +58,8 @@ describe(Tree, () => {
     expect(tree.root.left?.right).toBeNull();
     expect(tree.root.left?.left?.left?.value).toBe(4);
   });
+
+  it("dies when values array is empty", () => {
+    expect(() => new Tree([])).toThrow();
+  });
 });

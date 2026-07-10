@@ -39,7 +39,8 @@ export const getSubbedNumber = ({
 
   forEach(parts, (part) => {
     if ("fraction" === part.type && part.value) {
-      const leadingZeroes = get(/^0+/u.exec(part.value), [0, "length"], 0);
+      const regexMatch = /^0+/u.exec(part.value);
+      const leadingZeroes = get(regexMatch, [0, "length"], 0);
 
       if (maxSubDigits < leadingZeroes && 1 > Number(value)) {
         const afterZeroes = part.value.slice(leadingZeroes);

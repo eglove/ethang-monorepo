@@ -61,7 +61,7 @@ describe(getLocale, () => {
     });
 
     it("returns null when source is missing", () => {
-      const result = getLocale(["cookie"], undefined, "locale");
+      const result = getLocale(["cookie"], null, "locale");
 
       expect(result).toBeNull();
     });
@@ -89,7 +89,7 @@ describe(getLocale, () => {
     });
 
     it("falls through when navigator is undefined", () => {
-      vi.stubGlobal("navigator", undefined);
+      vi.stubGlobal("navigator", null);
 
       const result = getLocale(["navigator", "accept-language"], "en-US");
 
@@ -109,7 +109,7 @@ describe(getLocale, () => {
     });
 
     it("returns value from localStorage", () => {
-      const result = getLocale(["localStorage"], undefined, "locale");
+      const result = getLocale(["localStorage"], null, "locale");
 
       expect(result).toBe("ja-JP");
     });

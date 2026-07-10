@@ -1,7 +1,7 @@
 import constant from "lodash/constant.js";
 import { describe, expect, it, vi } from "vitest";
 
-import { getLocale } from "../../src/intl/get-locale.ts";
+import { getFromAcceptLanguage, getLocale } from "../../src/intl/get-locale.ts";
 
 const ACCEPT_LANGUAGE = "accept-language";
 
@@ -88,5 +88,22 @@ describe("getLocale", () => {
     const locale = getLocale(["navigator", "accept-language"], source);
     expect(locale).toBe("fr-FR");
     vi.unstubAllGlobals();
+  });
+
+  it("should return language-only locale when country is empty", () => {
+    const source = new Headers({ "accept-language": "fr" });
+    const locale = getLocale([ACCEPT_LANGUAGE], source);
+    expect(locale).toBe("fr");
+  });
+
+  it("should return null when accept-language has no language", () => {
+    const source = new Headers({ "accept-language": "-US" });
+    const locale = getLocale([ACCEPT_LANGUAGE], source);
+    expect(locale).toBeNull();
+  });
+
+  it("getFromAcceptLanguage returns null when language is empty", () => {
+    const result = getFromAcceptLanguage("-US");
+    expect(result).toBeNull();
   });
 });

@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm";
+import { Effect } from "effect";
 import isEmpty from "lodash/isEmpty.js";
 import trim from "lodash/trim.js";
 
@@ -14,7 +15,7 @@ export const removeSubscriptionMutation = async (
   const feedId = trim(parameters.feedId);
 
   if (isEmpty(feedId)) {
-    throw new Error("feedId is required");
+    Effect.runSync(Effect.die(new Error("feedId is required")));
   }
 
   await database

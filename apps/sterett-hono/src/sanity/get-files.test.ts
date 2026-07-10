@@ -1,4 +1,5 @@
 import every from "lodash/every.js";
+import matches from "lodash/matches.js";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock(import("../clients/sanity-client.ts"), () => {
@@ -73,11 +74,9 @@ describe(getFiles, () => {
 
     const result = await getFiles();
 
-    expect(
-      every(result.covenants, (f) => {
-        return "Covenant" === f.category;
-      })
-    ).toBe(true);
+    expect(every(result.covenants, matches({ category: "Covenant" }))).toBe(
+      true
+    );
     expect(result.general).toHaveLength(0);
   });
 
@@ -95,11 +94,7 @@ describe(getFiles, () => {
 
     const result = await getFiles();
 
-    expect(
-      every(result.general, (f) => {
-        return "General" === f.category;
-      })
-    ).toBe(true);
+    expect(every(result.general, matches({ category: "General" }))).toBe(true);
     expect(result.covenants).toHaveLength(0);
   });
 });

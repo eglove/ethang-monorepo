@@ -1,10 +1,39 @@
 import { Effect } from "effect";
 import { getCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
+import isNil from "lodash/isNil.js";
 
 export type AuthConfig = {
   cookieName?: string;
   verifyUrl?: string;
+};
+
+const UNAUTHORIZED = "Unauthorized";
+
+const toError = (error: unknown) => {
+  return Error.isError(error) ? error : new Error(String(error));
+};
+
+const fetchWithToken = (verifyUrl: string, token: string) => {
+  return Effect.tryPromise({
+    catch: toError,
+    try: async () => {
+      return fetch(verifyUrl, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
+  });
+};
+
+const parseJson = (response: Response) => {
+  return Effect.tryPromise({
+    catch: toError,
+    try: async () => {
+      return response.json();
+    }
+  });
 };
 
 export const requireAuth = (config?: AuthConfig) => {
@@ -14,37 +43,26 @@ export const requireAuth = (config?: AuthConfig) => {
 
     const token = getCookie(c, cookieName);
 
-    if (token === undefined) {
-      return c.json({ error: "Unauthorized" }, 401);
+    if (isNil(token)) {
+      return c.json({ error: UNAUTHORIZED }, 401);
     }
 
-    const verify = async (): Promise<void> => {
-      const response = await fetch(verifyUrl, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    const verify = Effect.gen(function* () {
+      const response = yield* fetchWithToken(verifyUrl, token);
 
       if (!response.ok) {
-        throw new Error("Unauthorized");
+        return yield* Effect.fail(new Error(UNAUTHORIZED));
       }
 
-      const data: unknown = await response.json();
-
+      const data: unknown = yield* parseJson(response);
       c.set("user", data);
-    };
+      return yield* Effect.succeed(null);
+    });
 
-    const exit = await Effect.runPromiseExit(
-      Effect.tryPromise({
-        catch: (error: unknown) => {
-          return Error.isError(error) ? error : new Error(String(error));
-        },
-        try: verify
-      })
-    );
+    const exit = await Effect.runPromiseExit(verify);
 
     if ("Failure" === exit._tag) {
-      return c.json({ error: "Unauthorized" }, 401);
+      return c.json({ error: UNAUTHORIZED }, 401);
     }
 
     return next();

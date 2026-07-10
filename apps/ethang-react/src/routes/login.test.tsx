@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import noop from "lodash/noop";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { authStoreActions } from "../components/auth/auth-store.ts";
@@ -12,10 +13,10 @@ const TEST_PASSWORD = "password123";
 
 // Mock the TanStack Router hooks
 const mockNavigate = vi.fn(async () => {
-  //
+  noop();
 });
 const mockSearchStore = {
-  search: { redirect: undefined as string | undefined }
+  search: { redirect: null as null | string }
 };
 vi.mock("@tanstack/react-router", async () => {
   const actual = await vi.importActual<Record<string, unknown>>(
@@ -55,7 +56,7 @@ describe("Login Integration", () => {
     authStoreActions.signOut();
     vi.restoreAllMocks();
     mockNavigate.mockClear();
-    mockSearchStore.search = { redirect: undefined as string | undefined };
+    mockSearchStore.search = { redirect: null as null | string };
   });
 
   it("should render the login form and handle successful authentication", async () => {

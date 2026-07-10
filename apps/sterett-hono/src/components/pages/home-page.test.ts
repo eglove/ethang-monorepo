@@ -41,7 +41,7 @@ describe("homePage", () => {
 
   it("renders without crashing when page data is undefined", async () => {
     vi.clearAllMocks();
-    vi.mocked(getPage).mockResolvedValue(undefined);
+    vi.mocked(getPage).mockResolvedValue(null);
 
     const html = await renderHomePage();
 

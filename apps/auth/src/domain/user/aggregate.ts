@@ -58,6 +58,9 @@ export const decide = (
         }
       ];
     }
+    default: {
+      return [];
+    }
   }
 };
 
@@ -83,6 +86,9 @@ export const apply = (state: UserState, event: UserEvent): UserState => {
         ...state,
         lastLoggedIn: event.lastLoggedIn
       };
+    }
+    default: {
+      return state;
     }
   }
 };

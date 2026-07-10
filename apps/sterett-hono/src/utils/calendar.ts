@@ -6,6 +6,7 @@ import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
+import matches from "lodash/matches.js";
 import padStart from "lodash/padStart.js";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
@@ -272,14 +273,9 @@ export const toPlainText = (
 ): string => {
   if (!description) return "";
   const blocks = isArray(description) ? description : [description];
-  return map(
-    filter(blocks, (b) => {
-      return "block" === b._type;
-    }),
-    (b) => {
-      return map(b.children, (child) => {
-        return "text" in child && isString(child.text) ? child.text : "";
-      }).join("");
-    }
-  ).join("\n");
+  return map(filter(blocks, matches({ _type: "block" })), (b) => {
+    return map(b.children, ({ text }) => {
+      return isString(text) ? text : "";
+    }).join("");
+  }).join("\n");
 };

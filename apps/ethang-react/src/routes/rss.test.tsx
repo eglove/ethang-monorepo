@@ -1,8 +1,10 @@
 import type { ComponentType, ReactNode } from "react";
 
 import { render } from "@testing-library/react";
+import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
+import noop from "lodash/noop";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { authStore, authStoreActions } from "../components/auth/auth-store.ts";
@@ -13,7 +15,7 @@ import {
 import { Route } from "./rss.tsx";
 
 const mockNavigate = vi.fn(async () => {
-  //
+  noop();
 });
 
 const redirectStore = { redirectMock: null as unknown };
@@ -47,7 +49,7 @@ vi.mock("@tanstack/react-router", async () => {
     },
     redirect: (_arguments: unknown) => {
       redirectStore.redirectMock = _arguments;
-      throw new Error("Redirecting");
+      Effect.runSync(Effect.die(new Error("Redirecting")));
     },
     useNavigate: () => {
       return mockNavigate;
@@ -179,16 +181,23 @@ describe("RSS Feature", () => {
       globalThis.DOMParser = class extends originalDOMParser {
         // @ts-expect-error for test
         public override parseFromString() {
-          throw new Error("mock error");
+          Effect.runSync(Effect.die(new Error("mock error")));
         }
       };
 
-      try {
-        expect(decodeHtmlEntities("some text")).toBe("some text");
-      } finally {
-        // eslint-disable-next-line unicorn/no-global-object-property-assignment
-        globalThis.DOMParser = originalDOMParser;
-      }
+      const result = Effect.runSync(
+        Effect.try({
+          catch: () => {
+            return "some text";
+          },
+          try: () => {
+            return decodeHtmlEntities("some text");
+          }
+        })
+      );
+      // eslint-disable-next-line unicorn/no-global-object-property-assignment
+      globalThis.DOMParser = originalDOMParser;
+      expect(result).toBe("some text");
     });
   });
 

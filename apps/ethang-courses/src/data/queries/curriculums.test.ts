@@ -318,4 +318,41 @@ describe("curriculumQuery", () => {
 
     expect(result).toBeNull();
   });
+
+  it("fails when curriculumsQuery database select throws", async () => {
+    const mockCurriculumsSelectResult = {
+      from: vi.fn().mockRejectedValue(new Error("Connection lost"))
+    };
+
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(mockCurriculumsSelectResult)
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumsQuery(mockDatabase, null).pipe(Effect.flip)
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toContain("Connection lost");
+  });
+
+  it("fails when curriculumQuery database select throws", async () => {
+    const mockSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockRejectedValue(new Error("Query failed")),
+      where: vi.fn().mockReturnThis()
+    };
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(mockSelectResult)
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      curriculumQuery(mockDatabase, "bad-id").pipe(Effect.flip)
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toContain("Query failed");
+  });
 });

@@ -31,7 +31,7 @@ const isIconRelationship = (relationshipValue: string) => {
   });
 };
 
-const parseSizeValue = (sizes: string | undefined) => {
+const parseSizeValue = (sizes: null | string) => {
   if (isNil(sizes)) {
     return 0;
   }
@@ -42,60 +42,62 @@ const parseSizeValue = (sizes: string | undefined) => {
   return Number(match[1]) * Number(match[2]);
 };
 
-const returnUndefined = constant(undefined);
+const returnNull = constant(null);
 
 const resolveHref = (href: string, baseUrl: string) => {
   return Effect.runSync(
     Effect.try({
-      catch: returnUndefined,
+      catch: returnNull,
       try: () => {
         const resolved = new URL(href, baseUrl);
         return resolved.href;
       }
     }).pipe(
       Effect.catchAll(() => {
-        return Effect.succeed(undefined);
+        return Effect.succeed(null);
       })
     )
   );
 };
 
-const buildFaviconFallback = (baseUrl: string) => {
+const buildFaviconFallback = (baseUrl: string): null | string => {
   const originValue = Effect.runSync(
     Effect.try({
-      catch: returnUndefined,
+      catch: returnNull,
       try: () => {
         const parsedBase = new URL(baseUrl);
         return parsedBase.origin;
       }
     }).pipe(
       Effect.catchAll(() => {
-        return Effect.succeed(undefined);
+        return Effect.succeed(null);
       })
     )
   );
   if (isNil(originValue)) {
-    return;
+    return null;
   }
   return `${originValue}/favicon.ico`;
 };
 
-const readLinkTag = (tag: string) => {
+const readLinkTag = (
+  tag: string
+): { href: string; sizes: null | string } | null => {
   const relationshipMatch = REL_PATTERN.exec(tag);
   if (isNil(relationshipMatch)) {
-    return;
+    return null;
   }
   const [, linkRelationship = ""] = relationshipMatch;
   if (!isIconRelationship(linkRelationship)) {
-    return;
+    return null;
   }
   const hrefMatch = HREF_PATTERN.exec(tag);
   const href = hrefMatch?.[1] ?? "";
   if ("" === href) {
-    return;
+    return null;
   }
   const sizesMatch = SIZES_PATTERN.exec(tag);
-  const sizes = sizesMatch?.[1];
+  const sizes = sizesMatch?.[1] ?? null;
   return {
     href,
     sizes
@@ -104,16 +106,14 @@ const readLinkTag = (tag: string) => {
 
 const pickBestIcon = (
   matches: string[]
-): { href: string; index: number } | undefined => {
+): { href: string; index: number } | null => {
   let bestIndex = -1;
   let bestArea = 0;
-  let bestHref: string | undefined;
+  let bestHref: null | string = null;
 
   for (const [index, tag] of matches.entries()) {
     const parsed = readLinkTag(tag);
-    if (isNil(parsed)) {
-      // skip non-icon link tags
-    } else {
+    if (!isNil(parsed)) {
       const area = parseSizeValue(parsed.sizes);
       if (-1 === bestIndex || area > bestArea) {
         bestIndex = index;
@@ -124,12 +124,15 @@ const pickBestIcon = (
   }
 
   if (-1 === bestIndex || isNil(bestHref)) {
-    return;
+    return null;
   }
   return { href: bestHref, index: bestIndex };
 };
 
-export const extractIconUrl = (html: string, baseUrl: string) => {
+export const extractIconUrl = (
+  html: string,
+  baseUrl: string
+): null | string => {
   if ("" === html) {
     return null;
   }

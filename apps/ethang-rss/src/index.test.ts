@@ -25,7 +25,7 @@ vi.mock("drizzle-orm/d1", () => {
 
 vi.mock("./data/mutations/add-subscription.ts", () => {
   return {
-    addSubscriptionMutation: vi.fn().mockResolvedValue(undefined)
+    addSubscriptionMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
@@ -40,19 +40,19 @@ vi.mock("./data/mutations/mark-article-read.ts", () => {
 
 vi.mock("./data/mutations/remove-subscription.ts", () => {
   return {
-    removeSubscriptionMutation: vi.fn().mockResolvedValue(undefined)
+    removeSubscriptionMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
 vi.mock("./data/queries/all-articles.ts", () => {
   return {
-    allArticlesQuery: vi.fn().mockResolvedValue(undefined)
+    allArticlesQuery: vi.fn().mockResolvedValue(null)
   };
 });
 
 vi.mock("./data/queries/feed-articles.ts", () => {
   return {
-    feedArticlesQuery: vi.fn().mockResolvedValue(undefined)
+    feedArticlesQuery: vi.fn().mockResolvedValue(null)
   };
 });
 

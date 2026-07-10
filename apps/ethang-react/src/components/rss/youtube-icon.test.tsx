@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { Effect } from "effect";
 import toLower from "lodash/toLower";
 import { describe, expect, it } from "vitest";
 import "@testing-library/jest-dom/vitest";
@@ -53,7 +54,9 @@ describe("YoutubeIcon", () => {
     if (svg) {
       check(svg);
     } else {
-      throw new Error("expected svg element to be present");
+      Effect.runSync(
+        Effect.die(new Error("expected svg element to be present"))
+      );
     }
   });
 });

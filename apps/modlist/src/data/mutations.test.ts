@@ -28,7 +28,7 @@ const { addPatchMutation, removePatchMutation } =
 function createDeleteMockDatabase() {
   return {
     delete: vi.fn().mockReturnValue({
-      where: vi.fn().mockResolvedValue(undefined)
+      where: vi.fn().mockResolvedValue(null)
     })
   } as any;
 }

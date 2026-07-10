@@ -13,14 +13,14 @@ describe("create search parameters", () => {
           filter: ["done", "recent", "expired"],
           max: 100,
           numbers: [1, 2, 3],
-          otherValue: undefined,
+          otherValue: null,
           to: "tomorrow"
         },
         Schema.Struct({
           filter: Schema.Array(Schema.String),
           max: Schema.Number,
           numbers: Schema.Array(Schema.Number),
-          otherValue: Schema.Undefined,
+          otherValue: Schema.Null,
           to: Schema.String
         })
       )

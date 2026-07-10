@@ -5,7 +5,7 @@ import keys from "lodash/keys.js";
 
 type SearchParametersRecord = Record<
   string,
-  number | number[] | string | string[] | undefined
+  null | number | number[] | string | string[]
 >;
 
 export const createSearchParameters = <Z extends Schema.Schema.AnyNoContext>(

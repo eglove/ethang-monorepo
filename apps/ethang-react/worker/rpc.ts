@@ -5,6 +5,7 @@
 // the backend services remain the source of truth for per-response caching
 // policy (including the `private, no-store` directive on user-specific
 // methods).
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 type RpcBinding = {
@@ -88,13 +89,15 @@ const rpcServiceDispatch = async (
   }
 
   if (null === dispatchMap) {
-    throw new Error("Invalid service");
+    Effect.runSync(Effect.die(new Error("Invalid service")));
+    return [] as unknown[];
   }
 
   const handler = dispatchMap[method];
 
   if (isNil(handler)) {
-    throw new Error("Invalid method");
+    Effect.runSync(Effect.die(new Error("Invalid method")));
+    return [] as unknown[];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -102,7 +105,8 @@ const rpcServiceDispatch = async (
   const serviceBinding = binding[service];
 
   if (isNil(serviceBinding)) {
-    throw new Error("Invalid service");
+    Effect.runSync(Effect.die(new Error("Invalid service")));
+    return [] as unknown[];
   }
 
   return handler(serviceBinding, parameters);

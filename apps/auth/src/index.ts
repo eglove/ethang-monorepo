@@ -6,9 +6,8 @@ import { setCookieValue } from "@ethang/toolbelt/http/cookie.js";
 import { Effect, Option, Schema } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
-import isString from "lodash/isString.js";
 
 import type { UserCommand } from "./domain/user/commands.ts";
 
@@ -21,12 +20,6 @@ import { createTokenService } from "./infrastructure/user/token-service.ts";
 export type AuthContextObject = { Bindings: CloudflareBindings };
 
 const AUTH_COOKIE_NAME = "ethang-auth-token";
-
-const hasSessionToken = (
-  value: unknown
-): value is { readonly sessionToken: null | string | undefined } => {
-  return isObject(value) && "sessionToken" in value;
-};
 
 const handleAuthCommand = (
   command: UserCommand,
@@ -42,11 +35,10 @@ const handleAuthCommand = (
   );
 };
 
-const setAuthCookie = (
-  response: Response,
-  token: null | string | undefined
-) => {
-  if (isNil(token)) return;
+const setAuthCookie = (response: Response, token: null | string) => {
+  if (isNil(token)) {
+    return;
+  }
   setCookieValue({
     config: {
       HttpOnly: false,
@@ -95,11 +87,13 @@ app.post("/sign-up", async (context) => {
   );
   const result = await Effect.runPromise(effect);
 
-  if ("error" in result && isString(result.error)) {
+  if ("error" in result) {
     return createJsonResponse({ error: result.error }, "INTERNAL_SERVER_ERROR");
   }
   const response = createJsonResponse(result, "OK");
-  setAuthCookie(response, hasSessionToken(result) ? result.sessionToken : null);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const sessionToken: null | string = get(result, ["sessionToken"], null);
+  setAuthCookie(response, sessionToken);
   return response;
 });
 
@@ -127,7 +121,10 @@ app.post("/sign-in", async (context) => {
     return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
   }
   const rsp = createJsonResponse(result, "OK");
-  setAuthCookie(rsp, hasSessionToken(result) ? result.sessionToken : null);
+
+  // @ts-expect-error allow this
+  const sessionToken: null | string = get(result, ["sessionToken"], null);
+  setAuthCookie(rsp, sessionToken);
   return rsp;
 });
 
@@ -184,7 +181,7 @@ app.post("/verify", async (context) => {
     }
   );
   const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
-  const error = isNil(result["error"]) ? undefined : result["error"];
+  const error = isNil(result["error"]) ? null : result["error"];
 
   return isNil(error)
     ? createJsonResponse(result, "OK")

@@ -337,9 +337,9 @@ describe("Markdown Generator", () => {
         expect(generateMarkdown(document)).toBe("");
       });
 
-      it("should handle null or undefined blocks safely without crashing", () => {
+      it("should handle null blocks safely without crashing", () => {
         const document = {
-          blocks: [null, undefined, { text: "Hello", type: "text" as const }],
+          blocks: [null, { text: "Hello", type: "text" as const }],
         };
 
         expect(() => {

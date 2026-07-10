@@ -1,4 +1,5 @@
 import compact from "lodash/compact.js";
+import get from "lodash/get.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
@@ -10,8 +11,8 @@ import trim from "lodash/trim.js";
 import { isBigIntOrNumber } from "../is/big-int-or-number.ts";
 
 type AcceptLanguageResults = {
-  country: string | undefined;
-  language: string | undefined;
+  country: null | string;
+  language: null | string;
   name: string;
   quality: number;
 }[];
@@ -32,7 +33,9 @@ export const getAcceptLanguage = (
 
   const result = map(languages, (lang) => {
     const [name, query] = split(lang, ";");
-    const [language, country] = split(name, "-");
+    const parts = split(name, "-");
+    const language = get(parts, 0) || null;
+    const country = get(parts, 1) || null;
     let quality = 1;
     if (!isNil(query)) {
       const [, value] = split(query, "=");

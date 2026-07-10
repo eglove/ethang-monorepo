@@ -158,11 +158,11 @@ describe(buildCalendarWeeks, () => {
   it("marks only current-month cells as current: true", () => {
     const weeks = buildCalendarWeeks(2024, 6);
     const cells = weeks.flat();
-    const currentCells = filter(cells, (c) => {
-      return c.current;
+    const currentCells = filter(cells, ({ current }) => {
+      return current;
     });
-    const otherCells = filter(cells, (c) => {
-      return !c.current;
+    const otherCells = filter(cells, ({ current }) => {
+      return !current;
     });
 
     expect(currentCells).toHaveLength(30); // June has 30 days
@@ -187,8 +187,8 @@ describe(buildCalendarWeeks, () => {
 
   it("handles February in a leap year (29 days)", () => {
     const weeks = buildCalendarWeeks(2024, 2);
-    const currentCells = filter(weeks.flat(), (c) => {
-      return c.current;
+    const currentCells = filter(weeks.flat(), ({ current }) => {
+      return current;
     });
 
     expect(currentCells).toHaveLength(29);
@@ -196,8 +196,8 @@ describe(buildCalendarWeeks, () => {
 
   it("handles February in a non-leap year (28 days)", () => {
     const weeks = buildCalendarWeeks(2025, 2);
-    const currentCells = filter(weeks.flat(), (c) => {
-      return c.current;
+    const currentCells = filter(weeks.flat(), ({ current }) => {
+      return current;
     });
 
     expect(currentCells).toHaveLength(28);

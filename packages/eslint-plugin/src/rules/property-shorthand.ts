@@ -3,6 +3,7 @@ import {
   ESLintUtils,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
 import { isLodashCall, resolveCall } from "../utils/ast.ts";
@@ -20,16 +21,16 @@ type Options = [Mode];
 
 export const getValueReturnedInFirstStatement = (
   node: TSESTree.Expression
-): TSESTree.Expression | undefined => {
+): null | TSESTree.Expression => {
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
 
       if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-        return first.argument ?? undefined;
+        return first.argument ?? null;
       }
 
-      return undefined;
+      return null;
     }
 
     return node.body;
@@ -40,38 +41,38 @@ export const getValueReturnedInFirstStatement = (
     const [first] = node.body.body;
 
     if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-      return first.argument ?? undefined;
+      return first.argument ?? null;
     }
   }
 
-  return undefined;
+  return null;
 };
 
 export const getFirstParameterName = (
-  node: TSESTree.Expression | undefined
-): string | undefined => {
+  node: null | TSESTree.Expression
+): null | string => {
   if (
-    node === undefined ||
+    isNil(node) ||
     (node.type !== AST_NODE_TYPES.FunctionExpression &&
       node.type !== AST_NODE_TYPES.ArrowFunctionExpression)
   ) {
-    return undefined;
+    return null;
   }
 
   const [firstParameter] = node.params;
 
   return firstParameter?.type === AST_NODE_TYPES.Identifier
     ? firstParameter.name
-    : undefined;
+    : null;
 };
 
 // Checks if the returned expression is a member expression of the first parameter,
 // e.g. x.name or x.user.name (non-computed only).
 export const isMemberExpressionOf = (
-  node: TSESTree.Expression | undefined,
-  parameterName: string | undefined
+  node: null | TSESTree.Expression,
+  parameterName: null | string
 ): boolean => {
-  if (parameterName === undefined || node === undefined) {
+  if (isNil(parameterName) || isNil(node)) {
     return false;
   }
 
@@ -97,10 +98,10 @@ export const isMemberExpressionOf = (
 
 // Checks if the iteratee is a function that returns a property of its first parameter.
 export const isExplicitPropertyFunction = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   if (
-    iteratee === undefined ||
+    isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
       iteratee.type !== AST_NODE_TYPES.ArrowFunctionExpression)
   ) {
@@ -109,7 +110,7 @@ export const isExplicitPropertyFunction = (
 
   const firstParameterName = getFirstParameterName(iteratee);
 
-  if (firstParameterName === undefined) {
+  if (isNil(firstParameterName)) {
     return false;
   }
 
@@ -120,7 +121,7 @@ export const isExplicitPropertyFunction = (
 
 // Checks if the iteratee is _.property('name') or lodash.property('name').
 export const isLodashPropertyCall = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
     return false;
@@ -148,14 +149,14 @@ export const isLodashPropertyCall = (
 };
 
 const canUsePropertyShorthand = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   return isExplicitPropertyFunction(iteratee) || isLodashPropertyCall(iteratee);
 };
 
 // Checks if the iteratee is a string literal (property shorthand usage).
 export const isStringLiteral = (
-  iteratee: TSESTree.Expression | undefined
+  iteratee: null | TSESTree.Expression
 ): boolean => {
   return iteratee?.type === AST_NODE_TYPES.Literal && isString(iteratee.value);
 };
@@ -182,7 +183,7 @@ export const propertyShorthandRule = createRule<Options, MessageIds>({
 
       if (isNeverMode) {
         if (
-          iteratee !== undefined &&
+          !isNil(iteratee) &&
           iteratee.type !== AST_NODE_TYPES.SpreadElement &&
           isStringLiteral(iteratee)
         ) {
@@ -196,7 +197,7 @@ export const propertyShorthandRule = createRule<Options, MessageIds>({
       }
 
       if (
-        iteratee !== undefined &&
+        !isNil(iteratee) &&
         iteratee.type !== AST_NODE_TYPES.SpreadElement &&
         canUsePropertyShorthand(iteratee)
       ) {

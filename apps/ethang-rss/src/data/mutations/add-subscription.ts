@@ -119,7 +119,7 @@ export const addSubscriptionMutation = async (
   }
 
   if (isNil(feed)) {
-    throw new Error("Unable to insert feed");
+    return Effect.runSync(Effect.die(new Error("Unable to insert feed")));
   }
 
   await database

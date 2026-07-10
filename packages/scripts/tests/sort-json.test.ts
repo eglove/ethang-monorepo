@@ -1,5 +1,6 @@
 import type process from "node:process";
 
+import { Effect } from "effect";
 import constant from "lodash/constant.js";
 import noop from "lodash/noop.js";
 import {
@@ -176,7 +177,7 @@ describe("sort-json utilities", () => {
       exitSpy = vi
         .spyOn(globalThis.process, "exit")
         .mockImplementation((code) => {
-          throw new Error(`exit:${code}`);
+          return Effect.runSync(Effect.die(new Error(`exit:${code}`)));
         });
       consoleLogSpy = vi
         .spyOn(globalThis.console, "log")

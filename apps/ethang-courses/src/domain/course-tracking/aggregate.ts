@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+
 import type { CourseTrackingCommand } from "./commands.ts";
 import type { CourseTrackingEvent } from "./events.ts";
 
@@ -39,6 +41,11 @@ export const apply = (
         status: "COMPLETE",
         userId: event.userId
       };
+    }
+    default: {
+      const _exhaustive: never = event;
+      const error = new Error(`Unknown event: ${String(_exhaustive)}`);
+      return Effect.runSync(Effect.die(error));
     }
   }
 };

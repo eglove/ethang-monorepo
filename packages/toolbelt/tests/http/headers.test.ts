@@ -19,7 +19,7 @@ describe("headers", () => {
           quality: 1,
         },
         {
-          country: undefined,
+          country: null,
           language: "en",
           name: "en",
           quality: 0.9,
@@ -36,19 +36,19 @@ describe("headers", () => {
           quality: 1,
         },
         {
-          country: undefined,
+          country: null,
           language: "en",
           name: "en",
           quality: 0.9,
         },
         {
-          country: undefined,
+          country: null,
           language: "fr",
           name: "fr",
           quality: 0.8,
         },
         {
-          country: undefined,
+          country: null,
           language: "de",
           name: "de",
           quality: 0.7,
@@ -65,7 +65,7 @@ describe("headers", () => {
           quality: 1,
         },
         {
-          country: undefined,
+          country: null,
           language: "en",
           name: "en",
           quality: 0.9,
@@ -86,6 +86,20 @@ describe("headers", () => {
     expect(value).not.toBeInstanceOf(Error);
     if (!isError(value)) {
       expect(value[0]?.quality).toBe(1);
+    }
+  });
+
+  it("handles language without country", () => {
+    const value = getAcceptLanguage("fr");
+
+    expect(value).not.toBeInstanceOf(Error);
+    if (!isError(value)) {
+      expect(value[0]).toStrictEqual({
+        country: null,
+        language: "fr",
+        name: "fr",
+        quality: 1
+      });
     }
   });
 

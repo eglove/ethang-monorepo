@@ -58,4 +58,15 @@ describe("getSubbedNumber", () => {
 
     expect(result).toBeDefined();
   });
+
+  it("uses custom minFractionDigitsAfterZeros and maxFractionDigitsAfterZeros", () => {
+    const result = getSubbedNumber({
+      maxFractionDigitsAfterZeros: 3,
+      maxSubDigits: 2,
+      minFractionDigitsAfterZeros: 2,
+      value: 0.000123
+    });
+
+    expect(result).toBeDefined();
+  });
 });

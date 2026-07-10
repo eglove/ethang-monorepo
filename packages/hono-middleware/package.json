@@ -25,7 +25,6 @@
     "node": ">=24"
   },
   "license": "MIT",
-  "main": "./src/index.ts",
   "name": "@ethang/hono-middleware",
   "private": true,
   "scripts": {

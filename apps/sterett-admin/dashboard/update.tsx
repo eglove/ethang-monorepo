@@ -5,6 +5,7 @@ import {
   DashboardWidgetContainer,
   type LayoutConfig
 } from "@sanity/dashboard";
+import isNil from "lodash/isNil.js";
 
 import { UpdateItems } from "./update-items.js";
 
@@ -38,7 +39,7 @@ export const updateWidget = (config?: {
     component: function component(): JSX.Element {
       return <UpdateWidget />;
     },
-    ...(config?.layout !== undefined && { layout: config.layout }),
+    ...(!isNil(config?.layout) && { layout: config.layout }),
     name: "update-widget"
   };
 };

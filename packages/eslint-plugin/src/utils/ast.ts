@@ -1,7 +1,10 @@
 import type { RuleFix } from "@typescript-eslint/utils/ts-eslint";
 
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
+import filter from "lodash/filter.js";
 import includes from "lodash/includes.js";
+import isArray from "lodash/isArray.js";
+import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import keys from "lodash/keys.js";
 import map from "lodash/map.js";
@@ -9,7 +12,13 @@ import some from "lodash/some.js";
 import startsWith from "lodash/startsWith.js";
 
 import { effectApi, isEffectApiMethod } from "./effect-api.ts";
-import { isLodashFunction, lodashApi } from "./lodash-api.ts";
+import {
+  hasNativeArrayAlias,
+  isCommonUserMethodName,
+  isLodashArrayFunction,
+  isLodashFunction,
+  lodashApi
+} from "./lodash-api.ts";
 import { isCallExpression } from "./type-guards.ts";
 
 type RuleFixer = {
@@ -58,6 +67,7 @@ const BUILTIN_NAMESPACES = new Set([
   "Array",
   "Boolean",
   "console",
+  "CSS",
   "Date",
   "Error",
   "JSON",
@@ -221,8 +231,12 @@ const isArrayLiteralReceiver = (callee: TSESTree.MemberExpression): boolean => {
 };
 
 const resolveMemberMethod = (node: TSESTree.MemberExpression): string => {
-  if (AST_NODE_TYPES.Identifier === node.property.type) {
+  if (AST_NODE_TYPES.Identifier === node.property.type && !node.computed) {
     return node.property.name;
+  }
+  if (AST_NODE_TYPES.Literal === node.property.type) {
+    const { value } = node.property;
+    return "string" === typeof value ? value : "";
   }
   return "";
 };
@@ -354,6 +368,74 @@ export const isEffectImportedIdentifier = (
   });
 };
 
+const isChainedArrayLike = (
+  innerCall: TSESTree.CallExpression,
+  methodName: string,
+  isLodashOrEffectMethod: boolean,
+  program?: TSESTree.Program
+): boolean => {
+  const innerResolved = resolveMemberExpressionCall(innerCall, program);
+  if ("array" === innerResolved.kind) {
+    return true;
+  }
+  // For non-array chains, only flag methods that have a native
+  // Array.prototype equivalent (like `map`, `filter`). Collection-only
+  // lodash methods like `groupBy` have no Array.prototype equivalent and
+  // should not be flagged on unknown builder chains.
+  return (
+    isLodashOrEffectMethod &&
+    hasNativeArrayAlias(methodName) &&
+    !isCommonUserMethodName(methodName)
+  );
+};
+
+const isReceiverArrayLike = (
+  callee: TSESTree.MemberExpression,
+  methodName: string,
+  program?: TSESTree.Program
+): boolean => {
+  const isNonArrayNativeMethod = NON_ARRAY_NATIVE_METHOD_NAMES.has(methodName);
+  const isLodashOrEffectMethod =
+    !isNonArrayNativeMethod &&
+    (isLodashFunction(methodName) || isEffectApiMethod(methodName));
+
+  if (isArrayLiteralReceiver(callee)) {
+    return isLodashOrEffectMethod;
+  }
+
+  // For chained method calls (receiver is a CallExpression), check if the
+  // inner call resolves to an array method. If the inner call is on a
+  // query builder or other non-array receiver, this is not an array call.
+  // e.g. `xs.map(fn).filter(fn)` — inner `map` is array, so `filter` is too
+  // but `database.select().from(t).groupBy(t.id)` — inner is not array
+  if (AST_NODE_TYPES.CallExpression === callee.object.type) {
+    return isChainedArrayLike(
+      callee.object,
+      methodName,
+      isLodashOrEffectMethod,
+      program
+    );
+  }
+
+  // For identifier receivers, only Array.prototype methods (category "array"
+  // or "collection") should trigger as array calls. Lodash functions in other
+  // categories (e.g. `create` is category "object") are not Array.prototype
+  // methods and may be called on arbitrary user objects (Cloudflare Workflow
+  // bindings, etc.). String/number methods like `camelCase` are still flagged
+  // since they are not real methods on any standard type, unless they share a
+  // name with a common user-defined method.
+  // Methods in NON_ARRAY_NATIVE_METHOD_NAMES (like `orderBy`, `get`, `set`)
+  // exist on non-array native objects and should not be classified as array.
+  if (isNonArrayNativeMethod) {
+    return false;
+  }
+  if (isLodashArrayFunction(methodName)) {
+    return true;
+  }
+
+  return isLodashOrEffectMethod && !isCommonUserMethodName(methodName);
+};
+
 const resolveArrayCall = (
   node: TSESTree.CallExpression,
   callee: TSESTree.MemberExpression,
@@ -375,7 +457,7 @@ const resolveArrayCall = (
   // Stream, DateTime, Chunk, Option, etc.), this is an Effect namespace call
   // — not an array call — so it should not trigger prefer-effect/lodash.
   if (
-    program !== undefined &&
+    !isNil(program) &&
     AST_NODE_TYPES.Identifier === callee.object.type &&
     isEffectImportedIdentifier(callee.object, program)
   ) {
@@ -389,25 +471,19 @@ const resolveArrayCall = (
   }
 
   // Math.* and JSON.* etc. are built-in namespaces, not array receivers
-  const isBuiltinNamespace = (): boolean => {
-    return (
-      AST_NODE_TYPES.Identifier === callee.object.type &&
-      BUILTIN_NAMESPACES.has(callee.object.name)
-    );
-  };
+  if (
+    AST_NODE_TYPES.Identifier === callee.object.type &&
+    BUILTIN_NAMESPACES.has(callee.object.name)
+  ) {
+    return {
+      kind: "unknown-member",
+      methodName,
+      node,
+      receiver: callee.object
+    };
+  }
 
-  // Methods like `get`, `set`, `has`, `update`, `orderBy`, `eq` etc. exist on
-  // native objects (Map, Set, drizzle query builders, etc.) AND in lodash/effect.
-  // When the receiver is not an array literal, classify as unknown-member to
-  // avoid false positives on non-array receivers.
-  const isNonArrayNativeMethod = NON_ARRAY_NATIVE_METHOD_NAMES.has(methodName);
-  const isNativeMethod = isNonArrayNativeMethod;
-  const isLodashOrEffectMethod =
-    !isNativeMethod &&
-    (isLodashFunction(methodName) || isEffectApiMethod(methodName));
-  const isArrayLike = isArrayLiteralReceiver(callee) || isLodashOrEffectMethod;
-
-  if (!isBuiltinNamespace() && isArrayLike) {
+  if (isReceiverArrayLike(callee, methodName, program)) {
     return { kind: "array", methodName, node, receiver: callee.object };
   }
   return {
@@ -548,5 +624,3 @@ const getChildNodes = (node: TSESTree.Node): TSESTree.Node[] => {
 };
 
 export { getParserServices } from "@typescript-eslint/utils/eslint-utils";
-import filter from "lodash/filter.js";
-import isArray from "lodash/isArray.js";

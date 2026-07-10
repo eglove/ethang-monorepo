@@ -9,9 +9,9 @@ import { astroPlugin } from "../setup/astro.ts";
 import { compatPlugin } from "../setup/compat.ts";
 import { cssPlugin } from "../setup/css.ts";
 import { eslintPlugin } from "../setup/eslint.ts";
+import { ethangPluginConfig } from "../setup/ethang-plugin.ts";
 import { htmlPlugin } from "../setup/html.ts";
 import { json5Plugin, jsoncPlugin, jsonPlugin } from "../setup/json.ts";
-import { lodashPlugin } from "../setup/lodash.ts";
 import { markdownPlugin } from "../setup/markdown.ts";
 import { perfectionistPlugin } from "../setup/perfectionist.ts";
 import { playwrightPlugin } from "../setup/playwright.ts";
@@ -28,56 +28,52 @@ import { unicornPlugin } from "../setup/unicorn.ts";
 import { vitestPlugin } from "../setup/vitest.ts";
 
 export type OutputConfigOptions = {
-  extraConfigEntries?: string[] | undefined;
-  extraImports?: string[] | undefined;
+  extraConfigEntries?: null | string[];
+  extraImports?: null | string[];
   fileName: string;
-  functionParameters?: string | undefined;
-  globalIgnores?: string[] | undefined;
-  includeIgnores?: boolean | undefined;
-  includeLanguageOptions?: boolean | undefined;
-  includeReactVersion?: boolean | undefined;
+  functionParameters?: null | string;
+  globalIgnores?: null | string[];
+  includeIgnores?: boolean | null;
+  includeLanguageOptions?: boolean | null;
+  includeReactVersion?: boolean | null;
   plugins: Plugin[];
-  readmeImport?: string | undefined;
-  readmeLabel?: string | undefined;
+  readmeImport?: null | string;
+  readmeLabel?: null | string;
 };
 
 export class OutputConfig {
-  public readonly extraConfigEntries?: string[] | undefined;
-  public readonly extraImports?: string[] | undefined;
+  public readonly extraConfigEntries: null | string[];
+  public readonly extraImports: null | string[];
   public readonly fileName: string;
-  public readonly functionParameters?: string | undefined;
-  public readonly globalIgnores?: string[] | undefined;
-  public readonly includeIgnores?: boolean | undefined;
-  public readonly includeLanguageOptions?: boolean | undefined;
-  public readonly includeReactVersion?: boolean | undefined;
+  public readonly functionParameters: null | string;
+  public readonly globalIgnores: null | string[];
+  public readonly includeIgnores: boolean | null;
+  public readonly includeLanguageOptions: boolean | null;
+  public readonly includeReactVersion: boolean | null;
   public readonly plugins: Plugin[];
-  public readonly readmeImport?: string | undefined;
-  public readonly readmeLabel?: string | undefined;
+  public readonly readmeImport: null | string;
+  public readonly readmeLabel: null | string;
 
-  public get pluginsByFiles(): Record<string, Plugin[]> {
-    return groupBy(this.plugins, (plugin) => {
-      return plugin.files;
-    });
+  public get pluginsByFiles() {
+    return groupBy(this.plugins, "files");
   }
 
-  public get ruleCount(): number {
-    return sumBy(this.plugins, (plugin) => {
-      return plugin.ruleCount;
-    });
+  public get ruleCount() {
+    return sumBy(this.plugins, "ruleCount");
   }
 
   public constructor(options: OutputConfigOptions) {
-    this.extraConfigEntries = options.extraConfigEntries;
-    this.extraImports = options.extraImports;
+    this.extraConfigEntries = options.extraConfigEntries ?? null;
+    this.extraImports = options.extraImports ?? null;
     this.fileName = options.fileName;
-    this.functionParameters = options.functionParameters;
-    this.globalIgnores = options.globalIgnores;
-    this.includeIgnores = options.includeIgnores;
-    this.includeLanguageOptions = options.includeLanguageOptions;
-    this.includeReactVersion = options.includeReactVersion;
+    this.functionParameters = options.functionParameters ?? null;
+    this.globalIgnores = options.globalIgnores ?? null;
+    this.includeIgnores = options.includeIgnores ?? null;
+    this.includeLanguageOptions = options.includeLanguageOptions ?? null;
+    this.includeReactVersion = options.includeReactVersion ?? null;
     this.plugins = options.plugins;
-    this.readmeImport = options.readmeImport;
-    this.readmeLabel = options.readmeLabel;
+    this.readmeImport = options.readmeImport ?? null;
+    this.readmeLabel = options.readmeLabel ?? null;
   }
 }
 
@@ -115,7 +111,7 @@ export const outputConfigs: OutputConfig[] = [
       eslintPlugin,
       typescriptPlugin,
       unicornPlugin,
-      lodashPlugin,
+      ethangPluginConfig,
       sonarPlugin,
       perfectionistPlugin,
       tanstackQueryPlugin,

@@ -33,14 +33,14 @@ const mockCallExpression = (
 };
 
 describe("chain-style unit tests", () => {
-  it("getParentCall returns undefined when parent is undefined", () => {
+  it("getParentCall returns null when parent is undefined", () => {
     const node = mockNode<TSESTree.Expression>(AST_NODE_TYPES.Identifier, {
       name: "x"
     });
-    expect(getParentCall(node)).toBeUndefined();
+    expect(getParentCall(node)).toBeNull();
   });
 
-  it("getParentCall returns undefined when grandParent is undefined", () => {
+  it("getParentCall returns null when grandParent is undefined", () => {
     const parent = mockNode<TSESTree.MemberExpression>(
       AST_NODE_TYPES.MemberExpression,
       { computed: false }
@@ -49,10 +49,10 @@ describe("chain-style unit tests", () => {
       name: "x"
     });
     node.parent = parent;
-    expect(getParentCall(node)).toBeUndefined();
+    expect(getParentCall(node)).toBeNull();
   });
 
-  it("getParentCall returns undefined when grandParent is not a method call", () => {
+  it("getParentCall returns null when grandParent is not a method call", () => {
     const grandParent = mockNode<TSESTree.Expression>(
       AST_NODE_TYPES.Identifier,
       { name: "x" }
@@ -66,7 +66,7 @@ describe("chain-style unit tests", () => {
       name: "x"
     });
     node.parent = parent;
-    expect(getParentCall(node)).toBeUndefined();
+    expect(getParentCall(node)).toBeNull();
   });
 
   it("reportAsNeeded does not report for non-explicit-chain-start nodes", () => {

@@ -88,7 +88,16 @@ describe("normalizeLink", () => {
     const item = {
       link: [{ [REL_ATTR]: ALTERNATE }]
     };
-    expect(normalizeLink(item)).toEqual({ [REL_ATTR]: ALTERNATE });
+    expect(normalizeLink(item)).toBe("");
+  });
+
+  it("handles array link item with string element and no href", () => {
+    const item = {
+      link: ["https://example.com/string-link"]
+    };
+    expect(normalizeLink(item as never)).toBe(
+      "https://example.com/string-link"
+    );
   });
 
   it("handles object link with @_href", () => {
@@ -440,6 +449,7 @@ describe("FetchFeedsWorkflow", () => {
   });
 });
 
+// eslint-disable-next-line sonar/max-lines-per-function
 describe("FetchFeedsWorkflow - error and normalization", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -480,6 +490,40 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
 
     // @ts-expect-error for test
     await expect(workflow.run({}, step)).rejects.toThrow(NETWORK_ERROR);
+  });
+
+  it("handles fetch rejection with non-Error object", async () => {
+    const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockResolvedValue(mockFeeds)
+    });
+
+    const mockEnvironment = {
+      ENVIRONMENT: ENVIRONMENT_TEST,
+      ethang_rss: {}
+    };
+
+    vi.spyOn(globalThis, "fetch").mockRejectedValue("network failure");
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, _function) => {
+        return _function();
+      })
+    };
+
+    const context = {
+      waitUntil: noop
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      context,
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await expect(workflow.run({}, step)).rejects.toThrow("network failure");
   });
 
   it("calls normalizeDate and inserts normalized ISO string into database", async () => {

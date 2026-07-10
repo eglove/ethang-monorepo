@@ -9,7 +9,7 @@ import { createUrlPath, type ParseUrlParameters } from "./create-url-path.ts";
 export type PathVariablesRecord = Record<string, number | string>;
 export type SearchParametersRecord = Record<
   string,
-  number | number[] | string | string[] | undefined
+  null | number | number[] | string | string[]
 >;
 
 export type UrlConfig<Url extends string> = {

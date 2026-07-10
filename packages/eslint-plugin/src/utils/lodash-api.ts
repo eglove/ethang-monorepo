@@ -1551,3 +1551,73 @@ export type LodashFunctionName = keyof typeof lodashApi;
 export const isLodashFunction = (name: string): name is LodashFunctionName => {
   return Object.hasOwn(lodashApi, name);
 };
+
+export const isLodashArrayFunction = (name: string): boolean => {
+  if (!isLodashFunction(name)) {
+    return false;
+  }
+  const { category } = lodashApi[name];
+  return "array" === category || "collection" === category;
+};
+
+/**
+Returns true if the lodash function has a native Array.prototype alias.
+Collection methods like `map`, `filter` have nativeAliases and are safe to
+flag on chained calls. Methods like `groupBy`, `keyBy` have no native alias
+and should NOT be flagged on chained (CallExpression) receivers.
+*/
+export const hasNativeArrayAlias = (name: string): boolean => {
+  if (!isLodashFunction(name)) {
+    return false;
+  }
+  return 0 < lodashApi[name].nativeAliases.length;
+};
+
+// Lodash functions that are NOT Array.prototype methods and therefore should only be flagged when called on an identifier receiver if the receiver's type does not actually have a method with that name.
+// These are common method names on user-defined objects (e.g.
+// Cloudflare Workflow bindings have a `create` method).
+const COMMON_USER_METHOD_NAMES = new Set([
+  "clone",
+  "cloneDeep",
+  "cloneDeepWith",
+  "cloneWith",
+  "create",
+  "defaults",
+  "defaultsDeep",
+  "extend",
+  "findKey",
+  "findLastKey",
+  "forIn",
+  "forInRight",
+  "forOwn",
+  "forOwnRight",
+  "fromPairs",
+  "functions",
+  "functionsIn",
+  "invert",
+  "invoke",
+  "keys",
+  "keysIn",
+  "mapKeys",
+  "mapValues",
+  "merge",
+  "mergeWith",
+  "mixin",
+  "omit",
+  "omitBy",
+  "pick",
+  "pickBy",
+  "result",
+  "set",
+  "setWith",
+  "transform",
+  "unset",
+  "update",
+  "updateWith",
+  "values",
+  "valuesIn"
+]);
+
+export const isCommonUserMethodName = (name: string): boolean => {
+  return COMMON_USER_METHOD_NAMES.has(name);
+};

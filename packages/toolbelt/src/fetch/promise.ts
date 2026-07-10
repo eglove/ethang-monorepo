@@ -7,16 +7,11 @@ import keys from "lodash/keys.js";
 import values from "lodash/values.js";
 
 const getErrorMessage = (reason: unknown) => {
-  if (undefined === reason) {
-    return "Rejected without reason";
+  if (isNil(reason)) {
+    return null === reason ? "null" : "Rejected without reason";
   }
 
-  if (
-    isString(reason) ||
-    isNumber(reason) ||
-    isBoolean(reason) ||
-    null === reason
-  ) {
+  if (isString(reason) || isNumber(reason) || isBoolean(reason)) {
     return String(reason);
   }
 

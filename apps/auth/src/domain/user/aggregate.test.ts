@@ -1,8 +1,8 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { describe, expect, it } from "vitest";
 
-import type { UserCommand } from "./commands.ts";
-import type { UserEvent } from "./events.ts";
+import type { UserCommand } from "./commands.d.ts";
+import type { UserEvent } from "./events.d.ts";
 
 import { apply, decide } from "./aggregate.ts";
 import { initialState, type UserState } from "./state.ts";
@@ -126,6 +126,12 @@ describe("decide", () => {
       }
     ]);
   });
+
+  it("returns empty array for unknown command kind", () => {
+    const command = { kind: "Unknown" } as unknown as UserCommand;
+    const events = decide(command, initialState);
+    expect(events).toEqual([]);
+  });
 });
 
 describe("apply", () => {
@@ -191,5 +197,10 @@ describe("apply", () => {
     };
     const newState = apply(initialState, event);
     expect(newState).toStrictEqual(initialState);
+  });
+
+  it("returns state for unknown event kind", () => {
+    const event = { kind: "Unknown" } as unknown as UserEvent;
+    expect(apply(initialState, event)).toBe(initialState);
   });
 });

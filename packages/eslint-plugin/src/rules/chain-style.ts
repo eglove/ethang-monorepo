@@ -3,6 +3,7 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import { isLodashCall } from "../utils/ast.ts";
 import {
@@ -27,24 +28,24 @@ type Options = [ChainStyle?];
 
 export const getParentCall = (
   node: TSESTree.Node
-): TSESTree.CallExpression | undefined => {
+): null | TSESTree.CallExpression => {
   const { parent } = node;
 
-  if (undefined === parent) {
-    return undefined;
+  if (isNil(parent)) {
+    return null;
   }
 
   const grandParent = parent.parent;
 
-  if (undefined === grandParent) {
-    return undefined;
+  if (isNil(grandParent)) {
+    return null;
   }
 
   if (isMethodCall(grandParent)) {
     return grandParent;
   }
 
-  return undefined;
+  return null;
 };
 
 export const reportAsNeeded = (
@@ -58,11 +59,7 @@ export const reportAsNeeded = (
   let current = getParentCall(node);
   let isNeeded = false;
 
-  while (
-    current !== undefined &&
-    isMethodCall(current) &&
-    !isChainBreaker(current)
-  ) {
+  while (!isNil(current) && isMethodCall(current) && !isChainBreaker(current)) {
     if (!isChainable(current)) {
       isNeeded = true;
     }
@@ -70,7 +67,7 @@ export const reportAsNeeded = (
     current = getParentCall(current);
   }
 
-  if (current !== undefined && isMethodCall(current) && !isNeeded) {
+  if (!isNil(current) && isMethodCall(current) && !isNeeded) {
     context.report({ messageId: "unnecessary", node });
   }
 };
@@ -100,7 +97,7 @@ export const reportExplicit = (
   const [firstArgument] = node.arguments;
 
   if (
-    firstArgument !== undefined &&
+    !isNil(firstArgument) &&
     isCallExpression(firstArgument) &&
     isLodashCall(firstArgument, program)
   ) {

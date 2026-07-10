@@ -1,4 +1,5 @@
-import { fn, installCloudflareLogger } from "@ethang/telemetry";
+import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { fn } from "@ethang/telemetry/spans.ts";
 import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.js";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
@@ -72,7 +73,7 @@ export default class extends WorkerEntrypoint<Env> {
     const user = await Effect.runPromise(verifySessionToken(sessionToken));
     const database = createDatabase(this.env.ethang_rss);
     await addSubscriptionMutation(database, { xmlAddress }, user);
-    return createCachedJsonResponse(undefined, {
+    return createCachedJsonResponse(null, {
       cacheControl: { scope: "no-store" }
     });
   }
@@ -146,7 +147,7 @@ export default class extends WorkerEntrypoint<Env> {
     const user = await Effect.runPromise(verifySessionToken(sessionToken));
     const database = createDatabase(this.env.ethang_rss);
     await removeSubscriptionMutation(database, mutationParameters, user);
-    return createCachedJsonResponse(undefined, {
+    return createCachedJsonResponse(null, {
       cacheControl: { scope: "no-store" }
     });
   }

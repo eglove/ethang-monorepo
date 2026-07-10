@@ -40,7 +40,7 @@ describe("getCourseUrlByCourseId", () => {
   it("fails with NotFoundError when course is undefined at index 0", async () => {
     const mockDatabase = {
       from: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockResolvedValue([undefined]),
+      limit: vi.fn().mockResolvedValue([null]),
       select: vi.fn().mockReturnThis(),
       where: vi.fn().mockReturnThis()
     };

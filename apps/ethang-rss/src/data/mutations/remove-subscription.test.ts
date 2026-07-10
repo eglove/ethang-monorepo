@@ -66,7 +66,7 @@ describe("removeSubscriptionMutation", () => {
       removeSubscriptionMutation(
         // @ts-expect-error test double
         mockDatabase,
-        { feedId: undefined as unknown as string },
+        { feedId: null as unknown as string },
         mockContext
       )
     ).rejects.toThrow("feedId is required");

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import isNil from "lodash/isNil.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 
@@ -68,7 +69,7 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
         isPending: mockArticlesStore.isMutationPending,
         mutateAsync: async (input: unknown) => {
           const result = await mockMutate(input);
-          if (undefined !== onSuccess) {
+          if (!isNil(onSuccess)) {
             await onSuccess(result);
           }
           return result;

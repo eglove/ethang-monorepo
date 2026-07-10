@@ -49,6 +49,11 @@ export const carryUserAuthCommand = (
     case "VerifyToken": {
       return tokenService.verify(command.token);
     }
+    default: {
+      return Effect.fail(
+        new Error(`Unexpected command: ${JSON.stringify(command)}`)
+      );
+    }
   }
 };
 
@@ -64,6 +69,7 @@ const assertValidCredentials = (
         new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
       );
     }
+    return null;
   });
 };
 
@@ -109,6 +115,7 @@ const processSignInOrUpEvent = (
   password: string,
   existing: ({ readonly id: string } & UserState) | null,
   passwordService: PasswordService
+  // eslint-disable-next-line @typescript-eslint/consistent-return,consistent-return
 ): Effect.Effect<UserState, HashError | InvalidCredentialsError> => {
   switch (event.kind) {
     case "UserCreated": {

@@ -128,7 +128,7 @@ describe("getValueReturnedInFirstStatement", () => {
     expect(getValueReturnedInFirstStatement(node)).toBe(body);
   });
 
-  it("returns undefined for arrow with empty block body", () => {
+  it("returns null for arrow with empty block body", () => {
     const block = mockNode<TSESTree.BlockStatement>(
       AST_NODE_TYPES.BlockStatement,
       {
@@ -136,7 +136,7 @@ describe("getValueReturnedInFirstStatement", () => {
       }
     );
     const node = arrowFunction([], block);
-    expect(getValueReturnedInFirstStatement(node)).toBeUndefined();
+    expect(getValueReturnedInFirstStatement(node)).toBeNull();
   });
 
   it("returns argument for arrow with return statement", () => {
@@ -152,7 +152,7 @@ describe("getValueReturnedInFirstStatement", () => {
     expect(getValueReturnedInFirstStatement(node)).toBe(argument);
   });
 
-  it("returns undefined for arrow with non-return first statement", () => {
+  it("returns null for arrow with non-return first statement", () => {
     const expression = mockNode<TSESTree.ExpressionStatement>(
       AST_NODE_TYPES.ExpressionStatement
     );
@@ -163,10 +163,10 @@ describe("getValueReturnedInFirstStatement", () => {
       }
     );
     const node = arrowFunction([], block);
-    expect(getValueReturnedInFirstStatement(node)).toBeUndefined();
+    expect(getValueReturnedInFirstStatement(node)).toBeNull();
   });
 
-  it("returns undefined for arrow with bare return", () => {
+  it("returns null for arrow with bare return", () => {
     const returnValue = returnStatement(null);
     const block = mockNode<TSESTree.BlockStatement>(
       AST_NODE_TYPES.BlockStatement,
@@ -175,7 +175,7 @@ describe("getValueReturnedInFirstStatement", () => {
       }
     );
     const node = arrowFunction([], block);
-    expect(getValueReturnedInFirstStatement(node)).toBeUndefined();
+    expect(getValueReturnedInFirstStatement(node)).toBeNull();
   });
 
   it("returns argument for FunctionExpression with return statement", () => {
@@ -191,7 +191,7 @@ describe("getValueReturnedInFirstStatement", () => {
     expect(getValueReturnedInFirstStatement(node)).toBe(argument);
   });
 
-  it("returns undefined for FunctionExpression with non-return first statement", () => {
+  it("returns null for FunctionExpression with non-return first statement", () => {
     const expression = mockNode<TSESTree.ExpressionStatement>(
       AST_NODE_TYPES.ExpressionStatement
     );
@@ -202,30 +202,30 @@ describe("getValueReturnedInFirstStatement", () => {
       }
     );
     const node = functionExpression([], block);
-    expect(getValueReturnedInFirstStatement(node)).toBeUndefined();
+    expect(getValueReturnedInFirstStatement(node)).toBeNull();
   });
 
-  it("returns undefined for non-function expression", () => {
+  it("returns null for non-function expression", () => {
     const node = identifier("x");
-    expect(getValueReturnedInFirstStatement(node)).toBeUndefined();
+    expect(getValueReturnedInFirstStatement(node)).toBeNull();
   });
 });
 
 describe("getFirstParameterName", () => {
-  it("returns undefined for undefined node", () => {
-    expect(getFirstParameterName(undefined)).toBeUndefined();
+  it("returns null for null node", () => {
+    expect(getFirstParameterName(null)).toBeNull();
   });
 
-  it("returns undefined for non-function node", () => {
-    expect(getFirstParameterName(identifier("x"))).toBeUndefined();
+  it("returns null for non-function node", () => {
+    expect(getFirstParameterName(identifier("x"))).toBeNull();
   });
 
-  it("returns undefined for function with no params", () => {
+  it("returns null for function with no params", () => {
     const node = arrowFunction([], identifier("x"));
-    expect(getFirstParameterName(node)).toBeUndefined();
+    expect(getFirstParameterName(node)).toBeNull();
   });
 
-  it("returns undefined for function with non-identifier first param", () => {
+  it("returns null for function with non-identifier first param", () => {
     const parameter = mockNode<TSESTree.RestElement>(
       AST_NODE_TYPES.RestElement,
       {
@@ -233,7 +233,7 @@ describe("getFirstParameterName", () => {
       }
     );
     const node = arrowFunction([parameter], identifier("x"));
-    expect(getFirstParameterName(node)).toBeUndefined();
+    expect(getFirstParameterName(node)).toBeNull();
   });
 
   it("returns name for function with identifier first param", () => {
@@ -243,14 +243,12 @@ describe("getFirstParameterName", () => {
 });
 
 describe("isMemberExpressionOf", () => {
-  it("returns false for undefined node", () => {
-    expect(isMemberExpressionOf(undefined, PARAM, 3, false)).toBe(false);
+  it("returns false for null node", () => {
+    expect(isMemberExpressionOf(null, PARAM, 3, false)).toBe(false);
   });
 
-  it("returns false for undefined parameterName", () => {
-    expect(isMemberExpressionOf(identifier(PARAM), undefined, 3, false)).toBe(
-      false
-    );
+  it("returns false for null parameterName", () => {
+    expect(isMemberExpressionOf(identifier(PARAM), null, 3, false)).toBe(false);
   });
 
   it("returns false for non-member expression", () => {
@@ -294,8 +292,8 @@ describe("isMemberExpressionOf", () => {
 });
 
 describe("isEqualityToMemberOf", () => {
-  it("returns false for undefined expression", () => {
-    expect(isEqualityToMemberOf(undefined, PARAM, 3, false, false)).toBe(false);
+  it("returns false for null expression", () => {
+    expect(isEqualityToMemberOf(null, PARAM, 3, false, false)).toBe(false);
   });
 
   it("returns false for non-strict-equality expression", () => {
@@ -305,11 +303,9 @@ describe("isEqualityToMemberOf", () => {
     );
   });
 
-  it("returns false for undefined parameterName in isEqualityToMemberOf", () => {
+  it("returns false for null parameterName in isEqualityToMemberOf", () => {
     const expression = binaryExpression("===", identifier("x"), literal("y"));
-    expect(isEqualityToMemberOf(expression, undefined, 3, false, false)).toBe(
-      false
-    );
+    expect(isEqualityToMemberOf(expression, null, 3, false, false)).toBe(false);
   });
 
   it("returns false when both sides are members of parameter", () => {
@@ -377,9 +373,9 @@ describe("isEqualityToMemberOf", () => {
 });
 
 describe("isConjunctionOfEqualitiesToMemberOf", () => {
-  it("returns false for undefined parameterName in isConjunctionOfEqualitiesToMemberOf", () => {
+  it("returns false for null parameterName in isConjunctionOfEqualitiesToMemberOf", () => {
     expect(
-      isConjunctionOfEqualitiesToMemberOf(undefined, undefined, 3, false, false)
+      isConjunctionOfEqualitiesToMemberOf(null, null, 3, false, false)
     ).toBe(false);
   });
 
@@ -449,10 +445,8 @@ describe("isConjunctionOfEqualitiesToMemberOf", () => {
 });
 
 describe("isFunctionReturningConjunction", () => {
-  it("returns false for undefined iteratee", () => {
-    expect(isFunctionReturningConjunction(undefined, 3, false, false)).toBe(
-      false
-    );
+  it("returns false for null iteratee", () => {
+    expect(isFunctionReturningConjunction(null, 3, false, false)).toBe(false);
   });
 
   it("returns false for non-function iteratee", () => {
@@ -505,8 +499,8 @@ describe("isFunctionReturningConjunction", () => {
 });
 
 describe("isLodashMatchesCall", () => {
-  it("returns false for undefined iteratee", () => {
-    expect(isLodashMatchesCall(undefined)).toBe(false);
+  it("returns false for null iteratee", () => {
+    expect(isLodashMatchesCall(null)).toBe(false);
   });
 
   it("returns false for non-call expression", () => {

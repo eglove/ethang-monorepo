@@ -10,6 +10,7 @@ const TEST_EMAIL = EMAIL;
 const TEST_PASSWORD = PASSWORD;
 const TEST_USERNAME_VALUE = TEST_USERNAME;
 const TEST_SECRET = SECRET;
+const VALID_TOKEN = "valid-token";
 
 const { hoistedEmail, hoistedToken, mockUser } = vi.hoisted(() => {
   const PWD_KEY = "password";
@@ -156,6 +157,27 @@ describe("POST /sign-up", () => {
     expect(body).toEqual({ error: "STRING_ERROR" });
   });
 
+  it("should return success when sign up is valid without username", async () => {
+    const response = await app.request(
+      "/sign-up",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toEqual(mockUser);
+  });
+
   it("should return success when sign up with fallback token-auth", async () => {
     const response = await app.request(
       "/sign-up",
@@ -291,7 +313,7 @@ describe("GET /verify", () => {
     const response = await app.request(
       "/verify",
       {
-        headers: { "X-Token": "valid-token" },
+        headers: { "X-Token": VALID_TOKEN },
         method: "GET"
       },
       {
@@ -312,7 +334,7 @@ describe("GET /verify", () => {
     const response = await app.request(
       "/verify",
       {
-        headers: { "X-Token": "valid-token" },
+        headers: { "X-Token": VALID_TOKEN },
         method: "GET"
       },
       {}
@@ -358,6 +380,28 @@ describe("GET /verify", () => {
     expect(response.status).toBe(401);
     const body = await response.json();
     expect(body).toEqual({ error: "Unauthorized" });
+  });
+
+  it("should return result directly when no payload property", async () => {
+    // @ts-expect-error for test
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed({ email: hoistedEmail });
+    });
+
+    const response = await app.request(
+      "/verify",
+      {
+        headers: { "X-Token": VALID_TOKEN },
+        method: "GET"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toEqual({ email: TEST_EMAIL });
   });
 });
 

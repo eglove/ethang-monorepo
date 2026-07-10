@@ -4,6 +4,7 @@ import {
   type TSESTree
 } from "@typescript-eslint/utils";
 import every from "lodash/every.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import join from "lodash/join.js";
 import map from "lodash/map.js";
@@ -126,12 +127,10 @@ export const isAdjacentToPropertyAccessInTemplate = (
   const quasiAfter = literal.quasis[quasiAfterIndex];
 
   const isBeforeMatches =
-    quasiBefore !== undefined &&
-    isEndsWithPropertyAccess(quasiBefore.value.raw);
+    !isNil(quasiBefore) && isEndsWithPropertyAccess(quasiBefore.value.raw);
 
   const isAfterMatches =
-    quasiAfter !== undefined &&
-    isStartsWithPropertyAccess(quasiAfter.value.raw);
+    !isNil(quasiAfter) && isStartsWithPropertyAccess(quasiAfter.value.raw);
 
   return isBeforeMatches || isAfterMatches;
 };
@@ -277,7 +276,7 @@ export const pathStyleRule = createRule<Options, MessageIds>({
 
       const argument = node.arguments[index];
 
-      if (argument === undefined) {
+      if (isNil(argument)) {
         return;
       }
 

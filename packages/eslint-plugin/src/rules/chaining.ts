@@ -3,6 +3,7 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import {
   isChainBreaker,
@@ -34,14 +35,14 @@ const isLodashIdentifierCall = (
 
 const getFirstArgumentCall = (
   node: TSESTree.CallExpression
-): TSESTree.CallExpression | undefined => {
+): null | TSESTree.CallExpression => {
   const [firstArgument] = node.arguments;
 
-  if (firstArgument !== undefined && isCallExpression(firstArgument)) {
+  if (!isNil(firstArgument) && isCallExpression(firstArgument)) {
     return firstArgument;
   }
 
-  return undefined;
+  return null;
 };
 
 export const isNestedNLevels = (
@@ -65,7 +66,7 @@ export const isNestedNLevels = (
 
   const innerCall = getFirstArgumentCall(node);
 
-  if (innerCall !== undefined) {
+  if (!isNil(innerCall)) {
     return isNestedNLevels(innerCall, depth - 1, isIncludingUnchainable);
   }
 
@@ -83,7 +84,7 @@ export const reportOnSingleChain = (
 
   const isStandaloneChain =
     !isObjectOfMethodCall(node) ||
-    (grandParent !== undefined &&
+    (!isNil(grandParent) &&
       isMethodCall(grandParent) &&
       isChainBreaker(grandParent));
 
@@ -104,7 +105,7 @@ const reportSingleChainFromExplicitStart = (
     parent: { parent }
   } = node;
 
-  if (parent !== undefined && isMethodCall(parent)) {
+  if (!isNil(parent) && isMethodCall(parent)) {
     reportOnSingleChain(parent, context);
   }
 };

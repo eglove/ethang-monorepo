@@ -1,5 +1,7 @@
 import type { PropsWithChildren } from "react";
 
+import isNil from "lodash/isNil.js";
+
 import { TimeDisplay } from "./time-display.js";
 
 type UpdateItemProperties = Readonly<
@@ -9,7 +11,7 @@ type UpdateItemProperties = Readonly<
 >;
 
 export const UpdateItem = ({ children, date }: UpdateItemProperties) => {
-  if (date !== undefined) {
+  if (!isNil(date)) {
     return (
       <li>
         <TimeDisplay date={date} /> -{children}

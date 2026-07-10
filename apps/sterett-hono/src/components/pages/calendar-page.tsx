@@ -1,4 +1,4 @@
-import { DateTime } from "effect";
+import { DateTime, Effect } from "effect";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
@@ -54,8 +54,8 @@ export const CalendarPage = async ({
   );
   const events = await getCalendarEvents(rangeStart, rangeEndExclusive);
   const updatedAt =
-    map(events, (event) => {
-      return event._updatedAt;
+    map(events, ({ _updatedAt }) => {
+      return _updatedAt;
     })
       .toSorted((a, b) => {
         return a.localeCompare(b);
@@ -66,7 +66,8 @@ export const CalendarPage = async ({
   const today = DateTime.formatIsoDate(
     DateTime.unsafeMakeZoned(DateTime.unsafeNow(), { timeZone: CHICAGO })
   );
-  if (isNil(today)) throw new Error("Could not determine current date");
+  if (isNil(today))
+    Effect.runSync(Effect.die(new Error("Could not determine current date")));
 
   // Month view locals
   const weeks = buildCalendarWeeks(year, month);
@@ -108,7 +109,9 @@ export const CalendarPage = async ({
     DateTime.unsafeMake(crossViewDt)
   );
   if (isNil(crossViewDate))
-    throw new Error("Could not determine cross-view date");
+    Effect.runSync(
+      Effect.die(new Error("Could not determine cross-view date"))
+    );
 
   const crossViewParts = DateTime.toPartsUtc(DateTime.unsafeMake(crossViewDt));
   const crossViewYear = crossViewParts.year;

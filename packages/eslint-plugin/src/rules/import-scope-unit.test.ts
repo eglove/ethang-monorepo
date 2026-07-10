@@ -102,18 +102,18 @@ describe("getNameFromCjsRequire", () => {
     expect(getNameFromCjsRequire(node)).toBe(LODASH);
   });
 
-  it("returns undefined when init is null", () => {
-    expect(getNameFromCjsRequire(null)).toBeUndefined();
+  it("returns null when init is null", () => {
+    expect(getNameFromCjsRequire(null)).toBeNull();
   });
 
-  it("returns undefined when init is not a CallExpression", () => {
+  it("returns null when init is not a CallExpression", () => {
     const node = mockNode<TSESTree.Identifier>(AST_NODE_TYPES.Identifier, {
       name: "foo"
     });
-    expect(getNameFromCjsRequire(node)).toBeUndefined();
+    expect(getNameFromCjsRequire(node)).toBeNull();
   });
 
-  it("returns undefined when callee is not an Identifier", () => {
+  it("returns null when callee is not an Identifier", () => {
     const node = mockNode<TSESTree.CallExpression>(
       AST_NODE_TYPES.CallExpression,
       {
@@ -135,10 +135,10 @@ describe("getNameFromCjsRequire", () => {
         )
       }
     );
-    expect(getNameFromCjsRequire(node)).toBeUndefined();
+    expect(getNameFromCjsRequire(node)).toBeNull();
   });
 
-  it("returns undefined when callee name is not require", () => {
+  it("returns null when callee name is not require", () => {
     const node = mockNode<TSESTree.CallExpression>(
       AST_NODE_TYPES.CallExpression,
       {
@@ -150,10 +150,10 @@ describe("getNameFromCjsRequire", () => {
         })
       }
     );
-    expect(getNameFromCjsRequire(node)).toBeUndefined();
+    expect(getNameFromCjsRequire(node)).toBeNull();
   });
 
-  it("returns undefined when arguments length is not 1", () => {
+  it("returns null when arguments length is not 1", () => {
     const node = mockNode<TSESTree.CallExpression>(
       AST_NODE_TYPES.CallExpression,
       {
@@ -163,10 +163,10 @@ describe("getNameFromCjsRequire", () => {
         })
       }
     );
-    expect(getNameFromCjsRequire(node)).toBeUndefined();
+    expect(getNameFromCjsRequire(node)).toBeNull();
   });
 
-  it("returns undefined when argument is not a Literal", () => {
+  it("returns null when argument is not a Literal", () => {
     const node = mockNode<TSESTree.CallExpression>(
       AST_NODE_TYPES.CallExpression,
       {
@@ -180,10 +180,10 @@ describe("getNameFromCjsRequire", () => {
         })
       }
     );
-    expect(getNameFromCjsRequire(node)).toBeUndefined();
+    expect(getNameFromCjsRequire(node)).toBeNull();
   });
 
-  it("returns undefined when literal value is not a string", () => {
+  it("returns null when literal value is not a string", () => {
     const node = mockNode<TSESTree.CallExpression>(
       AST_NODE_TYPES.CallExpression,
       {
@@ -195,7 +195,7 @@ describe("getNameFromCjsRequire", () => {
         })
       }
     );
-    expect(getNameFromCjsRequire(node)).toBeUndefined();
+    expect(getNameFromCjsRequire(node)).toBeNull();
   });
 });
 

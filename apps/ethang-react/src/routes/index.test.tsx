@@ -189,9 +189,12 @@ describe("Index Route", () => {
     const { WhatIveShipped } =
       await import("../components/what-ive-shipped.tsx");
     const { container } = render(<WhatIveShipped />);
-    const names = map(container.querySelectorAll("[data-name]"), (node) => {
-      return node.textContent;
-    });
+    const names = map(
+      container.querySelectorAll("[data-name]"),
+      ({ textContent }) => {
+        return textContent;
+      }
+    );
     const resumeNames = names.slice(0, 13);
     expect(resumeNames[0]).toContain("Telecom provisioning platform");
     expect(resumeNames[12]).toContain("CMS-driven village trustee site");

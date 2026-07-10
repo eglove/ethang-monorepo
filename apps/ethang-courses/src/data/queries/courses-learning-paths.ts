@@ -1,6 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import filter from "lodash/filter.js";
+import flatMap from "lodash/flatMap.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";
 
@@ -50,11 +51,10 @@ const buildOrderedCourses = (
       return courseMap.has(lpc.courseId);
     }),
     (lpc) => {
-      const courseEntry = courseMap.get(lpc.courseId);
-      if (!courseEntry) {
-        throw new Error("Course not found in map");
+      const course = courseMap.get(lpc.courseId);
+      if (!course) {
+        return Effect.runSync(Effect.die(new Error("Course not found in map")));
       }
-      const course = courseEntry;
       return {
         author: course.author,
         createdAt: course.createdAt,
@@ -74,11 +74,7 @@ const fetchLpData = async (database: Database, lpId: string) => {
     .where(eq(learningPathCoursesTable.learningPathId, lpId))
     .orderBy(asc(learningPathCoursesTable.orderRank));
 
-  const courseIds = new Set(
-    map(coursesInPath, (lpc) => {
-      return lpc.courseId;
-    })
-  );
+  const courseIds = new Set(map(coursesInPath, "courseId"));
 
   if (0 === courseIds.size) {
     return { orderedCourses: [] };
@@ -237,7 +233,7 @@ const buildAllCoursesFromSortedLpIds = (
   courseMap: Map<string, typeof coursesTable.$inferSelect>,
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
 ): LearningPathCourseEntry[] => {
-  const entries = sortedLpIds.flatMap((lpId) => {
+  const entries = flatMap(sortedLpIds, (lpId) => {
     return coursesByLp.get(lpId) ?? [];
   });
   const allCourses: LearningPathCourseEntry[] = [];

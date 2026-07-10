@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
@@ -15,11 +16,16 @@ const SW_VERSION = process.env["SW_VERSION"] ?? "v1";
 const ASSETS_CACHE = `assets-${SW_VERSION}`;
 const HTML_CACHE = `html-${SW_VERSION}`;
 
-try {
-  await self.skipWaiting();
-} catch {
-  // Do nothing
-}
+Effect.runFork(
+  Effect.tryPromise({
+    catch: () => {
+      // Do nothing
+    },
+    try: async () => {
+      await self.skipWaiting();
+    }
+  })
+);
 clientsClaim();
 
 // Cleanup old caches

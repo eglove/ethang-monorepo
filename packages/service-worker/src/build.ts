@@ -1,4 +1,5 @@
-import { Effect, installCloudflareLogger } from "@ethang/telemetry";
+import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { Effect } from "effect";
 import { build } from "esbuild";
 import { randomUUID } from "node:crypto";
 import path from "node:path";

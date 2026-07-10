@@ -48,7 +48,7 @@ const isInferable = (flags: TypeFlags): boolean => {
 };
 
 const hasGenericParameters = (functionNode: FunctionLikeNode): boolean => {
-  if (functionNode.typeParameters === undefined) {
+  if (isNil(functionNode.typeParameters)) {
     return false;
   }
 
@@ -70,9 +70,7 @@ const isExported = (
   functionNode: TSESTree.Node
 ): boolean => {
   const ancestors = context.sourceCode.getAncestors(functionNode);
-  return some(ancestors, (ancestor) => {
-    return AST_NODE_TYPES.ExportNamedDeclaration === ancestor.type;
-  });
+  return some(ancestors, ["type", AST_NODE_TYPES.ExportNamedDeclaration]);
 };
 
 const isStringEqual = (left: string, right: string): boolean => {

@@ -65,7 +65,7 @@ const buildImportList = (output: OutputConfig): string[] => {
 const buildConfigBlockOptionals = (
   sorted: Plugin[],
   output: OutputConfig,
-  reactSettings: string | undefined
+  reactSettings: null | string
 ): string => {
   let optionals = "";
 
@@ -100,7 +100,7 @@ const buildConfigBlock = (
   files: string,
   plugins: Plugin[],
   output: OutputConfig,
-  reactSettings: string | undefined
+  reactSettings: null | string
 ): string => {
   const sorted = [...plugins].toSorted((a, b) => {
     return (a.order ?? 0) - (b.order ?? 0);
@@ -117,7 +117,7 @@ const buildConfigBlock = (
   }
 
   const rulesJson = trimLodash(
-    JSON.stringify(mergedRules, undefined, 2).slice(2, -1)
+    JSON.stringify(mergedRules, null, 2).slice(2, -1)
   );
 
   let pluginsString = "";
@@ -142,9 +142,7 @@ const buildConfigBlock = (
     filter(sorted, (p) => {
       return !isNil(p.extraOptions);
     }),
-    (p) => {
-      return p.extraOptions;
-    }
+    "extraOptions"
   ).join("\n");
 
   return `{
@@ -161,7 +159,7 @@ const buildConfigBlock = (
 
 const buildConfigEntries = (
   output: OutputConfig,
-  reactSettings: string | undefined
+  reactSettings: null | string
 ): string[] => {
   const configEntries: string[] = [];
 
@@ -208,9 +206,11 @@ export const createConfigFile = async (output: OutputConfig): Promise<void> => {
     configFile += `${item}\n`;
   }
 
-  let reactSettings: string | undefined;
+  let reactSettings: null | string;
 
-  if (!isNil(output.includeReactVersion)) {
+  if (isNil(output.includeReactVersion)) {
+    reactSettings = null;
+  } else {
     const react = await getLatestReact();
     reactSettings = JSON.stringify({
       react: { version: react?.version }

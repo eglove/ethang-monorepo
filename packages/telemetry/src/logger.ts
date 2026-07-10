@@ -18,7 +18,6 @@ Call this once per Worker entrypoint before any `Effect.runPromise`.
 export const installCloudflareLogger = (): void => {
   const { defaultLogger } = Logger;
   const prettyLogger = Logger.prettyLogger({ colors: false });
-  // eslint-disable-next-line lodash/prefer-lodash-method
   const layer = Logger.replace(defaultLogger, prettyLogger);
 
   // Discard the resulting layer after evaluating it; we just need the

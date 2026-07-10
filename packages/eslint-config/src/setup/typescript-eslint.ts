@@ -24,10 +24,6 @@ const customRules = [
     rule: "off"
   },
   {
-    name: "consistent-return",
-    rule: "off"
-  },
-  {
     name: "consistent-type-definitions",
     rule: ["error", "type"]
   },

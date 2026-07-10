@@ -22,15 +22,16 @@ export default defineConfig({
   },
   test: {
     coverage: {
+      exclude: ["src/**/*.d.ts"],
       include: ["src/**/*.ts"],
       provider: "v8",
       reporter: ["text", "json", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
-        branches: 74.54,
-        functions: 90.4,
-        lines: 94.65,
-        statements: 94.65
+        branches: 76.69,
+        functions: 92.64,
+        lines: 96.09,
+        statements: 96.09
       }
     },
     environment: "node",

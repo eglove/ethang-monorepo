@@ -1,5 +1,6 @@
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 import every from "lodash/every.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
 import { isLodashFunction } from "./lodash-api.ts";
@@ -226,7 +227,7 @@ const getReturnedValue = (
     }
     const first = _function.body.body.at(0);
     /* v8 ignore if -- defensive guard: length check ensures first exists */
-    if (undefined === first) {
+    if (isNil(first)) {
       return null;
     }
     if (isReturnStatement(first) && null !== first.argument) {
@@ -249,7 +250,7 @@ const isCastingFirstParameter = (
 ): boolean => {
   const argument = node.arguments.at(0);
   return (
-    argument !== undefined &&
+    !isNil(argument) &&
     isIdentifier(argument) &&
     argument.name === parameter.name
   );
@@ -278,7 +279,7 @@ const isFirstParameterBooleanCasting = (
   }
 
   const parameter = _function.params.at(0);
-  if (parameter === undefined || !isIdentifier(parameter)) {
+  if (isNil(parameter) || !isIdentifier(parameter)) {
     return false;
   }
 
@@ -311,7 +312,7 @@ export const shouldPreferCompact = (node: TSESTree.CallExpression): boolean => {
   const iterateeIndex = isLodashMemberCall(node) ? 1 : 0;
   const iteratee = node.arguments.at(iterateeIndex);
 
-  if (undefined === iteratee) {
+  if (isNil(iteratee)) {
     return false;
   }
 
@@ -434,7 +435,7 @@ const getForEachIteratee = (
     return null;
   }
   const iteratee = node.arguments.at(0);
-  if (iteratee === undefined) {
+  if (isNil(iteratee)) {
     return null;
   }
   if (!isArrowFunctionExpression(iteratee) && !isFunctionExpression(iteratee)) {
@@ -457,7 +458,7 @@ export const shouldPreferMapPattern = (
   }
 
   const statement = body.body.at(0);
-  if (statement === undefined || !isExpressionStatement(statement)) {
+  if (isNil(statement) || !isExpressionStatement(statement)) {
     return false;
   }
 
@@ -496,15 +497,14 @@ export const shouldPreferFilterPattern = (
     return false;
   }
 
-  return isPushStatement(consequent.body.at(0));
+  /* v8 ignore next -- length check guarantees at(0) returns a value */
+  return isPushStatement(consequent.body.at(0) ?? null);
 };
 
-const isPushStatement = (
-  statement: TSESTree.Statement | undefined
-): boolean => {
+const isPushStatement = (statement: null | TSESTree.Statement): boolean => {
   /* v8 ignore if */
   if (
-    statement === undefined ||
+    isNil(statement) ||
     !isExpressionStatement(statement) ||
     !isCallExpression(statement.expression)
   ) {
@@ -628,8 +628,8 @@ export const resolvePreferImmutable = (
   if (isIdentifier(node.callee)) {
     const preferred = Object.hasOwn(MUTATING_METHODS, node.callee.name)
       ? MUTATING_METHODS[node.callee.name]
-      : undefined;
-    if (preferred !== undefined) {
+      : null;
+    if (!isNil(preferred)) {
       /* v8 ignore next -- defensive guard: bare identifier mutating calls are unusual */
       return { method: node.callee.name, preferred };
     }
@@ -638,8 +638,8 @@ export const resolvePreferImmutable = (
   if (isMemberExpression(node.callee) && isIdentifier(node.callee.property)) {
     const preferred = Object.hasOwn(MUTATING_METHODS, node.callee.property.name)
       ? MUTATING_METHODS[node.callee.property.name]
-      : undefined;
-    if (preferred !== undefined) {
+      : null;
+    if (!isNil(preferred)) {
       return { method: node.callee.property.name, preferred };
     }
   }
@@ -657,7 +657,7 @@ export const shouldPreferReject = (node: TSESTree.CallExpression): boolean => {
   const iterateeIndex = isLodashMemberCall(node) ? 1 : 0;
   const iteratee = node.arguments.at(iterateeIndex);
 
-  if (undefined === iteratee) {
+  if (isNil(iteratee)) {
     return false;
   }
 
@@ -690,7 +690,7 @@ export const resolvePreferOverQuantifier = (
   const iterateeIndex = isLodashMemberCall(node) ? 1 : 0;
   const iteratee = node.arguments.at(iterateeIndex);
 
-  if (undefined === iteratee) {
+  if (isNil(iteratee)) {
     return null;
   }
 
@@ -775,7 +775,7 @@ export const shouldPreferMatches = (node: TSESTree.CallExpression): boolean => {
   const iterateeIndex = isLodashMemberCall(node) ? 1 : 0;
   const iteratee = node.arguments.at(iterateeIndex);
 
-  if (undefined === iteratee) {
+  if (isNil(iteratee)) {
     return false;
   }
 
@@ -839,7 +839,7 @@ export const shouldPreferInvokeMap = (
 
   const parameter = iteratee.params.at(0);
   return (
-    parameter !== undefined &&
+    !isNil(parameter) &&
     isIdentifier(parameter) &&
     isIdentifier(callee.object) &&
     callee.object.name === parameter.name
@@ -851,7 +851,7 @@ const getMapFunctionIteratee = (
 ): null | TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression => {
   const iteratee = node.arguments.at(0);
   if (
-    iteratee === undefined ||
+    isNil(iteratee) ||
     (!isArrowFunctionExpression(iteratee) && !isFunctionExpression(iteratee))
   ) {
     return null;
