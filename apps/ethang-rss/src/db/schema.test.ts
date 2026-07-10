@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import find from "lodash/find.js";
 import isNil from "lodash/isNil.js";
 import { describe, expect, it } from "vitest";

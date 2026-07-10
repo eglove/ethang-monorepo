@@ -106,7 +106,6 @@ describe("requireAuth Middleware", () => {
   it("should return 401 if json parsing throws", async () => {
     (globalThis.fetch as any).mockResolvedValueOnce({
       json: async () => {
-        // eslint-disable-next-line @ethang/no-try-catch -- simulating fetch rejection for test
         throw new Error("Invalid JSON");
       },
       ok: true
@@ -129,7 +128,6 @@ describe("requireAuth Middleware", () => {
   it("should return 401 if json parsing throws non-Error value", async () => {
     (globalThis.fetch as any).mockResolvedValueOnce({
       json: async () => {
-        // eslint-disable-next-line @ethang/no-try-catch, @typescript-eslint/only-throw-error -- simulating non-Error throw for test
         throw "not an error";
       },
       ok: true

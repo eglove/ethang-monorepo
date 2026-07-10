@@ -130,7 +130,6 @@ describe("app routes", () => {
     const renderError = new Error("render error");
 
     vi.mocked(CalendarPage).mockImplementationOnce(() => {
-      // eslint-disable-next-line @ethang/no-try-catch
       throw renderError;
     });
     const response = await app.request(`${BASE}/calendar`);

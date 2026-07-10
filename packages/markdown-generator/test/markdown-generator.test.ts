@@ -86,10 +86,10 @@ describe("Markdown Generator", () => {
         const document = {
           blocks: [],
           frontmatter: {
-            zKey: "last",
-            title: "My Doc",
             aKey: "first",
-            ignoredKey: undefined as unknown as string
+            ignoredKey: null as unknown as string,
+            title: "My Doc",
+            zKey: "last"
           }
         };
         const expected = `---\ntitle: My Doc\naKey: first\nzKey: last\n---\n`;
@@ -339,7 +339,7 @@ describe("Markdown Generator", () => {
 
       it("should handle null blocks safely without crashing", () => {
         const document = {
-          blocks: [null, { text: "Hello", type: "text" as const }],
+          blocks: [null, { text: "Hello", type: "text" as const }]
         };
 
         expect(() => {
@@ -350,4 +350,3 @@ describe("Markdown Generator", () => {
     });
   });
 });
-
