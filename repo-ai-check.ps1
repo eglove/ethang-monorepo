@@ -227,7 +227,7 @@ try {
     # can exercise them in isolation.
     # -------------------------------------------------------------------------
 
-    function Parse-EslintJson {
+    function ConvertFrom-EslintJson {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory)]
@@ -312,7 +312,7 @@ try {
         }
     }
 
-    function Parse-TscOutput {
+    function ConvertFrom-TscOutput {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory)]
@@ -365,7 +365,7 @@ try {
         }
     }
 
-    function Parse-VitestJson {
+    function ConvertFrom-VitestJson {
         [CmdletBinding()]
         param(
             [Parameter(Mandatory)]
@@ -401,7 +401,6 @@ try {
             $numSkipped = 0
             $numTotal = 0
             $numTodo = 0
-            $startTime = $null
             $success = $true
 
             # The JSON reporter prints each test file as its own JSON document
@@ -420,7 +419,7 @@ try {
                         $documents.Add(($line | ConvertFrom-Json -ErrorAction Stop))
                     }
                     catch {
-                        # tolerate non-JSON noise lines
+                        Write-Verbose "Ignoring non-JSON vitest output line."
                     }
                 }
             }
@@ -432,7 +431,6 @@ try {
                 if ($null -ne $doc.PSObject.Properties['numTotalTests']) { $numTotal += [int]$doc.numTotalTests }
                 if ($null -ne $doc.PSObject.Properties['numTodoTests']) { $numTodo += [int]$doc.numTodoTests }
                 if ($null -ne $doc.PSObject.Properties['success'] -and -not $doc.success) { $success = $false }
-                if ($null -ne $doc.PSObject.Properties['startTime']) { $startTime = $doc.startTime }
 
                 if ($null -ne $doc.PSObject.Properties['testResults']) {
                     foreach ($fileResult in $doc.testResults) {
@@ -525,9 +523,6 @@ try {
             [string]$TempRoot,
 
             [Parameter(Mandatory)]
-            [int]$TimeoutSeconds,
-
-            [Parameter(Mandatory)]
             [bool]$UseFix
         )
 
@@ -546,11 +541,11 @@ try {
 
         try {
             Push-Location $Workspace.Path
+            $start = [DateTime]::UtcNow
 
             # ---- lint ---------------------------------------------------------
             if ($Workspace.HasLint) {
-                $lintFile = Join-Path $workspaceTemp 'lint.json'
-                $fixFlag = if ($UseFix) { '--fix' } else { '' }
+
                 $lintArgs = @('.', '--format', 'json')
                 if ($UseFix) { $lintArgs += '--fix' }
 
@@ -560,7 +555,7 @@ try {
 
                 $lintStdout = ($lintOut | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.ToString() } else { $_ } }) -join "`n"
 
-                $result.lint = Parse-EslintJson -Stdout $lintStdout -Stderr '' -ExitCode $lintExit -DurationMs $lintMs
+                $result.lint = ConvertFrom-EslintJson -Stdout $lintStdout -Stderr '' -ExitCode $lintExit -DurationMs $lintMs
             }
             else {
                 $result.lint = [PSCustomObject]@{
@@ -583,7 +578,7 @@ try {
                 $tscMs = [int]([DateTime]::UtcNow - $start).TotalMilliseconds
 
                 $tscText = ($tscOut | ForEach-Object { "$_" }) -join "`n"
-                $result.tsc = Parse-TscOutput -Stdout $tscText -Stderr '' -ExitCode $tscExit -DurationMs $tscMs
+                $result.tsc = ConvertFrom-TscOutput -Stdout $tscText -Stderr '' -ExitCode $tscExit -DurationMs $tscMs
             }
             else {
                 $result.tsc = [PSCustomObject]@{
@@ -599,13 +594,13 @@ try {
 
             # ---- test ---------------------------------------------------------
             if ($Workspace.HasTest) {
-                $testFile = Join-Path $workspaceTemp 'test.json'
+
                 $testOut = & pnpm exec vitest run --reporter=json --coverage=false 2>&1
                 $testExit = $LASTEXITCODE
                 $testMs = [int]([DateTime]::UtcNow - $start).TotalMilliseconds
 
                 $testText = ($testOut | ForEach-Object { "$_" }) -join "`n"
-                $result.test = Parse-VitestJson -Stdout $testText -Stderr '' -ExitCode $testExit -DurationMs $testMs
+                $result.test = ConvertFrom-VitestJson -Stdout $testText -Stderr '' -ExitCode $testExit -DurationMs $testMs
             }
             else {
                 $result.test = [PSCustomObject]@{
@@ -629,17 +624,14 @@ try {
         return $result
     }
 
-    # The `$start` variable used inside Invoke-WorkspaceCheck (via closure) is
-    # declared here so it captures the time the job began. Jobs get their own
-    # runspace so the closure is per-job.
+    # Per-workspace thread job. Each job receives an arg bag with the
+    # workspace metadata and a temp directory for per-workspace artifacts.
     $jobScript = {
         param($ArgBag)
         $Workspace = $ArgBag.Workspace
         $TempRoot = $ArgBag.TempRoot
-        $TimeoutSeconds = $ArgBag.TimeoutSeconds
         $UseFix = $ArgBag.UseFix
         $TargetFiles = @($ArgBag.TargetFiles)
-        $start = [DateTime]::UtcNow
 
         # Normalize forward slashes for case-insensitive path comparisons.
         $TargetFilesNormalized = @($TargetFiles | ForEach-Object {
@@ -657,8 +649,8 @@ try {
 
         # Inline-copy of the parser functions so they are available in the
         # job's runspace.
-        function Parse-EslintJsonLocal {
-            param($Stdout, $Stderr, $ExitCode, $DurationMs)
+        function ConvertFrom-EslintJsonLocal {
+            param($Stdout, $ExitCode, $DurationMs)
             $issues = [System.Collections.Generic.List[object]]::new()
             $raw = $Stdout.Trim()
             if (-not [string]::IsNullOrWhiteSpace($raw)) {
@@ -708,7 +700,7 @@ try {
             }
         }
 
-        function Parse-TscOutputLocal {
+        function ConvertFrom-TscOutputLocal {
             param($Stdout, $Stderr, $ExitCode, $DurationMs)
             $diagnostics = [System.Collections.Generic.List[object]]::new()
             $pattern = '^(?<file>.+?)\((?<line>\d+),(?<col>\d+)\):\s+(?<severity>error|warning|info)\s+(?<code>TS\d+):\s*(?<message>.*)$'
@@ -740,7 +732,7 @@ try {
             }
         }
 
-        function Parse-VitestJsonLocal {
+        function ConvertFrom-VitestJsonLocal {
             param($Stdout, $Stderr, $ExitCode, $DurationMs)
             $failingTests = [System.Collections.Generic.List[object]]::new()
             $raw = $Stdout.Trim()
@@ -762,7 +754,7 @@ try {
                     foreach ($line in ($raw -split "`r?`n")) {
                         if ([string]::IsNullOrWhiteSpace($line)) { continue }
                         try { $documents.Add(($line | ConvertFrom-Json -ErrorAction Stop)) }
-                        catch { }
+                        catch { Write-Verbose "Ignoring non-JSON vitest output line." }
                     }
                 }
                 foreach ($doc in $documents) {
@@ -855,7 +847,7 @@ try {
                 $lintExit = $LASTEXITCODE
                 $lintMs = [int]([DateTime]::UtcNow - $lintStart).TotalMilliseconds
                 $lintText = ($lintOut | ForEach-Object { "$_" }) -join "`n"
-                $result.lint = Parse-EslintJsonLocal -Stdout $lintText -Stderr '' -ExitCode $lintExit -DurationMs $lintMs
+                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $lintText -ExitCode $lintExit -DurationMs $lintMs
             }
             else {
                 $result.lint = [PSCustomObject]@{
@@ -877,7 +869,7 @@ try {
                 $tscExit = $LASTEXITCODE
                 $tscMs = [int]([DateTime]::UtcNow - $tscStart).TotalMilliseconds
                 $tscText = ($tscOut | ForEach-Object { "$_" }) -join "`n"
-                $tscResult = Parse-TscOutputLocal -Stdout $tscText -Stderr '' -ExitCode $tscExit -DurationMs $tscMs
+                $tscResult = ConvertFrom-TscOutputLocal -Stdout $tscText -Stderr '' -ExitCode $tscExit -DurationMs $tscMs
 
                 # When targeting specific files, filter the diagnostics list to
                 # only those whose file matches a target. Counts still reflect
@@ -937,7 +929,7 @@ try {
                         $testOut = & pnpm exec vitest @testArgs 2>&1
                         $testExit = $LASTEXITCODE
                         $testText = ($testOut | ForEach-Object { "$_" }) -join "`n"
-                        $testResult = Parse-VitestJsonLocal -Stdout $testText -Stderr '' -ExitCode $testExit -DurationMs 0
+                        $testResult = ConvertFrom-VitestJsonLocal -Stdout $testText -Stderr '' -ExitCode $testExit -DurationMs 0
                         $testResult | Add-Member -NotePropertyName scopedToTestFiles -NotePropertyValue $relTestFiles -Force
                         $testResult | Add-Member -NotePropertyName ranFullWorkspace -NotePropertyValue $false -Force
                         $testResult.durationMs = [int]([DateTime]::UtcNow - $testStart).TotalMilliseconds
@@ -950,7 +942,7 @@ try {
                     $testExit = $LASTEXITCODE
                     $testMs = [int]([DateTime]::UtcNow - $testStart).TotalMilliseconds
                     $testText = ($testOut | ForEach-Object { "$_" }) -join "`n"
-                    $testResult = Parse-VitestJsonLocal -Stdout $testText -Stderr '' -ExitCode $testExit -DurationMs $testMs
+                    $testResult = ConvertFrom-VitestJsonLocal -Stdout $testText -Stderr '' -ExitCode $testExit -DurationMs $testMs
                     $testResult | Add-Member -NotePropertyName scopedToTestFiles -NotePropertyValue @() -Force
                     $testResult | Add-Member -NotePropertyName ranFullWorkspace -NotePropertyValue $true -Force
                     $result.test = $testResult
