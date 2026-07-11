@@ -23,7 +23,7 @@ const ruleTester = new RuleTester({
   }
 });
 
-const fixturePath = path.join(pluginDirectory, "fixture.ts");
+const fixturePath = path.join(pluginDirectory, "fixture.fixture.ts");
 const original = readFileSync(fixturePath, "utf8");
 
 const restore = () => {

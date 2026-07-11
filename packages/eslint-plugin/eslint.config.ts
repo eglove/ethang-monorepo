@@ -3,7 +3,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
   globalIgnores([
-    "src/rules/fixture.ts",
+    "src/rules/fixture.fixture.ts",
     "tsconfig.json",
     "coverage",
     "dist",
