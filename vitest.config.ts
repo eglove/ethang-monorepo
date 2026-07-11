@@ -11,6 +11,7 @@ export default defineConfig({
         "*.bench.ts",
         "*.gen.ts",
         "*.config.ts",
+        "*.fixture.ts",
         "**/.wrangler/**",
         "**/build.ts",
         "apps/sterett-admin",
@@ -22,9 +23,9 @@ export default defineConfig({
       thresholds: {
         autoUpdate: true,
         branches: 98.12,
-        functions: 98.48,
-        lines: 99.34,
-        statements: 99.33
+        functions: 98.64,
+        lines: 99.36,
+        statements: 99.36
       }
     },
     projects: [

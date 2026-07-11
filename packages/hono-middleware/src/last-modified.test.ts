@@ -128,4 +128,19 @@ describe(lastModifiedMiddleware, () => {
       "Sun, 01 Jan 2023 12:00:00 GMT"
     );
   });
+
+  it("should not set Last-Modified header when content-type header is missing", async () => {
+    const app = new Hono<BlankEnv>();
+    app.use(lastModifiedMiddleware);
+    app.get("/", (c) => {
+      const body = "<html><body>Hello</body></html>";
+      const response = c.body(body, 200, {});
+      response.headers.delete("content-type");
+      return response;
+    });
+
+    const response = await app.request(LOCAL_HOST);
+
+    expect(response.headers.get(LAST_MODIFIED)).toBeNull();
+  });
 });

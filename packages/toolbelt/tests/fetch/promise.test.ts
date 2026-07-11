@@ -106,4 +106,15 @@ describe("promiseAllSettled", () => {
 
     spy.mockRestore();
   });
+
+  it("should wrap an undefined rejection reason with 'Rejected without reason'", async () => {
+    const results = await promiseAllSettled({
+      failUndefined: Promise.reject(undefined)
+    });
+
+    expect(results["failUndefined"]).toBeInstanceOf(Error);
+    expect((results["failUndefined"] as Error).message).toBe(
+      "Rejected without reason"
+    );
+  });
 });
