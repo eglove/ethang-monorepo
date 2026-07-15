@@ -10,6 +10,71 @@ const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
 });
 
+// True if the return-type annotation is an Effect type we need to preserve.
+// Matches: `Effect<...>`, `Effect.Effect<...>`, `Effect.Effect.Success<...>`,
+// `Effect.Effect.Error<...>`, `Effect.Effect.Context<...>`, and
+// `Effect.Option<...>`. We also handle `Promise<Effect<...>>` wrappers.
+const isEffectReturnType = (typeNode: TSESTree.TypeNode): boolean => {
+  if (typeNode.type === AST_NODE_TYPES.TSTypeReference) {
+    const { typeName, typeArguments } = typeNode;
+    if (typeName.type === AST_NODE_TYPES.Identifier) {
+      if (typeName.name === "Effect") {
+        return true;
+      }
+    }
+    if (typeName.type === AST_NODE_TYPES.TSQualifiedName) {
+      if (isEffectQualifiedName(typeName)) {
+        return true;
+      }
+    }
+    // Promise<Effect<...>> — recurse into the type arguments.
+    if (typeArguments !== undefined) {
+      return typeArguments.params.some(isEffectReturnType);
+    }
+  }
+  // Union / intersection — recurse into both halves.
+  if (typeNode.type === AST_NODE_TYPES.TSUnionType) {
+    return typeNode.types.some(isEffectReturnType);
+  }
+  if (typeNode.type === AST_NODE_TYPES.TSIntersectionType) {
+    return typeNode.types.some(isEffectReturnType);
+  }
+  // Parenthesised types — recurse into the inner type.
+  if (typeNode.type === AST_NODE_TYPES.TSParenthesizedType) {
+    return isEffectReturnType(typeNode.typeAnnotation);
+  }
+  return false;
+};
+
+const isEffectQualifiedName = (node: TSESTree.TSQualifiedName): boolean => {
+  const { left, right } = node;
+  if (right.type !== AST_NODE_TYPES.Identifier) {
+    return false;
+  }
+  if (left.type === AST_NODE_TYPES.Identifier) {
+    return (
+      left.name === "Effect" &&
+      (right.name === "Effect" ||
+        right.name === "Option" ||
+        right.name === "Stream" ||
+        right.name === "Chunk" ||
+        right.name === "Layer")
+    );
+  }
+  if (left.type === AST_NODE_TYPES.TSQualifiedName) {
+    return (
+      isEffectQualifiedName(left) &&
+      (right.name === "Success" ||
+        right.name === "Error" ||
+        right.name === "Context" ||
+        right.name === "Requirements" ||
+        right.name === "Effect" ||
+        right.name === "Option")
+    );
+  }
+  return false;
+};
+
 export type NoExplicitReturnTypeOptions = [];
 
 type FunctionLikeNode =
@@ -54,6 +119,12 @@ export const noExplicitReturnTypeRule = createRule<
       // mechanism — they aren't return-type *annotations* in the
       // documentation sense, so they're exempt.
       if (AST_NODE_TYPES.TSTypePredicate === returnType.typeAnnotation.type) {
+        return;
+      }
+      // Effect-returning functions (e.g. `Effect<...>`, `Effect.Effect<...>`)
+      // are exempt: removing the annotation widens the inferred type and
+      // breaks Effect combinator inference downstream.
+      if (isEffectReturnType(returnType.typeAnnotation)) {
         return;
       }
       check(returnType);

@@ -242,6 +242,42 @@ ruleTester.run("no-explicit-return-type", noExplicitReturnTypeRule as never, {
       },
       code: "const isFoo = (node: unknown): node is number => typeof node === 'number';",
       filename: FILENAME
+    },
+    {
+      before() {
+        runWith(
+          "import { Effect } from 'effect'; const f = (): Effect.Effect<number, Error> => Effect.succeed(1);"
+        );
+      },
+      code: "import { Effect } from 'effect'; const f = (): Effect.Effect<number, Error> => Effect.succeed(1);",
+      filename: FILENAME
+    },
+    {
+      before() {
+        runWith(
+          "import { Effect } from 'effect'; const f = (): Effect<number, Error> => Effect.succeed(1);"
+        );
+      },
+      code: "import { Effect } from 'effect'; const f = (): Effect<number, Error> => Effect.succeed(1);",
+      filename: FILENAME
+    },
+    {
+      before() {
+        runWith(
+          "import { Effect } from 'effect'; const f = (): Effect.Effect.Success<number, Error> => Effect.succeed(1);"
+        );
+      },
+      code: "import { Effect } from 'effect'; const f = (): Effect.Effect.Success<number, Error> => Effect.succeed(1);",
+      filename: FILENAME
+    },
+    {
+      before() {
+        runWith(
+          "import { Effect } from 'effect'; const f = async (): Promise<Effect.Effect<number, Error>> => Effect.succeed(1);"
+        );
+      },
+      code: "import { Effect } from 'effect'; const f = async (): Promise<Effect.Effect<number, Error>> => Effect.succeed(1);",
+      filename: FILENAME
     }
   ]
 });
