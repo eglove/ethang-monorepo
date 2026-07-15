@@ -39,10 +39,6 @@ const isEffectReturnType = (typeNode: TSESTree.TypeNode): boolean => {
   if (typeNode.type === AST_NODE_TYPES.TSIntersectionType) {
     return typeNode.types.some(isEffectReturnType);
   }
-  // Parenthesised types — recurse into the inner type.
-  if (typeNode.type === AST_NODE_TYPES.TSParenthesizedType) {
-    return isEffectReturnType(typeNode.typeAnnotation);
-  }
   return false;
 };
 
