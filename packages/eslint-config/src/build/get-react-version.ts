@@ -1,4 +1,3 @@
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json.ts";
 import { Effect, Exit, Schema } from "effect";
 import constant from "lodash/constant.js";
 
@@ -16,7 +15,9 @@ export const getLatestReact = async () => {
   }
 
   const result = await Effect.runPromiseExit(
-    parseFetchJson(response, Schema.Struct({ version: Schema.String }))
+    Schema.decodeUnknown(Schema.Struct({ version: Schema.String }))(
+      await response.json()
+    )
   );
 
   if (Exit.isFailure(result)) {

@@ -1,25 +1,6 @@
-import path from "node:path";
 import { defineConfig } from "vitest/config";
 
-const toolbeltRoot = path.resolve(
-  import.meta.dirname,
-  "..",
-  "..",
-  "packages",
-  "toolbelt"
-);
-
 export default defineConfig({
-  resolve: {
-    alias: {
-      "@ethang/toolbelt/cache/cache-control.js": path.join(
-        toolbeltRoot,
-        "dist",
-        "cache",
-        "cache-control.js"
-      )
-    }
-  },
   test: {
     coverage: {
       exclude: ["src/**/*.d.ts"],

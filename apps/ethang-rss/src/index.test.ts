@@ -129,15 +129,13 @@ describe("ethang-rss WorkerEntrypoint", () => {
         isRead: true,
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toEqual({ articleId: "a1", isRead: true });
+      expect(result).toEqual({ articleId: "a1", isRead: true });
     });
 
     it("subscription returns a subscription", async () => {
       const instance = createInstance({ ethang_rss: {} });
       const result = await instance.subscription({ feedId: "feed1" });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toEqual({ id: "feed1", title: "Test Feed" });
+      expect(result).toEqual({ id: "feed1", title: "Test Feed" });
     });
 
     it("subscriptions returns paginated subscriptions", async () => {
@@ -147,8 +145,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         sessionToken: auth.TEST_TOKEN,
         sortBy: { direction: "ASC", field: "TITLE" }
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toEqual({
+      expect(result).toEqual({
         edges: [],
         pageInfo: { hasNextPage: false }
       });
@@ -160,8 +157,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         sessionToken: auth.TEST_TOKEN,
         xmlAddress: "https://example.com/feed.xml"
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
 
     it("removeSubscription removes a subscription", async () => {
@@ -170,8 +166,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         feedId: "feed-1",
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
 
     it("rejects with unauthorized when auth fails", async () => {
@@ -216,8 +211,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         first: 10,
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
 
     it("feedArticles returns paginated feed articles", async () => {
@@ -227,8 +221,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         first: 10,
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
   });
 

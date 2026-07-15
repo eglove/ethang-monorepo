@@ -5,7 +5,6 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "workspace:*",
     "effect": "3.21.4"
   },
   "description": "Generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions.",

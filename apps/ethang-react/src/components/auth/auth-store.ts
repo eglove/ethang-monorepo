@@ -1,11 +1,9 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { makeStore, type Store } from "@ethang/store/store.ts";
-import { parseJson } from "@ethang/toolbelt/json/json.ts";
-import { Effect, Option, Schema } from "effect";
+import { Effect, Schema } from "effect";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
-
 export type User = {
   email: string;
   sessionToken: string;
@@ -31,10 +29,10 @@ const readStoredUser = (): null | User => {
   if (isNil(storedUser)) {
     return null;
   }
-  const decoded = Effect.runSync(
-    parseJson(storedUser, StoredUserSchema).pipe(Effect.option)
-  );
-  return Option.isSome(decoded) ? decoded.value : null;
+  const decoded = Schema.decodeUnknownOption(
+    Schema.parseJson(StoredUserSchema)
+  )(storedUser);
+  return "Some" === decoded._tag ? decoded.value : null;
 };
 
 export { readStoredUser };

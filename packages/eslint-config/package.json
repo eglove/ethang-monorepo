@@ -17,7 +17,6 @@
     "@ethang/eslint-plugin": "workspace:*",
     "@ethang/markdown-generator": "workspace:*",
     "@ethang/telemetry": "workspace:*",
-    "@ethang/toolbelt": "workspace:*",
     "@html-eslint/eslint-plugin": "^0.63.0",
     "@tanstack/eslint-plugin-query": "^5.101.2",
     "@tanstack/eslint-plugin-router": "^1.162.0",

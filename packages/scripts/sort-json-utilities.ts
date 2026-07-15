@@ -1,5 +1,4 @@
 import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
-import { parseJson } from "@ethang/toolbelt/json/json.ts";
 import { Effect, Schema } from "effect";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
@@ -52,7 +51,9 @@ export const sortJson = (filePath: string) => {
 
   const fileContent = readFileSync(absolutePath, "utf8");
   const result = Effect.runSync(
-    parseJson(fileContent, Schema.Unknown).pipe(Effect.either)
+    Schema.decodeUnknown(Schema.parseJson(Schema.Unknown))(fileContent).pipe(
+      Effect.either
+    )
   );
 
   if ("Left" === result._tag) {

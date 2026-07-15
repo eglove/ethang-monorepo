@@ -44,7 +44,6 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[service-worker](packages/service-worker)**: Shared Workbox-based service worker (with esbuild build step) used by the frontends.
 - **[store](packages/store)**: Fine-grained state management built on Immer (`Producer<T>`), Effect, `use-sync-external-store`, and lodash for the React frontends.
 - **[telemetry](packages/telemetry)**: Telemetry primitives built on Effect for instrumentation across services (no barrel file; import from subpaths like `@ethang/telemetry/logger.ts`).
-- **[toolbelt](packages/toolbelt)**: Comprehensive utility library covering collections, fetch helpers, functional programming, type checking, and more, shared across applications.
 - **[tsconfig](packages/tsconfig)**: Shared TypeScript configuration presets (`@tsconfig/node-lts`, `@tsconfig/strictest`, `@tsconfig/vite-react`).
 
 ## Technologies
