@@ -18,7 +18,7 @@ import {
 
 const KIND_UNKNOWN_MEMBER = "unknown-member";
 
-const parseProgram = (code: string): TSESTree.Program => {
+const parseProgram = (code: string) => {
   return parseForESLint(code, {
     ecmaVersion: 2024,
     sourceType: "module"

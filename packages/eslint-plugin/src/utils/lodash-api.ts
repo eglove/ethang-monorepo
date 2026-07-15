@@ -1552,7 +1552,7 @@ export const isLodashFunction = (name: string): name is LodashFunctionName => {
   return Object.hasOwn(lodashApi, name);
 };
 
-export const isLodashArrayFunction = (name: string): boolean => {
+export const isLodashArrayFunction = (name: string) => {
   if (!isLodashFunction(name)) {
     return false;
   }
@@ -1566,7 +1566,7 @@ Collection methods like `map`, `filter` have nativeAliases and are safe to
 flag on chained calls. Methods like `groupBy`, `keyBy` have no native alias
 and should NOT be flagged on chained (CallExpression) receivers.
 */
-export const hasNativeArrayAlias = (name: string): boolean => {
+export const hasNativeArrayAlias = (name: string) => {
   if (!isLodashFunction(name)) {
     return false;
   }
@@ -1618,6 +1618,6 @@ const COMMON_USER_METHOD_NAMES = new Set([
   "valuesIn"
 ]);
 
-export const isCommonUserMethodName = (name: string): boolean => {
+export const isCommonUserMethodName = (name: string) => {
   return COMMON_USER_METHOD_NAMES.has(name);
 };

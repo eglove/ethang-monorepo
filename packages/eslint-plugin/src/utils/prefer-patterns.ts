@@ -22,16 +22,14 @@ type FunctionLike =
   | TSESTree.FunctionDeclaration
   | TSESTree.FunctionExpression;
 
-const isNullOrUndefinedLiteral = (node: TSESTree.Node): boolean => {
+const isNullOrUndefinedLiteral = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.Literal === node.type && isNil(node.value)) {
     return true;
   }
   return AST_NODE_TYPES.Identifier === node.type && "undefined" === node.name;
 };
 
-const isTypeofUndefinedComparison = (
-  node: TSESTree.BinaryExpression
-): boolean => {
+const isTypeofUndefinedComparison = (node: TSESTree.BinaryExpression) => {
   /* v8 ignore if -- defensive guard: shouldPreferIsNil only passes === comparisons */
   if ("===" !== node.operator) {
     return false;
@@ -56,9 +54,7 @@ const isTypeofUndefinedComparison = (
   );
 };
 
-const isNullOrUndefinedComparison = (
-  node: TSESTree.BinaryExpression
-): boolean => {
+const isNullOrUndefinedComparison = (node: TSESTree.BinaryExpression) => {
   if (
     isNullOrUndefinedLiteral(node.left) ||
     isNullOrUndefinedLiteral(node.right)
@@ -68,9 +64,7 @@ const isNullOrUndefinedComparison = (
   return isTypeofUndefinedComparison(node);
 };
 
-export const shouldPreferIsNil = (
-  node: TSESTree.LogicalExpression
-): boolean => {
+export const shouldPreferIsNil = (node: TSESTree.LogicalExpression) => {
   if ("||" !== node.operator) {
     return false;
   }
@@ -96,14 +90,14 @@ const TYPECHECK_MAP: Record<string, string> = {
   string: "isString"
 };
 
-const isTypeofExpression = (expression: TSESTree.Node): boolean => {
+const isTypeofExpression = (expression: TSESTree.Node) => {
   return (
     AST_NODE_TYPES.UnaryExpression === expression.type &&
     "typeof" === expression.operator
   );
 };
 
-const getTypecheckLiteral = (expression: TSESTree.Node): null | string => {
+const getTypecheckLiteral = (expression: TSESTree.Node) => {
   if (
     AST_NODE_TYPES.Literal === expression.type &&
     isString(expression.value)
@@ -117,9 +111,7 @@ const getTypecheckLiteral = (expression: TSESTree.Node): null | string => {
   return null;
 };
 
-export const resolvePreferTypecheck = (
-  node: TSESTree.BinaryExpression
-): null | string => {
+export const resolvePreferTypecheck = (node: TSESTree.BinaryExpression) => {
   if ("===" !== node.operator && "!==" !== node.operator) {
     return null;
   }
@@ -137,9 +129,7 @@ export const resolvePreferTypecheck = (
 
 // --- prefer-includes ---
 
-export const resolvePreferIncludes = (
-  node: TSESTree.BinaryExpression
-): "preferIncludes" | "preferIncludesNegated" | null => {
+export const resolvePreferIncludes = (node: TSESTree.BinaryExpression) => {
   if ("!==" === node.operator && isIndexOfNegatedOne(node)) {
     return "preferIncludes";
   }
@@ -152,7 +142,7 @@ export const resolvePreferIncludes = (
   return null;
 };
 
-const isIndexOfCall = (expression: TSESTree.Node): boolean => {
+const isIndexOfCall = (expression: TSESTree.Node) => {
   return (
     isCallExpression(expression) &&
     isMemberExpression(expression.callee) &&
@@ -161,7 +151,7 @@ const isIndexOfCall = (expression: TSESTree.Node): boolean => {
   );
 };
 
-const isNegativeOneLiteral = (expression: TSESTree.Node): boolean => {
+const isNegativeOneLiteral = (expression: TSESTree.Node) => {
   return (
     AST_NODE_TYPES.UnaryExpression === expression.type &&
     "-" === expression.operator &&
@@ -170,57 +160,53 @@ const isNegativeOneLiteral = (expression: TSESTree.Node): boolean => {
   );
 };
 
-const isZeroLiteral = (expression: TSESTree.Node): boolean => {
+const isZeroLiteral = (expression: TSESTree.Node) => {
   return AST_NODE_TYPES.Literal === expression.type && 0 === expression.value;
 };
 
-const isIndexOfNegatedOne = (node: TSESTree.BinaryExpression): boolean => {
+const isIndexOfNegatedOne = (node: TSESTree.BinaryExpression) => {
   return (
     (isIndexOfCall(node.left) && isNegativeOneLiteral(node.right)) ||
     (isIndexOfCall(node.right) && isNegativeOneLiteral(node.left))
   );
 };
 
-const isIndexOfGteZero = (node: TSESTree.BinaryExpression): boolean => {
+const isIndexOfGteZero = (node: TSESTree.BinaryExpression) => {
   return isIndexOfCall(node.left) && isZeroLiteral(node.right);
 };
 
 // --- prefer-startswith ---
 
-export const shouldPreferStartsWith = (
-  node: TSESTree.BinaryExpression
-): boolean => {
+export const shouldPreferStartsWith = (node: TSESTree.BinaryExpression) => {
   if ("===" === node.operator && isIndexOfZero(node)) {
     return true;
   }
   return "<" === node.operator && isIndexOfLtOne(node);
 };
 
-const isIndexOfZero = (node: TSESTree.BinaryExpression): boolean => {
+const isIndexOfZero = (node: TSESTree.BinaryExpression) => {
   return (
     (isIndexOfCall(node.left) && isZeroLiteral(node.right)) ||
     (isIndexOfCall(node.right) && isZeroLiteral(node.left))
   );
 };
 
-const isOneLiteral = (expression: TSESTree.Node): boolean => {
+const isOneLiteral = (expression: TSESTree.Node) => {
   return AST_NODE_TYPES.Literal === expression.type && 1 === expression.value;
 };
 
-const isIndexOfLtOne = (node: TSESTree.BinaryExpression): boolean => {
+const isIndexOfLtOne = (node: TSESTree.BinaryExpression) => {
   return isIndexOfCall(node.left) && isOneLiteral(node.right);
 };
 
 // --- prefer-compact ---
 
-const isBooleanIdentifier = (node: TSESTree.Node): boolean => {
+const isBooleanIdentifier = (node: TSESTree.Node) => {
   /* v8 ignore next -- branch: isIdentifier false short-circuits the && */
   return isIdentifier(node) && "Boolean" === node.name;
 };
 
-const getReturnedValue = (
-  _function: FunctionLike
-): null | TSESTree.Expression => {
+const getReturnedValue = (_function: FunctionLike) => {
   if (isBlockStatement(_function.body)) {
     if (1 !== _function.body.body.length) {
       return null;
@@ -247,7 +233,7 @@ const isBooleanCast = (
 const isCastingFirstParameter = (
   node: TSESTree.CallExpression,
   parameter: TSESTree.Identifier
-): boolean => {
+) => {
   const argument = node.arguments.at(0);
   return (
     !isNil(argument) &&
@@ -259,7 +245,7 @@ const isCastingFirstParameter = (
 const isDoubleNegationOfParameter = (
   node: TSESTree.Node,
   parameter: TSESTree.Identifier
-): boolean => {
+) => {
   if (AST_NODE_TYPES.UnaryExpression !== node.type || "!" !== node.operator) {
     return false;
   }
@@ -272,7 +258,7 @@ const isDoubleNegationOfParameter = (
 
 const isFirstParameterBooleanCasting = (
   _function: TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression
-): boolean => {
+) => {
   const returned = getReturnedValue(_function);
   if (isNil(returned)) {
     return false;
@@ -296,7 +282,7 @@ const isFirstParameterBooleanCasting = (
   return false;
 };
 
-const isLodashMemberCall = (node: TSESTree.CallExpression): boolean => {
+const isLodashMemberCall = (node: TSESTree.CallExpression) => {
   return (
     isMemberExpression(node.callee) &&
     isIdentifier(node.callee.object) &&
@@ -304,7 +290,7 @@ const isLodashMemberCall = (node: TSESTree.CallExpression): boolean => {
   );
 };
 
-export const shouldPreferCompact = (node: TSESTree.CallExpression): boolean => {
+export const shouldPreferCompact = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "filter")) {
     return false;
   }
@@ -332,7 +318,7 @@ export const shouldPreferCompact = (node: TSESTree.CallExpression): boolean => {
 
 // --- prefer-some ---
 
-export const shouldPreferSome = (node: TSESTree.BinaryExpression): boolean => {
+export const shouldPreferSome = (node: TSESTree.BinaryExpression) => {
   if ("!==" === node.operator && isFindIndexCall(node.left)) {
     return isNegativeOneLiteral(node.right);
   }
@@ -343,7 +329,7 @@ export const shouldPreferSome = (node: TSESTree.BinaryExpression): boolean => {
   );
 };
 
-const isFindIndexCall = (expression: TSESTree.Expression): boolean => {
+const isFindIndexCall = (expression: TSESTree.Expression) => {
   return (
     isCallExpression(expression) &&
     isMemberExpression(expression.callee) &&
@@ -354,7 +340,7 @@ const isFindIndexCall = (expression: TSESTree.Expression): boolean => {
 
 // --- prefer-get ---
 
-export const shouldPreferGet = (node: TSESTree.LogicalExpression): boolean => {
+export const shouldPreferGet = (node: TSESTree.LogicalExpression) => {
   if ("&&" !== node.operator) {
     return false;
   }
@@ -369,14 +355,25 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression): boolean => {
   // Each member after the first must be a MemberExpression whose object matches the preceding member by textual key, forming a single chain.
   // This avoids false positives on `part.type && part.value` (two independent
   // properties of the same object) or `x > 1 && x < 10` (comparisons).
-  const memberKey = (expression: TSESTree.Expression): string => {
-    if (isIdentifier(expression)) {
-      return expression.name;
+  const memberKey = (expression: TSESTree.Expression) => {
+    const parts: string[] = [];
+    let current: TSESTree.Expression = expression;
+
+    while (isMemberExpression(current)) {
+      if (!isIdentifier(current.property)) {
+        return "";
+      }
+
+      parts.push(current.property.name);
+      current = current.object;
     }
-    if (isMemberExpression(expression) && isIdentifier(expression.property)) {
-      return `${memberKey(expression.object)}.${expression.property.name}`;
+
+    if (!isIdentifier(current)) {
+      return "";
     }
-    return "";
+
+    parts.push(current.name);
+    return parts.toReversed().join(".");
   };
 
   const [firstMember] = members;
@@ -405,12 +402,10 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression): boolean => {
   return true;
 };
 
-const extractAndChain = (
-  node: TSESTree.LogicalExpression
-): TSESTree.Expression[] => {
+const extractAndChain = (node: TSESTree.LogicalExpression) => {
   const parts: TSESTree.Expression[] = [];
 
-  const collect = (expression: TSESTree.Expression): void => {
+  const collect = (expression: TSESTree.Expression) => {
     if (
       AST_NODE_TYPES.LogicalExpression === expression.type &&
       "&&" === expression.operator
@@ -428,9 +423,7 @@ const extractAndChain = (
 
 // --- prefer-map / prefer-filter (forEach + push patterns) ---
 
-const getForEachIteratee = (
-  node: TSESTree.CallExpression
-): null | TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression => {
+const getForEachIteratee = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "forEach")) {
     return null;
   }
@@ -444,9 +437,7 @@ const getForEachIteratee = (
   return iteratee;
 };
 
-export const shouldPreferMapPattern = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const shouldPreferMapPattern = (node: TSESTree.CallExpression) => {
   const iteratee = getForEachIteratee(node);
   if (isNil(iteratee)) {
     return false;
@@ -474,9 +465,7 @@ export const shouldPreferMapPattern = (
   );
 };
 
-export const shouldPreferFilterPattern = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const shouldPreferFilterPattern = (node: TSESTree.CallExpression) => {
   const iteratee = getForEachIteratee(node);
   if (isNil(iteratee)) {
     return false;
@@ -501,7 +490,7 @@ export const shouldPreferFilterPattern = (
   return isPushStatement(consequent.body.at(0) ?? null);
 };
 
-const isPushStatement = (statement: null | TSESTree.Statement): boolean => {
+const isPushStatement = (statement: null | TSESTree.Statement) => {
   /* v8 ignore if */
   if (
     isNil(statement) ||
@@ -520,9 +509,7 @@ const isPushStatement = (statement: null | TSESTree.Statement): boolean => {
 
 // --- prefer-find: filter[0] (MemberExpression) or filter().shift() (CallExpression) ---
 
-export const shouldPreferFindMember = (
-  node: TSESTree.MemberExpression
-): boolean => {
+export const shouldPreferFindMember = (node: TSESTree.MemberExpression) => {
   if (!node.computed) {
     return false;
   }
@@ -534,13 +521,11 @@ export const shouldPreferFindMember = (
   return isCallExpression(object) && isMemberCallOnNamed(object, "filter");
 };
 
-const isLiteralZero = (expression: TSESTree.Node): boolean => {
+const isLiteralZero = (expression: TSESTree.Node) => {
   return AST_NODE_TYPES.Literal === expression.type && 0 === expression.value;
 };
 
-export const shouldPreferFindShift = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const shouldPreferFindShift = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "shift")) {
     return false;
   }
@@ -559,7 +544,7 @@ export const shouldPreferFindShift = (
 
 // --- prefer-constant ---
 
-const isLiteralValue = (node: TSESTree.Node): boolean => {
+const isLiteralValue = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.Literal === node.type) {
     return true;
   }
@@ -574,7 +559,7 @@ const isLiteralValue = (node: TSESTree.Node): boolean => {
   /* v8 ignore stop */
 };
 
-export const shouldPreferConstant = (node: FunctionLike): boolean => {
+export const shouldPreferConstant = (node: FunctionLike) => {
   // Only fire when the function is used as a callback argument,
   // not when it's a standalone declaration or immediately invoked.
   if (AST_NODE_TYPES.FunctionDeclaration === node.type) {
@@ -593,7 +578,7 @@ export const shouldPreferConstant = (node: FunctionLike): boolean => {
 
 // --- prefer-noop ---
 
-export const shouldPreferNoop = (node: FunctionLike): boolean => {
+export const shouldPreferNoop = (node: FunctionLike) => {
   if (AST_NODE_TYPES.BlockStatement !== node.body.type) {
     return false;
   }
@@ -622,9 +607,7 @@ const MUTATING_METHODS: Record<string, string> = {
   remove: "filter"
 };
 
-export const resolvePreferImmutable = (
-  node: TSESTree.CallExpression
-): { method: string; preferred: string } | null => {
+export const resolvePreferImmutable = (node: TSESTree.CallExpression) => {
   if (isIdentifier(node.callee)) {
     const preferred = Object.hasOwn(MUTATING_METHODS, node.callee.name)
       ? MUTATING_METHODS[node.callee.name]
@@ -649,7 +632,7 @@ export const resolvePreferImmutable = (
 
 // --- prefer-reject ---
 
-export const shouldPreferReject = (node: TSESTree.CallExpression): boolean => {
+export const shouldPreferReject = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "filter")) {
     return false;
   }
@@ -680,9 +663,7 @@ export const shouldPreferReject = (node: TSESTree.CallExpression): boolean => {
 
 // --- prefer-over-quantifier ---
 
-export const resolvePreferOverQuantifier = (
-  node: TSESTree.CallExpression
-): "overEvery" | "overSome" | null => {
+export const resolvePreferOverQuantifier = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "filter")) {
     return null;
   }
@@ -717,7 +698,7 @@ export const resolvePreferOverQuantifier = (
 
 // --- prefer-flat-map ---
 
-export const shouldPreferFlatMap = (node: TSESTree.CallExpression): boolean => {
+export const shouldPreferFlatMap = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "flatten")) {
     return false;
   }
@@ -734,7 +715,7 @@ export const shouldPreferFlatMap = (node: TSESTree.CallExpression): boolean => {
 
 // --- prefer-times ---
 
-export const shouldPreferTimes = (node: TSESTree.CallExpression): boolean => {
+export const shouldPreferTimes = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   if (!isMemberExpression(callee)) {
     return false;
@@ -767,7 +748,7 @@ export const shouldPreferTimes = (node: TSESTree.CallExpression): boolean => {
 
 // --- prefer-matches ---
 
-export const shouldPreferMatches = (node: TSESTree.CallExpression): boolean => {
+export const shouldPreferMatches = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "filter")) {
     return false;
   }
@@ -799,25 +780,50 @@ export const shouldPreferMatches = (node: TSESTree.CallExpression): boolean => {
   return isAllEqualityChecks(returned);
 };
 
-const isAllEqualityChecks = (node: TSESTree.LogicalExpression): boolean => {
-  const isCheck = (expression: TSESTree.Expression): boolean => {
-    if (AST_NODE_TYPES.LogicalExpression === expression.type) {
-      return isAllEqualityChecks(expression);
-    }
-    return (
-      AST_NODE_TYPES.BinaryExpression === expression.type &&
-      ("===" === expression.operator || "!==" === expression.operator)
-    );
-  };
+const isEqualityComparison = (expression: TSESTree.Expression) => {
+  return (
+    AST_NODE_TYPES.BinaryExpression === expression.type &&
+    ("===" === expression.operator || "!==" === expression.operator)
+  );
+};
 
-  return isCheck(node.left) && isCheck(node.right);
+const isAllEqualityChecks = (node: TSESTree.LogicalExpression) => {
+  if ("&&" !== node.operator) {
+    return false;
+  }
+
+  const stack: TSESTree.Expression[] = [node.left, node.right];
+
+  while (0 < stack.length) {
+    const current = stack.pop();
+
+    if (!isNil(current) && !processAllEqualityLeaf(current, stack)) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const processAllEqualityLeaf = (
+  current: TSESTree.Expression,
+  stack: TSESTree.Expression[]
+) => {
+  if (AST_NODE_TYPES.LogicalExpression === current.type) {
+    if ("&&" !== current.operator) {
+      return false;
+    }
+
+    stack.push(current.right, current.left);
+    return true;
+  }
+
+  return isEqualityComparison(current);
 };
 
 // --- prefer-invoke-map ---
 
-export const shouldPreferInvokeMap = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const shouldPreferInvokeMap = (node: TSESTree.CallExpression) => {
   if (!isMemberCallOnNamed(node, "map")) {
     return false;
   }
@@ -846,9 +852,7 @@ export const shouldPreferInvokeMap = (
   );
 };
 
-const getMapFunctionIteratee = (
-  node: TSESTree.CallExpression
-): null | TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression => {
+const getMapFunctionIteratee = (node: TSESTree.CallExpression) => {
   const iteratee = node.arguments.at(0);
   if (
     isNil(iteratee) ||
@@ -861,10 +865,7 @@ const getMapFunctionIteratee = (
 
 // --- Helpers ---
 
-function isMemberCallOnNamed(
-  node: TSESTree.CallExpression,
-  name: string
-): boolean {
+function isMemberCallOnNamed(node: TSESTree.CallExpression, name: string) {
   return (
     isMemberExpression(node.callee) &&
     isIdentifier(node.callee.property) &&
@@ -872,8 +873,6 @@ function isMemberCallOnNamed(
   );
 }
 
-export const isLodashIdentifierCall = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const isLodashIdentifierCall = (node: TSESTree.CallExpression) => {
   return isIdentifier(node.callee) && isLodashFunction(node.callee.name);
 };

@@ -15,11 +15,11 @@ import {
 
 const CHAIN_STARTERS = new Set(["_", "chain", "lodash"]);
 
-export const isChainStarter = (name: string): boolean => {
+export const isChainStarter = (name: string) => {
   return CHAIN_STARTERS.has(name);
 };
 
-export const isChainStarterCall = (node: TSESTree.CallExpression): boolean => {
+export const isChainStarterCall = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   /* v8 ignore next -- isLodashChain is only called on member calls, never direct identifier calls */
   return isIdentifier(callee) && isChainStarter(callee.name);
@@ -28,7 +28,7 @@ export const isChainStarterCall = (node: TSESTree.CallExpression): boolean => {
 export const isMemberCallOn = (
   node: TSESTree.CallExpression,
   methodName: string
-): boolean => {
+) => {
   const { callee } = node;
   return (
     isMemberExpression(callee) &&
@@ -37,9 +37,7 @@ export const isMemberCallOn = (
   );
 };
 
-export const getMemberObject = (
-  node: TSESTree.CallExpression
-): null | TSESTree.Expression => {
+export const getMemberObject = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   /* v8 ignore next -- always called after isMemberCallOn confirms MemberExpression */
   if (!isMemberExpression(callee)) {
@@ -50,9 +48,7 @@ export const getMemberObject = (
 
 // Trace back through a chain of method calls to see if the root is a chain
 // starter like _(arr), chain(arr), or lodash(arr).
-export const isTraceableToChainStarter = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const isTraceableToChainStarter = (node: TSESTree.CallExpression) => {
   let current: TSESTree.Node = node;
   while (isCallExpression(current)) {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
@@ -76,12 +72,12 @@ export const isTraceableToChainStarter = (
   return false;
 };
 
-export const isLodashChain = (node: TSESTree.CallExpression): boolean => {
+export const isLodashChain = (node: TSESTree.CallExpression) => {
   return isChainStarterCall(node) || isTraceableToChainStarter(node);
 };
 
 // Check if a callee is a chain starter or traces to one at the top level.
-const isCalleeChainStarter = (callee: TSESTree.Expression): boolean => {
+const isCalleeChainStarter = (callee: TSESTree.Expression) => {
   if (isIdentifier(callee) && isChainStarter(callee.name)) {
     return true;
   }
@@ -94,7 +90,7 @@ const isCalleeChainStarter = (callee: TSESTree.Expression): boolean => {
 };
 
 // Count chain methods (e.g. .map(fn).filter(fn) = 2 chain methods).
-export const countChainMethods = (node: TSESTree.CallExpression): number => {
+export const countChainMethods = (node: TSESTree.CallExpression) => {
   let count = 0;
   let current: TSESTree.Node = node;
   while (isCallExpression(current)) {
@@ -121,7 +117,7 @@ export const isNodeLike = (value: unknown): value is TSESTree.Node => {
   return !isNil(value) && isObject(value) && "type" in value;
 };
 
-export const extractNodesFromValue = (value: unknown): TSESTree.Node[] => {
+export const extractNodesFromValue = (value: unknown) => {
   if (!isArray(value)) {
     return isNodeLike(value) ? [value] : [];
   }
@@ -131,7 +127,7 @@ export const extractNodesFromValue = (value: unknown): TSESTree.Node[] => {
   });
 };
 
-export const getChildNodes = (node: TSESTree.Node): TSESTree.Node[] => {
+export const getChildNodes = (node: TSESTree.Node) => {
   const entries = toPairs(node) as [string, unknown][];
   return flatMap(
     filter(entries, ([key]) => {
@@ -148,7 +144,7 @@ export const getChildNodes = (node: TSESTree.Node): TSESTree.Node[] => {
 // Gets the method name from a CallExpression. For member expressions
 // (`obj.method()`), returns the property name. For identifier calls
 // (`method()`), returns the identifier name.
-export const getMethodName = (node: TSESTree.CallExpression): null | string => {
+export const getMethodName = (node: TSESTree.CallExpression) => {
   if (isMemberExpression(node.callee)) {
     if (isIdentifier(node.callee.property)) {
       return node.callee.property.name;
@@ -170,9 +166,7 @@ export const getMethodName = (node: TSESTree.CallExpression): null | string => {
 };
 
 // Gets the callee object of a member-expression call.
-export const getCaller = (
-  node: TSESTree.CallExpression
-): null | TSESTree.Expression => {
+export const getCaller = (node: TSESTree.CallExpression) => {
   if (isMemberExpression(node.callee)) {
     return node.callee.object;
   }
@@ -188,7 +182,7 @@ export const isMethodCall = (
 };
 
 // Returns true if the node is the object of a member-expression call.
-export const isObjectOfMethodCall = (node: TSESTree.Node): boolean => {
+export const isObjectOfMethodCall = (node: TSESTree.Node) => {
   const { parent } = node;
   if (isNil(parent) || !isMemberExpression(parent)) {
     return false;
@@ -198,14 +192,12 @@ export const isObjectOfMethodCall = (node: TSESTree.Node): boolean => {
 };
 
 // Returns true if the call is to the `chain` method (explicit chain start).
-export const isExplicitChainStart = (
-  node: TSESTree.CallExpression
-): boolean => {
+export const isExplicitChainStart = (node: TSESTree.CallExpression) => {
   return isIdentifier(node.callee) && "chain" === node.callee.name;
 };
 
 // Returns true if the method call is a chain breaker (e.g. `value()`).
-export const isChainBreaker = (node: TSESTree.CallExpression): boolean => {
+export const isChainBreaker = (node: TSESTree.CallExpression) => {
   if (!isMethodCall(node)) {
     return false;
   }
@@ -220,7 +212,7 @@ export const isChainBreaker = (node: TSESTree.CallExpression): boolean => {
 };
 
 // Returns true if the method call is chainable.
-export const isChainable = (node: TSESTree.CallExpression): boolean => {
+export const isChainable = (node: TSESTree.CallExpression) => {
   if (!isMethodCall(node)) {
     return false;
   }
@@ -240,7 +232,7 @@ export const isChainable = (node: TSESTree.CallExpression): boolean => {
 const getNextInChain = (
   current: TSESTree.CallExpression,
   isStillInChain: (node: TSESTree.CallExpression) => boolean
-): null | TSESTree.CallExpression => {
+) => {
   const { parent: currentParent } = current;
   if (
     isNil(currentParent) ||
@@ -259,7 +251,7 @@ const getNextInChain = (
 export const getEndOfChain = (
   startNode: TSESTree.CallExpression,
   isExplicit: boolean
-): TSESTree.CallExpression => {
+) => {
   const isStillInChain = isExplicit
     ? (node: TSESTree.CallExpression) => {
         return !isChainBreaker(node);
@@ -295,7 +287,7 @@ export const getEndOfChain = (
 export const isCallToMethod = (
   node: TSESTree.CallExpression,
   method: string
-): boolean => {
+) => {
   const name = getMethodName(node);
 
   if (isNil(name)) {

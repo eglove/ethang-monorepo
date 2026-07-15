@@ -14,7 +14,7 @@ type MessageIds = "noNullUndefinedCheck";
 
 type Options = [];
 
-const isNullOrUndefinedNode = (node: TSESTree.Node): boolean => {
+const isNullOrUndefinedNode = (node: TSESTree.Node) => {
   // null is a Literal with value null
   if (AST_NODE_TYPES.Literal === node.type && isNil(node.value)) {
     return true;
@@ -31,7 +31,7 @@ const isNullOrUndefinedNode = (node: TSESTree.Node): boolean => {
 const checkNullUndefinedEquality = (
   node: TSESTree.BinaryExpression,
   sourceCode: TSESLint.SourceCode
-): { readonly isNegated: boolean; readonly variable: string } | null => {
+) => {
   const equalityOperators = new Set(["!=", "!==", "==", "==="]);
   if (!equalityOperators.has(node.operator)) {
     return null;
@@ -55,7 +55,7 @@ const checkNullUndefinedEquality = (
 const checkTypeofUndefined = (
   node: TSESTree.BinaryExpression,
   sourceCode: TSESLint.SourceCode
-): { readonly isNegated: boolean; readonly variable: string } | null => {
+) => {
   const isNegated = "!=" === node.operator || "!==" === node.operator;
 
   // typeof x === 'undefined'

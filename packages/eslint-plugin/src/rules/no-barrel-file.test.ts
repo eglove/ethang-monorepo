@@ -17,7 +17,7 @@ const ruleTester = new RuleTester({
 
 const HELPER_REEXPORT = 'export { helper } from "./helper.js";';
 
-const temporary = (filename: string): string => {
+const temporary = (filename: string) => {
   return path.join(process.cwd(), "src", filename);
 };
 

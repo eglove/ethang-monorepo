@@ -42,7 +42,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
   invalid: [
     // JSON.parse (returns any) — result assigned to variable
     {
-      before(): void {
+      before() {
         runWith("const raw = '{}' as string;\nconst data = JSON.parse(raw);");
       },
       code: "const raw = '{}' as string;\nconst data = JSON.parse(raw);",
@@ -51,7 +51,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // response.json() returning unknown — async handler returns it
     {
-      before(): void {
+      before() {
         runWith(
           "declare const response: { json(): unknown };\nexport const handler = async () => response.json();"
         );
@@ -62,7 +62,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Native call returning unknown passed to a typed function
     {
-      before(): void {
+      before() {
         runWith(
           "declare const send: (value: unknown) => void;\nexport const handler = (raw: unknown) => send(JSON.parse(raw as string));"
         );
@@ -73,7 +73,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Function returning unknown called then passed to send
     {
-      before(): void {
+      before() {
         runWith(
           "declare const send: (value: unknown) => void;\nexport const handler = (raw: () => unknown) => send(raw());"
         );
@@ -84,7 +84,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Awaiting Promise<unknown> — the awaited value is used
     {
-      before(): void {
+      before() {
         runWith(
           "export const handler = async (raw: Promise<unknown>) => { const x = await raw; return x; };"
         );
@@ -95,7 +95,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // JSON.parse inside a class method
     {
-      before(): void {
+      before() {
         runWith(
           "class Parser { parse(raw: string) { const data = JSON.parse(raw); return data; } }"
         );
@@ -107,7 +107,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     // Call where the callee.object isn't an Identifier — the rule still flags
     // the unknown return value because the call is not a Schema decode.
     {
-      before(): void {
+      before() {
         runWith(
           "declare const obj: { decodeUnknown(v: unknown): unknown };\ndeclare const value: unknown;\nconst data = obj.decodeUnknown(value);"
         );
@@ -119,7 +119,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     // Call where the callee.object is itself a call (not an Identifier) —
     // exercises the non-Identifier branch of `isSchemaDecodeCall.object`.
     {
-      before(): void {
+      before() {
         runWith(
           "declare function getSchema(): { decodeUnknown(v: unknown): unknown };\ndeclare const value: unknown;\nconst data = getSchema().decodeUnknown(value);"
         );
@@ -132,7 +132,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
   valid: [
     // Result immediately discarded (bare statement)
     {
-      before(): void {
+      before() {
         runWith("const raw = '{}' as string;\nJSON.parse(raw);");
       },
       code: "const raw = '{}' as string;\nJSON.parse(raw);",
@@ -140,7 +140,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Wrapped in Schema.decodeUnknownSync (curried form)
     {
-      before(): void {
+      before() {
         runWith(
           "import { Schema } from \"effect\";\ndeclare const MySchema: Schema.Schema<string, string, never>;\nconst raw = '{}' as string;\nconst data = Schema.decodeUnknownSync(MySchema)(JSON.parse(raw));"
         );
@@ -150,7 +150,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Wrapped in Schema.is
     {
-      before(): void {
+      before() {
         runWith(
           "import { Schema } from \"effect\";\ndeclare const MySchema: Schema.Schema<string, string, never>;\nconst raw = '{}' as string;\nif (Schema.is(MySchema)(JSON.parse(raw))) { return true; }\nreturn false;"
         );
@@ -160,7 +160,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Wrapped in S.decodeUnknownSync (alternate alias)
     {
-      before(): void {
+      before() {
         runWith(
           "import { S } from \"effect\";\ndeclare const MySchema: S.Schema<string, string, never>;\nconst raw = '{}' as string;\nconst data = S.decodeUnknownSync(MySchema)(JSON.parse(raw));"
         );
@@ -170,7 +170,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Strongly typed function (not unknown/any)
     {
-      before(): void {
+      before() {
         runWith(
           "declare function parseThing(raw: string): { ok: boolean };\nconst raw = '{}' as string;\nconst data = parseThing(raw);"
         );
@@ -180,7 +180,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Strongly typed function call inside send — not unknown
     {
-      before(): void {
+      before() {
         runWith(
           "declare const send: (value: { ok: boolean }) => void;\ndeclare function parseThing(raw: string): { ok: boolean };\nconst raw = '{}' as string;\nsend(parseThing(raw));"
         );
@@ -190,7 +190,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Schema.decodeUnknownSync as ExpressionStatement (the inner JSON.parse is discarded)
     {
-      before(): void {
+      before() {
         runWith(
           "import { Schema } from \"effect\";\ndeclare const MySchema: Schema.Schema<string, string, never>;\nconst raw = '{}' as string;\nSchema.decodeUnknownSync(MySchema)(JSON.parse(raw));"
         );
@@ -199,7 +199,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
       filename: fixturePath
     },
     {
-      before(): void {
+      before() {
         runWith(
           "declare const raw: string;\n// eslint-disable-next-line rule-to-test/validate-unknown\nconst data = JSON.parse(raw);"
         );
@@ -209,7 +209,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // void F() discards the result
     {
-      before(): void {
+      before() {
         runWith("const raw = '{}' as string;\nvoid JSON.parse(raw);");
       },
       code: "const raw = '{}' as string;\nvoid JSON.parse(raw);",
@@ -217,7 +217,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Awaited Promise<unknown> inside Schema.decodeUnknownSync (curried)
     {
-      before(): void {
+      before() {
         runWith(
           'import { Schema } from "effect";\ndeclare const MySchema: Schema.Schema<string, string, never>;\nexport const handler = async (raw: Promise<unknown>) => Schema.decodeUnknownSync(MySchema)(await raw);'
         );
@@ -227,7 +227,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Discarded await of Promise<unknown>
     {
-      before(): void {
+      before() {
         runWith(
           "export const handler = async (raw: Promise<unknown>) => { await raw; };"
         );
@@ -237,7 +237,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Schema decode call (non-curried, direct) — Schema.decode*(value) is the validation
     {
-      before(): void {
+      before() {
         runWith(
           'import { Schema } from "effect";\ndeclare const MySchema: Schema.Schema<string, string, never>;\ndeclare const value: unknown;\nSchema.decodeUnknownSync(MySchema)(value);'
         );
@@ -247,7 +247,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Computed property access — `Schema["decodeUnknown"](MySchema)(value)` is still a Schema decode call
     {
-      before(): void {
+      before() {
         runWith(
           'import { Schema } from "effect";\ndeclare const MySchema: Schema.Schema<string, string, never>;\ndeclare const value: unknown;\nconst data = Schema["decodeUnknownSync"](MySchema)(value);'
         );
@@ -257,7 +257,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Discarded await — `void await raw;`
     {
-      before(): void {
+      before() {
         runWith(
           "export const handler = async (raw: Promise<unknown>) => { void await raw; };"
         );
@@ -267,7 +267,7 @@ ruleTester.run("validate-unknown", validateUnknownRule as never, {
     },
     // Awaited primitive — `await "hello"` is `string`, not unknown/any.
     {
-      before(): void {
+      before() {
         runWith(
           "export const handler = async () => { const x = await Promise.resolve('hi'); return x; };"
         );

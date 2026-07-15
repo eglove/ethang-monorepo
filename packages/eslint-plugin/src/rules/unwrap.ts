@@ -17,7 +17,7 @@ type Options = [];
 
 export const unwrapRule = createRule<Options, MessageIds>({
   create(context) {
-    const visitCallExpression = (node: TSESTree.CallExpression): void => {
+    const visitCallExpression = (node: TSESTree.CallExpression) => {
       if (!isExplicitChainStart(node)) {
         return;
       }

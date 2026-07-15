@@ -28,7 +28,7 @@ const DEFAULT_MAX_PROPERTY_PATH_LENGTH = 3;
 // Checks if the iteratee is _.matchesProperty(path, value) or lodash.matchesProperty(path, value).
 export const isLodashMatchesPropertyCall = (
   iteratee: null | TSESTree.Expression
-): boolean => {
+) => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
     return false;
   }
@@ -55,9 +55,7 @@ export const isLodashMatchesPropertyCall = (
 };
 
 // Checks if the iteratee is an array literal (matches-prop shorthand usage).
-export const isArrayLiteral = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+export const isArrayLiteral = (iteratee: null | TSESTree.Expression) => {
   return iteratee?.type === AST_NODE_TYPES.ArrayExpression;
 };
 
@@ -67,7 +65,7 @@ export const isFunctionReturningEqualityToMember = (
   maxPropertyPathLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
-): boolean => {
+) => {
   if (
     isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
@@ -130,7 +128,7 @@ export const matchesPropertyShorthandRule = createRule<Options, MessageIds>({
       }
     };
 
-    const checkNode = (node: TSESTree.CallExpression): void => {
+    const checkNode = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

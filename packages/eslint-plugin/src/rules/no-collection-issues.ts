@@ -67,14 +67,14 @@ const NO_RETURN_METHODS = new Set([
 ]);
 
 // Check if the iteratee of a collection method should return a value.
-const requiresReturnValue = (methodName: string): boolean => {
+const requiresReturnValue = (methodName: string) => {
   return (
     COLLECTION_RETURN_METHODS.has(methodName) &&
     !NO_RETURN_METHODS.has(methodName)
   );
 };
 
-const getMethodName = (callee: TSESTree.Expression): null | string => {
+const getMethodName = (callee: TSESTree.Expression) => {
   if (isIdentifier(callee)) {
     return callee.name;
   }
@@ -89,7 +89,7 @@ const getMethodName = (callee: TSESTree.Expression): null | string => {
 // Check if a function body always returns a value.
 const hasReturnValue = (
   _function: TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression
-): boolean => {
+) => {
   const { body } = _function;
 
   // Arrow function with expression body — always returns.
@@ -98,7 +98,7 @@ const hasReturnValue = (
   }
 
   // Check for return statements in the function body.
-  const hasReturn = (node: TSESTree.Node): boolean => {
+  const hasReturn = (node: TSESTree.Node) => {
     if (isReturnStatement(node)) {
       return true;
     }
@@ -125,7 +125,7 @@ const hasReturnValue = (
 const checkCollectionReturn = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   const { callee } = node;
 
   // Get method name from identifier call or member call.
@@ -136,17 +136,11 @@ const checkCollectionReturn = (
   }
 
   // Get the iteratee (first function argument).
-  const iteratee = find(
-    node.arguments,
-    (
-      argument
-    ): argument is
-      TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression => {
-      return (
-        isFunctionExpression(argument) || isArrowFunctionExpression(argument)
-      );
-    }
-  );
+  const iteratee = find(node.arguments, (argument) => {
+    return (
+      isFunctionExpression(argument) || isArrowFunctionExpression(argument)
+    );
+  });
 
   if (isNil(iteratee)) {
     return;
@@ -164,7 +158,7 @@ const checkCollectionReturn = (
 const checkUnwrap = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   if (!isMemberCallOn(node, "value")) {
     return;
   }
@@ -184,7 +178,7 @@ const checkUnwrap = (
 const checkCollectionMethodValue = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   const { callee } = node;
 
   // Must be a member call (e.g. _(xs).map(fn)).

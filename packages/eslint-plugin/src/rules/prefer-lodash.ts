@@ -185,7 +185,7 @@ type CallCheckContext = {
 const markInnerCallAndMember = (
   node: TSESTree.CallExpression,
   context: CallCheckContext
-): void => {
+) => {
   /* v8 ignore next -- defensive guard: detection functions ensure this structure */
   if (!(
     isMemberExpression(node.callee) && isCallExpression(node.callee.object)
@@ -381,7 +381,7 @@ const checkFunction = (
 const checkLodashChain = (
   node: TSESTree.MemberExpression,
   context: RuleContext
-): void => {
+) => {
   if (AST_NODE_TYPES.CallExpression !== node.object.type) {
     return;
   }

@@ -29,13 +29,13 @@ const DEFAULT_DEPTH = 3;
 
 const isLodashIdentifierCall = (
   node: TSESTree.CallExpression
-): node is { callee: TSESTree.Identifier } & TSESTree.CallExpression => {
+): node is {
+  callee: TSESTree.Identifier;
+} & TSESTree.CallExpression => {
   return isIdentifier(node.callee) && isLodashFunction(node.callee.name);
 };
 
-const getFirstArgumentCall = (
-  node: TSESTree.CallExpression
-): null | TSESTree.CallExpression => {
+const getFirstArgumentCall = (node: TSESTree.CallExpression) => {
   const [firstArgument] = node.arguments;
 
   if (!isNil(firstArgument) && isCallExpression(firstArgument)) {
@@ -46,31 +46,37 @@ const getFirstArgumentCall = (
 };
 
 export const isNestedNLevels = (
-  node: TSESTree.CallExpression,
+  startNode: TSESTree.CallExpression,
   depth: number,
   isIncludingUnchainable: boolean
-): boolean => {
-  if (1 === depth) {
-    return isLodashIdentifierCall(node);
+) => {
+  const calls: TSESTree.CallExpression[] = [startNode];
+  let current = getFirstArgumentCall(startNode);
+
+  while (!isNil(current)) {
+    calls.push(current);
+    current = getFirstArgumentCall(current);
   }
 
-  if (!isLodashIdentifierCall(node)) {
+  if (calls.length < depth) {
     return false;
   }
 
-  const methodName = node.callee.name;
+  for (const [index, call] of calls.slice(0, depth).entries()) {
+    if (!isLodashIdentifierCall(call)) {
+      return false;
+    }
 
-  if (!isIncludingUnchainable && !isChainableMethod(methodName)) {
-    return false;
+    const isLastLevel = index === depth - 1;
+    if (!(isLastLevel || isIncludingUnchainable)) {
+      const methodName = call.callee.name;
+      if (!isChainableMethod(methodName)) {
+        return false;
+      }
+    }
   }
 
-  const innerCall = getFirstArgumentCall(node);
-
-  if (!isNil(innerCall)) {
-    return isNestedNLevels(innerCall, depth - 1, isIncludingUnchainable);
-  }
-
-  return false;
+  return true;
 };
 
 export type ChainingContext = TSESLint.RuleContext<MessageIds, Options>;
@@ -78,7 +84,7 @@ export type ChainingContext = TSESLint.RuleContext<MessageIds, Options>;
 export const reportOnSingleChain = (
   node: TSESTree.CallExpression,
   context: ChainingContext
-): void => {
+) => {
   const { parent } = node;
   const grandParent = parent.parent;
 
@@ -96,7 +102,7 @@ export const reportOnSingleChain = (
 const reportSingleChainFromExplicitStart = (
   node: TSESTree.CallExpression,
   context: ChainingContext
-): void => {
+) => {
   if (!isExplicitChainStart(node)) {
     return;
   }
@@ -114,7 +120,7 @@ export const chainingRule = createRule<Options, MessageIds>({
   create(context) {
     const [mode = "never", depth = DEFAULT_DEPTH] = context.options;
 
-    const visitCallExpression = (node: TSESTree.CallExpression): void => {
+    const visitCallExpression = (node: TSESTree.CallExpression) => {
       if ("never" === mode) {
         if (isExplicitChainStart(node)) {
           context.report({ messageId: "never", node });

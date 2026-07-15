@@ -21,9 +21,7 @@ type Options = [Mode?, number?, boolean?, { onlyLiterals?: boolean }?];
 
 const DEFAULT_MAX_PROPERTY_PATH_LENGTH = 3;
 
-export const getValueReturnedInFirstStatement = (
-  node: TSESTree.Expression
-): null | TSESTree.Expression => {
+export const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
@@ -50,9 +48,7 @@ export const getValueReturnedInFirstStatement = (
   return null;
 };
 
-export const getFirstParameterName = (
-  node: null | TSESTree.Expression
-): null | string => {
+export const getFirstParameterName = (node: null | TSESTree.Expression) => {
   if (
     isNil(node) ||
     (node.type !== AST_NODE_TYPES.FunctionExpression &&
@@ -93,7 +89,7 @@ export const isMemberExpressionOf = (
   parameterName: null | string,
   maxLength: number,
   isAllowComputed: boolean
-): boolean => {
+) => {
   if (isNil(parameterName) || isNil(node)) {
     return false;
   }
@@ -125,7 +121,7 @@ export const isMemberExpressionOf = (
 };
 
 // Checks if a node is a literal.
-const isLiteral = (node: null | TSESTree.Expression): boolean => {
+const isLiteral = (node: null | TSESTree.Expression) => {
   return node?.type === AST_NODE_TYPES.Literal;
 };
 
@@ -138,7 +134,7 @@ export const isEqualityToMemberOf = (
   maxLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
-): boolean => {
+) => {
   if (!isStrictEquality(expression) || isNil(parameterName)) {
     return false;
   }
@@ -171,23 +167,54 @@ export const isEqualityToMemberOf = (
   return true;
 };
 
-// Recursively checks if a conjunction tree consists entirely of === comparisons
-// to members of the parameter.
+// Iteratively walks a conjunction tree and verifies every leaf is a strict
+// equality to a member of the parameter.
 export const isConjunctionOfEqualitiesToMemberOf = (
   expression: null | TSESTree.Expression,
   parameterName: null | string,
   maxLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
-): boolean => {
-  if (isNil(parameterName)) {
+) => {
+  if (isNil(parameterName) || isNil(expression)) {
     return false;
   }
 
-  // A single === comparison also counts
-  if (isStrictEquality(expression)) {
+  const stack: TSESTree.Expression[] = [expression];
+
+  while (0 < stack.length) {
+    const current = stack.pop();
+
+    if (!isNil(current)) {
+      const isMatch = processConjunctionLeaf(
+        current,
+        stack,
+        parameterName,
+        maxLength,
+        isAllowComputed,
+        isOnlyLiterals
+      );
+
+      if (!isMatch) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+};
+
+const processConjunctionLeaf = (
+  current: TSESTree.Expression,
+  stack: TSESTree.Expression[],
+  parameterName: string,
+  maxLength: number,
+  isAllowComputed: boolean,
+  isOnlyLiterals: boolean
+) => {
+  if (isStrictEquality(current)) {
     return isEqualityToMemberOf(
-      expression,
+      current,
       parameterName,
       maxLength,
       isAllowComputed,
@@ -195,26 +222,12 @@ export const isConjunctionOfEqualitiesToMemberOf = (
     );
   }
 
-  if (!isConjunction(expression)) {
-    return false;
+  if (isConjunction(current)) {
+    stack.push(current.right, current.left);
+    return true;
   }
 
-  return (
-    isConjunctionOfEqualitiesToMemberOf(
-      expression.left,
-      parameterName,
-      maxLength,
-      isAllowComputed,
-      isOnlyLiterals
-    ) &&
-    isConjunctionOfEqualitiesToMemberOf(
-      expression.right,
-      parameterName,
-      maxLength,
-      isAllowComputed,
-      isOnlyLiterals
-    )
-  );
+  return false;
 };
 
 // Checks if the iteratee is a function returning a conjunction of === comparisons.
@@ -223,7 +236,7 @@ export const isFunctionReturningConjunction = (
   maxPropertyPathLength: number,
   isAllowComputed: boolean,
   isOnlyLiterals: boolean
-): boolean => {
+) => {
   if (
     isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
@@ -250,9 +263,7 @@ export const isFunctionReturningConjunction = (
 };
 
 // Checks if the iteratee is _.matches({...}) or lodash.matches({...}).
-export const isLodashMatchesCall = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+export const isLodashMatchesCall = (iteratee: null | TSESTree.Expression) => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
     return false;
   }
@@ -279,7 +290,7 @@ export const isLodashMatchesCall = (
 };
 
 // Checks if the iteratee is an object literal (matches shorthand usage).
-const isObjectLiteral = (iteratee: null | TSESTree.Expression): boolean => {
+const isObjectLiteral = (iteratee: null | TSESTree.Expression) => {
   return iteratee?.type === AST_NODE_TYPES.ObjectExpression;
 };
 
@@ -325,7 +336,7 @@ export const matchesShorthandRule = createRule<Options, MessageIds>({
       }
     };
 
-    const checkNode = (node: TSESTree.CallExpression): void => {
+    const checkNode = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

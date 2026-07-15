@@ -16,7 +16,7 @@ import {
 const mockNode = <T extends TSESTree.Node>(
   type: T["type"],
   properties: Partial<T> = {}
-): T => {
+) => {
   return { type, ...properties } as unknown as T;
 };
 

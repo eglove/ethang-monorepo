@@ -48,7 +48,7 @@ const SCHEMA_DECODE_METHODS = new Set([
 
 const DECODE_ALIASES = new Set(["S", "Schema", "Schema$"]);
 
-const isSchemaDecodeCall = (node: TSESTree.CallExpression): boolean => {
+const isSchemaDecodeCall = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   if (AST_NODE_TYPES.MemberExpression !== callee.type) {
     return false;
@@ -65,7 +65,7 @@ const isSchemaDecodeCall = (node: TSESTree.CallExpression): boolean => {
   return SCHEMA_DECODE_METHODS.has(callee.property.name);
 };
 
-const isSchemaDecodeCallee = (node: TSESTree.Node): boolean => {
+const isSchemaDecodeCallee = (node: TSESTree.Node) => {
   // Curried form: Schema.decode*(args)(value) — the outer call's callee is
   // itself a Schema decode call.
   return (
@@ -73,7 +73,7 @@ const isSchemaDecodeCallee = (node: TSESTree.Node): boolean => {
   );
 };
 
-const isUnknownOrAny = (flags: TypeFlags): boolean => {
+const isUnknownOrAny = (flags: TypeFlags) => {
   // eslint-disable-next-line no-bitwise -- TypeFlags is a bitfield enum
   return 0 !== (flags & (TypeFlags.Unknown | TypeFlags.Any));
 };
@@ -81,7 +81,7 @@ const isUnknownOrAny = (flags: TypeFlags): boolean => {
 const isInsideSchemaDecodeChain = (
   node: TSESTree.Expression,
   ancestors: readonly TSESTree.Node[]
-): boolean => {
+) => {
   // Walk up the ancestor chain. The unknown/any result is validated if any
   // ancestor is a curried Schema decode call where the current node is one
   // of its arguments. This handles `Schema.decode*(Schema)(value)`. The
@@ -98,7 +98,7 @@ const isInsideSchemaDecodeChain = (
   });
 };
 
-const isResultDiscarded = (ancestors: readonly TSESTree.Node[]): boolean => {
+const isResultDiscarded = (ancestors: readonly TSESTree.Node[]) => {
   const directParent = ancestors.at(-1);
   // `void F();` — wrapped unary void discards the result.
   if (
@@ -116,7 +116,7 @@ const getReturnTypeFlags = (
   checker: TypeChecker,
   services: ReturnType<typeof getParserServices>,
   node: TSESTree.CallExpression
-): TypeFlags => {
+) => {
   const tsNode = services.esTreeNodeToTSNodeMap.get(node);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- TS compiler API types are over-defensive; signature is always non-null for a real CallExpression node
   const signature = checker.getResolvedSignature(
@@ -129,7 +129,7 @@ const getAwaitedTypeFlags = (
   checker: TypeChecker,
   services: ReturnType<typeof getParserServices>,
   node: TSESTree.AwaitExpression
-): TypeFlags => {
+) => {
   const tsNode = services.esTreeNodeToTSNodeMap.get(node);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- TS compiler API types are over-defensive; awaited is always non-null for a real AwaitExpression node
   const awaited = checker.getAwaitedType(

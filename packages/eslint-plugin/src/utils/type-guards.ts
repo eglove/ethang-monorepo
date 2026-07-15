@@ -2,7 +2,7 @@ import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 
 export const isExpression = (
   node: TSESTree.Expression | TSESTree.PrivateIdentifier
-): node is TSESTree.Expression => {
+) => {
   return node.type !== AST_NODE_TYPES.PrivateIdentifier;
 };
 

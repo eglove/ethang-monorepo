@@ -18,9 +18,7 @@ type Mode = "always" | "never";
 
 type Options = [Mode];
 
-const getValueReturnedInFirstStatement = (
-  node: TSESTree.Expression
-): null | TSESTree.Expression => {
+const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
@@ -47,9 +45,7 @@ const getValueReturnedInFirstStatement = (
   return null;
 };
 
-const isExplicitIdentityFunction = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+const isExplicitIdentityFunction = (iteratee: null | TSESTree.Expression) => {
   if (
     isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
@@ -72,9 +68,7 @@ const isExplicitIdentityFunction = (
   );
 };
 
-const isLodashIdentityMember = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+const isLodashIdentityMember = (iteratee: null | TSESTree.Expression) => {
   if (iteratee?.type !== AST_NODE_TYPES.MemberExpression) {
     return false;
   }
@@ -94,7 +88,7 @@ const isLodashIdentityMember = (
   );
 };
 
-const isIdentityFunction = (iteratee: null | TSESTree.Expression): boolean => {
+const isIdentityFunction = (iteratee: null | TSESTree.Expression) => {
   return (
     isExplicitIdentityFunction(iteratee) || isLodashIdentityMember(iteratee)
   );
@@ -107,7 +101,7 @@ export const identityShorthandRule = createRule<Options, MessageIds>({
     const program = context.sourceCode.ast;
     const isNeverMode = "never" === mode;
 
-    const checkNode = (node: TSESTree.CallExpression): void => {
+    const checkNode = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

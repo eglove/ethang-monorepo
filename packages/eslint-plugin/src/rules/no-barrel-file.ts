@@ -17,7 +17,7 @@ const createRule = ESLintUtils.RuleCreator((name) => {
 type MessageIds = "noBarrelFile" | "noDeepBarrelFile";
 type Options = [];
 
-const isReExport = (node: TSESTree.Node): boolean => {
+const isReExport = (node: TSESTree.Node) => {
   if (
     AST_NODE_TYPES.ExportNamedDeclaration !== node.type &&
     AST_NODE_TYPES.ExportAllDeclaration !== node.type

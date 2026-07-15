@@ -50,13 +50,11 @@ type RuleFixer = {
   ) => RuleFix;
 };
 
-const isLodashDefaultImport = (name: string): boolean => {
+const isLodashDefaultImport = (name: string) => {
   return "lodash" === name || startsWith(name, "lodash/");
 };
 
-const isLodashNamespaceReceiver = (
-  callee: TSESTree.MemberExpression
-): boolean => {
+const isLodashNamespaceReceiver = (callee: TSESTree.MemberExpression) => {
   return (
     AST_NODE_TYPES.Identifier === callee.object.type &&
     ("_" === callee.object.name || "lodash" === callee.object.name)
@@ -87,13 +85,13 @@ const BUILTIN_NAMESPACES = new Set([
   "WeakSet"
 ]);
 
-const isEffectSource = (name: string): boolean => {
+const isEffectSource = (name: string) => {
   return "effect" === name || startsWith(name, "effect/");
 };
 
 export type ImportedKind = "effect" | "lodash" | "none";
 
-const classifyImport = (node: TSESTree.Node): ImportedKind => {
+const classifyImport = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.ImportDeclaration !== node.type) {
     return "none";
   }
@@ -111,7 +109,7 @@ const classifyImport = (node: TSESTree.Node): ImportedKind => {
   return "none";
 };
 
-const detectImportKind = (program: TSESTree.Program): ImportedKind => {
+const detectImportKind = (program: TSESTree.Program) => {
   const kinds = map(program.body, classifyImport);
 
   if (includes(kinds, "effect")) {
@@ -127,35 +125,29 @@ const detectImportKind = (program: TSESTree.Program): ImportedKind => {
 
 export const getImportedKind = (context: {
   readonly sourceCode: { readonly ast: TSESTree.Program };
-}): ImportedKind => {
+}) => {
   return detectImportKind(context.sourceCode.ast);
 };
 
-const isEffectImportNode = (node: TSESTree.Node): boolean => {
+const isEffectImportNode = (node: TSESTree.Node) => {
   return (
     AST_NODE_TYPES.ImportDeclaration === node.type &&
     "effect" === node.source.value
   );
 };
 
-const hasEffectImport = (program: TSESTree.Program): boolean => {
+const hasEffectImport = (program: TSESTree.Program) => {
   return some(program.body, isEffectImportNode);
 };
 
-const isLodashDeepImportNode = (
-  node: TSESTree.Node,
-  importName: string
-): boolean => {
+const isLodashDeepImportNode = (node: TSESTree.Node, importName: string) => {
   if (AST_NODE_TYPES.ImportDeclaration !== node.type) {
     return false;
   }
   return node.source.value === `lodash/${importName}.js`;
 };
 
-const hasLodashDeepImport = (
-  program: TSESTree.Program,
-  importName: string
-): boolean => {
+const hasLodashDeepImport = (program: TSESTree.Program, importName: string) => {
   return some(program.body, (node) => {
     return isLodashDeepImportNode(node, importName);
   });
@@ -165,7 +157,7 @@ const insertImportAfterLastStatement = (
   program: TSESTree.Program,
   fixer: RuleFixer,
   text: string
-): RuleFix => {
+) => {
   const lastNode = program.body.at(-1);
   const anchor = lastNode ?? program;
 
@@ -175,7 +167,7 @@ const insertImportAfterLastStatement = (
 export const ensureEffectImport = (
   program: TSESTree.Program,
   fixer: RuleFixer
-): null | RuleFix => {
+) => {
   if (hasEffectImport(program)) {
     return null;
   }
@@ -191,7 +183,7 @@ export const ensureLodashImport = (
   program: TSESTree.Program,
   importName: string,
   fixer: RuleFixer
-): null | RuleFix => {
+) => {
   if (hasLodashDeepImport(program, importName)) {
     return null;
   }
@@ -223,15 +215,15 @@ export type ResolvedCall = {
 const isIdentifierNamed = (
   node: TSESTree.Expression,
   names: readonly string[]
-): boolean => {
+) => {
   return AST_NODE_TYPES.Identifier === node.type && includes(names, node.name);
 };
 
-const isArrayLiteralReceiver = (callee: TSESTree.MemberExpression): boolean => {
+const isArrayLiteralReceiver = (callee: TSESTree.MemberExpression) => {
   return AST_NODE_TYPES.ArrayExpression === callee.object.type;
 };
 
-const resolveMemberMethod = (node: TSESTree.MemberExpression): string => {
+const resolveMemberMethod = (node: TSESTree.MemberExpression) => {
   if (AST_NODE_TYPES.Identifier === node.property.type && !node.computed) {
     return node.property.name;
   }
@@ -250,40 +242,42 @@ const resolveEffectArray = (
   node: TSESTree.CallExpression,
   callee: TSESTree.MemberExpression,
   methodName: string
-): null | ResolvedCall => {
+) => {
   if (AST_NODE_TYPES.Identifier !== callee.object.type) {
     return null;
   }
   if (!isIdentifierNamed(callee.object, EFFECT_ARRAY_IDENTIFIERS)) {
     return null;
   }
-  return {
+  const result: ResolvedCall = {
     effectImportName: EFFECT_ARRAY_IMPORT,
     kind: KIND_EFFECT_ARRAY,
     methodName,
     node,
     receiver: callee.object
   };
+  return result;
 };
 
 const resolveEffectCore = (
   node: TSESTree.CallExpression,
   callee: TSESTree.MemberExpression,
   methodName: string
-): null | ResolvedCall => {
+) => {
   if (AST_NODE_TYPES.Identifier !== callee.object.type) {
     return null;
   }
   if (!isIdentifierNamed(callee.object, ["Effect", "Effect$"])) {
     return null;
   }
-  return {
+  const result: ResolvedCall = {
     effectImportName: "Effect",
     kind: "effect-core",
     methodName,
     node,
     receiver: callee.object
   };
+  return result;
 };
 
 export const NATIVE_EQUIVALENT_METHODS = new Set([
@@ -348,7 +342,7 @@ const NON_ARRAY_NATIVE_METHOD_NAMES = new Set([
 export const isEffectImportedIdentifier = (
   node: TSESTree.Node,
   program: TSESTree.Program
-): boolean => {
+) => {
   if (AST_NODE_TYPES.Identifier !== node.type) {
     return false;
   }
@@ -374,7 +368,7 @@ const isChainedArrayLike = (
   methodName: string,
   isLodashOrEffectMethod: boolean,
   program?: TSESTree.Program
-): boolean => {
+) => {
   const innerResolved = resolveMemberExpressionCall(innerCall, program);
   if ("array" === innerResolved.kind) {
     return true;
@@ -394,7 +388,7 @@ const isReceiverArrayLike = (
   callee: TSESTree.MemberExpression,
   methodName: string,
   program?: TSESTree.Program
-): boolean => {
+) => {
   const isNonArrayNativeMethod = NON_ARRAY_NATIVE_METHOD_NAMES.has(methodName);
   const isLodashOrEffectMethod =
     !isNonArrayNativeMethod &&
@@ -442,16 +436,17 @@ const resolveArrayCall = (
   callee: TSESTree.MemberExpression,
   methodName: string,
   program?: TSESTree.Program
-): ResolvedCall => {
+) => {
   // If the receiver is _ or lodash, this is already a lodash call
   if (isLodashNamespaceReceiver(callee)) {
-    return {
+    const result: ResolvedCall = {
       kind: "lodash",
       lodashImportName: methodName,
       methodName,
       node,
       receiver: callee.object
     };
+    return result;
   }
 
   // If the receiver is an identifier imported from "effect" (e.g. Schema,
@@ -462,13 +457,14 @@ const resolveArrayCall = (
     AST_NODE_TYPES.Identifier === callee.object.type &&
     isEffectImportedIdentifier(callee.object, program)
   ) {
-    return {
+    const result: ResolvedCall = {
       effectImportName: callee.object.name,
       kind: KIND_EFFECT_ARRAY,
       methodName,
       node,
       receiver: callee.object
     };
+    return result;
   }
 
   // Math.* and JSON.* etc. are built-in namespaces, not array receivers
@@ -476,78 +472,107 @@ const resolveArrayCall = (
     AST_NODE_TYPES.Identifier === callee.object.type &&
     BUILTIN_NAMESPACES.has(callee.object.name)
   ) {
-    return {
+    const result: ResolvedCall = {
       kind: "unknown-member",
       methodName,
       node,
       receiver: callee.object
     };
+    return result;
   }
 
   if (isReceiverArrayLike(callee, methodName, program)) {
-    return { kind: "array", methodName, node, receiver: callee.object };
+    const result: ResolvedCall = {
+      kind: "array",
+      methodName,
+      node,
+      receiver: callee.object
+    };
+    return result;
   }
-  return {
+  const result: ResolvedCall = {
     kind: "unknown-member",
     methodName,
     node,
     receiver: callee.object
   };
+  return result;
 };
 
 export const resolveMemberExpressionCall = (
   node: TSESTree.CallExpression,
   program?: TSESTree.Program
-): ResolvedCall => {
+) => {
   const { callee } = node;
   if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return { kind: "other", methodName: "", node, receiver: null };
+    const result: ResolvedCall = {
+      kind: "other",
+      methodName: "",
+      node,
+      receiver: null
+    };
+    return result;
   }
   const methodName = resolveMemberMethod(callee);
 
-  return (
+  const resolved =
     resolveEffectArray(node, callee, methodName) ??
     resolveEffectCore(node, callee, methodName) ??
-    resolveArrayCall(node, callee, methodName, program)
-  );
+    resolveArrayCall(node, callee, methodName, program);
+  const result: ResolvedCall = resolved;
+  return result;
 };
 
-const resolveIdentifierCall = (node: TSESTree.CallExpression): ResolvedCall => {
+const resolveIdentifierCall = (node: TSESTree.CallExpression) => {
   const { callee } = node;
 
   if (AST_NODE_TYPES.Identifier !== callee.type) {
-    return { kind: "other", methodName: "", node, receiver: null };
+    const result: ResolvedCall = {
+      kind: "other",
+      methodName: "",
+      node,
+      receiver: null
+    };
+    return result;
   }
 
   if (isLodashFunction(callee.name)) {
-    return {
+    const result: ResolvedCall = {
       kind: "lodash",
       lodashImportName: callee.name,
       methodName: callee.name,
       node,
       receiver: null
     };
+    return result;
   }
 
   if (isEffectApiMethod(callee.name)) {
     const entry = effectApi[callee.name];
 
-    return {
+    const result: ResolvedCall = {
       effectImportName: entry.import,
       kind: KIND_EFFECT_ARRAY,
       methodName: callee.name,
       node,
       receiver: null
     };
+    return result;
   }
 
-  return { kind: "other", methodName: callee.name, node, receiver: null };
+  const result: ResolvedCall = {
+    kind: "other",
+    methodName: callee.name,
+    node,
+    receiver: null
+  };
+  return result;
 };
 
 export const resolveCall = (
   node: TSESTree.CallExpression,
   program: TSESTree.Program
-): ResolvedCall => {
+) => {
   if (AST_NODE_TYPES.MemberExpression === node.callee.type) {
     return resolveMemberExpressionCall(node, program);
   }
@@ -557,11 +582,11 @@ export const resolveCall = (
 export const isLodashCall = (
   node: TSESTree.CallExpression,
   program: TSESTree.Program
-): boolean => {
+) => {
   return "lodash" === resolveCall(node, program).kind;
 };
 
-export const lodashDeepImport = (name: string): string => {
+export const lodashDeepImport = (name: string) => {
   return `lodash/${name}.js`;
 };
 
@@ -575,7 +600,7 @@ export const lookupLodashEntry = (name: string) => {
 export const markInnerCallExpressions = (
   node: TSESTree.Node,
   set: WeakSet<TSESTree.CallExpression>
-): void => {
+) => {
   if (isCallExpression(node)) {
     set.add(node);
   }
@@ -591,10 +616,7 @@ const isNodeLike = (value: unknown): value is TSESTree.Node => {
   return isObject(value) && "type" in value;
 };
 
-const collectFromArray = (
-  value: unknown[],
-  children: TSESTree.Node[]
-): void => {
+const collectFromArray = (value: unknown[], children: TSESTree.Node[]) => {
   for (const item of value) {
     if (isNodeLike(item)) {
       children.push(item);
@@ -602,7 +624,7 @@ const collectFromArray = (
   }
 };
 
-const getChildNodes = (node: TSESTree.Node): TSESTree.Node[] => {
+export const getChildNodes = (node: TSESTree.Node) => {
   const children: TSESTree.Node[] = [];
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- AST nodes are record-like
   const record = node as unknown as Record<string, unknown>;

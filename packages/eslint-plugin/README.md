@@ -1,6 +1,6 @@
 # @ethang/eslint-plugin
 
-Custom ESLint plugin that encodes ethang-monorepo standards: prefer Effect, prefer lodash, no try/catch, no barrel files, and auto-fix redundant explicit return types.
+Custom ESLint plugin that encodes ethang-monorepo standards: prefer Effect, prefer lodash, no try/catch, no barrel files, and no explicit return types.
 
 Replaces `eslint-plugin-lodash` with full lodash API surface coverage, proper Effect/lodash disambiguation, and additional monorepo-specific rules.
 
@@ -29,8 +29,9 @@ export default {
     "@ethang/matches-shorthand": "error",
     "@ethang/no-barrel-file": "error",
     "@ethang/no-collection-issues": "error",
+    "@ethang/no-explicit-return-type": "error",
     "@ethang/no-lodash-misuse": "error",
-    "@ethang/no-redundant-explicit-return-type": "error",
+    "@ethang/no-null-undefined-check": "error",
     "@ethang/no-try-catch": "error",
     "@ethang/path-style": "error",
     "@ethang/prefer-effect": "error",
@@ -59,7 +60,7 @@ export default {
 | `no-barrel-file` | Ban barrel files (`index.ts` that re-exports from siblings). Imports must come from the source file directly. | No |
 | `no-collection-issues` | Detects lodash collection issues: missing return values, unnecessary unwrap, and chain method values used outside chains. | No |
 | `no-lodash-misuse` | Detect common lodash misuse: calling `.commit()` on chains, double unwrap via `.value().value()`, passing extra arguments to single-arg functions, and using `this` in iteratees without binding. | No |
-| `no-redundant-explicit-return-type` | Disallow explicit return type annotations that are exactly the same as the inferred type. Auto-fix removes the redundant annotation. | Yes |
+| `no-explicit-return-type` | Ban all explicit return type annotations (per AGENTS.md rule 6). Auto-fix removes the annotation. | Yes |
 | `no-try-catch` | Ban `try`/`catch`/`throw`. Use the Effect typed error system (`Effect.try`, `Effect.tryPromise`, `Effect.catchTag`, `Effect.catchAll`, `Effect.fail`) instead. | No |
 | `validate-unknown` | Require that calls returning `unknown`/`any` (e.g. `JSON.parse`, `response.json()`, `fetch(...)`) are validated by an Effect Schema (`Schema.decodeUnknown*` / `Schema.is` / `Schema.validate*` / `S.decode*` family) before being used downstream. | No |
 

@@ -22,7 +22,7 @@ type Options = [];
 const buildArguments = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   callArguments: readonly TSESTree.CallExpressionArgument[]
-): string => {
+) => {
   const texts = map(callArguments, (argument) => {
     return context.sourceCode.getText(argument);
   });

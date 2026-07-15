@@ -35,12 +35,12 @@ export const ALL_COMPOSE_METHODS = new Set([
 
 // Returns the main method name for a given alias, or the method itself if
 // it is already the main name (or not an alias).
-export const getMainAlias = (method: string): string => {
+export const getMainAlias = (method: string) => {
   return LODASH_V4_ALIAS_TO_MAIN.get(method) ?? method;
 };
 
 // Returns true if the method is the main (non-alias) name.
-export const isMainAlias = (method: string): boolean => {
+export const isMainAlias = (method: string) => {
   return LODASH_V4_ALIASES.has(method);
 };
 
@@ -96,7 +96,7 @@ export const PROPERTY_ONLY_SHORTHAND_METHODS: ReadonlySet<string> = new Set([
 
 // Returns true if the method supports identity shorthand (omit iteratee
 // entirely when it returns its argument).
-export const isIdentityShorthandMethod = (method: string): boolean => {
+export const isIdentityShorthandMethod = (method: string) => {
   return SHORTHAND_METHODS.has(method);
 };
 
@@ -106,13 +106,13 @@ const PROPERTY_SHORTHAND_METHODS: ReadonlySet<string> = SHORTHAND_METHODS.union(
 );
 
 // Returns true if the method supports property shorthand (string path iteratee).
-export const isPropertyShorthandMethod = (method: string): boolean => {
+export const isPropertyShorthandMethod = (method: string) => {
   return PROPERTY_SHORTHAND_METHODS.has(method);
 };
 
 // Returns true if the method supports matches shorthand (object literal iteratee).
 // Same set as identity shorthand — all shorthand methods support matches.
-export const isMatchesShorthandMethod = (method: string): boolean => {
+export const isMatchesShorthandMethod = (method: string) => {
   return SHORTHAND_METHODS.has(method);
 };
 
@@ -297,23 +297,23 @@ export const CHAIN_BREAKER_METHODS: ReadonlySet<string> = new Set([
 ]);
 
 // Returns true if the method is chainable in lodash v4.
-export const isChainableMethod = (method: string): boolean => {
+export const isChainableMethod = (method: string) => {
   return CHAINABLE_METHODS.has(getMainAlias(method));
 };
 
 // Returns true if the method is a chain breaker in lodash v4.
-export const isChainBreakerMethod = (method: string): boolean => {
+export const isChainBreakerMethod = (method: string) => {
   return CHAIN_BREAKER_METHODS.has(getMainAlias(method));
 };
 
 // Returns true if the method is a wrapper method in lodash v4.
-export const isWrapperMethod = (method: string): boolean => {
+export const isWrapperMethod = (method: string) => {
   return WRAPPER_METHODS.has(method);
 };
 
 // Maximum argument count for lodash methods (used by callback-binding).
 // This is a simplified version; most lodash methods accept 1-4 args.
-export const getMethodMaxArguments = (method: string): number => {
+export const getMethodMaxArguments = (method: string) => {
   const maxArguments: Record<string, number> = {
     assign: 2,
     assignIn: 2,

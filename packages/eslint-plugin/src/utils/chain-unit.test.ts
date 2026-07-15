@@ -16,18 +16,18 @@ import {
 const mockNode = <T extends TSESTree.Node>(
   type: T["type"],
   properties: Partial<T> = {}
-): T => {
+) => {
   return { type, ...properties } as unknown as T;
 };
 
-const mockIdentifier = (name: string): TSESTree.Identifier => {
+const mockIdentifier = (name: string) => {
   return mockNode<TSESTree.Identifier>(AST_NODE_TYPES.Identifier, { name });
 };
 
 const mockCallExpression = (
   callee: TSESTree.Expression,
   parameters: TSESTree.Expression[] = []
-): TSESTree.CallExpression => {
+) => {
   return mockNode<TSESTree.CallExpression>(AST_NODE_TYPES.CallExpression, {
     arguments: parameters,
     callee
@@ -37,7 +37,7 @@ const mockCallExpression = (
 const mockMemberExpression = (
   object: TSESTree.Expression,
   property: TSESTree.Expression
-): TSESTree.MemberExpression => {
+) => {
   return mockNode<TSESTree.MemberExpression>(AST_NODE_TYPES.MemberExpression, {
     computed: false as const,
     object,
@@ -45,7 +45,7 @@ const mockMemberExpression = (
   });
 };
 
-const mockLiteral = (value: string): TSESTree.StringLiteral => {
+const mockLiteral = (value: string) => {
   return mockNode<TSESTree.StringLiteral>(AST_NODE_TYPES.Literal, {
     value
   });
@@ -55,7 +55,7 @@ const chainMethodName = "chain";
 const mapMethodName = "map";
 const nullMethodNameTestDescription = "returns false when method name is null";
 
-const mockComputedMember = (): TSESTree.MemberExpression => {
+const mockComputedMember = () => {
   return {
     computed: false,
     object: mockIdentifier("chain"),

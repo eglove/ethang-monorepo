@@ -11,21 +11,21 @@ import {
 const mockNode = <T extends TSESTree.Node>(
   type: T["type"],
   properties: Partial<T> = {}
-): T => {
+) => {
   return { type, ...properties } as unknown as T;
 };
 
 const mockCallExpression = (
   callee: TSESTree.Expression,
   parameters: TSESTree.Expression[] = []
-): TSESTree.CallExpression => {
+) => {
   return mockNode<TSESTree.CallExpression>(AST_NODE_TYPES.CallExpression, {
     arguments: parameters,
     callee
   });
 };
 
-const mockIdentifier = (name: string): TSESTree.Identifier => {
+const mockIdentifier = (name: string) => {
   return mockNode<TSESTree.Identifier>(AST_NODE_TYPES.Identifier, { name });
 };
 

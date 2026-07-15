@@ -41,19 +41,19 @@ const REGULAR_PATH_METHODS = new Set([
 
 const HIGHER_ORDER_PATH_METHODS = new Set(["matchesProperty", "property"]);
 
-const isRegularPathMethod = (method: string): boolean => {
+const isRegularPathMethod = (method: string) => {
   const main = getMainAlias(method);
   return REGULAR_PATH_METHODS.has(main) || REGULAR_PATH_METHODS.has(method);
 };
 
-const isHigherOrderPathMethod = (method: string): boolean => {
+const isHigherOrderPathMethod = (method: string) => {
   const main = getMainAlias(method);
   return (
     HIGHER_ORDER_PATH_METHODS.has(main) || HIGHER_ORDER_PATH_METHODS.has(method)
   );
 };
 
-export const getPathArgumentIndex = (method: string): number => {
+export const getPathArgumentIndex = (method: string) => {
   if (isRegularPathMethod(method)) {
     return 1;
   }
@@ -63,21 +63,19 @@ export const getPathArgumentIndex = (method: string): number => {
   return -1;
 };
 
-const isPropertyAccessCharacter = (char: string): boolean => {
+const isPropertyAccessCharacter = (char: string) => {
   return "." === char || "[" === char;
 };
 
-const isEndsWithPropertyAccess = (value: string): boolean => {
+const isEndsWithPropertyAccess = (value: string) => {
   return isPropertyAccessCharacter(value.at(-1) ?? "");
 };
 
-const isStartsWithPropertyAccess = (value: string): boolean => {
+const isStartsWithPropertyAccess = (value: string) => {
   return isPropertyAccessCharacter(value[0] ?? "");
 };
 
-export const isStringConcatWithVariableProperties = (
-  node: TSESTree.Node
-): boolean => {
+export const isStringConcatWithVariableProperties = (node: TSESTree.Node) => {
   if (node.type !== AST_NODE_TYPES.BinaryExpression || "+" !== node.operator) {
     return false;
   }
@@ -103,7 +101,7 @@ export const isStringConcatWithVariableProperties = (
 export const findQuasiAfterIndex = (
   expressionEnd: number,
   quasis: readonly TSESTree.TemplateElement[]
-): number => {
+) => {
   for (const [index, quasi] of quasis.entries()) {
     if (quasi.range[0] >= expressionEnd) {
       return index;
@@ -115,7 +113,7 @@ export const findQuasiAfterIndex = (
 export const isAdjacentToPropertyAccessInTemplate = (
   expression: TSESTree.Expression,
   literal: TSESTree.TemplateLiteral
-): boolean => {
+) => {
   const [, expressionEnd] = expression.range;
   const quasiAfterIndex = findQuasiAfterIndex(expressionEnd, literal.quasis);
 
@@ -137,7 +135,7 @@ export const isAdjacentToPropertyAccessInTemplate = (
 
 export const isTemplateLiteralWithVariableProperties = (
   node: TSESTree.Node
-): boolean => {
+) => {
   if (!isTemplateLiteral(node)) {
     return false;
   }
@@ -147,7 +145,7 @@ export const isTemplateLiteralWithVariableProperties = (
   });
 };
 
-export const isArrayOfLiterals = (node: TSESTree.Node): boolean => {
+export const isArrayOfLiterals = (node: TSESTree.Node) => {
   if (!isArrayExpression(node)) {
     return false;
   }
@@ -157,13 +155,11 @@ export const isArrayOfLiterals = (node: TSESTree.Node): boolean => {
   });
 };
 
-const canBeDotNotation = (value: string): boolean => {
+const canBeDotNotation = (value: string) => {
   return /^[a-zA-Z0-9_$][\w$]*$/u.test(value);
 };
 
-export const convertToStringStyle = (
-  node: TSESTree.ArrayExpression
-): string => {
+export const convertToStringStyle = (node: TSESTree.ArrayExpression) => {
   const parts = map(node.elements, (element) => {
     if (isNil(element) || !isLiteral(element)) {
       return "";
@@ -181,7 +177,7 @@ export const convertToStringStyle = (
   return `'${replace(join(parts, ""), /^\./u, "")}'`;
 };
 
-export const convertToArrayStyle = (node: TSESTree.Literal): string => {
+export const convertToArrayStyle = (node: TSESTree.Literal) => {
   const path = toPath(String(node.value));
 
   return `[${join(
@@ -197,7 +193,7 @@ export const pathStyleRule = createRule<Options, MessageIds>({
     const [style = "as-needed"] = context.options;
     const program = context.sourceCode.ast;
 
-    const reportAsNeeded = (node: TSESTree.Node): void => {
+    const reportAsNeeded = (node: TSESTree.Node) => {
       if (isArrayExpression(node) && isArrayOfLiterals(node)) {
         context.report({
           fix: (fixer) => {
@@ -219,7 +215,7 @@ export const pathStyleRule = createRule<Options, MessageIds>({
       }
     };
 
-    const reportArray = (node: TSESTree.Node): void => {
+    const reportArray = (node: TSESTree.Node) => {
       if (isLiteral(node) && isString(node.value)) {
         context.report({
           fix: (fixer) => {
@@ -236,7 +232,7 @@ export const pathStyleRule = createRule<Options, MessageIds>({
       }
     };
 
-    const reportString = (node: TSESTree.Node): void => {
+    const reportString = (node: TSESTree.Node) => {
       if (isArrayExpression(node)) {
         context.report({
           fix: (fixer) => {
@@ -248,7 +244,7 @@ export const pathStyleRule = createRule<Options, MessageIds>({
       }
     };
 
-    const reportIfViolates = (node: TSESTree.Node): void => {
+    const reportIfViolates = (node: TSESTree.Node) => {
       if ("as-needed" === style) {
         reportAsNeeded(node);
         return;
@@ -262,7 +258,7 @@ export const pathStyleRule = createRule<Options, MessageIds>({
       reportString(node);
     };
 
-    const visitCallExpression = (node: TSESTree.CallExpression): void => {
+    const visitCallExpression = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

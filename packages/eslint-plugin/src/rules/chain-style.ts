@@ -26,9 +26,7 @@ type MessageIds = "noExplicit" | "noImplicit" | "unnecessary";
 
 type Options = [ChainStyle?];
 
-export const getParentCall = (
-  node: TSESTree.Node
-): null | TSESTree.CallExpression => {
+export const getParentCall = (node: TSESTree.Node) => {
   const { parent } = node;
 
   if (isNil(parent)) {
@@ -41,7 +39,7 @@ export const getParentCall = (
     return null;
   }
 
-  if (isMethodCall(grandParent)) {
+  if (isCallExpression(grandParent) && isMethodCall(grandParent)) {
     return grandParent;
   }
 
@@ -51,7 +49,7 @@ export const getParentCall = (
 export const reportAsNeeded = (
   node: TSESTree.CallExpression,
   context: ChainStyleContext
-): void => {
+) => {
   if (!isExplicitChainStart(node)) {
     return;
   }
@@ -75,7 +73,7 @@ export const reportAsNeeded = (
 export const reportImplicit = (
   node: TSESTree.CallExpression,
   context: ChainStyleContext
-): void => {
+) => {
   if (isExplicitChainStart(node)) {
     context.report({ messageId: "noExplicit", node });
   }
@@ -85,7 +83,7 @@ export const reportExplicit = (
   node: TSESTree.CallExpression,
   context: ChainStyleContext,
   program: TSESTree.Program
-): void => {
+) => {
   if (isExplicitChainStart(node)) {
     return;
   }
@@ -109,7 +107,7 @@ export const chainStyleRule = createRule<Options, MessageIds>({
   create(context) {
     const [style = "as-needed"] = context.options;
 
-    const visitCallExpression = (node: TSESTree.CallExpression): void => {
+    const visitCallExpression = (node: TSESTree.CallExpression) => {
       if ("as-needed" === style) {
         reportAsNeeded(node, context);
         return;

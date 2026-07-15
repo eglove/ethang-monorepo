@@ -14,18 +14,18 @@ type ChainStyleContext = Parameters<typeof reportAsNeeded>[1];
 const mockNode = <T extends TSESTree.Node>(
   type: AST_NODE_TYPES | T["type"],
   properties: Partial<T> = {}
-): T => {
+) => {
   return { type, ...properties } as unknown as T;
 };
 
-const mockIdentifier = (name: string): TSESTree.Identifier => {
+const mockIdentifier = (name: string) => {
   return mockNode<TSESTree.Identifier>(AST_NODE_TYPES.Identifier, { name });
 };
 
 const mockCallExpression = (
   callee: TSESTree.Expression,
   parameters: TSESTree.Expression[] = []
-): TSESTree.CallExpression => {
+) => {
   return mockNode<TSESTree.CallExpression>(AST_NODE_TYPES.CallExpression, {
     arguments: parameters,
     callee

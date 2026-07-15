@@ -10,15 +10,15 @@ import {
 const mockNode = <T extends TSESTree.Node>(
   type: AST_NODE_TYPES | T["type"],
   properties: Partial<T> = {}
-): T => {
+) => {
   return { type, ...properties } as unknown as T;
 };
 
-const identifier = (name: string): TSESTree.Identifier => {
+const identifier = (name: string) => {
   return mockNode<TSESTree.Identifier>(AST_NODE_TYPES.Identifier, { name });
 };
 
-const literal = (value: boolean | null | number | string): TSESTree.Literal => {
+const literal = (value: boolean | null | number | string) => {
   return mockNode<TSESTree.Literal>(AST_NODE_TYPES.Literal, { value });
 };
 
@@ -26,7 +26,7 @@ const memberExpression = (
   object: TSESTree.Expression,
   property: TSESTree.Identifier | TSESTree.MemberExpression,
   isComputed = false
-): TSESTree.MemberExpression => {
+) => {
   return mockNode<TSESTree.MemberExpression>(AST_NODE_TYPES.MemberExpression, {
     computed: isComputed as false,
     object,
@@ -38,7 +38,7 @@ const binaryExpression = (
   operator: "!==" | "==" | "===",
   left: TSESTree.Expression,
   right: TSESTree.Expression
-): TSESTree.BinaryExpression => {
+) => {
   return mockNode<TSESTree.BinaryExpression>(AST_NODE_TYPES.BinaryExpression, {
     left,
     operator,
@@ -49,24 +49,20 @@ const binaryExpression = (
 const callExpression = (
   callee: TSESTree.Expression,
   callArguments: TSESTree.Expression[]
-): TSESTree.CallExpression => {
+) => {
   return mockNode<TSESTree.CallExpression>(AST_NODE_TYPES.CallExpression, {
     arguments: callArguments,
     callee
   });
 };
 
-const returnStatement = (
-  argument: null | TSESTree.Expression
-): TSESTree.ReturnStatement => {
+const returnStatement = (argument: null | TSESTree.Expression) => {
   return mockNode<TSESTree.ReturnStatement>(AST_NODE_TYPES.ReturnStatement, {
     argument
   });
 };
 
-const blockStatement = (
-  body: TSESTree.Statement[]
-): TSESTree.BlockStatement => {
+const blockStatement = (body: TSESTree.Statement[]) => {
   return mockNode<TSESTree.BlockStatement>(AST_NODE_TYPES.BlockStatement, {
     body
   });
@@ -75,7 +71,7 @@ const blockStatement = (
 const arrowFunction = (
   parameters: TSESTree.Parameter[],
   body: TSESTree.BlockStatement | TSESTree.Expression
-): TSESTree.ArrowFunctionExpression => {
+) => {
   return mockNode<TSESTree.ArrowFunctionExpression>(
     AST_NODE_TYPES.ArrowFunctionExpression,
     {
@@ -88,7 +84,7 @@ const arrowFunction = (
 const functionExpression = (
   parameters: TSESTree.Parameter[],
   body: TSESTree.BlockStatement
-): TSESTree.FunctionExpression => {
+) => {
   return mockNode<TSESTree.FunctionExpression>(
     AST_NODE_TYPES.FunctionExpression,
     {

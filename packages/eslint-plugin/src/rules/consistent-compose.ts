@@ -17,7 +17,7 @@ type MessageIds = "preferComposeDirection";
 
 type Options = [Direction];
 
-const getDirectionGroup = (method: string): "ltr" | "rtl" => {
+const getDirectionGroup = (method: string) => {
   return COMPOSE_LEFT_TO_RIGHT.has(method) ? "ltr" : "rtl";
 };
 
@@ -28,7 +28,7 @@ export const consistentComposeRule = createRule<Options, MessageIds>({
     const preferredGroup = COMPOSE_LEFT_TO_RIGHT.has(direction) ? "ltr" : "rtl";
     const program = context.sourceCode.ast;
 
-    const reportIfWrongDirection = (node: TSESTree.CallExpression): void => {
+    const reportIfWrongDirection = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

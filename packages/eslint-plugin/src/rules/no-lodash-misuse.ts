@@ -32,7 +32,7 @@ type MessageIds =
 
 type Options = [];
 
-const isLodashIdentifierCall = (node: TSESTree.CallExpression): boolean => {
+const isLodashIdentifierCall = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   return isIdentifier(callee) && isLodashFunction(callee.name);
 };
@@ -72,13 +72,13 @@ const LODASH_MAX_ARGS: Record<string, number> = {
   wrap: 2
 };
 
-const getMaxArguments = (name: string): null | number => {
+const getMaxArguments = (name: string) => {
   return Object.hasOwn(LODASH_MAX_ARGS, name)
     ? get(LODASH_MAX_ARGS, name)
     : null;
 };
 
-const hasUnboundThis = (_function: TSESTree.FunctionExpression): boolean => {
+const hasUnboundThis = (_function: TSESTree.FunctionExpression) => {
   let isFound = false;
 
   const walk = (node: TSESTree.Node) => {
@@ -105,7 +105,7 @@ const hasUnboundThis = (_function: TSESTree.FunctionExpression): boolean => {
   return isFound;
 };
 
-const isBoundFunction = (node: TSESTree.Node): boolean => {
+const isBoundFunction = (node: TSESTree.Node) => {
   if (!isCallExpression(node)) {
     return false;
   }
@@ -122,7 +122,7 @@ const isBoundFunction = (node: TSESTree.Node): boolean => {
 const checkNoCommit = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   if (!isMemberCallOn(node, "commit")) {
     return;
   }
@@ -136,7 +136,7 @@ const checkNoCommit = (
 const checkNoDoubleUnwrap = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   if (!isMemberCallOn(node, "value")) {
     return;
   }
@@ -163,7 +163,7 @@ const checkNoDoubleUnwrap = (
 const checkNoExtraArguments = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   const { callee } = node;
   if (!isIdentifier(callee) || !isLodashFunction(callee.name)) {
     return;
@@ -178,7 +178,7 @@ const checkNoExtraArguments = (
 const checkNoUnboundThis = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
-): void => {
+) => {
   if (!isLodashIdentifierCall(node)) {
     return;
   }

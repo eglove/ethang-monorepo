@@ -167,6 +167,6 @@ export const effectCoreMethods = new Set<string>([
   "zip"
 ]);
 
-export const isEffectCoreMethod = (name: string): boolean => {
+export const isEffectCoreMethod = (name: string) => {
   return effectCoreMethods.has(name);
 };

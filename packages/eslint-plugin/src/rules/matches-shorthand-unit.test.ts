@@ -15,13 +15,13 @@ import {
 const mockNode = <T extends TSESTree.Node>(
   type: AST_NODE_TYPES | T["type"],
   properties: Partial<T> = {}
-): T => {
+) => {
   return { type, ...properties } as unknown as T;
 };
 
 const PARAM = "x";
 
-const identifier = (name: string): TSESTree.Identifier => {
+const identifier = (name: string) => {
   return mockNode<TSESTree.Identifier>(AST_NODE_TYPES.Identifier, { name });
 };
 
@@ -29,7 +29,7 @@ const memberExpression = (
   object: TSESTree.Expression,
   property: TSESTree.Identifier | TSESTree.Literal | TSESTree.MemberExpression,
   isComputed = false
-): TSESTree.MemberExpression => {
+) => {
   return mockNode<TSESTree.MemberExpression>(AST_NODE_TYPES.MemberExpression, {
     computed: isComputed as false,
     object,
@@ -37,7 +37,7 @@ const memberExpression = (
   });
 };
 
-const literal = (value: boolean | number | string): TSESTree.Literal => {
+const literal = (value: boolean | number | string) => {
   return mockNode<TSESTree.Literal>(AST_NODE_TYPES.Literal, { value });
 };
 
@@ -45,7 +45,7 @@ const binaryExpression = (
   operator: "!==" | "==" | "===",
   left: TSESTree.Expression | TSESTree.PrivateIdentifier,
   right: TSESTree.Expression | TSESTree.PrivateIdentifier
-): TSESTree.BinaryExpression => {
+) => {
   return mockNode<TSESTree.BinaryExpression>(AST_NODE_TYPES.BinaryExpression, {
     left,
     operator,
@@ -53,7 +53,7 @@ const binaryExpression = (
   } as Partial<TSESTree.BinaryExpression>);
 };
 
-const privateIdentifier = (name: string): TSESTree.PrivateIdentifier => {
+const privateIdentifier = (name: string) => {
   return mockNode<TSESTree.PrivateIdentifier>(
     AST_NODE_TYPES.PrivateIdentifier,
     {
@@ -66,7 +66,7 @@ const logicalExpression = (
   operator: "??" | "&&" | "||",
   left: TSESTree.Expression,
   right: TSESTree.Expression
-): TSESTree.LogicalExpression => {
+) => {
   return mockNode<TSESTree.LogicalExpression>(
     AST_NODE_TYPES.LogicalExpression,
     {
@@ -77,9 +77,7 @@ const logicalExpression = (
   );
 };
 
-const returnStatement = (
-  argument: null | TSESTree.Expression
-): TSESTree.ReturnStatement => {
+const returnStatement = (argument: null | TSESTree.Expression) => {
   return mockNode<TSESTree.ReturnStatement>(AST_NODE_TYPES.ReturnStatement, {
     argument
   });
@@ -88,7 +86,7 @@ const returnStatement = (
 const arrowFunction = (
   parameters: TSESTree.Parameter[],
   body: TSESTree.BlockStatement | TSESTree.Expression
-): TSESTree.ArrowFunctionExpression => {
+) => {
   return mockNode<TSESTree.ArrowFunctionExpression>(
     AST_NODE_TYPES.ArrowFunctionExpression,
     {
@@ -101,7 +99,7 @@ const arrowFunction = (
 const functionExpression = (
   parameters: TSESTree.Parameter[],
   body: TSESTree.BlockStatement
-): TSESTree.FunctionExpression => {
+) => {
   return mockNode<TSESTree.FunctionExpression>(
     AST_NODE_TYPES.FunctionExpression,
     {
@@ -114,7 +112,7 @@ const functionExpression = (
 const callExpression = (
   callee: TSESTree.Expression,
   callArguments: TSESTree.Expression[]
-): TSESTree.CallExpression => {
+) => {
   return mockNode<TSESTree.CallExpression>(AST_NODE_TYPES.CallExpression, {
     arguments: callArguments,
     callee

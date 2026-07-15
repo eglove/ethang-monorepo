@@ -19,9 +19,7 @@ type Mode = "always" | "never";
 
 type Options = [Mode];
 
-export const getValueReturnedInFirstStatement = (
-  node: TSESTree.Expression
-): null | TSESTree.Expression => {
+export const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
   if (node.type === AST_NODE_TYPES.ArrowFunctionExpression) {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
@@ -48,9 +46,7 @@ export const getValueReturnedInFirstStatement = (
   return null;
 };
 
-export const getFirstParameterName = (
-  node: null | TSESTree.Expression
-): null | string => {
+export const getFirstParameterName = (node: null | TSESTree.Expression) => {
   if (
     isNil(node) ||
     (node.type !== AST_NODE_TYPES.FunctionExpression &&
@@ -71,7 +67,7 @@ export const getFirstParameterName = (
 export const isMemberExpressionOf = (
   node: null | TSESTree.Expression,
   parameterName: null | string
-): boolean => {
+) => {
   if (isNil(parameterName) || isNil(node)) {
     return false;
   }
@@ -99,7 +95,7 @@ export const isMemberExpressionOf = (
 // Checks if the iteratee is a function that returns a property of its first parameter.
 export const isExplicitPropertyFunction = (
   iteratee: null | TSESTree.Expression
-): boolean => {
+) => {
   if (
     isNil(iteratee) ||
     (iteratee.type !== AST_NODE_TYPES.FunctionExpression &&
@@ -120,9 +116,7 @@ export const isExplicitPropertyFunction = (
 };
 
 // Checks if the iteratee is _.property('name') or lodash.property('name').
-export const isLodashPropertyCall = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+export const isLodashPropertyCall = (iteratee: null | TSESTree.Expression) => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
     return false;
   }
@@ -148,16 +142,12 @@ export const isLodashPropertyCall = (
   );
 };
 
-const canUsePropertyShorthand = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+const canUsePropertyShorthand = (iteratee: null | TSESTree.Expression) => {
   return isExplicitPropertyFunction(iteratee) || isLodashPropertyCall(iteratee);
 };
 
 // Checks if the iteratee is a string literal (property shorthand usage).
-export const isStringLiteral = (
-  iteratee: null | TSESTree.Expression
-): boolean => {
+export const isStringLiteral = (iteratee: null | TSESTree.Expression) => {
   return iteratee?.type === AST_NODE_TYPES.Literal && isString(iteratee.value);
 };
 
@@ -168,7 +158,7 @@ export const propertyShorthandRule = createRule<Options, MessageIds>({
     const program = context.sourceCode.ast;
     const isNeverMode = "never" === mode;
 
-    const checkNode = (node: TSESTree.CallExpression): void => {
+    const checkNode = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

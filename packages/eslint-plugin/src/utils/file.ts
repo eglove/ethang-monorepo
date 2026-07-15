@@ -5,16 +5,16 @@ import split from "lodash/split.js";
 
 const BARREL_FILENAME = /^index\.(?:c?js|m?js|cts|mts|ts|tsx|js|jsx|d\.ts)$/u;
 
-const splitPath = (filename: string): readonly string[] => {
+const splitPath = (filename: string) => {
   return split(filename, /[\\/]/u);
 };
 
-export const isBarrelFilename = (filename: string): boolean => {
+export const isBarrelFilename = (filename: string) => {
   const segments = splitPath(filename);
   const basename = segments.at(-1);
   return !isNil(basename) && BARREL_FILENAME.test(basename);
 };
 
-export const isInsideNodeModules = (filename: string): boolean => {
+export const isInsideNodeModules = (filename: string) => {
   return /[\\/]node_modules[\\/]/u.test(filename);
 };

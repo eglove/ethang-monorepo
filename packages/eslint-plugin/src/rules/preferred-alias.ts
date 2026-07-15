@@ -15,14 +15,11 @@ type Options = [
   }
 ];
 
-const isAliasMethod = (method: string): boolean => {
+const isAliasMethod = (method: string) => {
   return LODASH_V4_ALIAS_TO_MAIN.has(method);
 };
 
-const isIgnored = (
-  method: string,
-  ignoreMethods: ReadonlySet<string>
-): boolean => {
+const isIgnored = (method: string, ignoreMethods: ReadonlySet<string>) => {
   return ignoreMethods.has(method);
 };
 
@@ -34,7 +31,7 @@ export const preferredAliasRule = createRule<Options, MessageIds>({
     const ignoreMethods = new Set(options.ignoreMethods ?? []);
     const program = context.sourceCode.ast;
 
-    const reportIfAlias = (node: TSESTree.CallExpression): void => {
+    const reportIfAlias = (node: TSESTree.CallExpression) => {
       if (!isLodashCall(node, program)) {
         return;
       }

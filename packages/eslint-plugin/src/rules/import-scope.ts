@@ -28,28 +28,26 @@ const MEMBER = "member";
 const FULL = "full";
 
 // Matches 'lodash', 'lodash/', 'lodash-es', 'lodash-es/'
-export const isFullLodashImport = (source: string): boolean => {
+export const isFullLodashImport = (source: string) => {
   return FULL_PATTERN.test(source);
 };
 
-const isLodashMethodImport = (source: string): boolean => {
+const isLodashMethodImport = (source: string) => {
   return METHOD_PATTERN.test(source);
 };
 
 // Matches 'lodash/map', 'lodash-es/map' — method imports (with slash)
-export const isMethodImport = (source: string): boolean => {
+export const isMethodImport = (source: string) => {
   return isLodashMethodImport(source) && !includes(source, DOT);
 };
 
 // Matches 'lodash.map' — method-package imports (with dot)
-export const isMethodPackageImport = (source: string): boolean => {
+export const isMethodPackageImport = (source: string) => {
   return isLodashMethodImport(source) && includes(source, DOT);
 };
 
 // Gets the imported module name from a CommonJS require() call
-export const getNameFromCjsRequire = (
-  init: null | TSESTree.Expression
-): null | string => {
+export const getNameFromCjsRequire = (init: null | TSESTree.Expression) => {
   if (init?.type !== AST_NODE_TYPES.CallExpression) {
     return null;
   }
@@ -85,20 +83,17 @@ const importNodeTypes: Record<ImportType, string[]> = {
 const isAllImportsOfType = (
   node: TSESTree.ImportDeclaration,
   types: string[]
-): boolean => {
+) => {
   return every(node.specifiers, (specifier) => {
     return includes(types, specifier.type);
   });
 };
 
-const isMethodOrMethodPackage = (importType: ImportType): boolean => {
+const isMethodOrMethodPackage = (importType: ImportType) => {
   return importType === METHOD || importType === METHOD_PACKAGE;
 };
 
-const isWrongMethodImport = (
-  source: string,
-  importType: ImportType
-): boolean => {
+const isWrongMethodImport = (source: string, importType: ImportType) => {
   return (
     (isMethodImport(source) && importType !== METHOD) ||
     (isMethodPackageImport(source) && importType !== METHOD_PACKAGE)
@@ -112,7 +107,7 @@ const reportFullImport = (
   importType: ImportType,
   node: TSESTree.Node,
   declaration: null | TSESTree.ImportDeclaration
-): void => {
+) => {
   if (
     isMethodOrMethodPackage(importType) ||
     (!isNil(declaration) &&
@@ -126,9 +121,7 @@ export const importScopeRule = createRule<Options, MessageIds>({
   create(context) {
     const [importType = METHOD] = context.options;
 
-    const reportImportDeclaration = (
-      node: TSESTree.ImportDeclaration
-    ): void => {
+    const reportImportDeclaration = (node: TSESTree.ImportDeclaration) => {
       const source = node.source.value;
 
       if (isFullLodashImport(source)) {
@@ -141,9 +134,7 @@ export const importScopeRule = createRule<Options, MessageIds>({
       }
     };
 
-    const reportVariableDeclarator = (
-      node: TSESTree.VariableDeclarator
-    ): void => {
+    const reportVariableDeclarator = (node: TSESTree.VariableDeclarator) => {
       const name = getNameFromCjsRequire(node.init);
 
       if (isNil(name)) {

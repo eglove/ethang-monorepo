@@ -15,7 +15,7 @@ import type { Plugin } from "./plugin.ts";
 
 import { getLatestReact } from "./get-react-version.ts";
 
-const buildImportList = (output: OutputConfig): string[] => {
+const buildImportList = (output: OutputConfig) => {
   const rawImports: string[] = [
     'import { defineConfig, globalIgnores } from "eslint/config";'
   ];
@@ -66,7 +66,7 @@ const buildConfigBlockOptionals = (
   sorted: Plugin[],
   output: OutputConfig,
   reactSettings: null | string
-): string => {
+) => {
   let optionals = "";
 
   const hasAngularLang = some(sorted, (p) => {
@@ -101,7 +101,7 @@ const buildConfigBlock = (
   plugins: Plugin[],
   output: OutputConfig,
   reactSettings: null | string
-): string => {
+) => {
   const sorted = [...plugins].toSorted((a, b) => {
     return (a.order ?? 0) - (b.order ?? 0);
   });
@@ -160,7 +160,7 @@ const buildConfigBlock = (
 const buildConfigEntries = (
   output: OutputConfig,
   reactSettings: null | string
-): string[] => {
+) => {
   const configEntries: string[] = [];
 
   if (!isNil(output.includeIgnores)) {
@@ -197,7 +197,7 @@ const buildConfigEntries = (
   return configEntries;
 };
 
-export const createConfigFile = async (output: OutputConfig): Promise<void> => {
+export const createConfigFile = async (output: OutputConfig) => {
   const importList = buildImportList(output);
 
   let configFile = "// @ts-nocheck\n";
