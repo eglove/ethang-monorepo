@@ -5,7 +5,7 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-* 952 rules.
+* 953 rules.
 * 311 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 * 246 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 * 146 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
@@ -13,7 +13,7 @@
 * 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
 * 22 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
 * 21 rules from [@eslint/markdown](https://github.com/eslint/markdown)
-* 18 rules from [@ethang/eslint-plugin](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-plugin)
+* 19 rules from [@ethang/eslint-plugin](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-plugin)
 * 13 rules from [@eslint/css](https://github.com/eslint/css)
 * 8 rules from [@tanstack/eslint-plugin-query](https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query)
 * 6 rules from [@eslint/json](https://github.com/eslint/json)
