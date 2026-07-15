@@ -8,6 +8,7 @@ import { matchesShorthandRule } from "./rules/matches-shorthand.ts";
 import { noBarrelFileRule } from "./rules/no-barrel-file.ts";
 import { noCollectionIssuesRule } from "./rules/no-collection-issues.ts";
 import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
+import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noRedundantExplicitReturnTypeRule } from "./rules/no-redundant-explicit-return-type.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
@@ -28,6 +29,7 @@ export const rules = {
   "no-barrel-file": noBarrelFileRule,
   "no-collection-issues": noCollectionIssuesRule,
   "no-lodash-misuse": noLodashMisuseRule,
+  "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-redundant-explicit-return-type": noRedundantExplicitReturnTypeRule,
   "no-try-catch": noTryCatchRule,
   "path-style": pathStyleRule,
@@ -58,6 +60,7 @@ export { matchesShorthandRule } from "./rules/matches-shorthand.ts";
 export { noBarrelFileRule } from "./rules/no-barrel-file.ts";
 export { noCollectionIssuesRule } from "./rules/no-collection-issues.ts";
 export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
+export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noRedundantExplicitReturnTypeRule } from "./rules/no-redundant-explicit-return-type.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";

@@ -1061,7 +1061,12 @@ try {
         workspaces = $workspaceResults
     }
 
-    [Console]::Error.WriteLine("Done. lint: $($summary.lint.errorCount) errors / $($summary.lint.warningCount) warnings across $($summary.lint.failed) workspace(s); tsc: $($summary.tsc.errorCount) errors across $($summary.tsc.failed); test: $($summary.test.failedTestCount) failing across $($summary.test.failed) workspace(s).")
+    # Only print summary to stderr if there are failures
+    if ($summary.lint.failed -gt 0 -or $summary.tsc.failed -gt 0 -or $summary.test.failed -gt 0) {
+        [Console]::Error.WriteLine("Done. lint: $($summary.lint.errorCount) errors / $($summary.lint.warningCount) warnings across $($summary.lint.failed) workspace(s); tsc: $($summary.tsc.errorCount) errors across $($summary.tsc.failed); test: $($summary.test.failedTestCount) failing across $($summary.test.failed) workspace(s).")
+    } else {
+        [Console]::Error.WriteLine("All checks passed.")
+    }
 
     # Reserve stdout exclusively for the JSON.
     ConvertTo-Json -InputObject $finalResult -Depth 12

@@ -23,6 +23,7 @@ describe("plugin", () => {
         "no-barrel-file",
         "no-collection-issues",
         "no-lodash-misuse",
+        "no-null-undefined-check",
         "no-redundant-explicit-return-type",
         "no-try-catch",
         "path-style",
