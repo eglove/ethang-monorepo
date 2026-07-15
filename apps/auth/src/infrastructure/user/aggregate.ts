@@ -1,5 +1,6 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
+import isNil from "lodash/isNil.js";
 
 import type { UserCommand } from "../../domain/user/commands.ts";
 import type { UserEvent } from "../../domain/user/events.ts";
@@ -80,13 +81,13 @@ const handleValidateCredentials = (
 ) => {
   return Effect.gen(function* () {
     const existing = yield* repo.fetch(command.email);
-    if (null === existing) {
+    if (isNil(existing)) {
       return yield* Effect.fail(
         new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
       );
     }
     const actualPassword = existing.password;
-    if (null === actualPassword) {
+    if (isNil(actualPassword)) {
       return yield* Effect.fail(
         new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
       );
@@ -125,13 +126,13 @@ const processSignInOrUpEvent = (
       });
     }
     case "UserSignedIn": {
-      if (null === existing) {
+      if (isNil(existing)) {
         return Effect.fail(
           new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
         );
       }
       const actualPassword = existing.password;
-      if (null === actualPassword) {
+      if (isNil(actualPassword)) {
         return Effect.fail(
           new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
         );

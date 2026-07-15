@@ -88,7 +88,7 @@ const rpcServiceDispatch = async (
     dispatchMap = null;
   }
 
-  if (null === dispatchMap) {
+  if (isNil(dispatchMap)) {
     Effect.runSync(Effect.die(new Error("Invalid service")));
     return [] as unknown[];
   }

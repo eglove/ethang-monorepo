@@ -205,7 +205,7 @@ const checkCallExpression = (
 
   // prefer-immutable-method: check both native and lodash calls
   const immutableResult = resolvePreferImmutable(node);
-  if (null !== immutableResult) {
+  if (!isNil(immutableResult)) {
     context.report({
       data: {
         method: immutableResult.method,
@@ -274,7 +274,7 @@ const checkCallExpression = (
 
   // prefer-over-quantifier (returns a string, not boolean)
   const overQuant = resolvePreferOverQuantifier(node);
-  if (null !== overQuant) {
+  if (!isNil(overQuant)) {
     context.report({
       data: { lodash: overQuant },
       messageId: "preferOverQuantifier",
@@ -331,7 +331,7 @@ const checkBinaryExpression = (
 ) => {
   // prefer-lodash-typecheck
   const typecheckLodash = resolvePreferTypecheck(node);
-  if (null !== typecheckLodash) {
+  if (!isNil(typecheckLodash)) {
     context.report({
       data: { lodash: typecheckLodash, native: "typeof" },
       messageId: "preferTypecheck",
@@ -342,7 +342,7 @@ const checkBinaryExpression = (
 
   // prefer-includes
   const includesResult = resolvePreferIncludes(node);
-  if (null !== includesResult) {
+  if (!isNil(includesResult)) {
     context.report({ messageId: includesResult, node });
     return;
   }

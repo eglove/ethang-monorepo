@@ -115,7 +115,7 @@ const reportFullImport = (
 ): void => {
   if (
     isMethodOrMethodPackage(importType) ||
-    (null !== declaration &&
+    (!isNil(declaration) &&
       !isAllImportsOfType(declaration, importNodeTypes[importType]))
   ) {
     context.report({ messageId: importType, node });

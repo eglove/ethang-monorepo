@@ -2,6 +2,7 @@ import { Effect } from "effect";
 import constant from "lodash/constant.js";
 import isArray from "lodash/isArray.js";
 import isFunction from "lodash/isFunction.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import { Buffer } from "node:buffer";
 
@@ -67,7 +68,7 @@ export const decodeCursor = (
       })
     );
 
-    if (null === decoded) {
+    if (isNil(decoded)) {
       return null;
     }
 
@@ -75,10 +76,10 @@ export const decodeCursor = (
       const array: unknown[] = decoded;
       const [firstValue, secondValue] = array;
       if (
-        (isString(firstValue) || null === firstValue) &&
+        (isString(firstValue) || isNil(firstValue)) &&
         isString(secondValue)
       ) {
-        return [firstValue, secondValue] as [null | string, string];
+        return [firstValue ?? null, secondValue];
       }
     }
     return null;

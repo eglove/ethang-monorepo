@@ -153,7 +153,7 @@ export const isArrayOfLiterals = (node: TSESTree.Node): boolean => {
   }
 
   return every(node.elements, (element) => {
-    return null !== element && isLiteral(element);
+    return !isNil(element) && isLiteral(element);
   });
 };
 
@@ -165,7 +165,7 @@ export const convertToStringStyle = (
   node: TSESTree.ArrayExpression
 ): string => {
   const parts = map(node.elements, (element) => {
-    if (null === element || !isLiteral(element)) {
+    if (isNil(element) || !isLiteral(element)) {
       return "";
     }
 

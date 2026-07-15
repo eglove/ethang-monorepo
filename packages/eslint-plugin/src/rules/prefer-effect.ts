@@ -5,6 +5,7 @@ import {
   type TSESTree
 } from "@typescript-eslint/utils";
 import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil.js";
 import join from "lodash/join.js";
 import map from "lodash/map.js";
 
@@ -62,10 +63,11 @@ export const preferEffectRule = createRule<Options, MessageIds>({
             const argumentsSuffix = buildArguments(context, node.arguments);
             const replacement = `${entry.import}.${entry.name}(${sourceText}${argumentsSuffix})`;
 
-            return [
-              fixer.replaceText(node, replacement),
-              ...(null === importFix ? [] : [importFix])
-            ];
+            if (isNil(importFix)) {
+              return fixer.replaceText(node, replacement);
+            }
+
+            return [fixer.replaceText(node, replacement), importFix];
           },
           messageId: "preferEffect",
           node

@@ -145,7 +145,7 @@ export const noRedundantExplicitReturnTypeRule = createRule<
         fix: (fixer) => {
           const tokenBefore = context.sourceCode.getTokenBefore(returnTypeNode);
           /* v8 ignore next -- defensive guard: a return type annotation always has a preceding token */
-          if (null === tokenBefore) {
+          if (isNil(tokenBefore)) {
             return null;
           }
 

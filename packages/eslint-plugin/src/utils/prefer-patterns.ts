@@ -23,7 +23,7 @@ type FunctionLike =
   | TSESTree.FunctionExpression;
 
 const isNullOrUndefinedLiteral = (node: TSESTree.Node): boolean => {
-  if (AST_NODE_TYPES.Literal === node.type && null === node.value) {
+  if (AST_NODE_TYPES.Literal === node.type && isNil(node.value)) {
     return true;
   }
   return AST_NODE_TYPES.Identifier === node.type && "undefined" === node.name;
@@ -230,7 +230,7 @@ const getReturnedValue = (
     if (isNil(first)) {
       return null;
     }
-    if (isReturnStatement(first) && null !== first.argument) {
+    if (isReturnStatement(first) && !isNil(first.argument)) {
       return first.argument;
     }
     return null;
@@ -274,7 +274,7 @@ const isFirstParameterBooleanCasting = (
   _function: TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression
 ): boolean => {
   const returned = getReturnedValue(_function);
-  if (null === returned) {
+  if (isNil(returned)) {
     return false;
   }
 
@@ -448,7 +448,7 @@ export const shouldPreferMapPattern = (
   node: TSESTree.CallExpression
 ): boolean => {
   const iteratee = getForEachIteratee(node);
-  if (null === iteratee) {
+  if (isNil(iteratee)) {
     return false;
   }
 
@@ -478,7 +478,7 @@ export const shouldPreferFilterPattern = (
   node: TSESTree.CallExpression
 ): boolean => {
   const iteratee = getForEachIteratee(node);
-  if (null === iteratee) {
+  if (isNil(iteratee)) {
     return false;
   }
 
@@ -585,7 +585,7 @@ export const shouldPreferConstant = (node: FunctionLike): boolean => {
     return false;
   }
   const returned = getReturnedValue(node);
-  if (null !== returned) {
+  if (!isNil(returned)) {
     return isLiteralValue(returned);
   }
   return false;
@@ -666,7 +666,7 @@ export const shouldPreferReject = (node: TSESTree.CallExpression): boolean => {
   }
 
   const returned = getReturnedValue(iteratee);
-  if (null === returned) {
+  if (isNil(returned)) {
     return false;
   }
 
@@ -699,7 +699,7 @@ export const resolvePreferOverQuantifier = (
   }
 
   const returned = getReturnedValue(iteratee);
-  if (null === returned) {
+  if (isNil(returned)) {
     return null;
   }
 
@@ -784,7 +784,7 @@ export const shouldPreferMatches = (node: TSESTree.CallExpression): boolean => {
   }
 
   const returned = getReturnedValue(iteratee);
-  if (null === returned) {
+  if (isNil(returned)) {
     return false;
   }
 
@@ -823,12 +823,12 @@ export const shouldPreferInvokeMap = (
   }
 
   const iteratee = getMapFunctionIteratee(node);
-  if (null === iteratee) {
+  if (isNil(iteratee)) {
     return false;
   }
 
   const returned = getReturnedValue(iteratee);
-  if (null === returned || !isCallExpression(returned)) {
+  if (isNil(returned) || !isCallExpression(returned)) {
     return false;
   }
 

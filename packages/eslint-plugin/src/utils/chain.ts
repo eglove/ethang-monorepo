@@ -212,7 +212,7 @@ export const isChainBreaker = (node: TSESTree.CallExpression): boolean => {
 
   const name = getMethodName(node);
 
-  if (null === name) {
+  if (isNil(name)) {
     return false;
   }
 
@@ -227,7 +227,7 @@ export const isChainable = (node: TSESTree.CallExpression): boolean => {
 
   const name = getMethodName(node);
 
-  if (null === name) {
+  if (isNil(name)) {
     return false;
   }
 
@@ -298,7 +298,7 @@ export const isCallToMethod = (
 ): boolean => {
   const name = getMethodName(node);
 
-  if (null === name) {
+  if (isNil(name)) {
     return false;
   }
 

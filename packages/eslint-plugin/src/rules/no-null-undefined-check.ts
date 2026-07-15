@@ -4,6 +4,7 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
@@ -15,7 +16,7 @@ type Options = [];
 
 const isNullOrUndefinedNode = (node: TSESTree.Node): boolean => {
   // null is a Literal with value null
-  if (AST_NODE_TYPES.Literal === node.type && null === node.value) {
+  if (AST_NODE_TYPES.Literal === node.type && isNil(node.value)) {
     return true;
   }
 

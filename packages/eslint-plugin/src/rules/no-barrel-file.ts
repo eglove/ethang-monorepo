@@ -27,7 +27,7 @@ const isReExport = (node: TSESTree.Node): boolean => {
 
   if (
     AST_NODE_TYPES.ExportNamedDeclaration === node.type &&
-    null !== node.declaration
+    !isNil(node.declaration)
   ) {
     return false;
   }
@@ -36,7 +36,7 @@ const isReExport = (node: TSESTree.Node): boolean => {
     return true;
   }
 
-  return null !== node.source;
+  return !isNil(node.source);
 };
 
 export const noBarrelFileRule = createRule<Options, MessageIds>({

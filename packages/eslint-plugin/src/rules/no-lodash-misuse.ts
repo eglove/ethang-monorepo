@@ -128,7 +128,7 @@ const checkNoCommit = (
   }
 
   const object = getMemberObject(node);
-  if (null !== object && isCallExpression(object) && isLodashChain(object)) {
+  if (!isNil(object) && isCallExpression(object) && isLodashChain(object)) {
     context.report({ messageId: "noCommit", node });
   }
 };
@@ -143,7 +143,7 @@ const checkNoDoubleUnwrap = (
 
   const object = getMemberObject(node);
   if (
-    null === object ||
+    isNil(object) ||
     !isCallExpression(object) ||
     !isMemberCallOn(object, "value")
   ) {
@@ -152,7 +152,7 @@ const checkNoDoubleUnwrap = (
 
   const innerObject = getMemberObject(object);
   if (
-    null !== innerObject &&
+    !isNil(innerObject) &&
     isCallExpression(innerObject) &&
     isLodashChain(innerObject)
   ) {
@@ -170,7 +170,7 @@ const checkNoExtraArguments = (
   }
 
   const maxArguments = getMaxArguments(callee.name);
-  if (null !== maxArguments && node.arguments.length > maxArguments) {
+  if (!isNil(maxArguments) && node.arguments.length > maxArguments) {
     context.report({ messageId: "noExtraArgs", node });
   }
 };

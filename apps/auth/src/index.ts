@@ -131,7 +131,7 @@ app.post("/sign-in", async (context) => {
 app.get("/verify", async (context) => {
   const token = context.req.raw.headers.get("X-Token");
 
-  if (null === token) {
+  if (isNil(token)) {
     return createJsonResponse({ error: UNAUTHORIZED_ERROR }, "UNAUTHORIZED");
   }
 

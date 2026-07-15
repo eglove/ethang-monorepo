@@ -3,6 +3,7 @@ import forEach from "lodash/forEach.js";
 import includes from "lodash/includes.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
+import isNull from "lodash/isNull.js";
 import join from "lodash/join.js";
 import map from "lodash/map.js";
 import split from "lodash/split.js";
@@ -139,7 +140,7 @@ export const createCachedJsonResponse = <T>(
   } = {}
 ): Response => {
   const init = options.init ?? {};
-  const body = null === data ? "null" : JSON.stringify(data);
+  const body = isNull(data) ? "null" : JSON.stringify(data);
   const base = new Response(body, init);
   return withCacheHeaders(base, {
     cacheControl: options.cacheControl ?? {},

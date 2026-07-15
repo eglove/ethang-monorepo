@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
+import isNil from "lodash/isNil.js";
 
 import type { Database } from "../../data/types.ts";
 import type { CourseTrackingCommand } from "../../domain/course-tracking/commands.ts";
@@ -128,7 +129,7 @@ export const createCourseTrackingRepo = (database: Database) => {
     },
     save: (state: CourseTrackingState, version: null | string) => {
       return Effect.gen(function* () {
-        if (null === version) {
+        if (isNil(version)) {
           const [record] = yield* insertTracking(database, state);
           if (!record) {
             return yield* Effect.fail(new SaveError("Insert returned no rows"));

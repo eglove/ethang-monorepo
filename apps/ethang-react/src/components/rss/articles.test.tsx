@@ -28,13 +28,13 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
       let hasNextPage = false;
 
       if (isAll) {
-        if (null !== mockArticlesStore.allArticlesData) {
+        if (!isNil(mockArticlesStore.allArticlesData)) {
           const { pages } = mockArticlesStore.allArticlesData as {
             pages: { pageInfo: { hasNextPage: boolean } }[];
           };
           hasNextPage = pages[0]?.pageInfo.hasNextPage ?? false;
         }
-      } else if (null === mockArticlesStore.feedArticlesData) {
+      } else if (isNil(mockArticlesStore.feedArticlesData)) {
         // do nothing
       } else {
         const { pages } = mockArticlesStore.feedArticlesData as {

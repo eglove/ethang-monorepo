@@ -27,7 +27,7 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
     ...actual,
     useInfiniteQuery: () => {
       let hasNextPage = false;
-      if (null !== mockFeedsStore.queryData) {
+      if (!isNil(mockFeedsStore.queryData)) {
         const { pages } = mockFeedsStore.queryData as {
           pages: { pageInfo: { hasNextPage: boolean } }[];
         };
@@ -483,7 +483,7 @@ describe("Feeds - SourceIcon", () => {
     const feedARow = container.querySelector(
       `[data-testid="feed-row-${CSS.escape(FEED_A_ID)}"]`
     );
-    if (null === feedARow) {
+    if (isNil(feedARow)) {
       Effect.runSync(
         Effect.die(new Error("expected feed row container to be present"))
       );
@@ -495,7 +495,7 @@ describe("Feeds - SourceIcon", () => {
     const unsubscribeAButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
     const iconA = feedARow.querySelector("img");
 
-    if (null === iconA) {
+    if (isNil(iconA)) {
       Effect.runSync(
         Effect.die(
           new Error("expected source icon img to be present in feed row")

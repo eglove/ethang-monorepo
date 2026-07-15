@@ -1,4 +1,5 @@
 import { Effect } from "effect";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
 import { UnauthorizedError } from "./errors/unauthorized-error.ts";
@@ -7,7 +8,7 @@ const getSessionToken = (request: Request, environment: Env) => {
   return Effect.gen(function* () {
     const clientToken = request.headers.get("X-Token");
 
-    if (null !== clientToken && "" !== clientToken) {
+    if (!isNil(clientToken) && "" !== clientToken) {
       return clientToken;
     }
 

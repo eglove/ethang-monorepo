@@ -1,6 +1,7 @@
 import isBoolean from "lodash/isBoolean.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
+import isNull from "lodash/isNull.js";
 import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
 import keys from "lodash/keys.js";
@@ -8,7 +9,7 @@ import values from "lodash/values.js";
 
 const getErrorMessage = (reason: unknown) => {
   if (isNil(reason)) {
-    return null === reason ? "null" : "Rejected without reason";
+    return isNull(reason) ? "null" : "Rejected without reason";
   }
 
   if (isString(reason) || isNumber(reason) || isBoolean(reason)) {

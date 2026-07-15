@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import { Effect } from "effect";
+import isNil from "lodash/isNil.js";
 import some from "lodash/some.js";
 import { describe, expect, it } from "vitest";
 import "@testing-library/jest-dom/vitest";
@@ -60,7 +61,7 @@ describe("SourceIcon", () => {
   ])("$label", ({ expected, link }) => {
     const { container } = render(<SourceIcon link={link} />);
     const svg = container.querySelector(SVG_TAG);
-    if (null === svg) {
+    if (isNil(svg)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
       return;
     }
@@ -79,7 +80,7 @@ describe("SourceIcon", () => {
       <SourceIcon link={link} className={SIZE_4_CLASS} />
     );
     const svg = container.querySelector(SVG_TAG);
-    if (null === svg) {
+    if (isNil(svg)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
       return;
     }
@@ -107,7 +108,7 @@ describe("SourceIcon with iconUrl", () => {
   ])("$label", ({ iconUrl, link }) => {
     const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const img = container.querySelector(IMG_TAG);
-    if (null === img) {
+    if (isNil(img)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_IMG_ERROR)));
       return;
     }
@@ -129,7 +130,7 @@ describe("SourceIcon with iconUrl", () => {
   ])("$label", ({ iconUrl, link }) => {
     const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const svg = container.querySelector(SVG_TAG);
-    if (null === svg) {
+    if (isNil(svg)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
       return;
     }
@@ -157,7 +158,7 @@ describe("SourceIcon with iconUrl", () => {
   ])("$label", ({ iconUrl, link }) => {
     const { container } = render(<SourceIcon link={link} iconUrl={iconUrl} />);
     const svg = container.querySelector(SVG_TAG);
-    if (null === svg) {
+    if (isNil(svg)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
       return;
     }
@@ -186,7 +187,7 @@ describe("SourceIcon with iconUrl", () => {
     const img = container.querySelector(IMG_TAG);
     expect(img).toBeNull();
     const svg = container.querySelector(SVG_TAG);
-    if (null === svg) {
+    if (isNil(svg)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_SVG_ERROR)));
       return;
     }
@@ -202,7 +203,7 @@ describe("SourceIcon with iconUrl", () => {
       />
     );
     const img = container.querySelector(IMG_TAG);
-    if (null === img) {
+    if (isNil(img)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_IMG_ERROR)));
       return;
     }
@@ -218,7 +219,7 @@ describe("SourceIcon with iconUrl", () => {
       />
     );
     const img = container.querySelector(IMG_TAG);
-    if (null === img) {
+    if (isNil(img)) {
       Effect.runSync(Effect.die(new Error(EXPECTED_IMG_ERROR)));
       return;
     }

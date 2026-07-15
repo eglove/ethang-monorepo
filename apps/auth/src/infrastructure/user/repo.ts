@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
+import isNil from "lodash/isNil.js";
 
 import type { UserState } from "../../domain/user/state.ts";
 import type { getDatabase } from "../../get-database.ts";
@@ -53,7 +54,7 @@ export const createUserRepo = (
     },
     save: (state: UserState, version: null | string) => {
       return Effect.gen(function* () {
-        if (null === version) {
+        if (isNil(version)) {
           const record = yield* Effect.tryPromise({
             catch: (cause) => {
               return new SaveError(String(cause));
@@ -73,7 +74,7 @@ export const createUserRepo = (
               return row ?? null;
             }
           });
-          if (null === record) {
+          if (isNil(record)) {
             return yield* Effect.fail(new SaveError("Insert returned no rows"));
           }
           return toState(record);

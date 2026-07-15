@@ -3,6 +3,7 @@ import { makeStore, type Store } from "@ethang/store/store.ts";
 import { Effect } from "effect";
 import attempt from "lodash/attempt.js";
 import isError from "lodash/isError.js";
+import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import trim from "lodash/trim.js";
@@ -23,7 +24,7 @@ export type AuthState = {
 
 const readStoredUser = (): null | User => {
   const storedUser = localStorage.getItem(USER_KEY);
-  if (null === storedUser) {
+  if (isNil(storedUser)) {
     return null;
   }
   const parsed: unknown = attempt(() => {

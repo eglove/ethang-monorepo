@@ -90,7 +90,7 @@ const handleRpcRequest = async (
     )
   );
 
-  if (null === sessionTokenResult) {
+  if (isNil(sessionTokenResult)) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -102,7 +102,7 @@ const handleRpcRequest = async (
     )
   );
 
-  if (null === verifiedUserResult) {
+  if (isNil(verifiedUserResult)) {
     return new Response("Unauthorized", { status: 401 });
   }
 
