@@ -1,38 +1,39 @@
 import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
 import { Effect, Schema } from "effect";
-import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
-import keys from "lodash/keys.js";
-import map from "lodash/map.js";
 import startsWith from "lodash/startsWith.js";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 installCloudflareLogger();
 
-export const recursiveSort = (value: unknown): unknown => {
-  if (isArray(value)) {
-    return map(value, recursiveSort);
+const isPlainObject = (value: unknown): value is Record<string, unknown> => {
+  return !isNil(value) && isObject(value) && !isArray(value);
+};
+
+const sortReplacer = (_key: string, value: unknown) => {
+  if (!isPlainObject(value)) {
+    return value;
   }
 
-  if (isObject(value) && !isNil(value)) {
-    const sorted: Record<string, unknown> = {};
-    const sortedKeys = keys(value).toSorted((a, b) => {
-      return a.localeCompare(b);
-    });
+  const sorted: Record<string, unknown> = {};
+  const keys = Object.keys(value).toSorted((a, b) => {
+    return a.localeCompare(b);
+  });
 
-    for (const key of sortedKeys) {
-      // eslint-disable-next-line @ethang/validate-unknown
-      sorted[key] = recursiveSort(get(value, [key]));
-    }
-
-    return sorted;
+  for (const key of keys) {
+    sorted[key] = value[key];
   }
 
-  return value;
+  return sorted;
+};
+
+export const recursiveSort = (value: unknown) => {
+  // eslint-disable-next-line @ethang/validate-unknown
+  return JSON.parse(JSON.stringify(value, sortReplacer));
 };
 
 export const sortJson = (filePath: string) => {
@@ -64,7 +65,7 @@ export const sortJson = (filePath: string) => {
   }
 
   // eslint-disable-next-line @ethang/validate-unknown
-  const sortedJson = recursiveSort(result.right);
+  const sortedJson: unknown = recursiveSort(result.right);
 
   writeFileSync(absolutePath, JSON.stringify(sortedJson, null, 2), "utf8");
 
@@ -75,7 +76,7 @@ export const findFilesRecursively = (
   directory: string,
   filename: string,
   results: string[] = []
-): string[] => {
+) => {
   const entries = readdirSync(directory, { withFileTypes: true });
 
   for (const entry of entries) {
