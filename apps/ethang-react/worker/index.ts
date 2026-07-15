@@ -39,6 +39,12 @@ const verifySessionToken = (
   });
 };
 
+const RpcBodySchema = Schema.Struct({
+  method: Schema.String,
+  params: Schema.Record({ key: Schema.String, value: Schema.Unknown }),
+  service: Schema.String
+});
+
 const parseJsonBody = (
   request: Request
 ): Effect.Effect<
@@ -54,17 +60,18 @@ const parseJsonBody = (
       return new Response("Invalid JSON body", { status: 400 });
     },
     try: async () => {
-      return request.json();
+      return Schema.decodeUnknownPromise(RpcBodySchema)(await request.json());
     }
   });
 };
 
-const callRpcService = (
+const callRpcService = <A, I>(
   environment: Env,
   service: string,
   method: string,
-  parameters: Record<string, unknown>
-): Effect.Effect<unknown, Response> => {
+  parameters: Record<string, unknown>,
+  resultSchema: Schema.Schema<A, I>
+): Effect.Effect<A, Response> => {
   return Effect.tryPromise({
     catch: (error) => {
       return new Response(
@@ -73,7 +80,9 @@ const callRpcService = (
       );
     },
     try: async () => {
-      return rpcServiceDispatch(environment, service, method, parameters);
+      return Schema.decodeUnknownPromise(resultSchema)(
+        await rpcServiceDispatch(environment, service, method, parameters)
+      );
     }
   });
 };
@@ -128,18 +137,26 @@ const handleRpcRequest = async (
     return new Response("Invalid service or method", { status: 400 });
   }
 
-  const result = await Effect.runPromise(
-    callRpcService(environment, service, method, {
+  const RpcResultSchema = Schema.Unknown;
+
+  const rpcEffect = callRpcService(
+    environment,
+    service,
+    method,
+    {
       ...params,
       sessionToken: sessionTokenResult,
       userEmail: verifiedUserResult.email,
       userSub: verifiedUserResult.sub
-    }).pipe(
-      Effect.catchAll((response) => {
-        return Effect.succeed(response);
-      })
-    )
+    },
+    RpcResultSchema
+  ).pipe(
+    Effect.catchAll((response) => {
+      return Effect.succeed(response);
+    })
   );
+  // eslint-disable-next-line @ethang/validate-unknown -- callRpcService decodes via the schema; result is narrowed with `instanceof Response` below
+  const result = await Effect.runPromise(rpcEffect);
 
   if (result instanceof Response) {
     return result;

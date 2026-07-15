@@ -145,7 +145,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               const response = await fetch(feed.xmlAddress);
               const xml = await response.text();
               const parsedMeta = parseFeedMetadata(xml);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@ethang/validate-unknown -- `parser.parse` returns `any` from `fast-xml-parser`; the downstream shape is already declared via the `FeedResult` type alias and consumed through manual narrowing in the normalizer helpers
               const parseResult = parser.parse(xml) as unknown as FeedResult;
 
               const rawItems =

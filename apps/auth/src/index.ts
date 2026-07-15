@@ -6,7 +6,6 @@ import { setCookieValue } from "@ethang/toolbelt/http/cookie.js";
 import { Effect, Option, Schema } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import get from "lodash/get.js";
 import isNil from "lodash/isNil.js";
 
 import type { UserCommand } from "./domain/user/commands.ts";
@@ -60,9 +59,9 @@ const VALIDATION_ERROR = "Validation failed";
 const UNAUTHORIZED_ERROR = "Unauthorized";
 
 app.post("/sign-up", async (context) => {
-  const body: unknown = await context.req.json();
-
-  const parsed = Schema.decodeUnknownOption(SignUpSchema)(body);
+  const parsed = Schema.decodeUnknownOption(SignUpSchema)(
+    await context.req.json()
+  );
   if (Option.isNone(parsed)) {
     return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
   }
@@ -91,16 +90,17 @@ app.post("/sign-up", async (context) => {
     return createJsonResponse({ error: result.error }, "INTERNAL_SERVER_ERROR");
   }
   const response = createJsonResponse(result, "OK");
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const sessionToken: null | string = get(result, ["sessionToken"], null);
-  setAuthCookie(response, sessionToken);
+  setAuthCookie(
+    response,
+    "sessionToken" in result ? result.sessionToken : null
+  );
   return response;
 });
 
 app.post("/sign-in", async (context) => {
-  const body: unknown = await context.req.json();
-
-  const parsed = Schema.decodeUnknownOption(AppSignInSchema)(body);
+  const parsed = Schema.decodeUnknownOption(AppSignInSchema)(
+    await context.req.json()
+  );
   if (Option.isNone(parsed)) {
     return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
   }
@@ -115,16 +115,13 @@ app.post("/sign-in", async (context) => {
       return Effect.succeed({ error: UNAUTHORIZED_ERROR });
     }
   );
-  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
+  const result = await Effect.runPromise(effect);
 
-  if (!isNil(result["error"])) {
-    return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
+  if ("error" in result) {
+    return createJsonResponse({ error: result.error }, "UNAUTHORIZED");
   }
   const rsp = createJsonResponse(result, "OK");
-
-  // @ts-expect-error allow this
-  const sessionToken: null | string = get(result, ["sessionToken"], null);
-  setAuthCookie(rsp, sessionToken);
+  setAuthCookie(rsp, "sessionToken" in result ? result.sessionToken : null);
   return rsp;
 });
 
@@ -152,19 +149,19 @@ app.get("/verify", async (context) => {
       return Effect.succeed({ error: UNAUTHORIZED_ERROR });
     }
   );
-  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
+  const result = await Effect.runPromise(effect);
 
-  if (!isNil(result["error"])) {
-    return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
+  if ("error" in result) {
+    return createJsonResponse({ error: result.error }, "UNAUTHORIZED");
   }
-  const payload = "payload" in result ? result["payload"] : result;
+  const payload = "payload" in result ? result.payload : result;
   return createJsonResponse(payload, "OK");
 });
 
 app.post("/verify", async (context) => {
-  const body: unknown = await context.req.json();
-
-  const parsed = Schema.decodeUnknownOption(VerifySchema)(body);
+  const parsed = Schema.decodeUnknownOption(VerifySchema)(
+    await context.req.json()
+  );
   if (Option.isNone(parsed)) {
     return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
   }
@@ -180,12 +177,12 @@ app.post("/verify", async (context) => {
       return Effect.succeed({ error: UNAUTHORIZED_ERROR });
     }
   );
-  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
-  const error = isNil(result["error"]) ? null : result["error"];
+  const result = await Effect.runPromise(effect);
 
-  return isNil(error)
-    ? createJsonResponse(result, "OK")
-    : createJsonResponse({ error }, "UNAUTHORIZED");
+  if ("error" in result) {
+    return createJsonResponse({ error: result.error }, "UNAUTHORIZED");
+  }
+  return createJsonResponse(result, "OK");
 });
 
 export { app };

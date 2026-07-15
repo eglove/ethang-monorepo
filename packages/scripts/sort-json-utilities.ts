@@ -26,6 +26,7 @@ export const recursiveSort = (value: unknown): unknown => {
     });
 
     for (const key of sortedKeys) {
+      // eslint-disable-next-line @ethang/validate-unknown
       sorted[key] = recursiveSort(get(value, [key]));
     }
 
@@ -61,6 +62,7 @@ export const sortJson = (filePath: string) => {
     return;
   }
 
+  // eslint-disable-next-line @ethang/validate-unknown
   const sortedJson = recursiveSort(result.right);
 
   writeFileSync(absolutePath, JSON.stringify(sortedJson, null, 2), "utf8");

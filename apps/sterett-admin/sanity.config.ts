@@ -1,4 +1,3 @@
-import get from "lodash/get.js";
 import { defineConfig } from "sanity";
 
 import {
@@ -11,7 +10,7 @@ export default defineConfig({
   dataset: "production",
   name: "default",
   plugins:
-    "development" === get(import.meta, ["env", "NODE_ENV"])
+    "development" === import.meta.env["NODE_ENV"]
       ? developmentPlugins
       : productionPlugins,
   // cspell:disable-next-line

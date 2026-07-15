@@ -7,7 +7,7 @@ import { SanityText } from "../../components/sanity-text.tsx";
 import { getBlogBySlug } from "../../models/blog-model.ts";
 
 const RouteComponent = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@ethang/validate-unknown
   const { slug } = useParams({ from: "/blog/$slug" });
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument

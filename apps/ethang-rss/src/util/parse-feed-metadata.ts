@@ -1,94 +1,147 @@
-/* eslint-disable @typescript-eslint/no-unsafe-type-assertion,@typescript-eslint/prefer-destructuring,@typescript-eslint/no-unsafe-assignment,sonar/cognitive-complexity,sonar/cyclomatic-complexity */
+import { Option, Schema } from "effect";
 import { XMLParser } from "fast-xml-parser";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import trim from "lodash/trim.js";
 
-export const parseFeedMetadata = (xmlText: string) => {
-  const parser = new XMLParser({
-    attributeNamePrefix: "@_",
-    ignoreAttributes: false
-  });
+type DecodedFeedMetadata = Schema.Schema.Type<typeof FeedMetadataSchema>;
+type FeedLink = FeedLinkEntry | readonly FeedLinkEntry[];
 
-  const parsed = parser.parse(xmlText) as Record<string, unknown>;
+type FeedLinkEntry = LinkObject | string;
+type LinkObject = {
+  "@_href"?: string;
+  "@_rel"?: string;
+  "#text"?: string;
+};
+
+type TextOrTextObject = { "#text"?: string } | string;
+
+const AnyObjectSchema = Schema.Record({
+  key: Schema.String,
+  value: Schema.Unknown
+});
+
+const TextOrTextObjectSchema = Schema.Union(Schema.String, AnyObjectSchema);
+
+const LinkEntrySchema = Schema.Union(Schema.String, AnyObjectSchema);
+
+const FeedLinkSchema = Schema.Union(
+  Schema.String,
+  AnyObjectSchema,
+  Schema.Array(LinkEntrySchema)
+);
+
+const AtomFeedSchema = Schema.Struct({
+  link: Schema.optional(FeedLinkSchema),
+  title: Schema.optional(TextOrTextObjectSchema)
+});
+
+const RssChannelSchema = Schema.Struct({
+  link: Schema.optional(TextOrTextObjectSchema),
+  title: Schema.optional(TextOrTextObjectSchema)
+});
+
+const RssFeedSchema = Schema.Struct({
+  channel: Schema.optional(RssChannelSchema)
+});
+
+const FeedMetadataSchema = Schema.Struct({
+  feed: Schema.optional(AtomFeedSchema),
+  rss: Schema.optional(RssFeedSchema)
+});
+
+const extractText = (value: null | TextOrTextObject): string => {
+  if (isString(value)) {
+    return value;
+  }
+  return value?.["#text"] ?? "";
+};
+
+const isLinkObject = (entry: FeedLinkEntry): entry is LinkObject => {
+  return !isString(entry);
+};
+
+const isLinkArray = (value: FeedLink): value is readonly FeedLinkEntry[] => {
+  return isArray(value);
+};
+
+const findAlternate = (
+  links: readonly FeedLinkEntry[]
+): FeedLinkEntry | null => {
+  return (
+    find(links, (entry) => {
+      return isLinkObject(entry) && "alternate" === entry["@_rel"];
+    }) ?? null
+  );
+};
+
+const findNonSelf = (links: readonly FeedLinkEntry[]): FeedLinkEntry | null => {
+  return (
+    find(links, (entry) => {
+      return (
+        isLinkObject(entry) &&
+        (isNil(entry["@_rel"]) || "self" !== entry["@_rel"])
+      );
+    }) ?? null
+  );
+};
+
+const linkHref = (entry: FeedLinkEntry | null): string => {
+  if (isString(entry)) {
+    return entry;
+  }
+  return entry?.["@_href"] ?? "";
+};
+
+const objectHrefOrText = (entry: LinkObject): string => {
+  return entry["@_href"] ?? entry["#text"] ?? "";
+};
+
+const chooseArrayLink = (links: readonly FeedLinkEntry[]): string => {
+  const chosen: FeedLinkEntry | null =
+    findAlternate(links) ?? findNonSelf(links) ?? links[0] ?? null;
+  return linkHref(chosen);
+};
+
+const extractAtomWebsite = (link: FeedLink | null): string => {
+  if (isNil(link)) {
+    return "";
+  }
+  if (isString(link)) {
+    return link;
+  }
+  if (isLinkArray(link)) {
+    return chooseArrayLink(link);
+  }
+  return objectHrefOrText(link);
+};
+
+const parser = new XMLParser({
+  attributeNamePrefix: "@_",
+  ignoreAttributes: false
+});
+
+export const parseFeedMetadata = (xmlText: string) => {
+  const decoded = Schema.decodeUnknownOption(FeedMetadataSchema)(
+    parser.parse(xmlText)
+  );
+  const metadata: DecodedFeedMetadata = Option.isSome(decoded)
+    ? decoded.value
+    : {};
 
   let title = "";
   let website = "";
 
-  if (isObject(parsed["rss"])) {
-    const rss = parsed["rss"] as Record<string, unknown>;
-    if (isObject(rss["channel"])) {
-      const channel = rss["channel"] as Record<string, unknown>;
-
-      if (isString(channel["title"])) {
-        title = channel["title"];
-      }
-
-      if (isObject(channel["title"])) {
-        title = (channel["title"] as Record<string, string>)["#text"] ?? "";
-      }
-
-      if (isString(channel["link"])) {
-        website = channel["link"];
-      }
-
-      if (isObject(channel["link"])) {
-        website = (channel["link"] as Record<string, string>)["#text"] ?? "";
-      }
-    }
-  } else if (isObject(parsed["feed"])) {
-    const feed = parsed["feed"] as Record<string, unknown>;
-
-    if (isString(feed["title"])) {
-      title = feed["title"];
-    }
-
-    if (isObject(feed["title"])) {
-      title = (feed["title"] as Record<string, string>)["#text"] ?? "";
-    }
-
-    const links = feed["link"];
-    if (isString(links)) {
-      website = links;
-    }
-
-    if (isArray(links)) {
-      const alternate =
-        find(links, (l) => {
-          return (
-            isObject(l) &&
-            "alternate" === (l as Record<string, string>)["@_rel"]
-          );
-        }) ??
-        find(links, (l) => {
-          return (
-            isObject(l) &&
-            (isNil((l as Record<string, string>)["@_rel"]) ||
-              "self" !== (l as Record<string, string>)["@_rel"])
-          );
-        }) ??
-        links[0];
-
-      if (isString(alternate)) {
-        website = alternate;
-      }
-
-      if (isObject(alternate)) {
-        website = (alternate as Record<string, string>)["@_href"] ?? "";
-      }
-    } else if (isObject(links)) {
-      website =
-        (links as Record<string, string>)["@_href"] ??
-        (links as Record<string, string>)["#text"] ??
-        "";
-    } else {
-      // do nothing
+  if (isNil(metadata.rss?.channel)) {
+    if (!isNil(metadata.feed)) {
+      title = extractText(metadata.feed.title ?? null);
+      website = extractAtomWebsite(metadata.feed.link ?? null);
     }
   } else {
-    // do nothing
+    title = extractText(metadata.rss.channel.title ?? null);
+    website = extractText(metadata.rss.channel.link ?? null);
   }
 
   return {

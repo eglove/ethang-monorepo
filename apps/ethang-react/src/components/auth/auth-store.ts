@@ -1,12 +1,10 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { makeStore, type Store } from "@ethang/store/store.ts";
-import { Effect } from "effect";
-import attempt from "lodash/attempt.js";
+import { parseJson } from "@ethang/toolbelt/json/json.ts";
+import { Effect, Option, Schema } from "effect";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
-import trim from "lodash/trim.js";
 
 export type User = {
   email: string;
@@ -22,24 +20,21 @@ export type AuthState = {
   user: null | User;
 };
 
+const StoredUserSchema = Schema.Struct({
+  email: Schema.String,
+  sessionToken: Schema.String,
+  username: Schema.String
+});
+
 const readStoredUser = (): null | User => {
   const storedUser = localStorage.getItem(USER_KEY);
   if (isNil(storedUser)) {
     return null;
   }
-  const parsed: unknown = attempt(() => {
-    return JSON.parse(storedUser);
-  });
-  if (isError(parsed) || !isObject(parsed)) {
-    return null;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  const data = parsed as Record<string, unknown>;
-  const { email, sessionToken, username } = data;
-  if (!isString(email) || !isString(sessionToken) || !isString(username)) {
-    return null;
-  }
-  return { email, sessionToken, username };
+  const decoded = Effect.runSync(
+    parseJson(storedUser, StoredUserSchema).pipe(Effect.option)
+  );
+  return Option.isSome(decoded) ? decoded.value : null;
 };
 
 export { readStoredUser };
@@ -49,6 +44,16 @@ const initialState: AuthState = {
   isPending: false,
   user: readStoredUser()
 };
+
+type SignInOutcome =
+  { failure: Error; success?: never } | { failure?: never; success: User };
+
+const SignInResponseSchema = Schema.Struct({
+  email: Schema.optional(Schema.String),
+  error: Schema.optional(Schema.String),
+  sessionToken: Schema.optional(Schema.String),
+  username: Schema.optional(Schema.String)
+});
 
 const signIn = async (
   store: Store<AuthState>,
@@ -61,69 +66,83 @@ const signIn = async (
   });
 
   const result = await Effect.runPromise(
-    Effect.tryPromise({
-      catch: (error: unknown) => {
-        return Error.isError(error) ? error : new Error("failed");
-      },
-      try: async () => {
-        const response = await fetch("https://auth.ethang.dev/sign-in", {
-          body: JSON.stringify({ email, password }),
-          headers: {
-            "Content-Type": "application/json"
-          },
-          method: "POST"
+    Effect.gen(function* () {
+      const response: Response = yield* Effect.tryPromise({
+        catch: (error: unknown) => {
+          if (isError(error)) {
+            return error;
+          }
+          return new Error(auth.UNEXPECTED_ERROR);
+        },
+        try: async () => {
+          return fetch("https://auth.ethang.dev/sign-in", {
+            body: JSON.stringify({ email, password }),
+            headers: {
+              "Content-Type": "application/json"
+            },
+            method: "POST"
+          });
+        }
+      });
+
+      const rawJson: unknown = yield* Effect.tryPromise({
+        catch: (error: unknown) => {
+          if (isError(error)) {
+            return error;
+          }
+          return new Error(auth.UNEXPECTED_ERROR);
+        },
+        try: async () => {
+          return response.json();
+        }
+      });
+
+      const decoded = Schema.decodeUnknownEither(SignInResponseSchema)(rawJson);
+      if ("Left" === decoded._tag) {
+        return yield* Effect.succeed<SignInOutcome>({
+          failure: new Error(auth.INVALID_RESPONSE)
         });
-
-        const data: {
-          email: string;
-          error: string;
-          sessionToken: string;
-          username: string;
-        } = await response.json();
-
-        const {
-          email: emailValue,
-          error: errorValue,
-          sessionToken: sessionTokenValue,
-          username: usernameValue
-        } = data;
-
-        if (!response.ok) {
-          const errorMessage = isString(errorValue)
-            ? errorValue
-            : auth.FAILED_TO_SIGN_IN;
-          Effect.runSync(Effect.die(new Error(errorMessage)));
-        }
-
-        if (
-          !isString(emailValue) ||
-          !isString(sessionTokenValue) ||
-          !isString(usernameValue)
-        ) {
-          Effect.runSync(Effect.die(new TypeError(auth.INVALID_RESPONSE)));
-        }
-
-        const user: User = {
-          email: emailValue,
-          sessionToken: sessionTokenValue,
-          username: usernameValue
-        };
-
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-
-        return user;
       }
+      const data = decoded.right;
+
+      if (!response.ok) {
+        const errorMessage = isString(data.error)
+          ? data.error
+          : auth.FAILED_TO_SIGN_IN;
+        return yield* Effect.succeed<SignInOutcome>({
+          failure: new Error(errorMessage)
+        });
+      }
+
+      if (
+        !isString(data.email) ||
+        !isString(data.sessionToken) ||
+        !isString(data.username)
+      ) {
+        return yield* Effect.succeed<SignInOutcome>({
+          failure: new Error(auth.INVALID_RESPONSE)
+        });
+      }
+
+      return yield* Effect.succeed<SignInOutcome>({
+        success: {
+          email: data.email,
+          sessionToken: data.sessionToken,
+          username: data.username
+        }
+      });
     }).pipe(
-      Effect.catchAll((error: Error) => {
-        return Effect.succeed(error);
+      Effect.catchAll((error): Effect.Effect<SignInOutcome> => {
+        if (isError(error)) {
+          return Effect.succeed({ failure: error });
+        }
+        return Effect.succeed({ failure: new Error(auth.UNEXPECTED_ERROR) });
       })
     )
   );
 
-  if (isError(result)) {
-    const trimmed = trim(result.message);
-    const message =
-      "failed" === trimmed ? auth.UNEXPECTED_ERROR : result.message;
+  if (isError(result.failure)) {
+    const { message } = result.failure;
     store.update((draft) => {
       draft.error = message;
       draft.isPending = false;
@@ -131,10 +150,22 @@ const signIn = async (
     return;
   }
 
+  if (isNil(result.success)) {
+    const message = auth.UNEXPECTED_ERROR;
+    store.update((draft) => {
+      draft.error = message;
+      draft.isPending = false;
+    });
+    return;
+  }
+
+  const user = result.success;
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
+
   store.update((draft) => {
     draft.error = null;
     draft.isPending = false;
-    draft.user = result;
+    draft.user = user;
   });
 };
 

@@ -35,7 +35,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@ethang/validate-unknown
   const search = useSearch({ from: "/login" });
 
   useEffect(() => {

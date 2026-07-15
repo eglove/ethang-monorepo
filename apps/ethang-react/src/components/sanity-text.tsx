@@ -9,7 +9,7 @@ import {
   Strong,
   Text
 } from "@radix-ui/themes";
-import get from "lodash/get.js";
+import { Option, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
@@ -18,6 +18,17 @@ import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 import { sanityImage } from "../clients/sanity.ts";
 import { Code as CodeBlock } from "./code.tsx";
 import { HybridLink } from "./hybrid-link.tsx";
+
+const MarkValueSchema = Schema.Struct({
+  href: Schema.optional(Schema.String)
+});
+
+const decodeMarkHref = (value: unknown): null | string => {
+  const decoded = Schema.decodeUnknownOption(MarkValueSchema)(value);
+  return Option.isSome(decoded) && isString(decoded.value.href)
+    ? decoded.value.href
+    : null;
+};
 
 type BlockquoteFooterProperties = {
   author: null | string;
@@ -115,9 +126,7 @@ const MarkComponents: PortableTextComponents["marks"] = {
     return <Em>{children}</Em>;
   },
   link: ({ children, value }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const link = get(value, ["href"]) as null | string;
-    const href = isString(link) ? link : "";
+    const href = decodeMarkHref(value) ?? "";
 
     return <HybridLink href={href}>{children}</HybridLink>;
   },

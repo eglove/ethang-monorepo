@@ -1,9 +1,6 @@
-import { Effect } from "effect";
+import { Effect, Option, Schema } from "effect";
 import constant from "lodash/constant.js";
-import isArray from "lodash/isArray.js";
 import isFunction from "lodash/isFunction.js";
-import isNil from "lodash/isNil.js";
-import isString from "lodash/isString.js";
 import { Buffer } from "node:buffer";
 
 type Uint8ArrayConstructorWithBase64 = {
@@ -13,6 +10,11 @@ type Uint8ArrayConstructorWithBase64 = {
 type Uint8ArrayWithBase64 = {
   toBase64?: () => string;
 } & Uint8Array;
+
+const CursorTupleSchema = Schema.Tuple(
+  Schema.NullOr(Schema.String),
+  Schema.String
+);
 
 export const encodeCursor = (value: [null | string, string]) => {
   const json = JSON.stringify(value);
@@ -57,31 +59,21 @@ export const decodeCursor = (
       return null;
     }
 
-    const decoded: unknown = yield* Effect.try({
-      catch: constant(null),
+    const validated = yield* Effect.try({
+      catch: constant(Option.none<[null | string, string]>()),
       try: () => {
-        return JSON.parse(json);
+        return Schema.decodeUnknownOption(CursorTupleSchema)(JSON.parse(json));
       }
     }).pipe(
       Effect.orElse(() => {
-        return Effect.succeed(null);
+        return Effect.succeed(Option.none<[null | string, string]>());
       })
     );
 
-    if (isNil(decoded)) {
+    if (Option.isNone(validated)) {
       return null;
     }
-
-    if (isArray(decoded) && 2 === decoded.length) {
-      const array: unknown[] = decoded;
-      const [firstValue, secondValue] = array;
-      if (
-        (isString(firstValue) || isNil(firstValue)) &&
-        isString(secondValue)
-      ) {
-        return [firstValue ?? null, secondValue];
-      }
-    }
-    return null;
+    const [first, second] = validated.value;
+    return [first, second] as [null | string, string];
   });
 };

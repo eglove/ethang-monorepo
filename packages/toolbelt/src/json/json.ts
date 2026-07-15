@@ -11,6 +11,7 @@ export const parseJson = <A>(
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: () => {
+        // eslint-disable-next-line @ethang/validate-unknown
         return JSON.parse(text, reviver);
       }
     });

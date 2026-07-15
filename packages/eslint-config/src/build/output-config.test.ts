@@ -3,7 +3,7 @@ import type { Linter } from "eslint";
 import keys from "lodash/keys.js";
 import { describe, expect, it } from "vitest";
 
-import { OutputConfig } from "./output-config.ts";
+import { OutputConfig, outputConfigs } from "./output-config.ts";
 import { Plugin } from "./plugin.ts";
 
 const TEST_FILE_NAME = "config.test.js";
@@ -86,6 +86,21 @@ describe(OutputConfig, () => {
       expect(keys(config.pluginsByFiles)).toHaveLength(2);
       expect(config.pluginsByFiles["**/*.ts"]).toHaveLength(2);
       expect(config.pluginsByFiles["**/*.md"]).toHaveLength(1);
+    });
+  });
+
+  describe("test-file exclusion entries", () => {
+    it("disables @ethang/validate-unknown for *.test.* and *.spec.* files", () => {
+      const [mainConfig] = outputConfigs;
+
+      expect(mainConfig).toBeDefined();
+      expect(mainConfig?.extraConfigEntries).toBeDefined();
+
+      const combined = (mainConfig?.extraConfigEntries ?? []).join("\n");
+
+      expect(combined).toContain('"@ethang/validate-unknown": "off"');
+      expect(combined).toMatch(/\*\*\/\*\.test\.\{ts,tsx,js,jsx,mjs,cjs\}/u);
+      expect(combined).toMatch(/\*\*\/\*\.spec\.\{ts,tsx,js,jsx,mjs,cjs\}/u);
     });
   });
 });

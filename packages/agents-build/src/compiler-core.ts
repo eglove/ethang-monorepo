@@ -1,10 +1,7 @@
 import { generateMarkdown } from "@ethang/markdown-generator";
-import { Effect } from "effect";
+import { Effect, Option, Schema } from "effect";
 import constant from "lodash/constant.js";
-import filter from "lodash/filter.js";
-import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import {
   existsSync,
@@ -175,7 +172,7 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   }
 };
 
-const loadManifest = (config: CompilerConfig): string[] => {
+const loadManifest = (config: CompilerConfig) => {
   const { manifestPath } = config;
   if (isNil(manifestPath)) {
     return [];
@@ -190,15 +187,18 @@ const loadManifest = (config: CompilerConfig): string[] => {
   );
 };
 
-const parseManifestContent = (content: string): string[] => {
-  const parsed: unknown = JSON.parse(content);
-  if (isObject(parsed) && "files" in parsed) {
-    const { files } = parsed;
-    if (isArray(files)) {
-      return filter(files, isString);
-    }
+const ManifestContentSchema = Schema.Struct({
+  files: Schema.optional(Schema.Array(Schema.String))
+});
+
+const parseManifestContent = (content: string) => {
+  const decoded = Schema.decodeUnknownOption(ManifestContentSchema)(
+    JSON.parse(content)
+  );
+  if (Option.isNone(decoded)) {
+    return [];
   }
-  return [];
+  return decoded.value.files ?? [];
 };
 
 const canRemoveDirectory = (directory: string): boolean => {

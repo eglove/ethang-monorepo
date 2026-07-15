@@ -31,7 +31,8 @@ describe("plugin", () => {
         "prefer-lodash",
         "preferred-alias",
         "property-shorthand",
-        "unwrap"
+        "unwrap",
+        "validate-unknown"
       ])
     );
   });

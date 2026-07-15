@@ -17,6 +17,7 @@ import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
 import { propertyShorthandRule } from "./rules/property-shorthand.ts";
 import { unwrapRule } from "./rules/unwrap.ts";
+import { validateUnknownRule } from "./rules/validate-unknown.ts";
 
 export const rules = {
   "chain-style": chainStyleRule,
@@ -37,7 +38,8 @@ export const rules = {
   "prefer-lodash": preferLodashRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
-  unwrap: unwrapRule
+  unwrap: unwrapRule,
+  "validate-unknown": validateUnknownRule
 } as const;
 
 export const plugin = {
@@ -69,6 +71,7 @@ export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
 export { propertyShorthandRule } from "./rules/property-shorthand.ts";
 export { unwrapRule } from "./rules/unwrap.ts";
+export { validateUnknownRule } from "./rules/validate-unknown.ts";
 
 export {
   effectApi,

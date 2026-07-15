@@ -1,8 +1,10 @@
-import { Effect } from "effect";
+import { Effect, Option, Schema } from "effect";
 import attempt from "lodash/attempt.js";
 import isNil from "lodash/isNil";
-import isObject from "lodash/isObject";
-import isString from "lodash/isString";
+
+const StoredUserSchema = Schema.Struct({
+  sessionToken: Schema.optional(Schema.String)
+});
 
 export const rpcRequest = async <TResult>(
   service: string,
@@ -14,12 +16,11 @@ export const rpcRequest = async <TResult>(
 
   if (!isNil(storedUser)) {
     attempt(() => {
-      const parsed: unknown = JSON.parse(storedUser);
-      if (isObject(parsed) && !isNil(parsed) && "sessionToken" in parsed) {
-        const { sessionToken } = parsed as Record<string, unknown>;
-        if (isString(sessionToken)) {
-          token = sessionToken;
-        }
+      const decoded = Schema.decodeUnknownOption(StoredUserSchema)(
+        JSON.parse(storedUser)
+      );
+      if (Option.isSome(decoded)) {
+        token = decoded.value.sessionToken ?? "";
       }
     });
   }

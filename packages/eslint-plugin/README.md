@@ -37,9 +37,10 @@ export default {
     "@ethang/prefer-lodash": "error",
     "@ethang/preferred-alias": "error",
     "@ethang/property-shorthand": "error",
-    "@ethang/unwrap": "error"
-  }
-};
+        "@ethang/unwrap": "error",
+        "@ethang/validate-unknown": "error"
+      }
+    };
 ```
 
 ## Rules
@@ -60,6 +61,7 @@ export default {
 | `no-lodash-misuse` | Detect common lodash misuse: calling `.commit()` on chains, double unwrap via `.value().value()`, passing extra arguments to single-arg functions, and using `this` in iteratees without binding. | No |
 | `no-redundant-explicit-return-type` | Disallow explicit return type annotations that are exactly the same as the inferred type. Auto-fix removes the redundant annotation. | Yes |
 | `no-try-catch` | Ban `try`/`catch`/`throw`. Use the Effect typed error system (`Effect.try`, `Effect.tryPromise`, `Effect.catchTag`, `Effect.catchAll`, `Effect.fail`) instead. | No |
+| `validate-unknown` | Require that calls returning `unknown`/`any` (e.g. `JSON.parse`, `response.json()`, `fetch(...)`) are validated by an Effect Schema (`Schema.decodeUnknown*` / `Schema.is` / `Schema.validate*` / `S.decode*` family) before being used downstream. | No |
 
 ### Stylistic rules
 
