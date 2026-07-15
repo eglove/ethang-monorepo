@@ -33,8 +33,13 @@ describe("validateFrontmatterBlock", () => {
   });
 });
 
-const makeRule = (filename: string): RuleDefinition => {
-  return { content: "x", filename, trigger: "always_on" };
+const makeRule = (filename: string) => {
+  const rule: RuleDefinition = {
+    content: "x",
+    filename,
+    trigger: "always_on"
+  };
+  return rule;
 };
 
 describe("findDuplicateRuleFilenames", () => {

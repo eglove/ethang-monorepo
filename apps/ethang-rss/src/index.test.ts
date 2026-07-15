@@ -74,13 +74,13 @@ vi.mock("./data/queries/subscriptions.ts", () => {
 
 import WorkerClass from "./index.ts";
 
-const WorkerClassConstructor = WorkerClass as unknown as new () => {
-  env: Record<string, unknown>;
-};
+const WorkerClassConstructor = WorkerClass as unknown as new () => InstanceType<
+  typeof WorkerClass
+>;
 
-const createInstance = (environment: Record<string, any> = {}): any => {
+const createInstance = (environment: Record<string, any> = {}) => {
   const instance = new WorkerClassConstructor();
-  instance.env = environment;
+  (instance as unknown as { env: Record<string, unknown> }).env = environment;
   return instance;
 };
 
@@ -90,7 +90,13 @@ describe("ethang-rss WorkerEntrypoint", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         json: async () => {
-          return { email: "test@test.com", sub: "test-sub" };
+          return {
+            email: "test@test.com",
+            exp: 1_700_000_000,
+            iat: 1_600_000_000,
+            sub: "test-sub",
+            username: "testuser"
+          };
         },
         ok: true
       })
@@ -103,7 +109,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
 
   it("should respond OK on fetch", async () => {
     const instance = createInstance({ ethang_rss: {} });
-    const response = await instance.fetch(new Request("https://example.com/"));
+    const response = instance.fetch(new Request("https://example.com/"));
     expect(response.status).toBe(200);
     const body = await response.text();
     expect(body).toBe("OK");
@@ -233,7 +239,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).resolves.not.toThrow();
       expect(createMock).toHaveBeenCalledWith({
         id: "fetch-feeds-123456"
@@ -249,7 +257,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).resolves.not.toThrow();
     });
 
@@ -263,7 +273,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).rejects.toThrow(SOME_OTHER_D1_ERROR);
     });
 
@@ -274,7 +286,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).rejects.toThrow(SOME_NON_ERROR_OBJECT);
     });
   });

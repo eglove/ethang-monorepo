@@ -14,7 +14,7 @@ export type TrusteeRecord = {
   phoneNumber: string;
 };
 
-export const getTrustees = async (): Promise<TrusteeRecord[]> => {
+export const getTrustees = async () => {
   const trusteesQuery = `*[_type == "trustee" && ${NO_DRAFTS}] | order(orderRank asc) {_id, _updatedAt, order, orderRank, duties, name, phoneNumber, image{asset->{url, metadata{dimensions{height, width}}}}}`;
 
   return sterettSanityClient.fetch<TrusteeRecord[]>(trusteesQuery);

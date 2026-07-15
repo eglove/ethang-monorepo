@@ -52,47 +52,47 @@ type TaskListBlock = Extract<MarkdownBlock, { type: "taskList" }>;
 type TextBlock = Extract<MarkdownBlock, { type: "text" }>;
 type UnorderedListBlock = Extract<MarkdownBlock, { type: "unorderedList" }>;
 
-export const bold = (text: string): string => {
+export const bold = (text: string) => {
   return `**${text}**`;
 };
 
-export const image = (text: string, url: string): string => {
+export const image = (text: string, url: string) => {
   return `![${text}](${url})`;
 };
 
-export const inlineCode = (text: string): string => {
+export const inlineCode = (text: string) => {
   return `\`${text}\``;
 };
 
-export const italic = (text: string): string => {
+export const italic = (text: string) => {
   return `*${text}*`;
 };
 
-export const link = (text: string, url: string): string => {
+export const link = (text: string, url: string) => {
   return `[${text}](${url})`;
 };
 
-export const mention = (text: string): string => {
+export const mention = (text: string) => {
   return `@${text}`;
 };
 
-export const strikeThrough = (text: string): string => {
+export const strikeThrough = (text: string) => {
   return `~~${text}~~`;
 };
 
-export const subscript = (text: string): string => {
+export const subscript = (text: string) => {
   return `<sub>${text}</sub>`;
 };
 
-export const superscript = (text: string): string => {
+export const superscript = (text: string) => {
   return `<sup>${text}</sup>`;
 };
 
-const die = (error: Error): never => {
+const die = (error: Error) => {
   return Effect.runSync(Effect.die(error));
 };
 
-const assertNoNewline = (value: string, key: string): void => {
+const assertNoNewline = (value: string, key: string) => {
   if (includes(value, "\n")) {
     die(
       new Error(
@@ -102,7 +102,7 @@ const assertNoNewline = (value: string, key: string): void => {
   }
 };
 
-const yamlScalar = (value: string): string => {
+const yamlScalar = (value: string) => {
   if (!/[:"#]/u.test(value)) {
     return value;
   }
@@ -115,7 +115,7 @@ const yamlScalar = (value: string): string => {
 
 const renderFrontmatter = (
   frontmatter: Record<string, boolean | number | string>
-): string => {
+) => {
   const lines: string[] = [];
   const sortedKeys = keys(frontmatter).toSorted((a, b) => {
     if ("title" === a) {
@@ -142,7 +142,7 @@ const renderList = (
   items: ListItem[],
   listType: "numbered" | "unordered",
   level = 0
-): string => {
+) => {
   const lines: string[] = [];
   const prefix = "unordered" === listType ? "* " : "1. ";
   const indent = repeat("\t", level);
@@ -156,7 +156,7 @@ const renderList = (
   return lines.join("\n");
 };
 
-const renderAlert = (block: AlertBlock): string => {
+const renderAlert = (block: AlertBlock) => {
   const lines = split(block.text, "\n");
   const formatted = map(lines, (line) => {
     return `> ${line}`;
@@ -164,7 +164,7 @@ const renderAlert = (block: AlertBlock): string => {
   return `> [!${block.alertType}]\n${formatted}`;
 };
 
-const renderTable = (block: TableBlock): string => {
+const renderTable = (block: TableBlock) => {
   const headerLength = block.headers.length;
   const rowLines: string[] = [];
 
@@ -238,9 +238,7 @@ const renderers = {
   }
 };
 
-const renderBlock = (
-  block: Exclude<MarkdownBlock, { type: "space" }>
-): string => {
+const renderBlock = (block: Exclude<MarkdownBlock, { type: "space" }>) => {
   const { type } = block;
   switch (type) {
     case "alert": {
@@ -299,7 +297,7 @@ const processBlock = (
   }
 };
 
-export const generateMarkdown = (document: MarkdownDocument): string => {
+export const generateMarkdown = (document: MarkdownDocument) => {
   let result = "";
 
   if (document.frontmatter) {

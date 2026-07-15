@@ -59,11 +59,7 @@ describe(toDateKey, () => {
 
 // ─── buildEventsByDate ───────────────────────────────────────────────────────
 
-const makeEvent = (
-  id: string,
-  startsAt: string,
-  endsAt: string
-): CalendarEventRecord => {
+const makeEvent = (id: string, startsAt: string, endsAt: string) => {
   return {
     _id: id,
     endsAt,

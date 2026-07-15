@@ -3,7 +3,7 @@ import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import trim from "lodash/trim.js";
 
-export const normalizeDate = (dateString?: null | string): string => {
+export const normalizeDate = (dateString?: null | string) => {
   if (isNil(dateString) || !isString(dateString) || "" === trim(dateString)) {
     return DateTime.formatIso(DateTime.unsafeNow());
   }

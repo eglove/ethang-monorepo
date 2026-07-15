@@ -18,7 +18,7 @@ type FilesResult = {
   meetingMinutes: FileRecord[];
 };
 
-export const getFiles = async (): Promise<FilesResult> => {
+export const getFiles = async () => {
   const generalCovenantQuery = `*[_type == "documentUpload" && (category == "General" || category == "Covenant") && ${NO_DRAFTS}] | order(date desc){_id, _updatedAt, title, category, date, file{asset->{url}}}`;
   const meetingMinutesQuery = `*[_type == "documentUpload" && category == "Meeting Minute" && ${NO_DRAFTS}] | order(date desc){_id, _updatedAt, title, category, date, file{asset->{url}}}`;
 
@@ -27,9 +27,10 @@ export const getFiles = async (): Promise<FilesResult> => {
     sterettSanityClient.fetch<FileRecord[]>(meetingMinutesQuery)
   ]);
 
-  return {
+  const result: FilesResult = {
     covenants: filter(generalCovenant, matches({ category: "Covenant" })),
     general: filter(generalCovenant, matches({ category: "General" })),
     meetingMinutes
   };
+  return result;
 };

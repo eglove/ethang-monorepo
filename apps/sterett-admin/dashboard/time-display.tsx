@@ -4,7 +4,7 @@ type TimeDisplayProperties = {
   readonly date: string;
 };
 
-const formatDate = (date: string): string => {
+const formatDate = (date: string) => {
   const dt = DateTime.unsafeMake(date);
   const formatter = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium"

@@ -19,19 +19,16 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
 import { renderCalendarEventDialog } from "../test-utilities/render.tsx";
 
-const makeEvent = (
-  overrides: Partial<CalendarEventRecord> = {}
-): CalendarEventRecord => {
-  return {
+const makeEvent = (overrides: Partial<CalendarEventRecord> = {}) => {
+  const event: CalendarEventRecord = {
     _id: "event-1",
     _updatedAt: "2024-06-15T12:00:00Z",
-    // @ts-expect-error mock
-    description: null,
     endsAt: "2024-06-15T15:00:00.000Z",
     startsAt: "2024-06-15T13:00:00.000Z",
     title: "Test Event",
     ...overrides
   };
+  return event;
 };
 
 describe("calendarEventDialog", () => {
@@ -104,11 +101,8 @@ describe("calendarEventDialog", () => {
     expect(html).toContain("Event description text");
   });
 
-  it("does not render description section when description is null", async () => {
-    const html = await renderCalendarEventDialog(
-      // @ts-expect-error mock
-      makeEvent({ description: null })
-    );
+  it("does not render description section when description is absent", async () => {
+    const html = await renderCalendarEventDialog(makeEvent());
 
     expect(html).not.toContain("prose");
   });

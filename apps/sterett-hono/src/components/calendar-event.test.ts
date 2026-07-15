@@ -9,9 +9,7 @@ const NOW_MS = DateTime.toEpochMillis(
   DateTime.unsafeMake("2024-06-15T12:00:00.000Z")
 );
 
-const makeEvent = (
-  overrides: Partial<CalendarEventReturn> = {}
-): CalendarEventReturn => {
+const makeEvent = (overrides: Partial<CalendarEventReturn> = {}) => {
   return {
     _id: "e1",
 

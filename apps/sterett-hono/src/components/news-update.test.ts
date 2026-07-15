@@ -6,9 +6,7 @@ import { renderNewsUpdate } from "../test-utilities/render.tsx";
 
 const TITLE = "Road Closure Notice";
 
-const makeUpdate = (
-  overrides: Partial<NewsUpdateReturn> = {}
-): NewsUpdateReturn => {
+const makeUpdate = (overrides: Partial<NewsUpdateReturn> = {}) => {
   return {
     _id: "n1",
     date: "2024-06-15",

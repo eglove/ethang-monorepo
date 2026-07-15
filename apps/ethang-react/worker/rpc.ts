@@ -36,9 +36,7 @@ type RpcDispatchHandler = (
   parameters: Record<string, unknown>
 ) => Promise<unknown>;
 
-const buildDispatchMap = (
-  methods: (keyof RpcBinding)[]
-): Record<string, RpcDispatchHandler> => {
+const buildDispatchMap = (methods: (keyof RpcBinding)[]) => {
   const map: Record<string, RpcDispatchHandler> = {};
   for (const method of methods) {
     map[method] = async (binding, parameters) => {
@@ -77,7 +75,7 @@ const rpcServiceDispatch = async (
   service: string,
   method: string,
   parameters: Record<string, unknown>
-): Promise<unknown> => {
+) => {
   let dispatchMap: null | Record<string, RpcDispatchHandler>;
 
   if ("ethang_courses" === service) {

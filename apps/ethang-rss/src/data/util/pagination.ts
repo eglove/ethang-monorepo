@@ -16,7 +16,7 @@ export type Connection<T> = {
 export const createConnection = <T extends { id: string }>(
   items: T[],
   hasNextPage: boolean
-): Connection<T> => {
+) => {
   const edges = map(items, (item) => {
     return {
       cursor: item.id,

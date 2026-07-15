@@ -30,7 +30,7 @@ export const decide = (
 export const apply = (
   state: CourseTrackingState,
   event: CourseTrackingEvent
-): CourseTrackingState => {
+) => {
   switch (event.kind) {
     case "StatusChanged": {
       return { ...state, status: event.to };
@@ -40,7 +40,7 @@ export const apply = (
         courseUrl: event.courseUrl,
         status: "COMPLETE",
         userId: event.userId
-      };
+      } satisfies CourseTrackingState;
     }
     default: {
       const _exhaustive: never = event;

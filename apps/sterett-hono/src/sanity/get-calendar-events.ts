@@ -19,7 +19,7 @@ export const getLatestCalendarEventUpdatedAt = async () => {
 export const getCalendarEvents = async (
   rangeStart: string,
   rangeEndExclusive: string
-): Promise<CalendarEventRecord[]> => {
+) => {
   const query = `*[_type == "calendarEvent" && ${NO_DRAFTS} && startsAt < $rangeEndExclusive && endsAt >= $rangeStart]{_id, _updatedAt, title, startsAt, endsAt, description}`;
   return sterettSanityClient.fetch<CalendarEventRecord[]>(query, {
     rangeEndExclusive,

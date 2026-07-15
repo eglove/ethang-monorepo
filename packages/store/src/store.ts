@@ -67,7 +67,7 @@ recipes: `store.update((draft) => { draft.count += 1 })`. This avoids
 the `{ ...d, ... }` spread noise while still producing immutable state
 under the hood.
 */
-export const makeStore = <T>(initial: T): Store<T> => {
+export const makeStore = <T>(initial: T) => {
   // The state itself lives in a closure variable so reads and writes are
   // plain synchronous JS. The Effect `PubSub` is the only place state
   // crosses into the Effect world; everything else is sync.
@@ -90,7 +90,7 @@ export const makeStore = <T>(initial: T): Store<T> => {
     });
   };
 
-  const commit = (next: T): T => {
+  const commit = (next: T) => {
     current = next;
     notify();
     // Fire-and-forget publish: the synchronous API doesn't surface
@@ -172,6 +172,6 @@ export const makeStore = <T>(initial: T): Store<T> => {
 };
 
 // Convenience: read a `Store<T>` synchronously. Exposed for the React adapter.
-export const readUnsafe = <T>(store: Store<T>): T => {
+export const readUnsafe = <T>(store: Store<T>) => {
   return store.state;
 };

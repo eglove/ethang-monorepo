@@ -176,7 +176,7 @@ describe("addSubscriptionMutation - icon URL extraction", () => {
   it("stores iconUrl=null when the website fetch fails (XML succeeds)", async () => {
     const fetchSpy = vi
       .spyOn(globalThis, "fetch")
-      .mockImplementation(async (input: FetchInput): Promise<Response> => {
+      .mockImplementation(async (input: FetchInput) => {
         const value = inputToString(input);
         if (value === XML_ADDRESS) {
           return rssResponse();
@@ -212,7 +212,7 @@ describe("addSubscriptionMutation - icon URL extraction", () => {
 
   it("stores iconUrl=null when the website returns non-OK (XML succeeds)", async () => {
     vi.spyOn(globalThis, "fetch").mockImplementation(
-      async (input: FetchInput): Promise<Response> => {
+      async (input: FetchInput) => {
         const value = inputToString(input);
         if (value === XML_ADDRESS) {
           return rssResponse();

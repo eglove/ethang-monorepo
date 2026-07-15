@@ -60,7 +60,7 @@ const resolveHref = (href: string, baseUrl: string) => {
   );
 };
 
-const buildFaviconFallback = (baseUrl: string): null | string => {
+const buildFaviconFallback = (baseUrl: string) => {
   const originValue = Effect.runSync(
     Effect.try({
       catch: returnNull,
@@ -80,9 +80,7 @@ const buildFaviconFallback = (baseUrl: string): null | string => {
   return `${originValue}/favicon.ico`;
 };
 
-const readLinkTag = (
-  tag: string
-): { href: string; sizes: null | string } | null => {
+const readLinkTag = (tag: string) => {
   const relationshipMatch = REL_PATTERN.exec(tag);
   if (isNil(relationshipMatch)) {
     return null;
@@ -104,9 +102,7 @@ const readLinkTag = (
   };
 };
 
-const pickBestIcon = (
-  matches: string[]
-): { href: string; index: number } | null => {
+const pickBestIcon = (matches: string[]) => {
   let bestIndex = -1;
   let bestArea = 0;
   let bestHref: null | string = null;
@@ -129,10 +125,7 @@ const pickBestIcon = (
   return { href: bestHref, index: bestIndex };
 };
 
-export const extractIconUrl = (
-  html: string,
-  baseUrl: string
-): null | string => {
+export const extractIconUrl = (html: string, baseUrl: string) => {
   if ("" === html) {
     return null;
   }

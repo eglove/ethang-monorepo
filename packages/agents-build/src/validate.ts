@@ -19,7 +19,7 @@ import type { RuleDefinition } from "./define.ts";
 A rendered markdown file must open with a well-formed frontmatter block:
 `---`, `key: value` lines only, closing `---`.
 */
-export const isValidFrontmatterBlock = (markdown: string): boolean => {
+export const isValidFrontmatterBlock = (markdown: string) => {
   if (!startsWith(markdown, "---\n")) {
     return false;
   }
@@ -39,9 +39,7 @@ export const isValidFrontmatterBlock = (markdown: string): boolean => {
 };
 
 /** Shared rules merged with plugin rules must not collide on filename. */
-export const findDuplicateRuleFilenames = (
-  rules: RuleDefinition[]
-): string[] => {
+export const findDuplicateRuleFilenames = (rules: RuleDefinition[]) => {
   const seen = new Set<string>();
   const duplicates = new Set<string>();
 
@@ -57,7 +55,7 @@ export const findDuplicateRuleFilenames = (
 };
 
 /** Scan a built directory tree for leftover {{sections}} tokens. */
-export const findUnresolvedTokens = (directory: string): string[] => {
+export const findUnresolvedTokens = (directory: string) => {
   const violations: string[] = [];
 
   const files = filter(readdirSync(directory, { recursive: true }), isString);

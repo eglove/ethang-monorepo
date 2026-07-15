@@ -97,7 +97,7 @@ const asGlobal = () => {
   return globalThis as unknown as GlobalAugmented;
 };
 
-const cookieStoreMock = (): CookieStoreMock => {
+const cookieStoreMock = () => {
   return {
     delete: vi.fn().mockResolvedValue(null),
     get: vi.fn().mockResolvedValue(null),
@@ -148,7 +148,7 @@ afterEach(() => {
   delete asGlobal().__capturedCookies;
 });
 
-const lastSetCookie = (): null | string => {
+const lastSetCookie = () => {
   const list = asGlobal().__capturedCookies;
   if (list === undefined || 0 === list.length) {
     return null;

@@ -9,7 +9,7 @@ import { sortJson } from "./sort-json-utilities.ts";
 
 installCloudflareLogger();
 
-export const run = (argv: string[]): void => {
+export const run = (argv: string[]) => {
   const { 2: filePath } = argv;
 
   if (isNil(filePath)) {

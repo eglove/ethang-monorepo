@@ -41,7 +41,7 @@ const addToDateMap = (
   dateMap.get(key)?.push(event);
 };
 
-const extractChicagoDateKey = (iso: string): string => {
+const extractChicagoDateKey = (iso: string) => {
   const maybeZoned = DateTime.makeZoned(iso, { timeZone: CHICAGO });
   if (Option.isNone(maybeZoned)) {
     return "";
@@ -99,7 +99,7 @@ const buildMonthGrid = ({
   previousMonth,
   previousYear,
   year
-}: MonthGridParameters): CalendarCell[][] => {
+}: MonthGridParameters) => {
   const cells: CalendarCell[] = [];
   for (let index = firstDay - 1; 0 <= index; index -= 1) {
     cells.push({
@@ -125,10 +125,7 @@ const buildMonthGrid = ({
   return weeks;
 };
 
-export const buildCalendarWeeks = (
-  year: number,
-  month: number
-): CalendarCell[][] => {
+export const buildCalendarWeeks = (year: number, month: number) => {
   if (1 > month || 12 < month || !Number.isSafeInteger(month)) {
     return [];
   }
@@ -164,7 +161,7 @@ export const getViewDateRange = (
   year: number,
   month: number,
   date: string
-): { rangeEndExclusive: string; rangeStart: string } => {
+) => {
   if ("day" === view) {
     return { rangeEndExclusive: shiftDate(date, 1), rangeStart: date };
   }
@@ -191,19 +188,19 @@ export const getViewDateRange = (
 
 export const renderDescriptionHtml = (
   description: CalendarEventRecord["description"]
-): string => {
+) => {
   if (!description) return "";
   const blocks = isArray(description) ? description : [description];
   return toHTML(blocks, { components: { types: { image: constant("") } } });
 };
 
-export const shiftDate = (dateString: string, days: number): string => {
+export const shiftDate = (dateString: string, days: number) => {
   return DateTime.formatIsoDate(
     DateTime.add(DateTime.unsafeMake(dateString), { days })
   );
 };
 
-export const getWeekDays = (dateString: string): string[] => {
+export const getWeekDays = (dateString: string) => {
   const maybeAnchor = DateTime.make(dateString);
   if (Option.isNone(maybeAnchor)) return [];
 
@@ -215,7 +212,7 @@ export const getWeekDays = (dateString: string): string[] => {
   });
 };
 
-export const formatTimeOnly = (iso: string): string => {
+export const formatTimeOnly = (iso: string) => {
   return DateTime.format(DateTime.unsafeMake(iso), {
     hour: "numeric",
     minute: "2-digit",
@@ -223,7 +220,7 @@ export const formatTimeOnly = (iso: string): string => {
   });
 };
 
-export const formatDayHeading = (dateString: string): string => {
+export const formatDayHeading = (dateString: string) => {
   return DateTime.format(
     DateTime.unsafeMakeZoned(dateString, {
       adjustForTimeZone: true,
@@ -239,7 +236,7 @@ export const formatDayHeading = (dateString: string): string => {
   );
 };
 
-export const formatWeekHeading = (dateString: string): string => {
+export const formatWeekHeading = (dateString: string) => {
   const days = getWeekDays(dateString);
   const { 0: firstDay, 6: lastDay } = days;
   if (isNil(firstDay) || isNil(lastDay) || "" === firstDay || "" === lastDay) {
@@ -270,7 +267,7 @@ export const formatWeekHeading = (dateString: string): string => {
 
 export const toPlainText = (
   description: CalendarEventRecord["description"]
-): string => {
+) => {
   if (!description) return "";
   const blocks = isArray(description) ? description : [description];
   return map(filter(blocks, matches({ _type: "block" })), (b) => {

@@ -17,7 +17,7 @@ import isString from "lodash/isString.js";
 
 import type { RuleDefinition, SkillDefinition } from "./define.ts";
 
-export const ruleMarkdown = (rule: RuleDefinition): string => {
+export const ruleMarkdown = (rule: RuleDefinition) => {
   if ("model_decision" === rule.trigger && isNil(rule.description)) {
     return Effect.runSync(
       Effect.die(
@@ -70,6 +70,6 @@ export const skillMarkdown = (skill: SkillDefinition) => {
   });
 };
 
-export const renderJson = (value: unknown): string => {
+export const renderJson = (value: unknown) => {
   return `${JSON.stringify(value, null, 2)}\n`;
 };

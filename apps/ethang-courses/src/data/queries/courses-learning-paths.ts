@@ -173,7 +173,7 @@ const buildCourseEntry = (
   index: number,
   courseMap: Map<string, typeof coursesTable.$inferSelect>,
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
-): LearningPathCourseEntry | null => {
+) => {
   const course = courseMap.get(lpc.courseId);
 
   if (!course) {
@@ -199,7 +199,7 @@ const buildCourseEntry = (
 
 const groupCoursesByLp = (
   learningPathCourses: (typeof learningPathCoursesTable.$inferSelect)[]
-): Map<string, (typeof learningPathCoursesTable.$inferSelect)[]> => {
+) => {
   const coursesByLp = new Map<
     string,
     (typeof learningPathCoursesTable.$inferSelect)[]
@@ -217,7 +217,7 @@ const groupCoursesByLp = (
 
 const buildLpCurriculumOrder = (
   curriculumLearningPaths: (typeof curriculumLearningPathsTable.$inferSelect)[]
-): Map<string, number> => {
+) => {
   const lpCurriculumOrder = new Map<string, number>();
   for (const clp of curriculumLearningPaths) {
     if (!lpCurriculumOrder.has(clp.learningPathId)) {
@@ -232,7 +232,7 @@ const buildAllCoursesFromSortedLpIds = (
   coursesByLp: Map<string, (typeof learningPathCoursesTable.$inferSelect)[]>,
   courseMap: Map<string, typeof coursesTable.$inferSelect>,
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
-): LearningPathCourseEntry[] => {
+) => {
   const entries = flatMap(sortedLpIds, (lpId) => {
     return coursesByLp.get(lpId) ?? [];
   });

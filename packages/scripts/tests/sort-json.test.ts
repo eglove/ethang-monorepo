@@ -52,10 +52,10 @@ class MockDirent implements Dirent {
     this.parentPath = "";
     this.path = "";
   }
-  public isDirectory(): boolean {
+  public isDirectory() {
     return this._isDirectory;
   }
-  public isFile(): boolean {
+  public isFile() {
     return !this._isDirectory;
   }
 }

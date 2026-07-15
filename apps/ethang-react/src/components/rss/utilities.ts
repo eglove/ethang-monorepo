@@ -2,7 +2,7 @@
 import { Effect } from "effect";
 import isUndefined from "lodash/isUndefined";
 
-export const decodeHtmlEntities = (text: string): string => {
+export const decodeHtmlEntities = (text: string) => {
   if (isUndefined(globalThis.window) || !text) {
     return text;
   }

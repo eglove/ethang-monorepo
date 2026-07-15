@@ -5,68 +5,93 @@ import {
   type TSESTree
 } from "@typescript-eslint/utils";
 import isNil from "lodash/isNil.js";
+import some from "lodash/some.js";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
 });
 
-// True if the return-type annotation is an Effect type we need to preserve.
-// Matches: `Effect<...>`, `Effect.Effect<...>`, `Effect.Effect.Success<...>`,
-// `Effect.Effect.Error<...>`, `Effect.Effect.Context<...>`, and
-// `Effect.Option<...>`. We also handle `Promise<Effect<...>>` wrappers.
-const isEffectReturnType = (typeNode: TSESTree.TypeNode): boolean => {
-  if (typeNode.type === AST_NODE_TYPES.TSTypeReference) {
-    const { typeName, typeArguments } = typeNode;
-    if (typeName.type === AST_NODE_TYPES.Identifier) {
-      if (typeName.name === "Effect") {
-        return true;
-      }
-    }
-    if (typeName.type === AST_NODE_TYPES.TSQualifiedName) {
-      if (isEffectQualifiedName(typeName)) {
-        return true;
-      }
-    }
-    // Promise<Effect<...>> — recurse into the type arguments.
-    if (typeArguments !== undefined) {
-      return typeArguments.params.some(isEffectReturnType);
-    }
+const EFFECT_ROOT_NAMES = new Set([
+  "Chunk",
+  "Effect",
+  "Layer",
+  "Option",
+  "Stream"
+]);
+
+const EFFECT_NAMESPACE_NAMES = new Set([
+  "Context",
+  "Effect",
+  "Error",
+  "Option",
+  "Requirements",
+  "Success"
+]);
+
+const isRootEffectName: (
+  left: TSESTree.Identifier,
+  right: TSESTree.Identifier
+) => boolean = (left, right) => {
+  const isRoot = "Effect" === left.name;
+  const isModule = EFFECT_ROOT_NAMES.has(right.name);
+  return isRoot && isModule;
+};
+
+const isNamespaceEffectName: (
+  left: TSESTree.TSQualifiedName,
+  right: TSESTree.Identifier
+) => boolean = (left, right) => {
+  const isModule = EFFECT_NAMESPACE_NAMES.has(right.name);
+  return isModule && isEffectQualifiedName(left);
+};
+
+const isEffectQualifiedName: (node: TSESTree.TSQualifiedName) => boolean = (
+  node
+) => {
+  const { left, right } = node;
+  if (left.type === AST_NODE_TYPES.Identifier) {
+    return isRootEffectName(left, right);
   }
-  // Union / intersection — recurse into both halves.
-  if (typeNode.type === AST_NODE_TYPES.TSUnionType) {
-    return typeNode.types.some(isEffectReturnType);
-  }
-  if (typeNode.type === AST_NODE_TYPES.TSIntersectionType) {
-    return typeNode.types.some(isEffectReturnType);
+  if (left.type === AST_NODE_TYPES.TSQualifiedName) {
+    return isNamespaceEffectName(left, right);
   }
   return false;
 };
 
-const isEffectQualifiedName = (node: TSESTree.TSQualifiedName): boolean => {
-  const { left, right } = node;
-  if (right.type !== AST_NODE_TYPES.Identifier) {
+const isEffectReturnType: (typeNode: TSESTree.TypeNode) => boolean = (
+  typeNode
+) => {
+  if (typeNode.type === AST_NODE_TYPES.TSTypeReference) {
+    const { typeArguments, typeName } = typeNode;
+    if (
+      typeName.type === AST_NODE_TYPES.Identifier &&
+      "Effect" === typeName.name
+    ) {
+      return true;
+    }
+    if (
+      typeName.type === AST_NODE_TYPES.TSQualifiedName &&
+      isEffectQualifiedName(typeName)
+    ) {
+      return true;
+    }
+    // Promise<Effect<...>> — recurse into the type arguments when present.
+    if (!isNil(typeArguments)) {
+      return some(typeArguments.params, (parameter) => {
+        return isEffectReturnType(parameter);
+      });
+    }
     return false;
   }
-  if (left.type === AST_NODE_TYPES.Identifier) {
-    return (
-      left.name === "Effect" &&
-      (right.name === "Effect" ||
-        right.name === "Option" ||
-        right.name === "Stream" ||
-        right.name === "Chunk" ||
-        right.name === "Layer")
-    );
+  if (typeNode.type === AST_NODE_TYPES.TSUnionType) {
+    return some(typeNode.types, (type) => {
+      return isEffectReturnType(type);
+    });
   }
-  if (left.type === AST_NODE_TYPES.TSQualifiedName) {
-    return (
-      isEffectQualifiedName(left) &&
-      (right.name === "Success" ||
-        right.name === "Error" ||
-        right.name === "Context" ||
-        right.name === "Requirements" ||
-        right.name === "Effect" ||
-        right.name === "Option")
-    );
+  if (typeNode.type === AST_NODE_TYPES.TSIntersectionType) {
+    return some(typeNode.types, (type) => {
+      return isEffectReturnType(type);
+    });
   }
   return false;
 };

@@ -24,7 +24,7 @@ const StoredUserSchema = Schema.Struct({
   username: Schema.String
 });
 
-const readStoredUser = (): null | User => {
+const readStoredUser = () => {
   const storedUser = localStorage.getItem(USER_KEY);
   if (isNil(storedUser)) {
     return null;

@@ -92,13 +92,13 @@ const DEFAULT_ENVIRONMENT: Record<string, unknown> = { ethang_modlist: {} };
 
 const createInstance = (
   environment: Record<string, unknown> = DEFAULT_ENVIRONMENT
-): any => {
-  const initializer = WorkerClass as unknown as new () => {
-    env: Record<string, unknown>;
-  };
+) => {
+  const initializer = WorkerClass as unknown as new () => InstanceType<
+    typeof WorkerClass
+  >;
 
   const instance = new initializer();
-  instance.env = environment;
+  (instance as unknown as { env: Record<string, unknown> }).env = environment;
   return instance;
 };
 

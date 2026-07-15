@@ -31,7 +31,7 @@ vi.mock(import("../clients/sanity-client.ts"), () => {
 
 import { renderTrusteeCard } from "../test-utilities/render.tsx";
 
-const makeTrustee = (overrides: Partial<TrusteeRecord> = {}): TrusteeRecord => {
+const makeTrustee = (overrides: Partial<TrusteeRecord> = {}) => {
   return {
     _id: "t1",
     duties: "Secretary",

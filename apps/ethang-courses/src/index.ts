@@ -2,8 +2,6 @@ import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect } from "effect";
 
-import type { Database } from "./data/types.ts";
-
 import { createCurriculumMutation } from "./data/mutations/create-curriculum.ts";
 import { cycleCourseTrackingStatusMutation } from "./data/mutations/cycle-course-tracking-status.ts";
 import { courseTrackingQuery } from "./data/queries/course-tracking.ts";
@@ -28,7 +26,7 @@ import {
   learningPathsTable
 } from "./db/schema.ts";
 
-const runQuery = async <A>(effect: Effect.Effect<A, unknown>): Promise<A> => {
+const runQuery = async <A>(effect: Effect.Effect<A, unknown>) => {
   return Effect.runPromise(effect);
 };
 
@@ -88,7 +86,7 @@ export default class extends WorkerEntrypoint<Env> {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  public override async fetch() {
+  public override async fetch(_request: Request) {
     return new Response("OK", { status: 200 });
   }
 
@@ -100,7 +98,7 @@ export default class extends WorkerEntrypoint<Env> {
     return runQuery(learningPathsQuery(this.getDb(), null));
   }
 
-  private getDb(): Database {
+  private getDb() {
     return drizzle(this.env.ethang_courses, {
       schema: {
         coursesTable,

@@ -52,7 +52,7 @@ const FeedMetadataSchema = Schema.Struct({
   rss: Schema.optional(RssFeedSchema)
 });
 
-const extractText = (value: null | TextOrTextObject): string => {
+const extractText = (value: null | TextOrTextObject) => {
   if (isString(value)) {
     return value;
   }
@@ -67,9 +67,7 @@ const isLinkArray = (value: FeedLink): value is readonly FeedLinkEntry[] => {
   return isArray(value);
 };
 
-const findAlternate = (
-  links: readonly FeedLinkEntry[]
-): FeedLinkEntry | null => {
+const findAlternate = (links: readonly FeedLinkEntry[]) => {
   return (
     find(links, (entry) => {
       return isLinkObject(entry) && "alternate" === entry["@_rel"];
@@ -77,7 +75,7 @@ const findAlternate = (
   );
 };
 
-const findNonSelf = (links: readonly FeedLinkEntry[]): FeedLinkEntry | null => {
+const findNonSelf = (links: readonly FeedLinkEntry[]) => {
   return (
     find(links, (entry) => {
       return (
@@ -88,24 +86,24 @@ const findNonSelf = (links: readonly FeedLinkEntry[]): FeedLinkEntry | null => {
   );
 };
 
-const linkHref = (entry: FeedLinkEntry | null): string => {
+const linkHref = (entry: FeedLinkEntry | null) => {
   if (isString(entry)) {
     return entry;
   }
   return entry?.["@_href"] ?? "";
 };
 
-const objectHrefOrText = (entry: LinkObject): string => {
+const objectHrefOrText = (entry: LinkObject) => {
   return entry["@_href"] ?? entry["#text"] ?? "";
 };
 
-const chooseArrayLink = (links: readonly FeedLinkEntry[]): string => {
+const chooseArrayLink = (links: readonly FeedLinkEntry[]) => {
   const chosen: FeedLinkEntry | null =
     findAlternate(links) ?? findNonSelf(links) ?? links[0] ?? null;
   return linkHref(chosen);
 };
 
-const extractAtomWebsite = (link: FeedLink | null): string => {
+const extractAtomWebsite = (link: FeedLink | null) => {
   if (isNil(link)) {
     return "";
   }

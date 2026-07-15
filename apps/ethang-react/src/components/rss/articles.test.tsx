@@ -92,7 +92,7 @@ vi.mock("@ethang/store/use-store", () => {
     useStore: <T, U>(
       _store: T,
       selector: (state: { selectedFeedId: null | string }) => U
-    ): U => {
+    ) => {
       return selector({ selectedFeedId: mockArticlesStore.selectedFeedId });
     }
   };

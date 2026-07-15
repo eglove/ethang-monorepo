@@ -9,9 +9,7 @@ import { user as userTable } from "../../db/schema.ts";
 import { FetchError } from "../../errors/fetch-error.ts";
 import { SaveError } from "../../errors/save-error.ts";
 
-const toState = (
-  row: typeof userTable.$inferSelect
-): { readonly id: string } & UserState => {
+const toState = (row: typeof userTable.$inferSelect) => {
   return {
     email: row.email,
     id: row.id,
@@ -34,9 +32,7 @@ export type UserRepo = {
   ) => Effect.Effect<{ readonly id: string } & UserState, SaveError>;
 };
 
-export const createUserRepo = (
-  database: ReturnType<typeof getDatabase>
-): UserRepo => {
+export const createUserRepo = (database: ReturnType<typeof getDatabase>) => {
   return {
     fetch: (email: string) => {
       return Effect.tryPromise({

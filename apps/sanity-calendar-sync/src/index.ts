@@ -22,7 +22,7 @@ const sanitizeInput = (text: string) => {
 };
 
 export default {
-  fetch: async (): Promise<Response> => {
+  fetch: async () => {
     const zone = "America/Chicago";
 
     const client = createClient({

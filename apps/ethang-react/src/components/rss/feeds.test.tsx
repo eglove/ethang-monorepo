@@ -86,7 +86,7 @@ vi.mock("@ethang/store/use-store", () => {
         pendingUnsubscribe: { feedId: string; title: string } | null;
         selectedFeedId: null | string;
       }) => U
-    ): U => {
+    ) => {
       return selector({
         pendingUnsubscribe: mockFeedsStore.pendingUnsubscribe,
         selectedFeedId: mockFeedsStore.selectedFeedId

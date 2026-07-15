@@ -83,7 +83,7 @@ export const validationHelpers = {
 const processMcpConfig = (
   config: CompilerConfig,
   write: (absolutePath: string, content: string) => void
-): void => {
+) => {
   if (isNil(config.mcpPublicPath)) {
     return;
   }
@@ -95,7 +95,7 @@ const processRules = (
   config: CompilerConfig,
   failures: string[],
   write: (absolutePath: string, content: string) => void
-): void => {
+) => {
   for (const duplicate of validationHelpers.findDuplicateRuleFilenames(
     config.rules
   )) {
@@ -117,7 +117,7 @@ const processSkills = (
   config: CompilerConfig,
   failures: string[],
   write: (absolutePath: string, content: string) => void
-): void => {
+) => {
   const { skills, skillsDir } = config;
   if (isNil(skills) || isNil(skillsDir)) {
     return;
@@ -146,7 +146,7 @@ const processSkills = (
   }
 };
 
-const scanDirectory = (directory: string, failures: string[]): void => {
+const scanDirectory = (directory: string, failures: string[]) => {
   const isExists = fsProxy.existsSync(directory);
 
   if (!isExists) {
@@ -158,7 +158,7 @@ const scanDirectory = (directory: string, failures: string[]): void => {
   }
 };
 
-const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
+const scanDirectories = (config: CompilerConfig, failures: string[]) => {
   const directoriesToScan = [config.rulesDir];
   const { skills, skillsDir } = config;
   if (!isNil(skills) && !isNil(skillsDir)) {
@@ -201,7 +201,7 @@ const parseManifestContent = (content: string) => {
   return decoded.value.files ?? [];
 };
 
-const canRemoveDirectory = (directory: string): boolean => {
+const canRemoveDirectory = (directory: string) => {
   return Effect.try(() => {
     return fsProxy.readdirSync(directory);
   }).pipe(
@@ -218,7 +218,7 @@ const canRemoveDirectory = (directory: string): boolean => {
 const cleanFileAndEmptyParents = (
   relativeOrAbsolutePath: string,
   config: CompilerConfig
-): void => {
+) => {
   const filePath = path.isAbsolute(relativeOrAbsolutePath)
     ? relativeOrAbsolutePath
     : path.resolve(config.rootDir, relativeOrAbsolutePath);
@@ -250,7 +250,7 @@ const cleanFileAndEmptyParents = (
   }
 };
 
-export const compile = (config: CompilerConfig): void => {
+export const compile = (config: CompilerConfig) => {
   const filesToClean = loadManifest(config);
 
   for (const file of filesToClean) {

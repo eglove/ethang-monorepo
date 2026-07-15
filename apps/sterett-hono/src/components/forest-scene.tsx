@@ -2,7 +2,7 @@
 // viewBox is 1440×220; preserveAspectRatio="none" stretches it to any viewport width.
 // Layers from bottom up: beach → grass → tree silhouettes.
 
-const tree = (cx: number, base: number, h: number): string => {
+const tree = (cx: number, base: number, h: number) => {
   const w1 = h * 0.33;
   const w2 = h * 0.2;
   const peak = h * 0.55;

@@ -86,10 +86,7 @@ const callRpcService = <A, I>(
   });
 };
 
-const handleRpcRequest = async (
-  request: Request,
-  environment: Env
-): Promise<Response> => {
+const handleRpcRequest = async (request: Request, environment: Env) => {
   const sessionTokenResult = await Effect.runPromise(
     getSessionToken(request, environment).pipe(
       Effect.catchAll(() => {

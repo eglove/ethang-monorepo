@@ -101,13 +101,13 @@ vi.mock("./data/queries/curriculums.ts", () => {
 
 import WorkerClass from "./index.ts";
 
-const createInstance = (environment: Record<string, any> = {}): any => {
-  const initializer = WorkerClass as unknown as new () => {
-    env: Record<string, unknown>;
-  };
+const createInstance = (environment: Record<string, any> = {}) => {
+  const initializer = WorkerClass as unknown as new () => InstanceType<
+    typeof WorkerClass
+  >;
 
   const instance = new initializer();
-  instance.env = environment;
+  (instance as unknown as { env: Record<string, unknown> }).env = environment;
   return instance;
 };
 

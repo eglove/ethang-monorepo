@@ -8,7 +8,7 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
@@ -19,12 +19,12 @@ export default defineType({
       },
       title: "Category",
       type: "string",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
     {
-      initialValue: (): { date: Date } => {
+      initialValue: () => {
         return {
           date: DateTime.toDate(DateTime.unsafeNow())
         };
@@ -32,7 +32,7 @@ export default defineType({
       name: "date",
       title: "Date",
       type: "date",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
@@ -40,7 +40,7 @@ export default defineType({
       name: "file",
       title: "File",
       type: "fileUpload",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     }

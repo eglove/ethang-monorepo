@@ -23,7 +23,7 @@ const MarkValueSchema = Schema.Struct({
   href: Schema.optional(Schema.String)
 });
 
-const decodeMarkHref = (value: unknown): null | string => {
+const decodeMarkHref = (value: unknown) => {
   const decoded = Schema.decodeUnknownOption(MarkValueSchema)(value);
   return Option.isSome(decoded) && isString(decoded.value.href)
     ? decoded.value.href

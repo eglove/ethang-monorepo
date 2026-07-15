@@ -6,11 +6,11 @@ const StoredUserSchema = Schema.Struct({
   sessionToken: Schema.optional(Schema.String)
 });
 
-export const rpcRequest = async <TResult>(
+export const rpcRequest = async <T>(
   service: string,
   method: string,
   parameters?: Record<string, unknown>
-): Promise<TResult> => {
+) => {
   const storedUser = localStorage.getItem("ethang-user");
   let token = "";
 
@@ -40,5 +40,6 @@ export const rpcRequest = async <TResult>(
     );
   }
 
-  return response.json();
+  const result: T = await response.json();
+  return result;
 };

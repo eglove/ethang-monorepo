@@ -2,7 +2,7 @@ import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
 import { fn } from "@ethang/telemetry/spans.ts";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
-import { Effect, pipe } from "effect";
+import { Effect, pipe, Schema } from "effect";
 import includes from "lodash/includes.js";
 
 import { UnauthorizedError } from "./authenticate.ts";
@@ -23,10 +23,17 @@ export type User = {
   email: string;
   exp: number;
   iat: number;
-  role?: string;
   sub: string;
   username: string;
 };
+
+const UserSchema = Schema.Struct({
+  email: Schema.String,
+  exp: Schema.Number,
+  iat: Schema.Number,
+  sub: Schema.String,
+  username: Schema.String
+});
 
 const createDatabase = (databaseBinding: D1Database) => {
   return drizzle(databaseBinding, {
@@ -55,8 +62,10 @@ const verifySessionToken = (sessionToken: string) => {
       catch: () => {
         return new UnauthorizedError({ message: "Unauthorized" });
       },
-      try: async (): Promise<User> => {
-        return userResponse.json();
+      try: async () => {
+        return Schema.decodeUnknownPromise(UserSchema)(
+          await userResponse.json()
+        );
       }
     });
   });
@@ -104,7 +113,7 @@ export default class extends WorkerEntrypoint<Env> {
     return feedArticlesQuery(database, queryParameters, user);
   }
 
-  public override fetch(): Response {
+  public override fetch(_request: Request) {
     return new Response("OK", { status: 200 });
   }
 

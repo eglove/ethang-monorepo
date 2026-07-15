@@ -12,7 +12,7 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
@@ -29,7 +29,7 @@ export default defineType({
       },
       title: "Slug - https://sterettcreekvillagetrustee.com/page/SLUG",
       type: "slug",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },

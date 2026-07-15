@@ -24,7 +24,7 @@ const DATE_JUNE_15 = "2024-06-15";
 const DATE_JUNE_01 = "2024-06-01";
 const EVENT_BOARD_MEETING = "Board Meeting";
 
-const makeEvent = (id: string, title: string): CalendarEventRecord => {
+const makeEvent = (id: string, title: string) => {
   return {
     _id: id,
     _updatedAt: "2024-06-15T12:00:00Z",

@@ -12,7 +12,7 @@ import path from "node:path";
 import process from "node:process";
 import { describe, expect, it } from "vitest";
 
-const getCiYamlPath = (): string => {
+const getCiYamlPath = () => {
   const cwd = process.cwd();
   const path1 = path.join(cwd, ".github", "workflows", "ci.yml");
   if (existsSync(path1)) {
@@ -27,7 +27,7 @@ const getCiYamlPath = (): string => {
   );
 };
 
-const getJobNames = (lines: string[]): string[] => {
+const getJobNames = (lines: string[]) => {
   const result: string[] = [];
   let isInJobs = false;
 
@@ -52,7 +52,7 @@ const getJobNames = (lines: string[]): string[] => {
   return result;
 };
 
-const findJobStartLineIndex = (lines: string[], jobName: string): number => {
+const findJobStartLineIndex = (lines: string[], jobName: string) => {
   let isInJobs = false;
   let index = 0;
 
@@ -78,7 +78,7 @@ const findJobStartLineIndex = (lines: string[], jobName: string): number => {
   return -1;
 };
 
-const getJobLines = (lines: string[], jobName: string): string[] => {
+const getJobLines = (lines: string[], jobName: string) => {
   const result: string[] = [];
   const startIndex = findJobStartLineIndex(lines, jobName);
 
@@ -112,7 +112,7 @@ type StepInfo = {
   uses?: string;
 };
 
-const parseStep = (stepLines: string[]): StepInfo => {
+const parseStep = (stepLines: string[]) => {
   const step: StepInfo = {};
 
   for (const rawLine of stepLines) {
@@ -138,7 +138,7 @@ const parseStep = (stepLines: string[]): StepInfo => {
   return step;
 };
 
-const getJobSteps = (jobLines: string[]): StepInfo[] => {
+const getJobSteps = (jobLines: string[]) => {
   const steps: StepInfo[] = [];
   let currentLines: string[] = [];
   let isSeenFirstStep = false;
@@ -164,7 +164,7 @@ const getJobSteps = (jobLines: string[]): StepInfo[] => {
   return steps;
 };
 
-const getStepLabel = (step: StepInfo): string => {
+const getStepLabel = (step: StepInfo) => {
   const { uses } = step;
   const { run } = step;
 
@@ -200,10 +200,7 @@ const getStepLabel = (step: StepInfo): string => {
   return "unknown";
 };
 
-const checkNoSecretsInEnvironment = (
-  lines: string[],
-  startIndent: number
-): void => {
+const checkNoSecretsInEnvironment = (lines: string[], startIndent: number) => {
   let isInEnvironment = false;
   let environmentIndent = -1;
 

@@ -130,13 +130,9 @@ const Login = () => {
   );
 };
 
-type LoginSearch = {
-  redirect?: string;
-};
-
 export const Route = createFileRoute("/login")({
   component: Login,
-  validateSearch: (search: Record<string, unknown>): LoginSearch => {
+  validateSearch: (search: Record<string, unknown>) => {
     return {
       redirect: isString(search["redirect"]) ? search["redirect"] : ""
     };

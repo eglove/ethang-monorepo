@@ -32,4 +32,5 @@ export const removeRequirementMutation = async (
   await database
     .delete(requirementTable)
     .where(eq(requirementTable.id, parameters.id));
+  return null;
 };

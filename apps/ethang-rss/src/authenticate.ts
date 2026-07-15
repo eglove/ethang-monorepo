@@ -1,11 +1,18 @@
-import { Data, DateTime, Effect } from "effect";
+import { Data, DateTime, Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
+
+const UserSchema = Schema.Struct({
+  email: Schema.String,
+  exp: Schema.Number,
+  iat: Schema.Number,
+  sub: Schema.String,
+  username: Schema.String
+});
 
 export type User = {
   email: string;
   exp: number;
   iat: number;
-  role?: string;
   sub: string;
   username: string;
 };
@@ -45,8 +52,8 @@ export const authenticate = (request: Request) => {
       catch: () => {
         return new UnauthorizedError({ message: "Unauthorized" });
       },
-      try: async (): Promise<User> => {
-        return response.json();
+      try: async () => {
+        return Schema.decodeUnknownPromise(UserSchema)(await response.json());
       }
     });
 

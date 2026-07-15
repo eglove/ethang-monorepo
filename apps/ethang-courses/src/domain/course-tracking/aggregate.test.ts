@@ -149,19 +149,28 @@ describe("state coverage \u{2014} full cycle is reachable", () => {
     const events1 = decide(COMMAND, stateAfterCreate);
     const [event1] = events1;
     if (!event1) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
-    const state1 = apply(stateAfterCreate, event1 as CourseTrackingEvent);
+    const state1: CourseTrackingState = apply(
+      stateAfterCreate,
+      event1 as CourseTrackingEvent
+    );
     expect(state1.status).toBe("REVISIT");
 
     const events2 = decide(COMMAND, state1);
     const [event2] = events2;
     if (!event2) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
-    const state2 = apply(state1, event2 as CourseTrackingEvent);
+    const state2: CourseTrackingState = apply(
+      state1,
+      event2 as CourseTrackingEvent
+    );
     expect(state2.status).toBe("INCOMPLETE");
 
     const events3 = decide(COMMAND, state2);
     const [event3] = events3;
     if (!event3) Effect.runSync(Effect.die(new Error(ERROR_NO_EVENT)));
-    const state3 = apply(state2, event3 as CourseTrackingEvent);
+    const state3: CourseTrackingState = apply(
+      state2,
+      event3 as CourseTrackingEvent
+    );
     expect(state3.status).toBe("COMPLETE");
   });
 });

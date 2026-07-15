@@ -25,7 +25,7 @@ const isCalendarView = (v: string): v is CalendarView => {
   return includes(CALENDAR_VIEWS, v);
 };
 
-const lastQuery = (value: null | string | string[]): null | string => {
+const lastQuery = (value: null | string | string[]) => {
   return isArray(value) ? (last(value) ?? null) : value;
 };
 

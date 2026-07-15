@@ -19,7 +19,7 @@ export const carryCourseTrackingCommand = (
     const state = existing ?? initialState;
 
     const events = decide(command, state);
-    let newState = state;
+    let newState: CourseTrackingState = state;
     for (const event of events) {
       newState = apply(newState, event);
     }

@@ -51,7 +51,7 @@ type FeedResult = {
   };
 };
 
-export const normalizeLink = (item: FeedItem): string => {
+export const normalizeLink = (item: FeedItem) => {
   if (isString(item.link)) {
     return item.link;
   }
@@ -82,7 +82,7 @@ export const normalizeLink = (item: FeedItem): string => {
   return "";
 };
 
-export const normalizeGuid = (item: FeedItem, link: string): string => {
+export const normalizeGuid = (item: FeedItem, link: string) => {
   if (isString(item.guid)) {
     return item.guid;
   }
@@ -94,7 +94,7 @@ export const normalizeGuid = (item: FeedItem, link: string): string => {
   return item.id ?? link;
 };
 
-export const normalizeContent = (item: FeedItem): string => {
+export const normalizeContent = (item: FeedItem) => {
   if (isString(item.description)) {
     return item.description;
   }
@@ -110,7 +110,7 @@ export const normalizeContent = (item: FeedItem): string => {
   return item.summary ?? "";
 };
 
-export const normalizeTitle = (item: FeedItem): string => {
+export const normalizeTitle = (item: FeedItem) => {
   if (isString(item.title)) {
     return item.title;
   }
@@ -126,7 +126,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
   public override async run(
     _event: WorkflowEvent<unknown>,
     step: WorkflowStep
-  ): Promise<void> {
+  ) {
     const database = drizzle(this.env.ethang_rss);
 
     const feeds = await step.do("get-feeds", async () => {
@@ -141,7 +141,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
             catch: (error: unknown) => {
               return Error.isError(error) ? error : new Error(String(error));
             },
-            try: async (): Promise<void> => {
+            try: async () => {
               const response = await fetch(feed.xmlAddress);
               const xml = await response.text();
               const parsedMeta = parseFeedMetadata(xml);

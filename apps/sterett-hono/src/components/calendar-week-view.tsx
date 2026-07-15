@@ -9,7 +9,7 @@ import { formatTimeOnly } from "../utils/calendar.ts";
 
 const DAY_HEADERS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const formatDayLabel = (dayKey: string): string => {
+const formatDayLabel = (dayKey: string) => {
   return DateTime.format(
     DateTime.unsafeMakeZoned(dayKey, {
       adjustForTimeZone: true,

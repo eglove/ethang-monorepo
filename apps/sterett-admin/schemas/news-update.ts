@@ -9,12 +9,12 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
     {
-      initialValue: (): { date: Date } => {
+      initialValue: () => {
         return {
           date: DateTime.toDateUtc(DateTime.unsafeNow())
         };
@@ -22,7 +22,7 @@ export default defineType({
       name: "date",
       title: "Start Showing",
       type: "date",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
@@ -30,7 +30,7 @@ export default defineType({
       name: "expireDate",
       title: "Stop Showing",
       type: "date",
-      validation: (Rule): Rule => {
+      validation: (Rule) => {
         return Rule.custom((expireDate, context) => {
           if (isNil(expireDate)) {
             return "Value is required";
@@ -61,7 +61,7 @@ export default defineType({
       name: "description",
       title: "Description",
       type: "blockContent",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     }

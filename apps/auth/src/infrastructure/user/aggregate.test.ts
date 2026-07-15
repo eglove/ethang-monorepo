@@ -91,7 +91,7 @@ const mockFail = <E>(error: E) => {
   return Effect.fail(error);
 };
 
-const createMockRepo = (overrides?: Partial<UserRepo>): UserRepo => {
+const createMockRepo = (overrides?: Partial<UserRepo>) => {
   return {
     fetch: vi.fn().mockReturnValue(mockSucceed(null)),
     save: vi.fn().mockReturnValue(mockSucceed(EXISTING_USER)),
@@ -99,9 +99,7 @@ const createMockRepo = (overrides?: Partial<UserRepo>): UserRepo => {
   };
 };
 
-const createMockPasswordService = (
-  overrides?: Partial<PasswordService>
-): PasswordService => {
+const createMockPasswordService = (overrides?: Partial<PasswordService>) => {
   return {
     compare: vi.fn().mockReturnValue(mockSucceed(true)),
     hash: vi.fn().mockReturnValue(mockSucceed(TEST_HASH)),
@@ -109,9 +107,7 @@ const createMockPasswordService = (
   };
 };
 
-const createMockTokenService = (
-  overrides?: Partial<TokenService>
-): TokenService => {
+const createMockTokenService = (overrides?: Partial<TokenService>) => {
   return {
     sign: vi.fn().mockReturnValue(mockSucceed(TEST_TOKEN)),
     verify: vi
