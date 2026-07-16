@@ -32,7 +32,6 @@ export default defineConfig(
       }
     },
     rules: {
-      "@ethang/prefer-effect": "off",
       "@ethang/prefer-lodash": "off",
       "sonar/function-name": "off"
     }

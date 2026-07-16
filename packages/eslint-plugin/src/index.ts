@@ -12,7 +12,6 @@ import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
-import { preferEffectRule } from "./rules/prefer-effect.ts";
 import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
 import { propertyShorthandRule } from "./rules/property-shorthand.ts";
@@ -34,7 +33,6 @@ export const rules = {
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
   "path-style": pathStyleRule,
-  "prefer-effect": preferEffectRule,
   "prefer-lodash": preferLodashRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
@@ -66,7 +64,6 @@ export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
-export { preferEffectRule } from "./rules/prefer-effect.ts";
 export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
 export { propertyShorthandRule } from "./rules/property-shorthand.ts";

@@ -35,7 +35,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 - **[agents-build](packages/agents-build)**: Compiler that generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions (driven by Bun + `@ethang/markdown-generator`).
 - **[eslint-config](packages/eslint-config)**: Shared ESLint configuration supporting React, Angular, Astro, Solid, TanStack Query/Router, Storybook, Playwright, Tailwind, and more.
-- **[eslint-plugin](packages/eslint-plugin)**: Custom ESLint plugin encoding monorepo standards — 18 custom rules including `prefer-effect`, `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, `matches-shorthand`, `identity-shorthand`, `import-scope`, and auto-fixers for redundant explicit return types.
+- **[eslint-plugin](packages/eslint-plugin)**: Custom ESLint plugin encoding monorepo standards — 18 custom rules including `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, `matches-shorthand`, `identity-shorthand`, `import-scope`, and auto-fixers for redundant explicit return types.
 - **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities (auth, caching, last-modified) reused across the Workers-based apps.
 - **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends (no barrel file; import from subpaths).
 - **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by `agents-build` and other tooling.
@@ -55,7 +55,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **Auth & Validation**: `jose` (JWT), `bcryptjs`, Effect Schema, `@hono/zod-validator`, `uuid`
 - **Build & Tooling**: Vite 8, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`, `@vitejs/plugin-react`, Wrangler, tsx, `@tailwindcss/vite`
 - **Testing**: Vitest 4, `@vitest/coverage-v8`, Testing Library, jsdom, happy-dom, `@faker-js/faker`, Vitest UI, `@effect/vitest`
-- **Code Quality**: TypeScript 6, ESLint 10, `@ethang/eslint-config`, `@ethang/eslint-plugin` (custom rules: `prefer-effect`, `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, shorthand variants), MegaLinter, SonarCloud, cspell, `typescript-eslint`
+- **Code Quality**: TypeScript 6, ESLint 10, `@ethang/eslint-config`, `@ethang/eslint-plugin` (custom rules: `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, shorthand variants), MegaLinter, SonarCloud, cspell, `typescript-eslint`
 - **Functional & Utility**: Effect 3, lodash, Immer, `@total-typescript/ts-reset`
 - **Workspace Management**: pnpm workspaces (Node `>=24`)
 

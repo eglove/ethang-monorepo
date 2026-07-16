@@ -1,7 +1,8 @@
 // Map of native Array.prototype / Set / Map methods to the equivalent
-// `effect` functions. The disambiguation logic in the prefer-effect rule
-// consults this table to decide whether an Array.prototype call should
-// really be rewritten to an Effect call.
+// `effect` functions. The disambiguation logic in prefer-lodash consults
+// this table to decide whether a CallExpression on a native receiver is
+// already an Effect call (and should be left alone) or a true native array
+// method that should be rewritten to a lodash deep import.
 //
 // The keys are Array.prototype method names (lowercase, no `Array.prototype.`
 // prefix); the values are the canonical effect module exports to use.

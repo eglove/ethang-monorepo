@@ -27,7 +27,6 @@ describe("plugin", () => {
         "no-null-undefined-check",
         "no-try-catch",
         "path-style",
-        "prefer-effect",
         "prefer-lodash",
         "preferred-alias",
         "property-shorthand",

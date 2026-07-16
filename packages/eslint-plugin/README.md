@@ -1,6 +1,6 @@
 # @ethang/eslint-plugin
 
-Custom ESLint plugin that encodes ethang-monorepo standards: prefer Effect, prefer lodash, no try/catch, no barrel files, and no explicit return types.
+Custom ESLint plugin that encodes ethang-monorepo standards: prefer lodash over native methods, no try/catch, no barrel files, and no explicit return types.
 
 Replaces `eslint-plugin-lodash` with full lodash API surface coverage, proper Effect/lodash disambiguation, and additional monorepo-specific rules.
 
@@ -34,7 +34,6 @@ export default {
     "@ethang/no-null-undefined-check": "error",
     "@ethang/no-try-catch": "error",
     "@ethang/path-style": "error",
-    "@ethang/prefer-effect": "error",
     "@ethang/prefer-lodash": "error",
     "@ethang/preferred-alias": "error",
     "@ethang/property-shorthand": "error",
@@ -50,7 +49,6 @@ export default {
 
 | Rule | Description | Auto-fix |
 | --- | --- | --- |
-| `prefer-effect` | Prefer `effect` (Array module) over native Array.prototype methods when an equivalent exists. | Yes |
 | `prefer-lodash` | Prefer lodash (full API surface) over Array.prototype / Object.* / native methods when an equivalent exists. | Yes |
 
 ### No rules
