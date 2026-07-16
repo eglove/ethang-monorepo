@@ -1,13 +1,13 @@
 import type { Linter, Rule } from "eslint";
 
-import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
-installCloudflareLogger();
+installLogger();
 
 export type EsLintRules = Record<string, Rule.RuleModule>;
 

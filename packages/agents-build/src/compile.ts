@@ -19,7 +19,7 @@ const main = Effect.try({
   catch: (error: unknown) => {
     if (error instanceof CompileError) {
       for (const failure of error.failures) {
-        console.error(`FAIL: ${failure}`);
+        Effect.runSync(Effect.logError(`FAIL: ${failure}`));
       }
       process.exit(1);
     }
@@ -37,13 +37,17 @@ const main = Effect.try({
       skills: GLOBAL_SKILLS,
       skillsDir: SKILLS_DIR
     });
-    console.log(
-      `Generated files for ${String(GLOBAL_RULES.length)} rule(s) and ${String(GLOBAL_SKILLS.length)} skill(s) into ${AGENTS_DIR}`
+    Effect.runSync(
+      Effect.logInfo(
+        `Generated files for ${String(GLOBAL_RULES.length)} rule(s) and ${String(GLOBAL_SKILLS.length)} skill(s) into ${AGENTS_DIR}`
+      )
     );
 
     const junieDirectory = path.join(ROOT, ".junie");
     rmSync(junieDirectory, { force: true, recursive: true });
-    console.log(`Cleaned up legacy ${junieDirectory} directory`);
+    Effect.runSync(
+      Effect.logInfo(`Cleaned up legacy ${junieDirectory} directory`)
+    );
   }
 });
 

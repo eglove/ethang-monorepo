@@ -12,7 +12,6 @@ export default defineConfig(
       }
     },
     rules: {
-      "no-console": "off",
       "unicorn/no-process-exit": "off"
     }
   }

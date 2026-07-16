@@ -87,6 +87,7 @@ export const outputConfigs: OutputConfig[] = [
     ],
     rules: {
       "@ethang/no-try-catch": "off",
+      "@ethang/prefer-effect-log": "off",
       "@ethang/validate-unknown": "off",
       "@typescript-eslint/consistent-type-imports": "off",
       "@typescript-eslint/no-empty-function": "off",
