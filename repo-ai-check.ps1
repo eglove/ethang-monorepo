@@ -937,7 +937,7 @@ try {
         }
 
         function ConvertFrom-EslintJsonLocal {
-            param($Stdout, $Stderr, $ExitCode, $DurationMs, $AutofixSummary)
+            param($Stdout, $ExitCode, $DurationMs, $AutofixSummary)
             $issues = [System.Collections.Generic.List[object]]::new()
             $raw = $Stdout.Trim()
             if (-not [string]::IsNullOrWhiteSpace($raw)) {
@@ -1144,21 +1144,19 @@ try {
                 $shimMs = [int]([DateTime]::UtcNow - $lintStart).TotalMilliseconds
                 $shimText = ($shimOut | ForEach-Object { "$_" }) -join "`n"
                 $shimTextTrim = $shimText.Trim()
-                $shimStderr = ''
                 $autofixPayload = $null
                 if (-not [string]::IsNullOrWhiteSpace($shimTextTrim)) {
                     try {
                         $autofixPayload = $shimTextTrim | ConvertFrom-Json -ErrorAction Stop
                     }
                     catch {
-                        $shimStderr = "eslint-autofix shim produced non-JSON output: $($_.Exception.Message)"
+                        # Swallowed: the lint parser below turns this into a
+                        # 'fatal' issue in $issues, which is enough to surface
+                        # the failure without needing a separate Stderr channel.
                     }
                 }
-                elseif ($shimExit -ne 0) {
-                    $shimStderr = "eslint-autofix shim exited $shimExit with no stdout."
-                }
                 $autofixSummary = if ($UseFix) { Get-AutofixSummaryLocal -Payload $autofixPayload } else { $null }
-                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $shimTextTrim -Stderr $shimStderr -ExitCode $shimExit -DurationMs $shimMs -AutofixSummary $autofixSummary
+                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $shimTextTrim -ExitCode $shimExit -DurationMs $shimMs -AutofixSummary $autofixSummary
             }
             else {
                 $result.lint = [PSCustomObject]@{
