@@ -6,8 +6,8 @@ export default defineConfig(...config, ...vitestConfig, {
   languageOptions: {
     parserOptions: {
       project: true,
-      tsconfigRootDir: import.meta.dirname,
-    },
+      tsconfigRootDir: import.meta.dirname
+    }
   },
-  rules: {},
+  rules: {}
 });

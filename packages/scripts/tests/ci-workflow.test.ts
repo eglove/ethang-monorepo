@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
@@ -5,12 +6,13 @@ import map from "lodash/map.js";
 import split from "lodash/split.js";
 import startsWith from "lodash/startsWith.js";
 import trim from "lodash/trim.js";
+import trimStart from "lodash/trimStart.js";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { describe, expect, it } from "vitest";
 
-const getCiYamlPath = (): string => {
+const getCiYamlPath = () => {
   const cwd = process.cwd();
   const path1 = path.join(cwd, ".github", "workflows", "ci.yml");
   if (existsSync(path1)) {
@@ -20,17 +22,19 @@ const getCiYamlPath = (): string => {
   if (existsSync(path2)) {
     return path2;
   }
-  throw new Error("Could not find .github/workflows/ci.yml");
+  return Effect.runSync(
+    Effect.die(new Error("Could not find .github/workflows/ci.yml"))
+  );
 };
 
-const getJobNames = (lines: string[]): string[] => {
+const getJobNames = (lines: string[]) => {
   const result: string[] = [];
   let isInJobs = false;
 
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
     const isEmptyOrComment = "" === trimmed || startsWith(trimmed, "#");
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if (!isEmptyOrComment) {
       if ("jobs:" === trimmed) {
@@ -48,14 +52,14 @@ const getJobNames = (lines: string[]): string[] => {
   return result;
 };
 
-const findJobStartLineIndex = (lines: string[], jobName: string): number => {
+const findJobStartLineIndex = (lines: string[], jobName: string) => {
   let isInJobs = false;
   let index = 0;
 
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
     const isEmptyOrComment = "" === trimmed || startsWith(trimmed, "#");
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if (!isEmptyOrComment) {
       if ("jobs:" === trimmed) {
@@ -74,7 +78,7 @@ const findJobStartLineIndex = (lines: string[], jobName: string): number => {
   return -1;
 };
 
-const getJobLines = (lines: string[], jobName: string): string[] => {
+const getJobLines = (lines: string[], jobName: string) => {
   const result: string[] = [];
   const startIndex = findJobStartLineIndex(lines, jobName);
 
@@ -87,7 +91,7 @@ const getJobLines = (lines: string[], jobName: string): string[] => {
   for (const rawLine of subsequentLines) {
     const trimmed = trim(rawLine);
     const isEmptyOrComment = "" === trimmed || startsWith(trimmed, "#");
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if (!isEmptyOrComment) {
       if (2 >= indent) {
@@ -108,7 +112,7 @@ type StepInfo = {
   uses?: string;
 };
 
-const parseStep = (stepLines: string[]): StepInfo => {
+const parseStep = (stepLines: string[]) => {
   const step: StepInfo = {};
 
   for (const rawLine of stepLines) {
@@ -134,7 +138,7 @@ const parseStep = (stepLines: string[]): StepInfo => {
   return step;
 };
 
-const getJobSteps = (jobLines: string[]): StepInfo[] => {
+const getJobSteps = (jobLines: string[]) => {
   const steps: StepInfo[] = [];
   let currentLines: string[] = [];
   let isSeenFirstStep = false;
@@ -160,7 +164,7 @@ const getJobSteps = (jobLines: string[]): StepInfo[] => {
   return steps;
 };
 
-const getStepLabel = (step: StepInfo): string => {
+const getStepLabel = (step: StepInfo) => {
   const { uses } = step;
   const { run } = step;
 
@@ -196,16 +200,13 @@ const getStepLabel = (step: StepInfo): string => {
   return "unknown";
 };
 
-const checkNoSecretsInEnvironment = (
-  lines: string[],
-  startIndent: number
-): void => {
+const checkNoSecretsInEnvironment = (lines: string[], startIndent: number) => {
   let isInEnvironment = false;
   let environmentIndent = -1;
 
   for (const rawLine of lines) {
     const trimmed = trim(rawLine);
-    const indent = rawLine.length - rawLine.trimStart().length;
+    const indent = rawLine.length - trimStart(rawLine).length;
 
     if ("env:" === trimmed && indent === startIndent) {
       isInEnvironment = true;
@@ -236,7 +237,7 @@ describe("CI Workflow Validation", () => {
 
     for (const rawLine of yamlLines) {
       const line = trim(rawLine);
-      const indent = rawLine.length - rawLine.trimStart().length;
+      const indent = rawLine.length - trimStart(rawLine).length;
 
       if ("permissions:" === line) {
         isInPermissions = true;

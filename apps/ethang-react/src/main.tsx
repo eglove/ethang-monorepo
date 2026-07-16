@@ -17,13 +17,22 @@ declare module "@tanstack/react-router" {
   };
 }
 
-const rootElement = document.querySelector("#root");
+/**
+Mounts the React app into the document's `#root` element. Exported
+for tests so they can drive the bootstrap behaviour directly without relying
+on side-effect imports.
+*/
+export const mountApp = () => {
+  const rootElement = document.querySelector("#root");
 
-if (!isNil(rootElement)) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <RouterProvider router={router} />
-    </StrictMode>
-  );
-}
+  if (!isNil(rootElement)) {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <StrictMode>
+        <RouterProvider router={router} />
+      </StrictMode>
+    );
+  }
+};
+
+mountApp();

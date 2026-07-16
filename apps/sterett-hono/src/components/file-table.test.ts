@@ -4,7 +4,7 @@ import type { FileRecord } from "../sanity/get-files.ts";
 
 import { renderFileTable } from "../test-utilities/render.tsx";
 
-const makeFile = (overrides: Partial<FileRecord> = {}): FileRecord => {
+const makeFile = (overrides: Partial<FileRecord> = {}) => {
   return {
     _id: "file-1",
     category: "General",

@@ -1,9 +1,6 @@
-import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.ts";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect } from "effect";
-
-import type { Database } from "./data/types.ts";
 
 import { createCurriculumMutation } from "./data/mutations/create-curriculum.ts";
 import { cycleCourseTrackingStatusMutation } from "./data/mutations/cycle-course-tracking-status.ts";
@@ -29,47 +26,30 @@ import {
   learningPathsTable
 } from "./db/schema.ts";
 
-const PUBLIC_READ_CACHE = { maxAge: 300, scope: "public" as const, swr: 3600 };
-const PRIVATE_NO_STORE = { maxAge: 0, scope: "private" as const, swr: 0 };
-const NO_STORE = { scope: "no-store" as const };
-
-const runQuery = async <A>(effect: Effect.Effect<A, unknown>): Promise<A> => {
+const runQuery = async <A>(effect: Effect.Effect<A, unknown>) => {
   return Effect.runPromise(effect);
 };
 
 // eslint-disable-next-line unicorn/no-anonymous-default-export
 export default class extends WorkerEntrypoint<Env> {
   public async course(parameters: { id: string }) {
-    const data = await runQuery(courseQuery(this.getDb(), parameters.id));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["courses", `course:${parameters.id}`]
-    });
+    return runQuery(courseQuery(this.getDb(), parameters.id));
   }
 
   public async courses() {
-    const data = await runQuery(coursesQuery(this.getDb(), null));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["courses"]
-    });
+    return runQuery(coursesQuery(this.getDb(), null));
   }
 
   // New method: Return all courses with stable indices and learning path context
   public async coursesAll() {
-    const data = await runQuery(coursesAllQuery(this.getDb(), null));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["courses"]
-    });
+    return runQuery(coursesAllQuery(this.getDb(), null));
   }
 
   public async courseTracking(parameters: {
     courseId: string;
     userId: string;
   }) {
-    const data = await runQuery(courseTrackingQuery(this.getDb(), parameters));
-    return createCachedJsonResponse(data, { cacheControl: PRIVATE_NO_STORE });
+    return runQuery(courseTrackingQuery(this.getDb(), parameters));
   }
 
   public async courseTrackings(parameters: {
@@ -79,10 +59,7 @@ export default class extends WorkerEntrypoint<Env> {
     first?: number;
     userId: string;
   }) {
-    const data = await runQuery(
-      courseTrackingsQuery(this.getDb(), parameters.userId)
-    );
-    return createCachedJsonResponse(data, { cacheControl: PRIVATE_NO_STORE });
+    return runQuery(courseTrackingsQuery(this.getDb(), parameters.userId));
   }
 
   public async createCurriculum(parameters: {
@@ -90,59 +67,38 @@ export default class extends WorkerEntrypoint<Env> {
     name: string;
     url?: null | string;
   }) {
-    const data = await createCurriculumMutation(this.getDb(), parameters);
-    return createCachedJsonResponse(data, { cacheControl: NO_STORE });
+    return createCurriculumMutation(this.getDb(), parameters);
   }
 
   public async curriculum(parameters: { id: string }) {
-    const data = await runQuery(curriculumQuery(this.getDb(), parameters.id));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["curriculums", `curriculum:${parameters.id}`]
-    });
+    return runQuery(curriculumQuery(this.getDb(), parameters.id));
   }
 
   public async curriculums() {
-    const data = await runQuery(curriculumsQuery(this.getDb(), null));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["curriculums"]
-    });
+    return runQuery(curriculumsQuery(this.getDb(), null));
   }
 
   public async cycleCourseTrackingStatus(parameters: {
     courseId: string;
     userId: string;
   }) {
-    const data = await cycleCourseTrackingStatusMutation(
-      this.getDb(),
-      parameters
-    );
-    return createCachedJsonResponse(data, { cacheControl: NO_STORE });
+    return cycleCourseTrackingStatusMutation(this.getDb(), parameters);
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  public override async fetch() {
+  public override async fetch(_request: Request) {
     return new Response("OK", { status: 200 });
   }
 
   public async learningPath(parameters: { id: string }) {
-    const data = await runQuery(learningPathQuery(this.getDb(), parameters.id));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["learningPaths", `learningPath:${parameters.id}`]
-    });
+    return runQuery(learningPathQuery(this.getDb(), parameters.id));
   }
 
   public async learningPaths() {
-    const data = await runQuery(learningPathsQuery(this.getDb(), null));
-    return createCachedJsonResponse(data, {
-      cacheControl: PUBLIC_READ_CACHE,
-      tags: ["learningPaths"]
-    });
+    return runQuery(learningPathsQuery(this.getDb(), null));
   }
 
-  private getDb(): Database {
+  private getDb() {
     return drizzle(this.env.ethang_courses, {
       schema: {
         coursesTable,

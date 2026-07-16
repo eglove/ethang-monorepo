@@ -11,7 +11,6 @@ const customRules = [
     "capitalized-comments",
     "class-methods-use-this",
     "complexity",
-    "consistent-return",
     "consistent-this",
     "curly",
     "default-case",
@@ -40,13 +39,11 @@ const customRules = [
     "no-restricted-globals",
     "no-restricted-imports",
     "no-restricted-properties",
-    "no-restricted-syntax",
     "no-shadow",
     "no-template-curly-in-string",
     "no-ternary",
     "no-throw-literal",
     "no-undef",
-    "no-undefined",
     "no-underscore-dangle",
     "no-unexpected-multiline",
     "no-unused-expressions",
@@ -71,6 +68,21 @@ const customRules = [
   {
     name: "func-style",
     rule: ["error", "declaration", { allowArrowFunctions: true }]
+  },
+  {
+    name: "no-restricted-syntax",
+    rule: [
+      "error",
+      {
+        message:
+          "Never use 'undefined' explicitly. Use 'null' for intentional absence of a value.",
+        selector: "Identifier[name='undefined']"
+      },
+      {
+        message: "Do not use the 'undefined' type. Use 'null' instead.",
+        selector: "TSUndefinedKeyword"
+      }
+    ]
   },
   {
     name: "no-unsafe-optional-chaining",

@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "ignoreDeprecations": "6.0",
-    "paths": {
-      "@ethang/toolbelt/*": ["../../packages/toolbelt/dist/*"]
-    },
     "types": ["node"]
   },
   "exclude": ["coverage"],

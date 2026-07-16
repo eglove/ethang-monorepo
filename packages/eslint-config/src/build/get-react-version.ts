@@ -1,10 +1,9 @@
-import { parseFetchJson } from "@ethang/toolbelt/fetch/json.ts";
 import { Effect, Exit, Schema } from "effect";
 import constant from "lodash/constant.js";
 
 /**
 Fetches the latest React version from npm registry.
-Returns undefined if fetch fails or validation fails.
+Returns null if fetch fails or validation fails.
 */
 export const getLatestReact = async () => {
   const response = await globalThis
@@ -12,15 +11,17 @@ export const getLatestReact = async () => {
     .catch(constant(null));
 
   if (!response) {
-    return;
+    return null;
   }
 
   const result = await Effect.runPromiseExit(
-    parseFetchJson(response, Schema.Struct({ version: Schema.String }))
+    Schema.decodeUnknown(Schema.Struct({ version: Schema.String }))(
+      await response.json()
+    )
   );
 
   if (Exit.isFailure(result)) {
-    return;
+    return null;
   }
 
   return result.value;

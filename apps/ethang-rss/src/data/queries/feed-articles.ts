@@ -1,4 +1,4 @@
-import { and, desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt, sql } from "drizzle-orm";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
@@ -22,7 +22,7 @@ export const feedArticlesQuery = async (
   const limit = first + 1;
 
   const readStateFilter = getReadStateFilter(database, user.sub, {
-    isRead
+    isRead: isRead ?? null
   });
 
   const articles = await database
@@ -56,8 +56,8 @@ export const feedArticlesQuery = async (
     .where(
       and(
         eq(databaseSchema.articlesTable.feedId, feedId),
-        readStateFilter,
-        isNil(after) ? undefined : lt(databaseSchema.articlesTable.id, after)
+        readStateFilter ?? sql``,
+        isNil(after) ? sql`` : lt(databaseSchema.articlesTable.id, after)
       )
     )
     .orderBy(desc(databaseSchema.articlesTable.id))
@@ -79,7 +79,7 @@ export const feedArticlesQuery = async (
         __typename: "Article" as const,
         ...rest,
         feed: isNil(feedTitle)
-          ? undefined
+          ? null
           : { iconUrl: feedIconUrl, id: articleFeedId, title: feedTitle },
         isRead: articleIsRead ?? false
       };

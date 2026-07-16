@@ -25,11 +25,11 @@ export type NewsUpdateReturn = {
 
 const CHICAGO = "America/Chicago";
 
-const getEpoch = (value: string): number => {
+const getEpoch = (value: string) => {
   return DateTime.toEpochMillis(DateTime.unsafeMake(value));
 };
 
-export const eventRangeFormat = (start: string, end: string): string => {
+export const eventRangeFormat = (start: string, end: string) => {
   const startDt = DateTime.unsafeMake(start);
   const endDt = DateTime.unsafeMake(end);
 
@@ -54,7 +54,7 @@ export const eventRangeFormat = (start: string, end: string): string => {
   return `${startZoned} – ${endZoned}`;
 };
 
-export const getRelativeDate = (date: string): string => {
+export const getRelativeDate = (date: string) => {
   const diffMs =
     DateTime.toEpochMillis(DateTime.unsafeMake(date)) -
     DateTime.toEpochMillis(DateTime.unsafeNow());
@@ -69,7 +69,7 @@ export const getRelativeDate = (date: string): string => {
   return rtf.format(Math.round(diffDays / 30), "month");
 };
 
-export const getNewsAndEvents = async (): Promise<NewsAndEvents> => {
+export const getNewsAndEvents = async () => {
   const formattedDate = DateTime.formatIsoDate(DateTime.unsafeNow());
 
   const eventQuery = `*[_type == "calendarEvent"

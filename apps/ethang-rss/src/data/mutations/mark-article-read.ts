@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 import type { User } from "../../index.ts";
@@ -35,7 +36,7 @@ export const markArticleReadMutation = async (
     .where(eq(databaseSchema.articlesTable.id, parameters.articleId));
 
   if (isNil(article)) {
-    throw new Error("Article not found");
+    Effect.runSync(Effect.die(new Error("Article not found")));
   }
 
   return article;

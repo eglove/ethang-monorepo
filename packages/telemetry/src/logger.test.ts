@@ -1,4 +1,5 @@
 import { LogLevel } from "effect";
+import isNil from "lodash/isNil.js";
 import noop from "lodash/noop.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -25,14 +26,14 @@ describe("installCloudflareLogger", () => {
 });
 
 describe("defaultLogLevel", () => {
-  const originalEnvironment = process.env["ENVIRONMENT"];
+  const originalEnvironment = process.env["ENVIRONMENT"] ?? null;
 
   beforeEach(() => {
     delete process.env["ENVIRONMENT"];
   });
 
   afterEach(() => {
-    if (originalEnvironment === undefined) {
+    if (isNil(originalEnvironment)) {
       delete process.env["ENVIRONMENT"];
     } else {
       process.env["ENVIRONMENT"] = originalEnvironment;

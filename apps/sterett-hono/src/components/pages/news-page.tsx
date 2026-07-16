@@ -16,8 +16,8 @@ export const NewsPage = async ({
   items: providedItems
 }: NewsPageProperties = {}) => {
   const items = providedItems ?? (await getNewsAndEvents());
-  const updatedAt = map(items, (index) => {
-    return index._updatedAt;
+  const updatedAt = map(items, ({ _updatedAt }) => {
+    return _updatedAt;
   })
     .toSorted((a, b) => {
       return a.localeCompare(b);
@@ -26,7 +26,7 @@ export const NewsPage = async ({
 
   return (
     <MainLayout
-      updatedAt={updatedAt}
+      updatedAt={updatedAt ?? null}
       title="Sterett Creek Village Trustee | News"
       description="News and Event Updates for Sterett Creek Village Trustee"
     >

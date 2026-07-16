@@ -29,7 +29,7 @@ describe("blockContentType schema", () => {
     const [linkAnnotation] = blockEntry.marks.annotations;
     expect(linkAnnotation).toBeDefined();
     if (!linkAnnotation) {
-      throw new Error("linkAnnotation should be defined");
+      return;
     }
     expect(linkAnnotation.name).toBe("link");
     expect(linkAnnotation.type).toBe("object");
@@ -66,7 +66,7 @@ describe("blockContentType schema", () => {
     expect(altField).toBeDefined();
     expect(captionField).toBeDefined();
     if (!altField || !captionField) {
-      throw new Error("alt and caption fields should be defined");
+      return;
     }
     expect(altField.name).toBe("alt");
     expect(altField.validation).toBeDefined();

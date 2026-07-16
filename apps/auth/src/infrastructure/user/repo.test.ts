@@ -108,7 +108,7 @@ describe("createUserRepo", () => {
 
     it("returns null when no user is found", async () => {
       const { database, findFirstMock } = createMockDatabase();
-      findFirstMock.mockResolvedValue(undefined);
+      findFirstMock.mockResolvedValue(null);
 
       const repo = createUserRepo(database);
       const result = await Effect.runPromise(repo.fetch(TEST_EMAIL));
@@ -156,7 +156,7 @@ describe("createUserRepo", () => {
 
     it("updates existing user when version is provided", async () => {
       const { database, updateRunMock } = createMockDatabase();
-      updateRunMock.mockResolvedValue(undefined);
+      updateRunMock.mockResolvedValue(null);
 
       const repo = createUserRepo(database);
       const result = await Effect.runPromise(repo.save(STATE, TEST_USER_ID));
@@ -175,6 +175,19 @@ describe("createUserRepo", () => {
 
       expect(result).toBeInstanceOf(SaveError);
       expect(result.message).toContain("Insert failed");
+    });
+
+    it("fails with SaveError on database error during update", async () => {
+      const { database, updateRunMock } = createMockDatabase();
+      updateRunMock.mockRejectedValue(new Error("Update failed"));
+
+      const repo = createUserRepo(database);
+      const result = await Effect.runPromise(
+        repo.save(STATE, TEST_USER_ID).pipe(Effect.flip)
+      );
+
+      expect(result).toBeInstanceOf(SaveError);
+      expect(result.message).toContain("Update failed");
     });
 
     it("inserts with empty string password when state password is null", async () => {
@@ -197,7 +210,7 @@ describe("createUserRepo", () => {
     it("updates with empty string password when state password is null", async () => {
       const NULL_PASSWORD_STATE: UserState = { ...STATE, password: null };
       const { database, updateRunMock } = createMockDatabase();
-      updateRunMock.mockResolvedValue(undefined);
+      updateRunMock.mockResolvedValue(null);
 
       const repo = createUserRepo(database);
       const result = await Effect.runPromise(

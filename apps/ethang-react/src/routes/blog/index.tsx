@@ -13,19 +13,27 @@ import { InternalLink } from "../../components/internal-link.tsx";
 import { MainLayout } from "../../components/layout/main-layout.tsx";
 import { getPaginatedBlogs } from "../../models/blog-model.ts";
 
-const formattedDateTime = (dateTime: string) => {
+/**
+Formats a UTC datetime string into a human-friendly representation. Exported
+so unit tests can exercise the format helper directly.
+*/
+export const formattedDateTime = (dateTime: string) => {
   return DateTime.format(DateTime.unsafeMake(dateTime), {
     dateStyle: "medium",
     timeStyle: "short"
   });
 };
 
+/**
+Builds the page object consumed by `useStore`. Exported for tests so they
+can exercise the selector branch in isolation.
+*/
+export const selectPage = (state: { paginationPage: number }) => {
+  return { page: state.paginationPage };
+};
+
 const RouteComponent = () => {
-  const { page } = useStore(blogStore, (state) => {
-    return {
-      page: state.paginationPage
-    };
-  });
+  const { page } = useStore(blogStore, selectPage);
 
   const { data, isPending } = useQuery({
     ...getPaginatedBlogs(page, 10),

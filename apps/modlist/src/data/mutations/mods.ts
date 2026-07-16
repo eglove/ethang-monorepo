@@ -57,4 +57,5 @@ export const deleteModificationMutation = async (
   parameters: { id: string }
 ) => {
   await database.delete(moduleTable).where(eq(moduleTable.id, parameters.id));
+  return null;
 };

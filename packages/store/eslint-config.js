@@ -3,16 +3,16 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig(
   {
-    ignores: [],
+    ignores: []
   },
   ...config,
   {
     languageOptions: {
       parserOptions: {
         project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
+        tsconfigRootDir: import.meta.dirname
+      }
     },
-    rules: {},
-  },
+    rules: {}
+  }
 );

@@ -1,14 +1,10 @@
 import { SignInSchema as AppSignInSchema } from "@ethang/schemas/auth/sign-in-schema.ts";
 import { SignUpSchema } from "@ethang/schemas/auth/sign-up-schema.ts";
 import { VerifySchema } from "@ethang/schemas/auth/verify-schema.ts";
-import { createJsonResponse } from "@ethang/toolbelt/fetch/create-json-response.js";
-import { setCookieValue } from "@ethang/toolbelt/http/cookie.js";
 import { Effect, Option, Schema } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
-import isString from "lodash/isString.js";
 
 import type { UserCommand } from "./domain/user/commands.ts";
 
@@ -22,10 +18,21 @@ export type AuthContextObject = { Bindings: CloudflareBindings };
 
 const AUTH_COOKIE_NAME = "ethang-auth-token";
 
-const hasSessionToken = (
-  value: unknown
-): value is { readonly sessionToken: null | string | undefined } => {
-  return isObject(value) && "sessionToken" in value;
+const JSON_HEADERS = {
+  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Allow-Methods": "*",
+  "Access-Control-Allow-Origin": "*",
+  "Content-Type": "application/json",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "SAMEORIGIN"
+} as const;
+
+const json = <T>(data: T, status: number) => {
+  // v8 ignore next -- defensive guard: every call site passes a non-nil value
+  return new Response(isNil(data) ? null : JSON.stringify(data), {
+    headers: JSON_HEADERS,
+    status
+  });
 };
 
 const handleAuthCommand = (
@@ -42,22 +49,19 @@ const handleAuthCommand = (
   );
 };
 
-const setAuthCookie = (
-  response: Response,
-  token: null | string | undefined
-) => {
-  if (isNil(token)) return;
-  setCookieValue({
-    config: {
-      HttpOnly: false,
-      "Max-Age": 31_536_000,
-      Path: "/",
-      SameSite: "None",
-      Secure: true
-    },
-    cookieName: AUTH_COOKIE_NAME,
-    cookieValue: token,
-    response
+const ONE_YEAR_MS = 31_536_000 * 1000;
+
+const setAuthCookie = async (token: null | string) => {
+  if (isNil(token)) {
+    return;
+  }
+  // eslint-disable-next-line compat/compat
+  await cookieStore.set({
+    expires: Date.now() + ONE_YEAR_MS,
+    name: AUTH_COOKIE_NAME,
+    path: "/",
+    sameSite: "none",
+    value: token
   });
 };
 
@@ -68,11 +72,11 @@ const VALIDATION_ERROR = "Validation failed";
 const UNAUTHORIZED_ERROR = "Unauthorized";
 
 app.post("/sign-up", async (context) => {
-  const body: unknown = await context.req.json();
-
-  const parsed = Schema.decodeUnknownOption(SignUpSchema)(body);
+  const parsed = Schema.decodeUnknownOption(SignUpSchema)(
+    await context.req.json()
+  );
   if (Option.isNone(parsed)) {
-    return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
+    return json({ error: VALIDATION_ERROR }, 400);
   }
 
   const { email, password, username } = parsed.value;
@@ -95,20 +99,20 @@ app.post("/sign-up", async (context) => {
   );
   const result = await Effect.runPromise(effect);
 
-  if ("error" in result && isString(result.error)) {
-    return createJsonResponse({ error: result.error }, "INTERNAL_SERVER_ERROR");
+  if ("error" in result) {
+    return json({ error: result.error }, 500);
   }
-  const response = createJsonResponse(result, "OK");
-  setAuthCookie(response, hasSessionToken(result) ? result.sessionToken : null);
+  const response = json(result, 200);
+  await setAuthCookie("sessionToken" in result ? result.sessionToken : null);
   return response;
 });
 
 app.post("/sign-in", async (context) => {
-  const body: unknown = await context.req.json();
-
-  const parsed = Schema.decodeUnknownOption(AppSignInSchema)(body);
+  const parsed = Schema.decodeUnknownOption(AppSignInSchema)(
+    await context.req.json()
+  );
   if (Option.isNone(parsed)) {
-    return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
+    return json({ error: VALIDATION_ERROR }, 400);
   }
 
   const { email, password } = parsed.value;
@@ -121,21 +125,21 @@ app.post("/sign-in", async (context) => {
       return Effect.succeed({ error: UNAUTHORIZED_ERROR });
     }
   );
-  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
+  const result = await Effect.runPromise(effect);
 
-  if (!isNil(result["error"])) {
-    return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
+  if ("error" in result) {
+    return json({ error: result.error }, 401);
   }
-  const rsp = createJsonResponse(result, "OK");
-  setAuthCookie(rsp, hasSessionToken(result) ? result.sessionToken : null);
+  const rsp = json(result, 200);
+  await setAuthCookie("sessionToken" in result ? result.sessionToken : null);
   return rsp;
 });
 
 app.get("/verify", async (context) => {
   const token = context.req.raw.headers.get("X-Token");
 
-  if (null === token) {
-    return createJsonResponse({ error: UNAUTHORIZED_ERROR }, "UNAUTHORIZED");
+  if (isNil(token)) {
+    return json({ error: UNAUTHORIZED_ERROR }, 401);
   }
 
   const database = getDatabase(context.env.DB);
@@ -155,21 +159,21 @@ app.get("/verify", async (context) => {
       return Effect.succeed({ error: UNAUTHORIZED_ERROR });
     }
   );
-  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
+  const result = await Effect.runPromise(effect);
 
-  if (!isNil(result["error"])) {
-    return createJsonResponse({ error: result["error"] }, "UNAUTHORIZED");
+  if ("error" in result) {
+    return json({ error: result.error }, 401);
   }
-  const payload = "payload" in result ? result["payload"] : result;
-  return createJsonResponse(payload, "OK");
+  const payload = "payload" in result ? result.payload : result;
+  return json(payload, 200);
 });
 
 app.post("/verify", async (context) => {
-  const body: unknown = await context.req.json();
-
-  const parsed = Schema.decodeUnknownOption(VerifySchema)(body);
+  const parsed = Schema.decodeUnknownOption(VerifySchema)(
+    await context.req.json()
+  );
   if (Option.isNone(parsed)) {
-    return createJsonResponse({ error: VALIDATION_ERROR }, "BAD_REQUEST");
+    return json({ error: VALIDATION_ERROR }, 400);
   }
 
   const { email, password } = parsed.value;
@@ -183,12 +187,12 @@ app.post("/verify", async (context) => {
       return Effect.succeed({ error: UNAUTHORIZED_ERROR });
     }
   );
-  const result = (await Effect.runPromise(effect)) as Record<string, unknown>;
-  const error = isNil(result["error"]) ? undefined : result["error"];
+  const result = await Effect.runPromise(effect);
 
-  return isNil(error)
-    ? createJsonResponse(result, "OK")
-    : createJsonResponse({ error }, "UNAUTHORIZED");
+  if ("error" in result) {
+    return json({ error: result.error }, 401);
+  }
+  return json(result, 200);
 });
 
 export { app };

@@ -91,7 +91,7 @@ const mockFail = <E>(error: E) => {
   return Effect.fail(error);
 };
 
-const createMockRepo = (overrides?: Partial<UserRepo>): UserRepo => {
+const createMockRepo = (overrides?: Partial<UserRepo>) => {
   return {
     fetch: vi.fn().mockReturnValue(mockSucceed(null)),
     save: vi.fn().mockReturnValue(mockSucceed(EXISTING_USER)),
@@ -99,9 +99,7 @@ const createMockRepo = (overrides?: Partial<UserRepo>): UserRepo => {
   };
 };
 
-const createMockPasswordService = (
-  overrides?: Partial<PasswordService>
-): PasswordService => {
+const createMockPasswordService = (overrides?: Partial<PasswordService>) => {
   return {
     compare: vi.fn().mockReturnValue(mockSucceed(true)),
     hash: vi.fn().mockReturnValue(mockSucceed(TEST_HASH)),
@@ -109,9 +107,7 @@ const createMockPasswordService = (
   };
 };
 
-const createMockTokenService = (
-  overrides?: Partial<TokenService>
-): TokenService => {
+const createMockTokenService = (overrides?: Partial<TokenService>) => {
   return {
     sign: vi.fn().mockReturnValue(mockSucceed(TEST_TOKEN)),
     verify: vi
@@ -478,5 +474,23 @@ describe("error propagation", () => {
         carryUserAuthCommand(command, repo, passwordService, tokenService)
       )
     ).rejects.toThrow("Hash failed");
+  });
+});
+
+describe("unexpected command kind", () => {
+  it("fails on unknown command kind", async () => {
+    const repo = createMockRepo();
+    const passwordService = createMockPasswordService();
+    const tokenService = createMockTokenService();
+    const command = { kind: "Unknown" } as unknown as UserCommand;
+
+    const result = await Effect.runPromise(
+      carryUserAuthCommand(command, repo, passwordService, tokenService).pipe(
+        Effect.flip
+      )
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toContain("Unexpected command");
   });
 });

@@ -4,6 +4,9 @@
     "extends browserslist-config-baseline",
     "current node"
   ],
+  "dependencies": {
+    "effect": "3.21.4"
+  },
   "description": "Generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions.",
   "devDependencies": {
     "@ethang/eslint-config": "workspace:*",
@@ -33,9 +36,5 @@
     "test:watch": "vitest"
   },
   "type": "module",
-  "version": "1.0.0",
-  "dependencies": {
-    "@ethang/toolbelt": "workspace:*",
-    "effect": "3.21.4"
-  }
+  "version": "1.0.0"
 }

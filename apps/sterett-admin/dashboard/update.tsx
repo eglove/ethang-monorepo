@@ -1,10 +1,5 @@
-import type { JSX } from "react";
-
-import {
-  type DashboardWidget,
-  DashboardWidgetContainer,
-  type LayoutConfig
-} from "@sanity/dashboard";
+import { DashboardWidgetContainer, type LayoutConfig } from "@sanity/dashboard";
+import isNil from "lodash/isNil.js";
 
 import { UpdateItems } from "./update-items.js";
 
@@ -21,7 +16,7 @@ export type DocumentListConfig = {
   types?: string[];
 };
 
-const UpdateWidget = (): JSX.Element => {
+const UpdateWidget = () => {
   return (
     <DashboardWidgetContainer header="Latest Updates">
       <ul>
@@ -31,14 +26,12 @@ const UpdateWidget = (): JSX.Element => {
   );
 };
 
-export const updateWidget = (config?: {
-  layout: LayoutConfig;
-}): DashboardWidget => {
+export const updateWidget = (config?: { layout: LayoutConfig }) => {
   return {
-    component: function component(): JSX.Element {
+    component: function component() {
       return <UpdateWidget />;
     },
-    ...(config?.layout !== undefined && { layout: config.layout }),
+    ...(!isNil(config?.layout) && { layout: config.layout }),
     name: "update-widget"
   };
 };

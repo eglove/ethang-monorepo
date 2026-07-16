@@ -1,5 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { Effect } from "effect";
 import filter from "lodash/filter.js";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import "@testing-library/jest-dom/vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -25,7 +27,7 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
     ...actual,
     useInfiniteQuery: () => {
       let hasNextPage = false;
-      if (null !== mockFeedsStore.queryData) {
+      if (!isNil(mockFeedsStore.queryData)) {
         const { pages } = mockFeedsStore.queryData as {
           pages: { pageInfo: { hasNextPage: boolean } }[];
         };
@@ -50,8 +52,8 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
       return {
         mutateAsync: async (input: unknown) => {
           const result = await mockRemoveSubscription(input);
-          if (undefined !== onSuccess) {
-            await onSuccess(undefined, input as { feedId: string });
+          if (!isNil(onSuccess)) {
+            await onSuccess(null, input as { feedId: string });
           }
           return result;
         }
@@ -84,7 +86,7 @@ vi.mock("@ethang/store/use-store", () => {
         pendingUnsubscribe: { feedId: string; title: string } | null;
         selectedFeedId: null | string;
       }) => U
-    ): U => {
+    ) => {
       return selector({
         pendingUnsubscribe: mockFeedsStore.pendingUnsubscribe,
         selectedFeedId: mockFeedsStore.selectedFeedId
@@ -102,13 +104,13 @@ vi.mock("./rss-store.ts", () => {
       }
     },
     rssStoreActions: {
-      cancelUnsubscribe: vi.fn().mockResolvedValue(undefined),
+      cancelUnsubscribe: vi.fn().mockResolvedValue(null),
       requestUnsubscribe: vi
         .fn()
         .mockImplementation(async (feedId: string, title: string) => {
           mockFeedsStore.pendingUnsubscribe = { feedId, title };
         }),
-      setSelectedFeedId: vi.fn().mockResolvedValue(undefined)
+      setSelectedFeedId: vi.fn().mockResolvedValue(null)
     }
   };
 });
@@ -481,18 +483,25 @@ describe("Feeds - SourceIcon", () => {
     const feedARow = container.querySelector(
       `[data-testid="feed-row-${CSS.escape(FEED_A_ID)}"]`
     );
-    if (!feedARow) {
-      throw new Error("expected feed row container to be present");
+    if (isNil(feedARow)) {
+      Effect.runSync(
+        Effect.die(new Error("expected feed row container to be present"))
+      );
+      return;
     }
-
     const feedAButton = screen.getByRole("button", {
       name: ALPHA_FEED_TITLE
     });
     const unsubscribeAButton = screen.getByTestId(`unsubscribe-${FEED_A_ID}`);
     const iconA = feedARow.querySelector("img");
 
-    if (!iconA) {
-      throw new Error("expected source icon img to be present in feed row");
+    if (isNil(iconA)) {
+      Effect.runSync(
+        Effect.die(
+          new Error("expected source icon img to be present in feed row")
+        )
+      );
+      return;
     }
 
     expect(feedARow.contains(feedAButton)).toBe(true);

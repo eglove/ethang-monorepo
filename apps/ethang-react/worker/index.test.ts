@@ -1,7 +1,6 @@
-import map from "lodash/map.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import worker from "./index.ts";
+import worker, { handleRpcRequest } from "./index.ts";
 
 const APPLICATION_JSON = "application/json" as const;
 const CACHE_CONTROL_HEADER = "Cache-Control";
@@ -10,8 +9,6 @@ const TEST_COURSE_NAME = "Test Course" as const;
 const TEST_EMAIL = "test@test.com" as const;
 const TEST_TOKEN = "test-token" as const;
 const TEST_URL = "https://ethang.dev/api/rpc";
-const PUBLIC_CACHE_CONTROL =
-  "public, max-age=300, stale-while-revalidate=3600" as const;
 const MOCK_USER = {
   email: TEST_EMAIL,
   role: "user",
@@ -229,6 +226,32 @@ describe(`${HTTP_POST} /api/rpc - input validation`, () => {
     expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
   });
 
+  it("should return 400 when only service is missing", async () => {
+    const request = new Request(TEST_URL, {
+      body: '{"method":"courses","params":{}}',
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(400);
+    expect(await response.text()).toBe("Invalid JSON body");
+  });
+
+  it("should return 400 when only method is missing", async () => {
+    const request = new Request(TEST_URL, {
+      body: '{"params":{},"service":"ethang_courses"}',
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(400);
+    expect(await response.text()).toBe("Invalid JSON body");
+  });
+
   it("should return 400 for invalid service name", async () => {
     const request = new Request(TEST_URL, {
       body: JSON.stringify({
@@ -280,13 +303,6 @@ describe(`${HTTP_POST} /api/rpc - ethang_courses dispatch`, () => {
       userEmail: TEST_EMAIL,
       userSub: "test-user"
     });
-
-    expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe(
-      PUBLIC_CACHE_CONTROL
-    );
-    expect(response.headers.get("Cache-Tag")).toBe(
-      "ethang-react-rpc:ethang_courses:courses"
-    );
   });
 
   it("should dispatch to ethang_courses course method", async () => {
@@ -631,112 +647,55 @@ describe(`${HTTP_POST} /api/rpc - routing`, () => {
   });
 });
 
-describe("cache headers", () => {
-  const COURSES_METHODS = [
-    "course",
-    "courses",
-    "courseTracking",
-    "courseTrackings",
-    "createCurriculum",
-    "curriculum",
-    "curriculums",
-    "cycleCourseTrackingStatus",
-    "learningPath",
-    "learningPaths",
-    "coursesAll"
-  ] as const;
-
-  const RSS_METHODS = [
-    "addSubscription",
-    "allArticles",
-    "feedArticles",
-    "markArticleRead",
-    "removeSubscription",
-    "subscription",
-    "subscriptions"
-  ] as const;
-
-  const buildCacheHeaderEnvironment = () => {
-    const coursesMocks: Record<string, ReturnType<typeof vi.fn>> = {};
-    for (const method of COURSES_METHODS) {
-      coursesMocks[method] = vi.fn().mockResolvedValue({ method, ok: true });
-    }
-    const rssMocks: Record<string, ReturnType<typeof vi.fn>> = {};
-    for (const method of RSS_METHODS) {
-      rssMocks[method] = vi.fn().mockResolvedValue({ method, ok: true });
-    }
-    return {
-      ...mockEnvironment,
-      ethang_courses: coursesMocks,
-      ethang_rss: rssMocks
-    };
-  };
-
-  beforeEach(() => {
+describe("handleRpcRequest - exported directly", () => {
+  it("delegates to the same logic as worker.fetch for POST /api/rpc", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       Response.json(MOCK_USER, { status: 200 })
     );
-  });
 
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  it.each(
-    map(COURSES_METHODS, (method) => {
-      return {
-        expectedTag: `ethang-react-rpc:ethang_courses:${method}`,
-        method,
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
         service: "ethang_courses"
-      };
-    })
-  )(
-    "ethang_courses.$method sets Cache-Control and Cache-Tag",
-    async ({ expectedTag, method, service }) => {
-      const environment = buildCacheHeaderEnvironment();
+      }),
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
 
-      const request = new Request(TEST_URL, {
-        body: JSON.stringify({ method, params: {}, service }),
-        headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-        method: HTTP_POST
-      });
+    // @ts-expect-error test double
+    const response = await handleRpcRequest(request, mockEnvironment);
+    expect(response.status).toBe(200);
 
-      // @ts-expect-error test double
-      const response = await worker.fetch(request, environment);
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe(
-        PUBLIC_CACHE_CONTROL
-      );
-      expect(response.headers.get("Cache-Tag")).toBe(expectedTag);
-    }
-  );
+    const body = await response.json();
+    expect(body).toEqual([{ id: "c1", name: TEST_COURSE_NAME }]);
+  });
 
-  it.each(
-    map(RSS_METHODS, (method) => {
-      return {
-        expectedTag: `ethang-react-rpc:ethang_rss:${method}`,
-        method,
-        service: "ethang_rss"
-      };
-    })
-  )(
-    "ethang_rss.$method sets Cache-Control and Cache-Tag",
-    async ({ expectedTag, method, service }) => {
-      const environment = buildCacheHeaderEnvironment();
+  it("returns the Response when the rpc binding throws", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(MOCK_USER, { status: 200 })
+    );
 
-      const request = new Request(TEST_URL, {
-        body: JSON.stringify({ method, params: {}, service }),
-        headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
-        method: HTTP_POST
-      });
+    const environment = {
+      ...mockEnvironment,
+      ethang_courses: {
+        courses: vi.fn().mockRejectedValue(new Error("Bad Gateway"))
+      }
+    };
 
-      // @ts-expect-error test double
-      const response = await worker.fetch(request, environment);
-      expect(response.status).toBe(200);
-      expect(response.headers.get(CACHE_CONTROL_HEADER)).toBe(
-        PUBLIC_CACHE_CONTROL
-      );
-      expect(response.headers.get("Cache-Tag")).toBe(expectedTag);
-    }
-  );
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await handleRpcRequest(request, environment);
+    expect(response.status).toBe(500);
+    expect(await response.text()).toBe("Bad Gateway");
+  });
 });

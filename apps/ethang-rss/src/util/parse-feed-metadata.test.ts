@@ -204,6 +204,53 @@ describe("parseFeedMetadata", () => {
           <title>Invalid Feed</title>
         </notfeed>
       `
+    },
+    {
+      expectedTitle: "Self Closing Link",
+      expectedWebsite: "",
+      name: "should handle Atom link as self-closing object with neither href nor text",
+      xml: `
+        <?xml version="1.0" encoding="utf-8"?>
+        <feed xmlns="http://www.w3.org/2005/Atom">
+          <title>Self Closing Link</title>
+          <link type="text/html"/>
+        </feed>
+      `
+    },
+    {
+      expectedTitle: "All Self Links",
+      expectedWebsite: "https://atom-self-1.com",
+      name: "should fall back to first link when all links are self-referential",
+      xml: `
+        <?xml version="1.0" encoding="utf-8"?>
+        <feed xmlns="http://www.w3.org/2005/Atom">
+          <title>All Self Links</title>
+          <link rel="self" href="https://atom-self-1.com"/>
+          <link rel="self" href="https://atom-self-2.com"/>
+        </feed>
+      `
+    },
+    {
+      expectedTitle: "No Link At All",
+      expectedWebsite: "",
+      name: "should handle Atom feed with no link element at all",
+      xml: `
+        <?xml version="1.0" encoding="utf-8"?>
+        <feed xmlns="http://www.w3.org/2005/Atom">
+          <title>No Link At All</title>
+        </feed>
+      `
+    },
+    {
+      expectedTitle: "",
+      expectedWebsite: "https://no-title.com",
+      name: "should handle Atom feed with no title element",
+      xml: `
+        <?xml version="1.0" encoding="utf-8"?>
+        <feed xmlns="http://www.w3.org/2005/Atom">
+          <link href="https://no-title.com"/>
+        </feed>
+      `
     }
   ])("$name", ({ expectedTitle, expectedWebsite, xml }) => {
     const result = parseFeedMetadata(xml);

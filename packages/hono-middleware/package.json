@@ -4,7 +4,6 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/toolbelt": "workspace:*",
     "effect": "^3.21.4",
     "hono": "^4.12.28",
     "lodash": "^4.18.1"
@@ -25,7 +24,6 @@
     "node": ">=24"
   },
   "license": "MIT",
-  "main": "./src/index.ts",
   "name": "@ethang/hono-middleware",
   "private": true,
   "scripts": {

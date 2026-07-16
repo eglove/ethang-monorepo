@@ -13,7 +13,7 @@ export type RuleDefinition = {
 
 export type RuleTrigger = "always_on" | "glob" | "manual" | "model_decision";
 
-export const defineRule = (definition: RuleDefinition): RuleDefinition => {
+export const defineRule = (definition: RuleDefinition) => {
   return definition;
 };
 
@@ -24,6 +24,6 @@ export type SkillDefinition = {
   resources?: { content: MarkdownBlock[] | string; filename: string }[];
 };
 
-export const defineSkill = (definition: SkillDefinition): SkillDefinition => {
+export const defineSkill = (definition: SkillDefinition) => {
   return definition;
 };

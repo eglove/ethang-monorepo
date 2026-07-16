@@ -1,12 +1,11 @@
-import { fn, installCloudflareLogger } from "@ethang/telemetry";
-import { createCachedJsonResponse } from "@ethang/toolbelt/cache/cache-control.js";
+import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { fn } from "@ethang/telemetry/spans.ts";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
-import { Effect, pipe } from "effect";
+import { Effect, pipe, Schema } from "effect";
 import includes from "lodash/includes.js";
-import isError from "lodash/isError.js";
-import convertToString from "lodash/toString.js";
 
+import { UnauthorizedError } from "./authenticate.ts";
 import { addSubscriptionMutation } from "./data/mutations/add-subscription.ts";
 import { markArticleReadMutation } from "./data/mutations/mark-article-read.ts";
 import { removeSubscriptionMutation } from "./data/mutations/remove-subscription.ts";
@@ -24,10 +23,17 @@ export type User = {
   email: string;
   exp: number;
   iat: number;
-  role?: string;
   sub: string;
   username: string;
 };
+
+const UserSchema = Schema.Struct({
+  email: Schema.String,
+  exp: Schema.Number,
+  iat: Schema.Number,
+  sub: Schema.String,
+  username: Schema.String
+});
 
 const createDatabase = (databaseBinding: D1Database) => {
   return drizzle(databaseBinding, {
@@ -35,19 +41,34 @@ const createDatabase = (databaseBinding: D1Database) => {
   });
 };
 
-const verifySessionToken = async (sessionToken: string): Promise<User> => {
-  const userResponse = await globalThis.fetch(
-    "https://auth.ethang.dev/verify",
-    {
-      headers: { "X-Token": sessionToken }
+const verifySessionToken = (sessionToken: string) => {
+  return Effect.gen(function* () {
+    const userResponse = yield* Effect.tryPromise({
+      catch: () => {
+        return new UnauthorizedError({ message: "Unauthorized" });
+      },
+      try: async () => {
+        return globalThis.fetch("https://auth.ethang.dev/verify", {
+          headers: { "X-Token": sessionToken }
+        });
+      }
+    });
+
+    if (!userResponse.ok) {
+      yield* Effect.fail(new UnauthorizedError({ message: "Unauthorized" }));
     }
-  );
 
-  if (!userResponse.ok) {
-    throw new Error("Unauthorized");
-  }
-
-  return userResponse.json();
+    return yield* Effect.tryPromise({
+      catch: () => {
+        return new UnauthorizedError({ message: "Unauthorized" });
+      },
+      try: async () => {
+        return Schema.decodeUnknownPromise(UserSchema)(
+          await userResponse.json()
+        );
+      }
+    });
+  });
 };
 
 // eslint-disable-next-line unicorn/no-anonymous-default-export
@@ -57,12 +78,10 @@ export default class extends WorkerEntrypoint<Env> {
     xmlAddress: string;
   }) {
     const { sessionToken, xmlAddress } = parameters;
-    const user = await verifySessionToken(sessionToken);
+    const user = await Effect.runPromise(verifySessionToken(sessionToken));
     const database = createDatabase(this.env.ethang_rss);
     await addSubscriptionMutation(database, { xmlAddress }, user);
-    return createCachedJsonResponse(undefined, {
-      cacheControl: { scope: "no-store" }
-    });
+    return null;
   }
 
   public async allArticles(parameters: {
@@ -72,15 +91,11 @@ export default class extends WorkerEntrypoint<Env> {
     sessionToken: string;
   }) {
     const { sessionToken, ...queryParameters } = parameters;
-    const user = await verifySessionToken(sessionToken);
+    const user = await Effect.runPromise(verifySessionToken(sessionToken));
 
     const database = createDatabase(this.env.ethang_rss);
 
-    const result = await allArticlesQuery(database, queryParameters, user);
-    return createCachedJsonResponse(result, {
-      cacheControl: { scope: "no-store" },
-      vary: ["Cookie"]
-    });
+    return allArticlesQuery(database, queryParameters, user);
   }
 
   public async feedArticles(parameters: {
@@ -91,18 +106,14 @@ export default class extends WorkerEntrypoint<Env> {
     sessionToken: string;
   }) {
     const { sessionToken, ...queryParameters } = parameters;
-    const user = await verifySessionToken(sessionToken);
+    const user = await Effect.runPromise(verifySessionToken(sessionToken));
 
     const database = createDatabase(this.env.ethang_rss);
 
-    const result = await feedArticlesQuery(database, queryParameters, user);
-    return createCachedJsonResponse(result, {
-      cacheControl: { scope: "no-store" },
-      vary: ["Cookie"]
-    });
+    return feedArticlesQuery(database, queryParameters, user);
   }
 
-  public override fetch(): Response {
+  public override fetch(_request: Request) {
     return new Response("OK", { status: 200 });
   }
 
@@ -112,18 +123,11 @@ export default class extends WorkerEntrypoint<Env> {
     sessionToken: string;
   }) {
     const { sessionToken, ...queryParameters } = parameters;
-    const user = await verifySessionToken(sessionToken);
+    const user = await Effect.runPromise(verifySessionToken(sessionToken));
 
     const database = createDatabase(this.env.ethang_rss);
 
-    const result = await markArticleReadMutation(
-      database,
-      queryParameters,
-      user
-    );
-    return createCachedJsonResponse(result, {
-      cacheControl: { scope: "no-store" }
-    });
+    return markArticleReadMutation(database, queryParameters, user);
   }
 
   public async removeSubscription(parameters: {
@@ -131,12 +135,10 @@ export default class extends WorkerEntrypoint<Env> {
     sessionToken: string;
   }) {
     const { sessionToken, ...mutationParameters } = parameters;
-    const user = await verifySessionToken(sessionToken);
+    const user = await Effect.runPromise(verifySessionToken(sessionToken));
     const database = createDatabase(this.env.ethang_rss);
     await removeSubscriptionMutation(database, mutationParameters, user);
-    return createCachedJsonResponse(undefined, {
-      cacheControl: { scope: "no-store" }
-    });
+    return null;
   }
 
   public override async scheduled(event: ScheduledEvent) {
@@ -145,8 +147,8 @@ export default class extends WorkerEntrypoint<Env> {
 
     const startFetchFeedsWorkflow = fn("startFetchFeedsWorkflow")(function* () {
       const tryCreateWorkflow = Effect.tryPromise({
-        catch: (error) => {
-          return error;
+        catch: (error: unknown) => {
+          return Error.isError(error) ? error : new Error(String(error));
         },
         try: async () => {
           return workflowBinding.create({ id: workflowId });
@@ -156,9 +158,7 @@ export default class extends WorkerEntrypoint<Env> {
       return yield* pipe(
         tryCreateWorkflow,
         Effect.catchAll((error) => {
-          const message = isError(error)
-            ? error.message
-            : convertToString(error);
+          const { message } = error;
 
           if (includes(message, "already exists")) {
             return Effect.void;
@@ -167,7 +167,7 @@ export default class extends WorkerEntrypoint<Env> {
           return pipe(
             Effect.logError("Failed to start feed sync workflow", {
               error: message,
-              stack: isError(error) ? error.stack : undefined
+              stack: error.stack
             }),
             Effect.flatMap(() => {
               return Effect.fail(error);
@@ -183,11 +183,7 @@ export default class extends WorkerEntrypoint<Env> {
   public async subscription(parameters: { feedId: string }) {
     const database = createDatabase(this.env.ethang_rss);
 
-    const result = await subscriptionQuery(database, parameters);
-    return createCachedJsonResponse(result, {
-      cacheControl: { maxAge: 300, scope: "public", swr: 3600 },
-      tags: ["subscriptions", `subscription:${parameters.feedId}`]
-    });
+    return subscriptionQuery(database, parameters);
   }
 
   public async subscriptions(parameters: {
@@ -200,15 +196,11 @@ export default class extends WorkerEntrypoint<Env> {
     };
   }) {
     const { sessionToken, ...queryParameters } = parameters;
-    const user = await verifySessionToken(sessionToken);
+    const user = await Effect.runPromise(verifySessionToken(sessionToken));
 
     const database = createDatabase(this.env.ethang_rss);
 
-    const result = await subscriptionsQuery(database, queryParameters, user);
-    return createCachedJsonResponse(result, {
-      cacheControl: { scope: "no-store" },
-      vary: ["Cookie"]
-    });
+    return subscriptionsQuery(database, queryParameters, user);
   }
 }
 

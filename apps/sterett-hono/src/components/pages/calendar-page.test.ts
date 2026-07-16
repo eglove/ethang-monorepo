@@ -8,6 +8,7 @@ import { renderCalendarPage } from "../../test-utilities/render.tsx";
 const CALENDAR_TITLE = "Sterett Creek Village Trustee | Calendar";
 const DATE = "2024-06-17";
 const UPDATED_AT = "2024-06-01T00:00:00Z";
+const MOCK_EVENT_UPDATED_AT = "2024-06-16T12:00:00Z";
 
 describe("calendarPage", () => {
   it("renders the calendar page title in month view", async () => {
@@ -32,7 +33,7 @@ describe("calendarPage", () => {
       // @ts-expect-error for test
       vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
       // @ts-expect-error for test
-      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(undefined);
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(null);
 
       const html = await renderCalendarPage({
         date: DATE,
@@ -48,10 +49,62 @@ describe("calendarPage", () => {
     }
   );
 
+  // eslint-disable-next-line unicorn/prefer-temporal
+  const OUTSIDE_WEEK_TIMESTAMP = Date.parse("2099-01-04T12:00:00Z");
+  // eslint-disable-next-line unicorn/prefer-temporal
+  const INSIDE_WEEK_TIMESTAMP = Date.parse(`${DATE}T12:00:00Z`);
+
+  it("renders the calendar page for week view when today is outside the current week", async () => {
+    // Pin "today" to a date outside the week containing DATE so the weekDays.includes false-branch is exercised.
+    vi.useFakeTimers();
+    vi.setSystemTime(OUTSIDE_WEEK_TIMESTAMP);
+    try {
+      // @ts-expect-error for test
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
+      // @ts-expect-error for test
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(null);
+
+      const html = await renderCalendarPage({
+        date: DATE,
+        month: 6,
+        view: "week",
+        year: 2024
+      });
+
+      expect(html).toContain(CALENDAR_TITLE);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("renders the calendar page for week view when today is inside the current week", async () => {
+    // Pin "today" to a date inside the week containing DATE so the weekDays.includes true-branch is exercised.
+    vi.useFakeTimers();
+    vi.setSystemTime(INSIDE_WEEK_TIMESTAMP);
+    try {
+      // @ts-expect-error for test
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([]);
+      // @ts-expect-error for test
+      vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce(null);
+
+      const html = await renderCalendarPage({
+        date: DATE,
+        month: 6,
+        view: "week",
+        year: 2024
+      });
+
+      expect(html).toContain(CALENDAR_TITLE);
+      expect(html).toContain("Today");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("renders the day view with events", async () => {
     const mockEvent = {
       _id: "evt-1",
-      _updatedAt: "2024-06-16T12:00:00Z",
+      _updatedAt: MOCK_EVENT_UPDATED_AT,
       description: [],
       endsAt: "2024-06-17T15:00:00Z",
       startsAt: "2024-06-17T13:00:00Z",
@@ -72,6 +125,29 @@ describe("calendarPage", () => {
     expect(html).toContain("Test Event");
   });
 
+  it("renders the day view with no events on the selected date", async () => {
+    const mockEvent = {
+      _id: "evt-1",
+      _updatedAt: MOCK_EVENT_UPDATED_AT,
+      description: [],
+      endsAt: "2024-06-18T15:00:00Z",
+      startsAt: "2024-06-18T13:00:00Z",
+      title: "Other Day Event"
+    };
+
+    // @ts-expect-error for test
+    vi.mocked(sterettSanityClient.fetch).mockResolvedValueOnce([mockEvent]);
+
+    const html = await renderCalendarPage({
+      date: DATE,
+      month: 6,
+      view: "day",
+      year: 2024
+    });
+
+    expect(html).toContain(CALENDAR_TITLE);
+  });
+
   it("sorts event updatedAt correctly", async () => {
     const mockEvents = [
       {
@@ -84,7 +160,7 @@ describe("calendarPage", () => {
       },
       {
         _id: "evt-2",
-        _updatedAt: "2024-06-16T12:00:00Z",
+        _updatedAt: MOCK_EVENT_UPDATED_AT,
         description: [],
         endsAt: "2024-06-17T16:00:00Z",
         startsAt: "2024-06-17T14:00:00Z",

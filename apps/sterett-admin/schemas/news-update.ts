@@ -1,5 +1,6 @@
 import { BulbOutlineIcon } from "@sanity/icons/BulbOutline";
 import { DateTime } from "effect";
+import isNil from "lodash/isNil.js";
 import { defineType, type Rule } from "sanity";
 
 export default defineType({
@@ -8,12 +9,12 @@ export default defineType({
       name: "title",
       title: "Title",
       type: "string",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
     {
-      initialValue: (): { date: Date } => {
+      initialValue: () => {
         return {
           date: DateTime.toDateUtc(DateTime.unsafeNow())
         };
@@ -21,7 +22,7 @@ export default defineType({
       name: "date",
       title: "Start Showing",
       type: "date",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     },
@@ -29,13 +30,13 @@ export default defineType({
       name: "expireDate",
       title: "Stop Showing",
       type: "date",
-      validation: (Rule): Rule => {
-        return Rule.custom((expireDate: string | undefined, context) => {
-          if (expireDate === undefined) {
+      validation: (Rule) => {
+        return Rule.custom((expireDate, context) => {
+          if (isNil(expireDate)) {
             return "Value is required";
           }
 
-          if (context.document === undefined) {
+          if (isNil(context.document)) {
             return true;
           }
 
@@ -60,7 +61,7 @@ export default defineType({
       name: "description",
       title: "Description",
       type: "blockContent",
-      validation: (rule: Rule): Rule => {
+      validation: (rule: Rule) => {
         return rule.required();
       }
     }

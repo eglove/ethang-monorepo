@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import isString from "lodash/isString.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -175,13 +176,13 @@ describe("addSubscriptionMutation - icon URL extraction", () => {
   it("stores iconUrl=null when the website fetch fails (XML succeeds)", async () => {
     const fetchSpy = vi
       .spyOn(globalThis, "fetch")
-      .mockImplementation(async (input: FetchInput): Promise<Response> => {
+      .mockImplementation(async (input: FetchInput) => {
         const value = inputToString(input);
         if (value === XML_ADDRESS) {
           return rssResponse();
         }
         if (value === WEBSITE) {
-          throw new Error(NETWORK_ERROR);
+          Effect.runSync(Effect.die(new Error(NETWORK_ERROR)));
         }
         return new Response("", { status: 404 });
       });
@@ -211,7 +212,7 @@ describe("addSubscriptionMutation - icon URL extraction", () => {
 
   it("stores iconUrl=null when the website returns non-OK (XML succeeds)", async () => {
     vi.spyOn(globalThis, "fetch").mockImplementation(
-      async (input: FetchInput): Promise<Response> => {
+      async (input: FetchInput) => {
         const value = inputToString(input);
         if (value === XML_ADDRESS) {
           return rssResponse();

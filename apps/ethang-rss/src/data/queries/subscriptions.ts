@@ -8,7 +8,7 @@ import type { User } from "../../index.ts";
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
 import { decodeCursor, encodeCursor } from "../util/cursor.ts";
 
-const getCursorParameters = async (after: string | undefined) => {
+const getCursorParameters = async (after: null | string) => {
   if (isNil(after)) {
     return [null, null] as const;
   }
@@ -44,7 +44,7 @@ const getSortWhereCondition = (
 const getDefaultSubscriptions = async (
   database: Database,
   userId: string,
-  after: string | undefined,
+  after: null | string,
   limit: number
 ) => {
   return database
@@ -65,9 +65,7 @@ const getDefaultSubscriptions = async (
     .where(
       and(
         eq(databaseSchema.subscriptionsTable.userId, userId),
-        isNil(after)
-          ? undefined
-          : lt(databaseSchema.subscriptionsTable.id, after)
+        isNil(after) ? sql`` : lt(databaseSchema.subscriptionsTable.id, after)
       )
     )
     .orderBy(desc(databaseSchema.subscriptionsTable.id))
@@ -77,7 +75,7 @@ const getDefaultSubscriptions = async (
 const getTitleSortedSubscriptions = async (
   database: Database,
   userId: string,
-  after: string | undefined,
+  after: null | string,
   direction: "ASC" | "DESC",
   limit: number
 ) => {
@@ -110,25 +108,25 @@ const getTitleSortedSubscriptions = async (
         lastId,
         direction
       )
-    : undefined;
+    : null;
 
   const orderBySql =
     "DESC" === direction
       ? sql`${subquery.title} DESC, ${subquery.id} DESC`
       : sql`${subquery.title} ASC, ${subquery.id} ASC`;
 
-  return database
-    .select()
-    .from(subquery)
-    .where(whereCondition)
-    .orderBy(orderBySql)
-    .limit(limit);
+  const baseQuery = database.select().from(subquery);
+  const filteredQuery = isNil(whereCondition)
+    ? baseQuery
+    : baseQuery.where(whereCondition);
+
+  return filteredQuery.orderBy(orderBySql).limit(limit);
 };
 
 const getPublishedAtSortedSubscriptions = async (
   database: Database,
   userId: string,
-  after: string | undefined,
+  after: null | string,
   direction: "ASC" | "DESC",
   limit: number
 ) => {
@@ -175,25 +173,30 @@ const getPublishedAtSortedSubscriptions = async (
         lastId,
         direction
       )
-    : undefined;
+    : null;
 
   const orderBySql =
     "DESC" === direction
       ? sql`${subquery.maxPublishedAt} DESC, ${subquery.id} DESC`
       : sql`${subquery.maxPublishedAt} ASC, ${subquery.id} ASC`;
 
-  return database
-    .select()
-    .from(subquery)
-    .where(whereCondition)
-    .orderBy(orderBySql)
-    .limit(limit);
+  const baseQuery = database.select().from(subquery);
+  const filteredQuery = isNil(whereCondition)
+    ? baseQuery
+    : baseQuery.where(whereCondition);
+
+  return filteredQuery.orderBy(orderBySql).limit(limit);
 };
 
 const getItemCursor = (
-  item: { id?: string; maxPublishedAt?: string; title?: string } | undefined,
+  item: {
+    id?: null | string;
+    maxPublishedAt?: null | string;
+    title?: null | string;
+  } | null,
   sortBy?: { field: "PUBLISHED_AT" | "TITLE" }
 ) => {
+  // v8 ignore next -- defensive guard: buildEdges always passes a non-null item
   if (isNil(item)) {
     return "";
   }
@@ -213,9 +216,9 @@ const buildEdges = (
   items: {
     feedId: string;
     iconUrl: null | string;
-    id?: string;
+    id?: null | string;
     lastFetchedAt: null | string;
-    maxPublishedAt?: string;
+    maxPublishedAt?: null | string;
     title: string;
     website: string;
     xmlAddress: string;
@@ -244,7 +247,7 @@ const buildEdges = (
 export const subscriptionsQuery = async (
   database: Database,
   parameters: {
-    after?: string;
+    after?: null | string;
     first?: number;
     sortBy?: {
       direction: "ASC" | "DESC";
@@ -253,21 +256,19 @@ export const subscriptionsQuery = async (
   },
   user: User
 ) => {
-  const { after, first = 20, sortBy } = parameters;
+  const { after = null, first = 20, sortBy } = parameters;
   const limit = first + 1;
 
-  let items: {
+  let subscriptions: {
     feedId: string;
     iconUrl: null | string;
-    id?: string;
+    id?: null | string;
     lastFetchedAt: null | string;
-    maxPublishedAt?: string;
+    maxPublishedAt?: null | string;
     title: string;
     website: string;
     xmlAddress: string;
-  }[] = [];
-  let hasNextPage = false;
-  let subscriptions: typeof items;
+  }[];
 
   if (isNil(sortBy)) {
     subscriptions = await getDefaultSubscriptions(
@@ -276,28 +277,26 @@ export const subscriptionsQuery = async (
       after,
       limit
     );
+  } else if ("TITLE" === sortBy.field) {
+    subscriptions = await getTitleSortedSubscriptions(
+      database,
+      user.sub,
+      after,
+      sortBy.direction,
+      limit
+    );
   } else {
-    const { direction, field } = sortBy;
-    subscriptions =
-      "TITLE" === field
-        ? await getTitleSortedSubscriptions(
-            database,
-            user.sub,
-            after,
-            direction,
-            limit
-          )
-        : await getPublishedAtSortedSubscriptions(
-            database,
-            user.sub,
-            after,
-            direction,
-            limit
-          );
+    subscriptions = await getPublishedAtSortedSubscriptions(
+      database,
+      user.sub,
+      after,
+      sortBy.direction,
+      limit
+    );
   }
 
-  hasNextPage = subscriptions.length > first;
-  items = subscriptions.slice(0, first);
+  const hasNextPage = subscriptions.length > first;
+  const items = subscriptions.slice(0, first);
 
   const edges = buildEdges(items, sortBy);
 

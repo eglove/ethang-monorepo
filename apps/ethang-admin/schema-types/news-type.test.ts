@@ -1,14 +1,13 @@
+import { Effect } from "effect";
 import find from "lodash/find.js";
 import { describe, expect, it, vi } from "vitest";
 
 import { newsType } from "./news-type.ts";
 
 const getField = (name: string) => {
-  const field = find(newsType.fields, (candidate) => {
-    return candidate.name === name;
-  });
+  const field = find(newsType.fields, { name });
   if (!field) {
-    throw new Error(`field ${name} not found`);
+    return Effect.runSync(Effect.die(new Error(`field ${name} not found`)));
   }
   return field;
 };

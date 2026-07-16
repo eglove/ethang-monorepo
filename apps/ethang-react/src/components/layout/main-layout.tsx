@@ -3,7 +3,8 @@ import type { PropsWithChildren } from "react";
 import { navigation } from "@ethang/intl/en/navigation.ts";
 import { useStore } from "@ethang/store/use-store.ts";
 import { Button, Flex, Text } from "@radix-ui/themes";
-import map from "lodash/map";
+import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
 import { NavigationMenu } from "radix-ui";
 
 import { authStore, authStoreActions } from "../auth/auth-store.ts";
@@ -42,7 +43,7 @@ export const MainLayout = ({ children }: Readonly<PropsWithChildren>) => {
         </NavigationMenu.Root>
 
         <Flex gap="4" align="center">
-          {null === user ? (
+          {isNil(user) ? (
             <NavigationMenu.Root>
               <NavigationMenu.List>
                 <NavigationMenu.Link asChild>

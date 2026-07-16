@@ -9,7 +9,7 @@ import {
   Strong,
   Text
 } from "@radix-ui/themes";
-import get from "lodash/get.js";
+import { Option, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
@@ -19,13 +19,33 @@ import { sanityImage } from "../clients/sanity.ts";
 import { Code as CodeBlock } from "./code.tsx";
 import { HybridLink } from "./hybrid-link.tsx";
 
-type BlockquoteFooterProperties = {
-  author: string | undefined;
-  source: string | undefined;
-  sourceUrl: string | undefined;
+const MarkValueSchema = Schema.Struct({
+  href: Schema.optional(Schema.String)
+});
+
+/**
+Decodes the `href` property of a portable-text mark value. Returns the href
+string when it is a string, otherwise `null`. Exported so tests can exercise
+the decode logic directly without going through PortableText.
+*/
+export const decodeMarkHref = (value: unknown) => {
+  const decoded = Schema.decodeUnknownOption(MarkValueSchema)(value);
+  return Option.isSome(decoded) && isString(decoded.value.href)
+    ? decoded.value.href
+    : null;
 };
 
-const BlockquoteFooter = ({
+/**
+Footer renderer for blockquote-style portable-text blocks. Exported for
+direct testing of the conditional layout branches.
+*/
+export type BlockquoteFooterProperties = {
+  author: null | string;
+  source: null | string;
+  sourceUrl: null | string;
+};
+
+export const BlockquoteFooter = ({
   author,
   source,
   sourceUrl
@@ -60,16 +80,19 @@ const BlockquoteFooter = ({
 const BlockStyleComponents: PortableTextComponents["block"] = {
   blockquote: ({ children, value }) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const node = value as
-      { author?: string; source?: string; sourceUrl?: string } | undefined;
+    const node = value as {
+      author?: string;
+      source?: string;
+      sourceUrl?: string;
+    } | null;
 
     return (
       <Blockquote>
         {children}
         <BlockquoteFooter
-          author={node?.author}
-          source={node?.source}
-          sourceUrl={node?.sourceUrl}
+          author={node?.author ?? null}
+          source={node?.source ?? null}
+          sourceUrl={node?.sourceUrl ?? null}
         />
       </Blockquote>
     );
@@ -112,9 +135,7 @@ const MarkComponents: PortableTextComponents["marks"] = {
     return <Em>{children}</Em>;
   },
   link: ({ children, value }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const link = get(value, ["href"]) as string | undefined;
-    const href = isString(link) ? link : "";
+    const href = decodeMarkHref(value) ?? "";
 
     return <HybridLink href={href}>{children}</HybridLink>;
   },
@@ -137,9 +158,9 @@ const QuoteRenderer = ({ value }: { value: unknown }) => {
       <Blockquote>
         {node.quote}
         <BlockquoteFooter
-          author={node.author}
-          source={node.source}
-          sourceUrl={node.sourceUrl}
+          author={node.author ?? null}
+          source={node.source ?? null}
+          sourceUrl={node.sourceUrl ?? null}
         />
       </Blockquote>
     </Box>

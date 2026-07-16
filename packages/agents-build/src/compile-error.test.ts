@@ -21,8 +21,7 @@ describe("compile.ts error path", () => {
       throw new Error(`process.exit: ${String(code)}`);
     });
     mockState.compileFn = () => {
-      // @ts-expect-error for test
-      throw new CompileError(["Failed to validate schema"]);
+      throw new CompileError(["Failed to validate schema"], {});
     };
 
     await expect(import("./compile.ts")).rejects.toThrow("process.exit: 1");

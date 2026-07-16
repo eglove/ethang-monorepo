@@ -46,6 +46,15 @@ const createMockDatabase = () => {
     updateRunMock: vi.fn()
   };
 
+  const wrappedFindFirst = vi.fn(
+    (options?: { where?: (table: unknown, operators: unknown) => unknown }) => {
+      if (options?.where) {
+        options.where({}, { and: vi.fn(), eq: vi.fn() });
+      }
+      return findFirstMock();
+    }
+  );
+
   const database = {
     insert: vi.fn(() => {
       return {
@@ -58,7 +67,7 @@ const createMockDatabase = () => {
     }),
     query: {
       courseTrackingTable: {
-        findFirst: findFirstMock
+        findFirst: wrappedFindFirst
       }
     },
     update: vi.fn(() => {
@@ -98,7 +107,7 @@ describe("createCourseTrackingRepo", () => {
 
     it("returns null when no row is found", async () => {
       const { database, findFirstMock } = createMockDatabase();
-      findFirstMock.mockResolvedValue(undefined);
+      findFirstMock.mockResolvedValue(null);
 
       const repo = createCourseTrackingRepo(database);
       const result = await Effect.runPromise(repo.fetch(COMMAND));
@@ -159,7 +168,7 @@ describe("createCourseTrackingRepo", () => {
 
     it("updates existing record when version is provided", async () => {
       const { database, updateRunMock } = createMockDatabase();
-      updateRunMock.mockResolvedValue(undefined);
+      updateRunMock.mockResolvedValue(null);
 
       const repo = createCourseTrackingRepo(database);
       const result = await Effect.runPromise(repo.save(STATE, TRACKING_ID));
@@ -178,6 +187,34 @@ describe("createCourseTrackingRepo", () => {
 
       expect(result).toBeInstanceOf(SaveError);
       expect(result.message).toContain("Insert failed");
+    });
+
+    it("fails with SaveError when insert returns row with invalid status", async () => {
+      const { database, insertReturningMock } = createMockDatabase();
+      insertReturningMock.mockResolvedValue([
+        { ...ROW, status: "INVALID_STATUS" }
+      ]);
+
+      const repo = createCourseTrackingRepo(database);
+      const result = await Effect.runPromise(
+        repo.save(STATE, null).pipe(Effect.flip)
+      );
+
+      expect(result).toBeInstanceOf(SaveError);
+      expect(result.message).toContain("Unknown status");
+    });
+
+    it("fails with SaveError on database error during update", async () => {
+      const { database, updateRunMock } = createMockDatabase();
+      updateRunMock.mockRejectedValue(new Error("Update failed"));
+
+      const repo = createCourseTrackingRepo(database);
+      const result = await Effect.runPromise(
+        repo.save(STATE, TRACKING_ID).pipe(Effect.flip)
+      );
+
+      expect(result).toBeInstanceOf(SaveError);
+      expect(result.message).toContain("Update failed");
     });
   });
 });

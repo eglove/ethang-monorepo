@@ -19,7 +19,7 @@ export const createCurriculumMutation = async (
       {
         learningPathIds: parameters.learningPathIds ?? [],
         name: parameters.name,
-        url: parameters.url === undefined ? null : parameters.url
+        url: parameters.url ?? null
       },
       repo
     )

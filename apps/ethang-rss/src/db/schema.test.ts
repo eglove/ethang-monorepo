@@ -1,5 +1,5 @@
-/* eslint-disable unicorn/consistent-function-scoping */
 import find from "lodash/find.js";
+import isNil from "lodash/isNil.js";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -91,11 +91,14 @@ describe("Database Schema Definitions", () => {
 
   it("evaluates extra config builder callbacks", () => {
     const getExtraBuilder = (table: unknown) => {
-      const sym = find(Object.getOwnPropertySymbols(table), (s) => {
-        return "drizzle:ExtraConfigBuilder" === s.description;
+      const sym = find(Object.getOwnPropertySymbols(table), {
+        description: "drizzle:ExtraConfigBuilder"
       });
+      if (isNil(sym)) {
+        return null;
+      }
       // @ts-expect-error for test
-      return sym ? table[sym] : undefined;
+      return table[sym as symbol];
     };
 
     const articlesBuilder = getExtraBuilder(articlesTable);

@@ -1,11 +1,11 @@
 {
-  "name": "@ethang/markdown-generator",
   "author": "Ethan Glover",
   "browserslist": [
     "current node",
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
+    "effect": "^3.21.4",
     "lodash": "^4.18.1"
   },
   "description": "Markdown Generator following GitHub syntax.",
@@ -27,6 +27,7 @@
     ".": "./src/markdown-generator.ts",
     "./*": "./src/*"
   },
+  "name": "@ethang/markdown-generator",
   "peerDependencies": {
     "lodash": "^4.17.21"
   },

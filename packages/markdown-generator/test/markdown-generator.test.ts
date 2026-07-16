@@ -86,13 +86,28 @@ describe("Markdown Generator", () => {
         const document = {
           blocks: [],
           frontmatter: {
-            zKey: "last",
-            title: "My Doc",
             aKey: "first",
-            ignoredKey: undefined as unknown as string
+            ignoredKey: null as unknown as string,
+            title: "My Doc",
+            zKey: "last"
           }
         };
         const expected = `---\ntitle: My Doc\naKey: first\nzKey: last\n---\n`;
+        expect(generateMarkdown(document)).toBe(expected);
+      });
+
+      it("sorts remaining frontmatter keys alphabetically when title is mixed in", () => {
+        const document = {
+          blocks: [],
+          frontmatter: {
+            alpha: "a",
+            description: "desc",
+            mango: "m",
+            title: "My Doc",
+            zebra: "z"
+          }
+        };
+        const expected = `---\ntitle: My Doc\nalpha: a\ndescription: desc\nmango: m\nzebra: z\n---\n`;
         expect(generateMarkdown(document)).toBe(expected);
       });
 
@@ -337,9 +352,9 @@ describe("Markdown Generator", () => {
         expect(generateMarkdown(document)).toBe("");
       });
 
-      it("should handle null or undefined blocks safely without crashing", () => {
+      it("should handle null blocks safely without crashing", () => {
         const document = {
-          blocks: [null, undefined, { text: "Hello", type: "text" as const }],
+          blocks: [null, { text: "Hello", type: "text" as const }]
         };
 
         expect(() => {
@@ -350,4 +365,3 @@ describe("Markdown Generator", () => {
     });
   });
 });
-

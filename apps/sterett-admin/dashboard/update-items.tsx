@@ -1,3 +1,4 @@
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
 import { UpdateItem } from "./update-item.js";
@@ -82,7 +83,7 @@ export const UpdateItems = () => {
         return (
           <UpdateItem
             key={item.id}
-            {...(item.date !== undefined && { date: item.date })}
+            {...(!isNil(item.date) && { date: item.date })}
           >
             {item.children}
           </UpdateItem>

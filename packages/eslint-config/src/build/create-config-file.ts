@@ -15,7 +15,7 @@ import type { Plugin } from "./plugin.ts";
 
 import { getLatestReact } from "./get-react-version.ts";
 
-const buildImportList = (output: OutputConfig): string[] => {
+const buildImportList = (output: OutputConfig) => {
   const rawImports: string[] = [
     'import { defineConfig, globalIgnores } from "eslint/config";'
   ];
@@ -65,8 +65,8 @@ const buildImportList = (output: OutputConfig): string[] => {
 const buildConfigBlockOptionals = (
   sorted: Plugin[],
   output: OutputConfig,
-  reactSettings: string | undefined
-): string => {
+  reactSettings: null | string
+) => {
   let optionals = "";
 
   const hasAngularLang = some(sorted, (p) => {
@@ -100,8 +100,8 @@ const buildConfigBlock = (
   files: string,
   plugins: Plugin[],
   output: OutputConfig,
-  reactSettings: string | undefined
-): string => {
+  reactSettings: null | string
+) => {
   const sorted = [...plugins].toSorted((a, b) => {
     return (a.order ?? 0) - (b.order ?? 0);
   });
@@ -117,7 +117,7 @@ const buildConfigBlock = (
   }
 
   const rulesJson = trimLodash(
-    JSON.stringify(mergedRules, undefined, 2).slice(2, -1)
+    JSON.stringify(mergedRules, null, 2).slice(2, -1)
   );
 
   let pluginsString = "";
@@ -142,9 +142,7 @@ const buildConfigBlock = (
     filter(sorted, (p) => {
       return !isNil(p.extraOptions);
     }),
-    (p) => {
-      return p.extraOptions;
-    }
+    "extraOptions"
   ).join("\n");
 
   return `{
@@ -161,8 +159,8 @@ const buildConfigBlock = (
 
 const buildConfigEntries = (
   output: OutputConfig,
-  reactSettings: string | undefined
-): string[] => {
+  reactSettings: null | string
+) => {
   const configEntries: string[] = [];
 
   if (!isNil(output.includeIgnores)) {
@@ -199,7 +197,7 @@ const buildConfigEntries = (
   return configEntries;
 };
 
-export const createConfigFile = async (output: OutputConfig): Promise<void> => {
+export const createConfigFile = async (output: OutputConfig) => {
   const importList = buildImportList(output);
 
   let configFile = "// @ts-nocheck\n";
@@ -208,9 +206,11 @@ export const createConfigFile = async (output: OutputConfig): Promise<void> => {
     configFile += `${item}\n`;
   }
 
-  let reactSettings: string | undefined;
+  let reactSettings: null | string;
 
-  if (!isNil(output.includeReactVersion)) {
+  if (isNil(output.includeReactVersion)) {
+    reactSettings = null;
+  } else {
     const react = await getLatestReact();
     reactSettings = JSON.stringify({
       react: { version: react?.version }

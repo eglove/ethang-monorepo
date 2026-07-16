@@ -6,15 +6,10 @@ import { makeStore, type Store } from "../src/store.js";
 import { useStore } from "../src/use-store.js";
 
 vi.mock("use-sync-external-store/with-selector", async (importOriginal) => {
-  const actual = (await importOriginal()) as {
-    useSyncExternalStoreWithSelector: (
-      subscribe: (onStoreChange: () => void) => () => void,
-      getSnapshot: () => State,
-      getServerSnapshot: () => State,
-      selector: (snapshot: State) => unknown,
-      isEqual?: (a: unknown, b: unknown) => boolean
-    ) => unknown;
-  };
+  const actual =
+    await importOriginal<
+      typeof import("use-sync-external-store/with-selector")
+    >();
 
   return {
     ...actual,
@@ -43,6 +38,7 @@ type State = { count: number; name: string };
 let store: Store<State>;
 
 beforeEach(() => {
+  // eslint-disable-next-line unicorn/no-top-level-assignment-in-function
   store = makeStore({ count: 0, name: "Initial" });
 });
 
@@ -136,11 +132,9 @@ describe("useStore", () => {
       });
     });
 
-    const mockFunction = (
-      useSyncExternalStoreWithSelector as unknown as {
-        mock: { calls: unknown[][] };
-      }
-    );
+    const mockFunction = useSyncExternalStoreWithSelector as unknown as {
+      mock: { calls: unknown[][] };
+    };
     const lastCall = mockFunction.mock.calls.at(-1);
     const getServerSnapshot = lastCall?.[2] as () => State;
 

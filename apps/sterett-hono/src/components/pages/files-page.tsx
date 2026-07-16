@@ -6,9 +6,12 @@ import { MainLayout } from "../layouts/main-layout.tsx";
 
 export const FilesPage = async () => {
   const { covenants, general, meetingMinutes } = await getFiles();
-  const updatedAt = map([...covenants, ...general, ...meetingMinutes], (f) => {
-    return f._updatedAt;
-  })
+  const updatedAt = map(
+    [...covenants, ...general, ...meetingMinutes],
+    ({ _updatedAt }) => {
+      return _updatedAt;
+    }
+  )
     .toSorted((a, b) => {
       return a.localeCompare(b);
     })
@@ -16,7 +19,7 @@ export const FilesPage = async () => {
 
   return (
     <MainLayout
-      updatedAt={updatedAt}
+      updatedAt={updatedAt ?? null}
       title="Sterett Creek Village Trustee | Files"
       description="Covenants and files for Sterett Creek Village Trustee"
     >

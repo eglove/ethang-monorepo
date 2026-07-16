@@ -2,7 +2,7 @@ import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig(
-  globalIgnores(["coverage", "node_modules"]),
+  globalIgnores(["coverage", "node_modules", "README.md"]),
   ...config,
   {
     languageOptions: {

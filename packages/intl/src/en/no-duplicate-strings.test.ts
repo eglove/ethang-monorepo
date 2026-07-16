@@ -1,3 +1,5 @@
+import filter from "lodash/filter.js";
+import map from "lodash/map.js";
 import { describe, expect, it } from "vitest";
 
 import { auth } from "./auth.ts";
@@ -41,15 +43,14 @@ describe("intl constants", () => {
       }
     }
 
-    // eslint-disable-next-line lodash/prefer-lodash-method
-    const duplicates = [...valueToModules]
-      .filter(([, locations]) => {
+    const duplicates = map(
+      filter([...valueToModules], ([, locations]) => {
         return 1 < locations.length;
-      })
-
-      .map(([value, locations]) => {
+      }),
+      ([value, locations]) => {
         return { locations, value };
-      });
+      }
+    );
 
     expect(duplicates).toStrictEqual([]);
   });

@@ -8,18 +8,18 @@ describe("getEnvironmentString", () => {
     expect(getEnvironmentString(object, "ENVIRONMENT")).toBe("production");
   });
 
-  it("returns undefined if key does not exist", () => {
+  it("returns null if key does not exist", () => {
     const object = { OTHER: "value" };
-    expect(getEnvironmentString(object, "ENVIRONMENT")).toBeUndefined();
+    expect(getEnvironmentString(object, "ENVIRONMENT")).toBeNull();
   });
 
-  it("returns undefined if key value is not a string", () => {
+  it("returns null if key value is not a string", () => {
     const object = { ENVIRONMENT: 123 };
-    expect(getEnvironmentString(object, "ENVIRONMENT")).toBeUndefined();
+    expect(getEnvironmentString(object, "ENVIRONMENT")).toBeNull();
   });
 
-  it("returns undefined if input is not an object", () => {
-    expect(getEnvironmentString(null, "ENVIRONMENT")).toBeUndefined();
-    expect(getEnvironmentString("string", "ENVIRONMENT")).toBeUndefined();
+  it("returns null if input is not an object", () => {
+    expect(getEnvironmentString(null, "ENVIRONMENT")).toBeNull();
+    expect(getEnvironmentString("string", "ENVIRONMENT")).toBeNull();
   });
 });

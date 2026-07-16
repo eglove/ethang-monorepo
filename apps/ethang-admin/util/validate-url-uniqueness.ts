@@ -16,7 +16,7 @@ export const validateUrlUniqueness = (
 
     const { document, getClient } = context;
 
-    if (document === undefined) {
+    if (isNil(document)) {
       return true;
     }
 

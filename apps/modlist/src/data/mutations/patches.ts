@@ -32,4 +32,5 @@ export const removePatchMutation = async (
   parameters: { id: string }
 ) => {
   await database.delete(patchTable).where(eq(patchTable.id, parameters.id));
+  return null;
 };

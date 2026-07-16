@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import isNil from "lodash/isNil.js";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 import type { FileRecord } from "../sanity/get-files.ts";
@@ -168,7 +169,7 @@ export const renderTrusteesPage = async () => {
 export const renderNewsPage = async (items?: NewsAndEvents) => {
   const app = new Hono();
   app.get("/", async (c) => {
-    return items === undefined
+    return isNil(items)
       ? c.html(<NewsPage />)
       : c.html(<NewsPage items={items} />);
   });

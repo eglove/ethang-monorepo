@@ -6,7 +6,6 @@ import { Route } from "./scroll-containers.tsx";
 vi.mock("@tanstack/react-router", () => {
   return {
     createFileRoute: () => {
-      // eslint-disable-next-line unicorn/consistent-function-scoping
       return (config: { component: React.ComponentType }) => {
         return {
           component: config.component

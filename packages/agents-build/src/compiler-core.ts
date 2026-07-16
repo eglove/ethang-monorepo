@@ -1,9 +1,7 @@
 import { generateMarkdown } from "@ethang/markdown-generator";
-import { Effect } from "effect";
+import { Effect, Option, Schema } from "effect";
 import constant from "lodash/constant.js";
-import filter from "lodash/filter.js";
-import isArray from "lodash/isArray.js";
-import isObject from "lodash/isObject.js";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import {
   existsSync,
@@ -85,8 +83,8 @@ export const validationHelpers = {
 const processMcpConfig = (
   config: CompilerConfig,
   write: (absolutePath: string, content: string) => void
-): void => {
-  if (undefined === config.mcpPublicPath) {
+) => {
+  if (isNil(config.mcpPublicPath)) {
     return;
   }
 
@@ -97,7 +95,7 @@ const processRules = (
   config: CompilerConfig,
   failures: string[],
   write: (absolutePath: string, content: string) => void
-): void => {
+) => {
   for (const duplicate of validationHelpers.findDuplicateRuleFilenames(
     config.rules
   )) {
@@ -119,9 +117,9 @@ const processSkills = (
   config: CompilerConfig,
   failures: string[],
   write: (absolutePath: string, content: string) => void
-): void => {
+) => {
   const { skills, skillsDir } = config;
-  if (undefined === skills || undefined === skillsDir) {
+  if (isNil(skills) || isNil(skillsDir)) {
     return;
   }
   for (const skill of skills) {
@@ -148,7 +146,7 @@ const processSkills = (
   }
 };
 
-const scanDirectory = (directory: string, failures: string[]): void => {
+const scanDirectory = (directory: string, failures: string[]) => {
   const isExists = fsProxy.existsSync(directory);
 
   if (!isExists) {
@@ -160,10 +158,10 @@ const scanDirectory = (directory: string, failures: string[]): void => {
   }
 };
 
-const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
+const scanDirectories = (config: CompilerConfig, failures: string[]) => {
   const directoriesToScan = [config.rulesDir];
   const { skills, skillsDir } = config;
-  if (undefined !== skills && undefined !== skillsDir) {
+  if (!isNil(skills) && !isNil(skillsDir)) {
     for (const skill of skills) {
       directoriesToScan.push(path.join(skillsDir, skill.name));
     }
@@ -174,9 +172,9 @@ const scanDirectories = (config: CompilerConfig, failures: string[]): void => {
   }
 };
 
-const loadManifest = (config: CompilerConfig): string[] => {
+const loadManifest = (config: CompilerConfig) => {
   const { manifestPath } = config;
-  if (manifestPath === undefined) {
+  if (isNil(manifestPath)) {
     return [];
   }
   return Effect.try(() => {
@@ -189,18 +187,21 @@ const loadManifest = (config: CompilerConfig): string[] => {
   );
 };
 
-const parseManifestContent = (content: string): string[] => {
-  const parsed: unknown = JSON.parse(content);
-  if (isObject(parsed) && "files" in parsed) {
-    const { files } = parsed;
-    if (isArray(files)) {
-      return filter(files, isString);
-    }
+const ManifestContentSchema = Schema.Struct({
+  files: Schema.optional(Schema.Array(Schema.String))
+});
+
+const parseManifestContent = (content: string) => {
+  const decoded = Schema.decodeUnknownOption(ManifestContentSchema)(
+    JSON.parse(content)
+  );
+  if (Option.isNone(decoded)) {
+    return [];
   }
-  return [];
+  return decoded.value.files ?? [];
 };
 
-const canRemoveDirectory = (directory: string): boolean => {
+const canRemoveDirectory = (directory: string) => {
   return Effect.try(() => {
     return fsProxy.readdirSync(directory);
   }).pipe(
@@ -217,7 +218,7 @@ const canRemoveDirectory = (directory: string): boolean => {
 const cleanFileAndEmptyParents = (
   relativeOrAbsolutePath: string,
   config: CompilerConfig
-): void => {
+) => {
   const filePath = path.isAbsolute(relativeOrAbsolutePath)
     ? relativeOrAbsolutePath
     : path.resolve(config.rootDir, relativeOrAbsolutePath);
@@ -231,7 +232,7 @@ const cleanFileAndEmptyParents = (
     path.resolve(config.rootDir),
     path.resolve(config.rulesDir)
   ]);
-  if (config.skillsDir !== undefined) {
+  if (!isNil(config.skillsDir)) {
     stopDirectories.add(path.resolve(config.skillsDir));
   }
 
@@ -249,7 +250,7 @@ const cleanFileAndEmptyParents = (
   }
 };
 
-export const compile = (config: CompilerConfig): void => {
+export const compile = (config: CompilerConfig) => {
   const filesToClean = loadManifest(config);
 
   for (const file of filesToClean) {
@@ -273,10 +274,11 @@ export const compile = (config: CompilerConfig): void => {
   scanDirectories(config, failures);
 
   if (0 < failures.length) {
+    // eslint-disable-next-line @ethang/no-try-catch -- throw is correct for sync errors caught by Effect.try
     throw new CompileError(failures, {});
   }
 
-  if (config.manifestPath !== undefined) {
+  if (!isNil(config.manifestPath)) {
     fsProxy.mkdirSync(path.dirname(config.manifestPath), { recursive: true });
     fsProxy.writeFileSync(
       config.manifestPath,

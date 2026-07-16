@@ -25,9 +25,7 @@ import { wowTaskType } from "./wow-task-types.ts";
 
 describe("wowTaskType schema", () => {
   it("validates title is required", () => {
-    const titleField = find(wowTaskType.fields, (field) => {
-      return "title" === field.name;
-    });
+    const titleField = find(wowTaskType.fields, { name: "title" });
     expect(titleField).toBeDefined();
 
     const mockRule = {
@@ -40,9 +38,7 @@ describe("wowTaskType schema", () => {
   });
 
   it("validates taskType is required", () => {
-    const taskTypeField = find(wowTaskType.fields, (field) => {
-      return "taskType" === field.name;
-    });
+    const taskTypeField = find(wowTaskType.fields, { name: "taskType" });
     expect(taskTypeField).toBeDefined();
 
     const mockRule = {

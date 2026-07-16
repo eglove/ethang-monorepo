@@ -25,7 +25,7 @@ vi.mock("drizzle-orm/d1", () => {
 
 vi.mock("./data/mutations/add-subscription.ts", () => {
   return {
-    addSubscriptionMutation: vi.fn().mockResolvedValue(undefined)
+    addSubscriptionMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
@@ -40,19 +40,19 @@ vi.mock("./data/mutations/mark-article-read.ts", () => {
 
 vi.mock("./data/mutations/remove-subscription.ts", () => {
   return {
-    removeSubscriptionMutation: vi.fn().mockResolvedValue(undefined)
+    removeSubscriptionMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
 vi.mock("./data/queries/all-articles.ts", () => {
   return {
-    allArticlesQuery: vi.fn().mockResolvedValue(undefined)
+    allArticlesQuery: vi.fn().mockResolvedValue(null)
   };
 });
 
 vi.mock("./data/queries/feed-articles.ts", () => {
   return {
-    feedArticlesQuery: vi.fn().mockResolvedValue(undefined)
+    feedArticlesQuery: vi.fn().mockResolvedValue(null)
   };
 });
 
@@ -74,13 +74,13 @@ vi.mock("./data/queries/subscriptions.ts", () => {
 
 import WorkerClass from "./index.ts";
 
-const WorkerClassConstructor = WorkerClass as unknown as new () => {
-  env: Record<string, unknown>;
-};
+const WorkerClassConstructor = WorkerClass as unknown as new () => InstanceType<
+  typeof WorkerClass
+>;
 
-const createInstance = (environment: Record<string, any> = {}): any => {
+const createInstance = (environment: Record<string, any> = {}) => {
   const instance = new WorkerClassConstructor();
-  instance.env = environment;
+  (instance as unknown as { env: Record<string, unknown> }).env = environment;
   return instance;
 };
 
@@ -90,7 +90,13 @@ describe("ethang-rss WorkerEntrypoint", () => {
       "fetch",
       vi.fn().mockResolvedValue({
         json: async () => {
-          return { email: "test@test.com", sub: "test-sub" };
+          return {
+            email: "test@test.com",
+            exp: 1_700_000_000,
+            iat: 1_600_000_000,
+            sub: "test-sub",
+            username: "testuser"
+          };
         },
         ok: true
       })
@@ -103,7 +109,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
 
   it("should respond OK on fetch", async () => {
     const instance = createInstance({ ethang_rss: {} });
-    const response = await instance.fetch(new Request("https://example.com/"));
+    const response = instance.fetch(new Request("https://example.com/"));
     expect(response.status).toBe(200);
     const body = await response.text();
     expect(body).toBe("OK");
@@ -129,15 +135,13 @@ describe("ethang-rss WorkerEntrypoint", () => {
         isRead: true,
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toEqual({ articleId: "a1", isRead: true });
+      expect(result).toEqual({ articleId: "a1", isRead: true });
     });
 
     it("subscription returns a subscription", async () => {
       const instance = createInstance({ ethang_rss: {} });
       const result = await instance.subscription({ feedId: "feed1" });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toEqual({ id: "feed1", title: "Test Feed" });
+      expect(result).toEqual({ id: "feed1", title: "Test Feed" });
     });
 
     it("subscriptions returns paginated subscriptions", async () => {
@@ -147,8 +151,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         sessionToken: auth.TEST_TOKEN,
         sortBy: { direction: "ASC", field: "TITLE" }
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toEqual({
+      expect(result).toEqual({
         edges: [],
         pageInfo: { hasNextPage: false }
       });
@@ -160,8 +163,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         sessionToken: auth.TEST_TOKEN,
         xmlAddress: "https://example.com/feed.xml"
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
 
     it("removeSubscription removes a subscription", async () => {
@@ -170,8 +172,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         feedId: "feed-1",
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
 
     it("rejects with unauthorized when auth fails", async () => {
@@ -187,14 +188,36 @@ describe("ethang-rss WorkerEntrypoint", () => {
       ).rejects.toThrow("Unauthorized");
     });
 
+    it("rejects with unauthorized when fetch throws", async () => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockRejectedValue(new Error("Network error"))
+      );
+      const instance = createInstance({ ethang_rss: {} });
+      await expect(
+        instance.allArticles({ sessionToken: "any-token" })
+      ).rejects.toThrow("Unauthorized");
+    });
+
+    it("rejects with unauthorized when response.json throws", async () => {
+      const jsonMock = vi.fn().mockRejectedValue(new Error("Invalid JSON"));
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({ json: jsonMock, ok: true })
+      );
+      const instance = createInstance({ ethang_rss: {} });
+      await expect(
+        instance.allArticles({ sessionToken: "any-token" })
+      ).rejects.toThrow("Unauthorized");
+    });
+
     it("allArticles returns paginated articles", async () => {
       const instance = createInstance({ ethang_rss: {} });
       const result = await instance.allArticles({
         first: 10,
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
 
     it("feedArticles returns paginated feed articles", async () => {
@@ -204,8 +227,7 @@ describe("ethang-rss WorkerEntrypoint", () => {
         first: 10,
         sessionToken: auth.TEST_TOKEN
       });
-      expect(result).toBeInstanceOf(Response);
-      expect(await result.json()).toBeNull();
+      expect(result).toBeNull();
     });
   });
 
@@ -217,7 +239,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).resolves.not.toThrow();
       expect(createMock).toHaveBeenCalledWith({
         id: "fetch-feeds-123456"
@@ -233,7 +257,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).resolves.not.toThrow();
     });
 
@@ -247,7 +273,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).rejects.toThrow(SOME_OTHER_D1_ERROR);
     });
 
@@ -258,7 +286,9 @@ describe("ethang-rss WorkerEntrypoint", () => {
       });
 
       await expect(
-        instance.scheduled({ scheduledTime: 123_456 })
+        instance.scheduled({
+          scheduledTime: 123_456
+        } as unknown as ScheduledEvent)
       ).rejects.toThrow(SOME_NON_ERROR_OBJECT);
     });
   });

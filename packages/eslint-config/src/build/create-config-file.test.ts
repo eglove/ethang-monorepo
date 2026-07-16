@@ -351,7 +351,7 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       fileName: TEST_FILE_NAME,
       plugins: [
         makePlugin({
-          importString: undefined
+          importString: null
         })
       ]
     });
@@ -369,8 +369,8 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
       fileName: TEST_FILE_NAME,
       plugins: [
         makePlugin({
-          pluginName: undefined,
-          pluginValue: undefined
+          pluginName: null,
+          pluginValue: null
         })
       ]
     });

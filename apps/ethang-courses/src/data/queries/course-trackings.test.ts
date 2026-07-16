@@ -57,4 +57,24 @@ describe("courseTrackingsQuery", () => {
 
     expect(result).toStrictEqual([]);
   });
+
+  it("wraps thrown database errors", async () => {
+    const mockSelectResult = {
+      from: vi.fn().mockReturnThis(),
+      orderBy: vi.fn().mockReturnThis(),
+      where: vi.fn().mockRejectedValue(new Error("db connection lost"))
+    };
+
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(mockSelectResult)
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error test double
+      courseTrackingsQuery(mockDatabase, "user-1").pipe(Effect.flip)
+    );
+
+    expect(result).toBeInstanceOf(Error);
+    expect(result.message).toBe("Failed to fetch course trackings");
+  });
 });

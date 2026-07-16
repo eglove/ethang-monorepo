@@ -1,8 +1,6 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 
-import type { Database } from "./data/types.ts";
-
 import {
   addConflictMutation,
   removeConflictMutation
@@ -97,7 +95,7 @@ export default class extends WorkerEntrypoint<Env> {
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  public override async fetch(): Promise<Response> {
+  public override async fetch(_request: Request) {
     return new Response("OK", { status: 200 });
   }
 
@@ -157,7 +155,7 @@ export default class extends WorkerEntrypoint<Env> {
     return updateModificationListMutation(this.getDb(), parameters);
   }
 
-  private getDb(): Database {
+  private getDb() {
     return drizzle(this.env.ethang_modlist, {
       schema: {
         conflictTable,

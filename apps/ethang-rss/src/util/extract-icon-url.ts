@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+import constant from "lodash/constant.js";
 import endsWith from "lodash/endsWith.js";
 import isNil from "lodash/isNil.js";
 import some from "lodash/some.js";
@@ -29,7 +31,7 @@ const isIconRelationship = (relationshipValue: string) => {
   });
 };
 
-const parseSizeValue = (sizes: string | undefined) => {
+const parseSizeValue = (sizes: null | string) => {
   if (isNil(sizes)) {
     return 0;
   }
@@ -40,27 +42,40 @@ const parseSizeValue = (sizes: string | undefined) => {
   return Number(match[1]) * Number(match[2]);
 };
 
+const returnNull = constant(null);
+
 const resolveHref = (href: string, baseUrl: string) => {
-  let resolvedHref: string | undefined;
-  try {
-    const resolved = new URL(href, baseUrl);
-    resolvedHref = resolved.href;
-  } catch {
-    /* invalid href or baseUrl */
-  }
-  return resolvedHref;
+  return Effect.runSync(
+    Effect.try({
+      catch: returnNull,
+      try: () => {
+        const resolved = new URL(href, baseUrl);
+        return resolved.href;
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(null);
+      })
+    )
+  );
 };
 
 const buildFaviconFallback = (baseUrl: string) => {
-  let originValue: string | undefined;
-  try {
-    const parsedBase = new URL(baseUrl);
-    originValue = parsedBase.origin;
-  } catch {
-    /* invalid baseUrl */
-  }
+  const originValue = Effect.runSync(
+    Effect.try({
+      catch: returnNull,
+      try: () => {
+        const parsedBase = new URL(baseUrl);
+        return parsedBase.origin;
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(null);
+      })
+    )
+  );
   if (isNil(originValue)) {
-    return;
+    return null;
   }
   return `${originValue}/favicon.ico`;
 };
@@ -68,37 +83,33 @@ const buildFaviconFallback = (baseUrl: string) => {
 const readLinkTag = (tag: string) => {
   const relationshipMatch = REL_PATTERN.exec(tag);
   if (isNil(relationshipMatch)) {
-    return;
+    return null;
   }
   const [, linkRelationship = ""] = relationshipMatch;
   if (!isIconRelationship(linkRelationship)) {
-    return;
+    return null;
   }
   const hrefMatch = HREF_PATTERN.exec(tag);
   const href = hrefMatch?.[1] ?? "";
   if ("" === href) {
-    return;
+    return null;
   }
   const sizesMatch = SIZES_PATTERN.exec(tag);
-  const sizes = sizesMatch?.[1];
+  const sizes = sizesMatch?.[1] ?? null;
   return {
     href,
     sizes
   };
 };
 
-const pickBestIcon = (
-  matches: string[]
-): { href: string; index: number } | undefined => {
+const pickBestIcon = (matches: string[]) => {
   let bestIndex = -1;
   let bestArea = 0;
-  let bestHref: string | undefined;
+  let bestHref: null | string = null;
 
   for (const [index, tag] of matches.entries()) {
     const parsed = readLinkTag(tag);
-    if (isNil(parsed)) {
-      // skip non-icon link tags
-    } else {
+    if (!isNil(parsed)) {
       const area = parseSizeValue(parsed.sizes);
       if (-1 === bestIndex || area > bestArea) {
         bestIndex = index;
@@ -109,7 +120,7 @@ const pickBestIcon = (
   }
 
   if (-1 === bestIndex || isNil(bestHref)) {
-    return;
+    return null;
   }
   return { href: bestHref, index: bestIndex };
 };

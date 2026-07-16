@@ -13,17 +13,15 @@ describe("videoEmbedType schema", () => {
   it.each(["videoId", "url", "title", "source"])(
     "exposes the %s field",
     (fieldName) => {
-      const field = find(videoEmbedType.fields, (candidate) => {
-        return candidate.name === fieldName;
-      });
+      const field = find(videoEmbedType.fields, { name: fieldName });
       expect(field).toBeDefined();
     }
   );
 
   it("exposes YouTube as a source option", () => {
-    const sourceField = find(videoEmbedType.fields, (candidate) => {
-      return "source" === candidate.name;
-    }) as { options: { list: { title: string; value: string }[] } };
+    const sourceField = find(videoEmbedType.fields, { name: "source" }) as {
+      options: { list: { title: string; value: string }[] };
+    };
 
     expect(sourceField.options.list[0]).toEqual({
       title: "YouTube",

@@ -11,9 +11,7 @@ describe("techType schema", () => {
   });
 
   it("requires the name field", () => {
-    const nameField = find(techType.fields, (field) => {
-      return "name" === field.name;
-    });
+    const nameField = find(techType.fields, { name: "name" });
     expect(nameField).toBeDefined();
 
     const mockRule = { required: vi.fn().mockReturnThis() };

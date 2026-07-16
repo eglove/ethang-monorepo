@@ -14,7 +14,7 @@ import {
   useNavigate,
   useSearch
 } from "@tanstack/react-router";
-import isNil from "lodash/isNil";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import noop from "lodash/noop.js";
 import trim from "lodash/trim.js";
@@ -35,7 +35,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@ethang/validate-unknown
   const search = useSearch({ from: "/login" });
 
   useEffect(() => {
@@ -69,7 +69,7 @@ const Login = () => {
                 {forms.SIGN_IN_TO_ACCOUNT}
               </Heading>
 
-              {null !== error && (
+              {!isNil(error) && (
                 <Box className="animate-in fade-in zoom-in-95 rounded-xl border border-red-800/60 bg-red-950/40 p-3 transition-all duration-300">
                   <Text
                     size="2"
@@ -130,13 +130,9 @@ const Login = () => {
   );
 };
 
-type LoginSearch = {
-  redirect?: string;
-};
-
 export const Route = createFileRoute("/login")({
   component: Login,
-  validateSearch: (search: Record<string, unknown>): LoginSearch => {
+  validateSearch: (search: Record<string, unknown>) => {
     return {
       redirect: isString(search["redirect"]) ? search["redirect"] : ""
     };

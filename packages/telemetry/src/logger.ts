@@ -15,10 +15,9 @@ which writes to `console.*` — we get both:
 
 Call this once per Worker entrypoint before any `Effect.runPromise`.
 */
-export const installCloudflareLogger = (): void => {
+export const installCloudflareLogger = () => {
   const { defaultLogger } = Logger;
   const prettyLogger = Logger.prettyLogger({ colors: false });
-  // eslint-disable-next-line lodash/prefer-lodash-method
   const layer = Logger.replace(defaultLogger, prettyLogger);
 
   // Discard the resulting layer after evaluating it; we just need the
@@ -33,7 +32,7 @@ export const installCloudflareLogger = (): void => {
 /**
 Default minimum log level for production. Lower in development.
 */
-export const defaultLogLevel = (): LogLevel.LogLevel => {
+export const defaultLogLevel = () => {
   const environment = (
     globalThis as { process?: { env?: { ENVIRONMENT?: string } } }
   ).process?.env?.ENVIRONMENT;

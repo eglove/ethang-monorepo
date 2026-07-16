@@ -74,7 +74,7 @@ describe("sanity-calendar-sync worker", () => {
     const mockEvents = [
       {
         _id: "id-2",
-        description: undefined,
+        description: null,
         endsAt: "invalid-date",
         startsAt: "2026-06-14T12:00:00Z",
         title: "Event 2"
@@ -105,7 +105,7 @@ describe("sanity-calendar-sync worker", () => {
     const mockEvents = [
       {
         _id: "id-3",
-        description: undefined,
+        description: null,
         endsAt: "2026-06-14T13:00:00Z",
         startsAt: "not-a-real-date",
         title: "Broken Event"

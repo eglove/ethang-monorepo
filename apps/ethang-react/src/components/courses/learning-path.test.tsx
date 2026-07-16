@@ -2,11 +2,16 @@ import { render, screen } from "@testing-library/react";
 import isNil from "lodash/isNil.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { LearningPath } from "./learning-path.tsx";
+import { coursesAllQueryOptions, LearningPath } from "./learning-path.tsx";
 
 const CONSTRUCTION_PATH_NAME = "Software Construction Path";
 const CONSTRUCTION_PATH_URL = "https://example.com/construction";
 const CONSTRUCTION_FOCUS = "construction";
+const AUTHOR_A = "Author A";
+const AUTHOR_B = "Author B";
+const COURSE_1_UPDATED_AT = "2024-01-01";
+const COURSE_2_UPDATED_AT = "2024-01-02";
+const COURSE_3_UPDATED_AT = "2024-01-03";
 
 const mockAllCoursesData: {
   data: unknown;
@@ -56,7 +61,7 @@ describe("LearningPath", () => {
   it("renders learning path metadata and list of courses", () => {
     mockAllCoursesData.data = [
       {
-        author: "Author A",
+        author: AUTHOR_A,
         courseId: "course-1",
         courseIndex: 35,
         learningPathId: "path-1",
@@ -65,11 +70,11 @@ describe("LearningPath", () => {
         learningPathUrl: CONSTRUCTION_PATH_URL,
         name: "Code Construction Basics",
         swebokFocus: CONSTRUCTION_FOCUS,
-        updatedAt: "2024-01-01",
-        url: "https://example.com/basics"
+        updatedAt: COURSE_1_UPDATED_AT,
+        url: `${CONSTRUCTION_PATH_URL}/basics`
       },
       {
-        author: "Author B",
+        author: AUTHOR_B,
         courseId: "course-2",
         courseIndex: 36,
         learningPathId: "path-1",
@@ -78,7 +83,7 @@ describe("LearningPath", () => {
         learningPathUrl: CONSTRUCTION_PATH_URL,
         name: "Refactoring and Patterns",
         swebokFocus: CONSTRUCTION_FOCUS,
-        updatedAt: "2024-01-02",
+        updatedAt: COURSE_2_UPDATED_AT,
         url: "https://example.com/refactoring"
       },
       {
@@ -88,10 +93,10 @@ describe("LearningPath", () => {
         learningPathId: "other-path",
         learningPathName: "Other Path",
         learningPathOrder: 1,
-        learningPathUrl: null,
+        learningPathUrl: CONSTRUCTION_PATH_URL,
         name: "Other Course",
         swebokFocus: null,
-        updatedAt: "2024-01-03",
+        updatedAt: COURSE_3_UPDATED_AT,
         url: "https://example.com/other"
       }
     ];
@@ -110,5 +115,59 @@ describe("LearningPath", () => {
 
     expect(screen.getByText("Code Construction Basics")).toBeDefined();
     expect(screen.getByText("Refactoring and Patterns")).toBeDefined();
+  });
+
+  it("executes the coursesAll query function", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json([], { status: 200 })
+    );
+
+    const options = coursesAllQueryOptions();
+    // @ts-expect-error for tests
+    const result = await options.queryFn();
+
+    expect(result).toEqual([]);
+  });
+
+  it("falls back to a generic badge when the focus key is unknown", () => {
+    mockAllCoursesData.data = [
+      {
+        author: AUTHOR_A,
+        courseId: "course-1",
+        courseIndex: 1,
+        learningPathId: "path-1",
+        learningPathName: CONSTRUCTION_PATH_NAME,
+        learningPathOrder: 1,
+        learningPathUrl: null,
+        name: "Mystery Course",
+        swebokFocus: "unknown-focus",
+        updatedAt: COURSE_1_UPDATED_AT,
+        url: "https://example.com/x"
+      }
+    ];
+
+    render(<LearningPath learningPathId="path-1" />);
+    expect(screen.getByText("unknown-focus")).toBeDefined();
+  });
+
+  it("renders singular course label when there is one course", () => {
+    mockAllCoursesData.data = [
+      {
+        author: AUTHOR_A,
+        courseId: "course-1",
+        courseIndex: 1,
+        learningPathId: "path-1",
+        learningPathName: CONSTRUCTION_PATH_NAME,
+        learningPathOrder: 1,
+        learningPathUrl: null,
+        name: "Solo Course",
+        swebokFocus: null,
+        updatedAt: COURSE_1_UPDATED_AT,
+        url: "https://example.com/x"
+      }
+    ];
+
+    render(<LearningPath learningPathId="path-1" />);
+    expect(screen.getByText("1 course")).toBeDefined();
   });
 });

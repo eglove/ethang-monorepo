@@ -28,7 +28,7 @@ const { mockBody, mockRouteConfig, mockSlug, mockTitle, SanityText } =
       SanityText: ({ value }: { value: unknown }) => {
         return (
           <div data-testid="sanity-text">
-            {((value as { _key: string }[])[0] as { text?: string } | undefined)
+            {((value as { _key: string }[])[0] as { text?: string } | null)
               ?.text ?? ""}
           </div>
         );

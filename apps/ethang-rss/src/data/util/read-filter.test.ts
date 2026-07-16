@@ -6,7 +6,7 @@ describe("getReadStateFilter", () => {
   it("should return undefined if options are empty", () => {
     const mockDatabase = {} as any;
     const result = getReadStateFilter(mockDatabase, "user-1");
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   it("should build inArray filter when isRead is true", () => {

@@ -76,7 +76,7 @@ describe("SanityText - Blocks, headings, marks", () => {
         author: MOCK_AUTHOR,
         children: [{ _key: "span1", _type: MOCK_SPAN, text: MOCK_QUOTE_TEXT }],
         source: MOCK_SOURCE,
-        sourceUrl: undefined,
+        sourceUrl: null,
         style: MOCK_BLOCKQUOTE
       }
     ];
@@ -195,7 +195,7 @@ describe("SanityText - Blocks, headings, marks", () => {
       {
         _key: MOCK_LINK1,
         _type: "link",
-        href: undefined
+        href: null
       }
     ];
 
@@ -237,7 +237,7 @@ describe("SanityText - Custom Quote and Code types", () => {
         _key: "code2",
         _type: "code",
         code: "const y = 24;",
-        language: undefined
+        language: null
       }
     ];
 
@@ -254,13 +254,56 @@ describe("SanityText - Custom Quote and Code types", () => {
       {
         _key: "code1",
         _type: "code",
-        code: undefined,
+        code: null,
         language: "javascript"
       }
     ];
 
     const { container } = render(<SanityText value={value} />);
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("renders custom code type with no language falls back to typescript", () => {
+    const value = [
+      {
+        _key: "code1",
+        _type: "code",
+        code: "const z = 99;"
+      }
+    ];
+
+    render(<SanityText value={value} />);
+    expect(screen.getByRole("code").textContent).toBe("const z = 99;");
+  });
+
+  it("renders the custom quote type used as a portable-text type entry", () => {
+    const value = [
+      {
+        _key: "quote2",
+        _type: "blockquote",
+        quote: "Blockquote Quote"
+      }
+    ];
+
+    render(<SanityText value={value} />);
+    expect(screen.getByText("Blockquote Quote")).toBeDefined();
+  });
+
+  it("renders the custom quote type with author and source", () => {
+    const value = [
+      {
+        _key: "quote3",
+        _type: "blockquote",
+        author: "Author",
+        quote: "Quote",
+        source: "Source"
+      }
+    ];
+
+    render(<SanityText value={value} />);
+    expect(screen.getByText("Quote")).toBeDefined();
+    expect(screen.getByText(/Author/u)).toBeDefined();
+    expect(screen.getByText(/Source/u)).toBeDefined();
   });
 });
 
@@ -316,7 +359,7 @@ describe("SanityText - Custom Image and Video types", () => {
       {
         _key: "img1",
         _type: "image",
-        asset: undefined
+        asset: null
       }
     ];
 
@@ -337,7 +380,7 @@ describe("SanityText - Custom Image and Video types", () => {
       {
         _key: "vid2",
         _type: "video",
-        title: undefined,
+        title: null,
         videoId: "67890"
       }
     ];
@@ -359,7 +402,7 @@ describe("SanityText - Custom Image and Video types", () => {
       {
         _key: "vid1",
         _type: "video",
-        videoId: undefined
+        videoId: null
       }
     ];
 

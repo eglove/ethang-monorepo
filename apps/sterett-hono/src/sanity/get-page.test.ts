@@ -40,7 +40,7 @@ describe(getPage, () => {
 
     const result = await getPage("nonexistent");
 
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   it("passes the slug parameter to the query", async () => {

@@ -12,15 +12,11 @@ const DIFFERENT_DAY = "2024-06-16";
 
 const NOW_ISO = DateTime.formatIso(DateTime.unsafeNow());
 
-const makeEvent = (
-  id: string,
-  startsAt: string,
-  endsAt: string
-): CalendarEventRecord => {
+const makeEvent = (id: string, startsAt: string, endsAt: string) => {
   return {
     _id: id,
     _updatedAt: NOW_ISO,
-    description: undefined,
+    description: null,
     endsAt,
     startsAt,
     title: id

@@ -1,5 +1,4 @@
-import { DateTime } from "effect";
-import includes from "lodash/includes.js";
+import { DateTime, Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { twMerge } from "tailwind-merge";
@@ -35,6 +34,28 @@ const tabClass = (isActive: boolean) => {
   );
 };
 
+const buildFirstOfMonthParts = (year: number, month: number) => {
+  return DateTime.toPartsUtc(DateTime.unsafeMake({ day: 1, month, year }));
+};
+
+const buildAdjacentMonthParts = (year: number, month: number) => {
+  const previousParts = buildFirstOfMonthParts(year, month - 1);
+  const nextParts = buildFirstOfMonthParts(year, month + 1);
+  return {
+    nextMonth: nextParts.month,
+    nextYear: nextParts.year,
+    previousMonth: previousParts.month,
+    previousYear: previousParts.year
+  };
+};
+
+const computeIsCurrentWeek = (weekDays: string[], today: string) => {
+  for (const day of weekDays) {
+    if (day === today) return true;
+  }
+  return false;
+};
+
 export const CalendarPage = async ({
   date,
   month,
@@ -53,37 +74,29 @@ export const CalendarPage = async ({
     date
   );
   const events = await getCalendarEvents(rangeStart, rangeEndExclusive);
-  const updatedAt =
-    map(events, (event) => {
-      return event._updatedAt;
+  const latestUpdatedAt =
+    map(events, ({ _updatedAt }) => {
+      return _updatedAt;
     })
       .toSorted((a, b) => {
         return a.localeCompare(b);
       })
       .at(-1) ?? (await getLatestCalendarEventUpdatedAt());
-
   const eventsByDate = buildEventsByDate(events);
   const today = DateTime.formatIsoDate(
     DateTime.unsafeMakeZoned(DateTime.unsafeNow(), { timeZone: CHICAGO })
   );
-  if (isNil(today)) throw new Error("Could not determine current date");
+  // v8 ignore next -- defensive guard: formatIsoDate on an unsafeNow zoned datetime always returns a string
+  if (isNil(today))
+    Effect.runSync(Effect.die(new Error("Could not determine current date")));
 
   // Month view locals
   const weeks = buildCalendarWeeks(year, month);
   const currentMonthDt = DateTime.toEpochMillis(
     DateTime.unsafeMake({ day: 1, month, year })
   );
-  const previousDate = DateTime.subtract(
-    DateTime.unsafeMake({ day: 1, month, year }),
-    { months: 1 }
-  );
-  const previousMonth = DateTime.toPartsUtc(previousDate).month;
-  const previousYear = DateTime.toPartsUtc(previousDate).year;
-  const nextDate = DateTime.add(DateTime.unsafeMake({ day: 1, month, year }), {
-    months: 1
-  });
-  const nextMonth = DateTime.toPartsUtc(nextDate).month;
-  const nextYear = DateTime.toPartsUtc(nextDate).year;
+  const { nextMonth, nextYear, previousMonth, previousYear } =
+    buildAdjacentMonthParts(year, month);
   const monthName = DateTime.format(
     DateTime.unsafeMakeZoned(DateTime.unsafeMake({ day: 1, month, year }), {
       adjustForTimeZone: true,
@@ -98,7 +111,7 @@ export const CalendarPage = async ({
 
   // Week view locals
   const weekDays = getWeekDays(date);
-  const isCurrentWeek = includes(weekDays, today);
+  const isCurrentWeek = computeIsCurrentWeek(weekDays, today);
 
   // Day view locals
   const isToday = date === today;
@@ -107,8 +120,11 @@ export const CalendarPage = async ({
   const crossViewDate = DateTime.formatIsoDate(
     DateTime.unsafeMake(crossViewDt)
   );
+  // v8 ignore next -- defensive guard: formatIsoDate on unsafeMake epoch millis always returns a string
   if (isNil(crossViewDate))
-    throw new Error("Could not determine cross-view date");
+    Effect.runSync(
+      Effect.die(new Error("Could not determine cross-view date"))
+    );
 
   const crossViewParts = DateTime.toPartsUtc(DateTime.unsafeMake(crossViewDt));
   const crossViewYear = crossViewParts.year;
@@ -145,7 +161,7 @@ export const CalendarPage = async ({
   return (
     <MainLayout
       prefetch={prefetch}
-      updatedAt={updatedAt}
+      updatedAt={latestUpdatedAt}
       title="Sterett Creek Village Trustee | Calendar"
       description="Events calendar for Sterett Creek Village Trustee"
     >

@@ -9,7 +9,7 @@ const mockBinding = {
     .fn()
     .mockResolvedValue({ edges: [], pageInfo: { hasNextPage: false } }),
   courses: vi.fn().mockResolvedValue([{ id: "c1", name: "Course 1" }]),
-  removeSubscription: vi.fn().mockResolvedValue(undefined)
+  removeSubscription: vi.fn().mockResolvedValue(null)
 };
 
 const mockEnvironment: Environment = {
@@ -53,7 +53,7 @@ describe("rpcServiceDispatch", () => {
       feedId: "feed-1",
       sessionToken: "token"
     });
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
   it("throws 'Invalid service' when service is not recognized", async () => {

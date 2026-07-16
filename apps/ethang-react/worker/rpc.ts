@@ -5,6 +5,7 @@
 // the backend services remain the source of truth for per-response caching
 // policy (including the `private, no-store` directive on user-specific
 // methods).
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 type RpcBinding = {
@@ -35,9 +36,7 @@ type RpcDispatchHandler = (
   parameters: Record<string, unknown>
 ) => Promise<unknown>;
 
-const buildDispatchMap = (
-  methods: (keyof RpcBinding)[]
-): Record<string, RpcDispatchHandler> => {
+const buildDispatchMap = (methods: (keyof RpcBinding)[]) => {
   const map: Record<string, RpcDispatchHandler> = {};
   for (const method of methods) {
     map[method] = async (binding, parameters) => {
@@ -76,7 +75,7 @@ const rpcServiceDispatch = async (
   service: string,
   method: string,
   parameters: Record<string, unknown>
-): Promise<unknown> => {
+) => {
   let dispatchMap: null | Record<string, RpcDispatchHandler>;
 
   if ("ethang_courses" === service) {
@@ -87,14 +86,16 @@ const rpcServiceDispatch = async (
     dispatchMap = null;
   }
 
-  if (null === dispatchMap) {
-    throw new Error("Invalid service");
+  if (isNil(dispatchMap)) {
+    Effect.runSync(Effect.die(new Error("Invalid service")));
+    return [] as unknown[];
   }
 
   const handler = dispatchMap[method];
 
   if (isNil(handler)) {
-    throw new Error("Invalid method");
+    Effect.runSync(Effect.die(new Error("Invalid method")));
+    return [] as unknown[];
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
@@ -102,7 +103,8 @@ const rpcServiceDispatch = async (
   const serviceBinding = binding[service];
 
   if (isNil(serviceBinding)) {
-    throw new Error("Invalid service");
+    Effect.runSync(Effect.die(new Error("Invalid service")));
+    return [] as unknown[];
   }
 
   return handler(serviceBinding, parameters);

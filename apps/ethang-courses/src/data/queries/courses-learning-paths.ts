@@ -1,6 +1,7 @@
 import { asc, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import filter from "lodash/filter.js";
+import flatMap from "lodash/flatMap.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";
 
@@ -41,7 +42,11 @@ export const courseQuery = (database: Database, courseId: string) => {
   });
 };
 
-const buildOrderedCourses = (
+/** Build the ordered list of courses for a learning path. Filters out any courses
+not present in `courseMap` (the caller is expected to have pre-loaded the map).
+Exported for unit testing.
+*/
+export const buildOrderedCourses = (
   coursesInPath: { courseId: string }[],
   courseMap: Map<string, typeof coursesTable.$inferSelect>
 ) => {
@@ -50,11 +55,11 @@ const buildOrderedCourses = (
       return courseMap.has(lpc.courseId);
     }),
     (lpc) => {
-      const courseEntry = courseMap.get(lpc.courseId);
-      if (!courseEntry) {
-        throw new Error("Course not found in map");
+      const course = courseMap.get(lpc.courseId);
+      // v8 ignore next -- defensive guard: filter above guarantees courseMap.has(lpc.courseId)
+      if (!course) {
+        return Effect.runSync(Effect.die(new Error("Course not found in map")));
       }
-      const course = courseEntry;
       return {
         author: course.author,
         createdAt: course.createdAt,
@@ -67,18 +72,17 @@ const buildOrderedCourses = (
   );
 };
 
-const fetchLpData = async (database: Database, lpId: string) => {
+/** Fetch all learning path course rows plus the matching course records so the
+caller can render the path in order. Exported for unit testing.
+*/
+export const fetchLpData = async (database: Database, lpId: string) => {
   const coursesInPath = await database
     .select()
     .from(learningPathCoursesTable)
     .where(eq(learningPathCoursesTable.learningPathId, lpId))
     .orderBy(asc(learningPathCoursesTable.orderRank));
 
-  const courseIds = new Set(
-    map(coursesInPath, (lpc) => {
-      return lpc.courseId;
-    })
-  );
+  const courseIds = new Set(map(coursesInPath, "courseId"));
 
   if (0 === courseIds.size) {
     return { orderedCourses: [] };
@@ -172,12 +176,16 @@ type LearningPathCourseEntry = {
   url: string;
 };
 
-const buildCourseEntry = (
+/** Build a single learning path course entry (row enriched with course and
+learning-path metadata). Returns `null` when the course is missing.
+Exported for unit testing.
+*/
+export const buildCourseEntry = (
   lpc: typeof learningPathCoursesTable.$inferSelect,
   index: number,
   courseMap: Map<string, typeof coursesTable.$inferSelect>,
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
-): LearningPathCourseEntry | null => {
+) => {
   const course = courseMap.get(lpc.courseId);
 
   if (!course) {
@@ -201,9 +209,12 @@ const buildCourseEntry = (
   };
 };
 
-const groupCoursesByLp = (
+/** Group learning-path-course rows by learning path id. Exported for unit
+testing.
+*/
+export const groupCoursesByLp = (
   learningPathCourses: (typeof learningPathCoursesTable.$inferSelect)[]
-): Map<string, (typeof learningPathCoursesTable.$inferSelect)[]> => {
+) => {
   const coursesByLp = new Map<
     string,
     (typeof learningPathCoursesTable.$inferSelect)[]
@@ -219,9 +230,13 @@ const groupCoursesByLp = (
   return coursesByLp;
 };
 
-const buildLpCurriculumOrder = (
+/** Build a map from learning-path id to its first curriculum order rank. The
+first rank wins; subsequent entries for the same learning path are ignored.
+Exported for unit testing.
+*/
+export const buildLpCurriculumOrder = (
   curriculumLearningPaths: (typeof curriculumLearningPathsTable.$inferSelect)[]
-): Map<string, number> => {
+) => {
   const lpCurriculumOrder = new Map<string, number>();
   for (const clp of curriculumLearningPaths) {
     if (!lpCurriculumOrder.has(clp.learningPathId)) {
@@ -231,13 +246,17 @@ const buildLpCurriculumOrder = (
   return lpCurriculumOrder;
 };
 
-const buildAllCoursesFromSortedLpIds = (
+/** Flatten sorted learning-path ids into a fully-populated array of course
+entries. Exported for unit testing.
+*/
+export const buildAllCoursesFromSortedLpIds = (
   sortedLpIds: string[],
   coursesByLp: Map<string, (typeof learningPathCoursesTable.$inferSelect)[]>,
   courseMap: Map<string, typeof coursesTable.$inferSelect>,
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
-): LearningPathCourseEntry[] => {
-  const entries = sortedLpIds.flatMap((lpId) => {
+) => {
+  const entries = flatMap(sortedLpIds, (lpId) => {
+    // v8 ignore next -- defensive guard: sortedLpIds is derived from coursesByLp.keys() so every id is defined
     return coursesByLp.get(lpId) ?? [];
   });
   const allCourses: LearningPathCourseEntry[] = [];

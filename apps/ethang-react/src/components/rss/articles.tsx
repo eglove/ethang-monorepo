@@ -7,6 +7,7 @@ import {
   useQueryClient
 } from "@tanstack/react-query";
 import { DateTime } from "effect";
+import flatMap from "lodash/flatMap";
 import isNil from "lodash/isNil";
 import map from "lodash/map";
 import noop from "lodash/noop";
@@ -52,14 +53,14 @@ export const Articles = () => {
 
   const allEdges = isNil(allData)
     ? []
-    : allData.pages.flatMap((page) => {
-        return page.edges;
+    : flatMap(allData.pages, ({ edges }) => {
+        return edges;
       });
 
   const feedEdges = isNil(feedData)
     ? []
-    : feedData.pages.flatMap((page) => {
-        return page.edges;
+    : flatMap(feedData.pages, ({ edges }) => {
+        return edges;
       });
 
   const data = isNil(feedId) ? allEdges : feedEdges;

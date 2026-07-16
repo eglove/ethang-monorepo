@@ -1,5 +1,6 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
+import isNil from "lodash/isNil.js";
 
 import type { UserCommand } from "../../domain/user/commands.ts";
 import type { UserEvent } from "../../domain/user/events.ts";
@@ -49,6 +50,11 @@ export const carryUserAuthCommand = (
     case "VerifyToken": {
       return tokenService.verify(command.token);
     }
+    default: {
+      return Effect.fail(
+        new Error(`Unexpected command: ${JSON.stringify(command)}`)
+      );
+    }
   }
 };
 
@@ -64,6 +70,7 @@ const assertValidCredentials = (
         new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
       );
     }
+    return null;
   });
 };
 
@@ -74,13 +81,13 @@ const handleValidateCredentials = (
 ) => {
   return Effect.gen(function* () {
     const existing = yield* repo.fetch(command.email);
-    if (null === existing) {
+    if (isNil(existing)) {
       return yield* Effect.fail(
         new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
       );
     }
     const actualPassword = existing.password;
-    if (null === actualPassword) {
+    if (isNil(actualPassword)) {
       return yield* Effect.fail(
         new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
       );
@@ -109,6 +116,7 @@ const processSignInOrUpEvent = (
   password: string,
   existing: ({ readonly id: string } & UserState) | null,
   passwordService: PasswordService
+  // eslint-disable-next-line @typescript-eslint/consistent-return,consistent-return
 ): Effect.Effect<UserState, HashError | InvalidCredentialsError> => {
   switch (event.kind) {
     case "UserCreated": {
@@ -118,13 +126,13 @@ const processSignInOrUpEvent = (
       });
     }
     case "UserSignedIn": {
-      if (null === existing) {
+      if (isNil(existing)) {
         return Effect.fail(
           new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
         );
       }
       const actualPassword = existing.password;
-      if (null === actualPassword) {
+      if (isNil(actualPassword)) {
         return Effect.fail(
           new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
         );

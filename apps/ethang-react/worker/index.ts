@@ -1,5 +1,4 @@
 import { TokenSchema } from "@ethang/schemas/auth/token-schema.js";
-import { withCacheHeaders } from "@ethang/toolbelt/cache/cache-control.js";
 import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";
@@ -39,6 +38,12 @@ const verifySessionToken = (
   });
 };
 
+const RpcBodySchema = Schema.Struct({
+  method: Schema.String,
+  params: Schema.Record({ key: Schema.String, value: Schema.Unknown }),
+  service: Schema.String
+});
+
 const parseJsonBody = (
   request: Request
 ): Effect.Effect<
@@ -54,17 +59,18 @@ const parseJsonBody = (
       return new Response("Invalid JSON body", { status: 400 });
     },
     try: async () => {
-      return request.json();
+      return Schema.decodeUnknownPromise(RpcBodySchema)(await request.json());
     }
   });
 };
 
-const callRpcService = (
+const callRpcService = <A, I>(
   environment: Env,
   service: string,
   method: string,
-  parameters: Record<string, unknown>
-): Effect.Effect<unknown, Response> => {
+  parameters: Record<string, unknown>,
+  resultSchema: Schema.Schema<A, I>
+): Effect.Effect<A, Response> => {
   return Effect.tryPromise({
     catch: (error) => {
       return new Response(
@@ -73,31 +79,23 @@ const callRpcService = (
       );
     },
     try: async () => {
-      return rpcServiceDispatch(environment, service, method, parameters);
+      return Schema.decodeUnknownPromise(resultSchema)(
+        await rpcServiceDispatch(environment, service, method, parameters)
+      );
     }
   });
 };
 
-const handleRpcRequest = async (
-  request: Request,
-  environment: Env
-): Promise<Response> => {
+const handleRpcRequest = async (request: Request, environment: Env) => {
   const sessionTokenResult = await Effect.runPromise(
-    Effect.tryPromise({
-      catch: () => {
-        return new Error("Unauthorized");
-      },
-      try: async () => {
-        return getSessionToken(request, environment);
-      }
-    }).pipe(
+    getSessionToken(request, environment).pipe(
       Effect.catchAll(() => {
         return Effect.succeed(null as null | string);
       })
     )
   );
 
-  if (null === sessionTokenResult) {
+  if (isNil(sessionTokenResult)) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -109,7 +107,7 @@ const handleRpcRequest = async (
     )
   );
 
-  if (null === verifiedUserResult) {
+  if (isNil(verifiedUserResult)) {
     return new Response("Unauthorized", { status: 401 });
   }
 
@@ -127,45 +125,39 @@ const handleRpcRequest = async (
 
   const { method, params, service } = bodyResult;
 
-  if (isNil(method) || isNil(service)) {
-    return new Response("Missing service or method", { status: 400 });
-  }
-
   if ("ethang_courses" !== service && "ethang_rss" !== service) {
     return new Response("Invalid service or method", { status: 400 });
   }
 
-  const result = await Effect.runPromise(
-    callRpcService(environment, service, method, {
+  const RpcResultSchema = Schema.Unknown;
+
+  const rpcEffect = callRpcService(
+    environment,
+    service,
+    method,
+    {
       ...params,
       sessionToken: sessionTokenResult,
       userEmail: verifiedUserResult.email,
       userSub: verifiedUserResult.sub
-    }).pipe(
-      Effect.catchAll((response) => {
-        return Effect.succeed(response);
-      })
-    )
+    },
+    RpcResultSchema
+  ).pipe(
+    Effect.catchAll((response) => {
+      return Effect.succeed(response);
+    })
   );
+  // eslint-disable-next-line @ethang/validate-unknown -- callRpcService decodes via the schema; result is narrowed with `instanceof Response` below
+  const result = await Effect.runPromise(rpcEffect);
 
   if (result instanceof Response) {
     return result;
   }
 
-  // Per the Cloudflare Workers Cache blog post, the binding call below is made
-  // WITHOUT forwarding the inbound request, so the header-based cache bypass
-  // does NOT apply at the binding boundary. The cache key is the tuple
-  // (service, method, params). Per-user correctness is the responsibility of
-  // the backend services, which set `Cache-Control: private, no-store` on
-  // responses for user-specific methods (e.g. courseTracking, subscriptions).
-  // If the backend returned a Response (e.g. with a private cache header), it
-  // was returned verbatim above. Otherwise, wrap the JSON body with public
-  // cache headers and a service/method tag for targeted purges.
-  return withCacheHeaders(Response.json(result), {
-    cacheControl: { maxAge: 300, scope: "public", swr: 3600 },
-    tags: [`ethang-react-rpc:${service}:${method}`]
-  });
+  return Response.json(result);
 };
+
+export { handleRpcRequest };
 
 export default {
   async fetch(request: Request, environment: Env) {

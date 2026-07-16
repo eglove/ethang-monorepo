@@ -10,7 +10,7 @@ failure.
 Example:
 ```ts
 import { Effect } from "effect";
-import { fn } from "@ethang/telemetry";
+import { fn } from "@ethang/telemetry/spans.ts";
 
 export const fetchFeed = fn("fetchFeed")(function* (url: string) {
   const response = yield* Effect.tryPromise(() => fetch(url));

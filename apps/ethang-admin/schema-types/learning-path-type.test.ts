@@ -1,3 +1,4 @@
+import { Effect } from "effect";
 import find from "lodash/find.js";
 import map from "lodash/map.js";
 import { describe, expect, it, vi } from "vitest";
@@ -6,11 +7,9 @@ import { validateUrlUniqueness } from "../util/validate-url-uniqueness.ts";
 import { learningPathType } from "./learning-path-type.ts";
 
 const getField = (name: string) => {
-  const field = find(learningPathType.fields, (candidate) => {
-    return candidate.name === name;
-  });
+  const field = find(learningPathType.fields, { name });
   if (!field) {
-    throw new Error(`field ${name} not found`);
+    return Effect.runSync(Effect.die(new Error(`field ${name} not found`)));
   }
   return field;
 };

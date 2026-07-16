@@ -2,9 +2,10 @@ import { toHTML } from "@portabletext/to-html";
 import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
 import map from "lodash/map.js";
+import matches from "lodash/matches.js";
 
 type PortableTextProperties = {
-  content: Parameters<typeof toHTML>[0] | undefined;
+  content: null | Parameters<typeof toHTML>[0];
 };
 
 type SanityImageBlock = {
@@ -46,15 +47,16 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
   const imageHtmlMap = new Map<string, string>();
 
   if (isArray(blocks)) {
+    const imageBlocks = filter(blocks, matches({ _type: "image" }));
     await Promise.all(
-      map(
-        filter(blocks, (block): block is SanityImageBlock => {
-          return "image" === block._type;
-        }),
-        async (block) => {
-          imageHtmlMap.set(block._key, await buildImageHtml(block));
-        }
-      )
+      map(imageBlocks, async (block) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        const imageBlock = block as SanityImageBlock;
+        return imageHtmlMap.set(
+          imageBlock._key,
+          await buildImageHtml(imageBlock)
+        );
+      })
     );
   }
 
@@ -67,6 +69,7 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
             types: {
               // toHTML handlers must be synchronous and return HTML strings
               image: ({ value }: { value: { _key: string } }) => {
+                // v8 ignore next -- defensive guard: pre-processing above guarantees every image _key is in the map
                 return imageHtmlMap.get(value._key) ?? "";
               }
             }

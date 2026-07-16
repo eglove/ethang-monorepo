@@ -25,10 +25,9 @@ const isCalendarView = (v: string): v is CalendarView => {
   return includes(CALENDAR_VIEWS, v);
 };
 
-const lastQuery = (
-  value: string | string[] | undefined
-): string | undefined => {
-  return isArray(value) ? last(value) : value;
+const lastQuery = (value: null | string | string[]) => {
+  /* v8 ignore next -- defensive guard: Hono's validator yields either a non-empty array or a single string for repeated query params, never an empty array */
+  return isArray(value) ? (last(value) ?? null) : value;
 };
 
 app.get("/", async (c) => {
@@ -56,17 +55,17 @@ app.get(
         timeZone: "America/Chicago"
       })
     );
-    const rawView = lastQuery(value["view"]) ?? "month";
+    const rawView = lastQuery(value["view"] ?? null) ?? "month";
     const nowParts = DateTime.toPartsUtc(
       DateTime.unsafeMakeZoned(DateTime.unsafeNow(), {
         timeZone: "America/Chicago"
       })
     );
     return {
-      date: lastQuery(value["date"]) ?? chicagoTime,
-      month: Number(lastQuery(value["month"]) ?? nowParts.month),
+      date: lastQuery(value["date"] ?? null) ?? chicagoTime,
+      month: Number(lastQuery(value["month"] ?? null) ?? nowParts.month),
       view: isCalendarView(rawView) ? rawView : "month",
-      year: Number(lastQuery(value["year"]) ?? nowParts.year)
+      year: Number(lastQuery(value["year"] ?? null) ?? nowParts.year)
     };
   }),
   async (c) => {

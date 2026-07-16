@@ -18,7 +18,7 @@ describe("get-react-version", () => {
     );
   });
 
-  it("should return undefined on fetch error", async () => {
+  it("should return null on fetch error", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockRejectedValue(new Error("Network error"))
@@ -26,10 +26,10 @@ describe("get-react-version", () => {
 
     const result = await getLatestReact();
 
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 
-  it("should return undefined on invalid json", async () => {
+  it("should return null on invalid json", async () => {
     const mockResponse = {
       json: vi.fn().mockResolvedValue({ invalid: "data" }),
       ok: true
@@ -38,6 +38,6 @@ describe("get-react-version", () => {
 
     const result = await getLatestReact();
 
-    expect(result).toBeUndefined();
+    expect(result).toBeNull();
   });
 });

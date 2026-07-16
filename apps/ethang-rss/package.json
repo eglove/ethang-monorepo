@@ -6,7 +6,6 @@
   "dependencies": {
     "@ethang/intl": "workspace:*",
     "@ethang/telemetry": "workspace:*",
-    "@ethang/toolbelt": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.21.4",
     "fast-xml-parser": "^5.9.3",

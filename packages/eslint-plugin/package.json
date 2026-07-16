@@ -1,0 +1,43 @@
+{
+  "author": "Ethan Glover",
+  "dependencies": {
+    "@typescript-eslint/utils": "^8.63.0",
+    "typescript": "^6.0.3"
+  },
+  "description": "Custom ESLint plugin that encodes ethang-monorepo standards: prefer effect, prefer lodash, no try/catch, no barrel files, and auto-fix redundant explicit return types.",
+  "devDependencies": {
+    "@effect/vitest": "^0.29.0",
+    "@ethang/eslint-config": "workspace:*",
+    "@total-typescript/ts-reset": "^0.6.1",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^26.1.1",
+    "@typescript-eslint/parser": "^8.63.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "effect": "^3.21.4",
+    "eslint": "^10.6.0",
+    "lodash": "^4.18.1",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*"
+  },
+  "license": "ISC",
+  "main": "src/index.ts",
+  "name": "@ethang/eslint-plugin",
+  "private": true,
+  "repository": {
+    "url": "git+https://github.com/eglove/ethang-monorepo.git#master"
+  },
+  "scripts": {
+    "lint": "pnpm tsc --noEmit && eslint . --fix",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

@@ -8,10 +8,7 @@ const getTimestamp = () => {
   return DateTime.formatIso(DateTime.unsafeNow());
 };
 
-export const decide = (
-  command: UserCommand,
-  state: UserState
-): readonly UserEvent[] => {
+export const decide = (command: UserCommand, state: UserState) => {
   switch (command.kind) {
     case "SignIn": {
       return [
@@ -58,10 +55,13 @@ export const decide = (
         }
       ];
     }
+    default: {
+      return [];
+    }
   }
 };
 
-export const apply = (state: UserState, event: UserEvent): UserState => {
+export const apply = (state: UserState, event: UserEvent) => {
   switch (event.kind) {
     case "CredentialsValidated": {
       return state;
@@ -83,6 +83,9 @@ export const apply = (state: UserState, event: UserEvent): UserState => {
         ...state,
         lastLoggedIn: event.lastLoggedIn
       };
+    }
+    default: {
+      return state;
     }
   }
 };

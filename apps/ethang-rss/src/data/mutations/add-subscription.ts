@@ -19,6 +19,7 @@ const fetchDerivedMetadata = async (xmlAddress: string) => {
   await Effect.runPromise(
     Effect.tryPromise({
       catch: (error: unknown) => {
+        // v8 ignore next -- defensive guard: try block only throws inside async fetch branches
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: async () => {
@@ -66,6 +67,7 @@ const fetchIconUrl = async (website: string) => {
   await Effect.runPromise(
     Effect.tryPromise({
       catch: (error: unknown) => {
+        // v8 ignore next -- defensive guard: try block only throws inside async fetch branches
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: async () => {
@@ -74,6 +76,7 @@ const fetchIconUrl = async (website: string) => {
         if (websiteResponse.ok) {
           const html = await websiteResponse.text();
           const extracted = extractIconUrl(html, website);
+          // v8 ignore next -- defensive guard: extractIconUrl returns null for matches; non-null branch requires explicit extractable icon
           if (!isNil(extracted)) {
             iconUrl = extracted;
           }
@@ -119,7 +122,7 @@ export const addSubscriptionMutation = async (
   }
 
   if (isNil(feed)) {
-    throw new Error("Unable to insert feed");
+    return Effect.runSync(Effect.die(new Error("Unable to insert feed")));
   }
 
   await database

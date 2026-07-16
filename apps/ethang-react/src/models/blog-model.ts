@@ -1,7 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import type { GetBlogBySlug } from "./get-blog-by-slug-types.ts";
-import type { Blog, GetBlogs, PaginatedBlogResult } from "./get-blogs-types.ts";
+import type { Blog, GetBlogs } from "./get-blogs-types.ts";
 
 import { sanityClient } from "../clients/sanity.ts";
 
@@ -61,7 +61,7 @@ export const getBlogBySlug = (slug: string) => {
 
 export const getPaginatedBlogs = (page: number, pageSize: number) => {
   return queryOptions({
-    queryFn: async (): Promise<PaginatedBlogResult> => {
+    queryFn: async () => {
       const start = (page - 1) * pageSize;
       const end = start + pageSize;
 

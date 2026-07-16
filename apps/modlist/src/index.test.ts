@@ -52,7 +52,7 @@ vi.mock(import("./data/mutations/modlist.ts"), () => {
     createModificationListMutation: vi
       .fn()
       .mockResolvedValue(TEST_MODLIST_DATA),
-    deleteModificationListMutation: vi.fn().mockResolvedValue(undefined),
+    deleteModificationListMutation: vi.fn().mockResolvedValue(null),
     updateModificationListMutation: vi.fn().mockResolvedValue(TEST_MODLIST_DATA)
   };
 });
@@ -60,7 +60,7 @@ vi.mock(import("./data/mutations/modlist.ts"), () => {
 vi.mock(import("./data/mutations/mods.ts"), () => {
   return {
     createModificationMutation: vi.fn().mockResolvedValue(TEST_MOD_DATA),
-    deleteModificationMutation: vi.fn().mockResolvedValue(undefined),
+    deleteModificationMutation: vi.fn().mockResolvedValue(null),
     updateModificationMutation: vi.fn().mockResolvedValue(TEST_MOD_DATA)
   };
 });
@@ -68,21 +68,21 @@ vi.mock(import("./data/mutations/mods.ts"), () => {
 vi.mock(import("./data/mutations/requirements.ts"), () => {
   return {
     addRequirementMutation: vi.fn().mockResolvedValue({ id: "r1" }),
-    removeRequirementMutation: vi.fn().mockResolvedValue(undefined)
+    removeRequirementMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
 vi.mock(import("./data/mutations/conflicts.ts"), () => {
   return {
     addConflictMutation: vi.fn().mockResolvedValue({ id: "c1" }),
-    removeConflictMutation: vi.fn().mockResolvedValue(undefined)
+    removeConflictMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
 vi.mock(import("./data/mutations/patches.ts"), () => {
   return {
     addPatchMutation: vi.fn().mockResolvedValue({ id: "p1" }),
-    removePatchMutation: vi.fn().mockResolvedValue(undefined)
+    removePatchMutation: vi.fn().mockResolvedValue(null)
   };
 });
 
@@ -92,13 +92,13 @@ const DEFAULT_ENVIRONMENT: Record<string, unknown> = { ethang_modlist: {} };
 
 const createInstance = (
   environment: Record<string, unknown> = DEFAULT_ENVIRONMENT
-): any => {
-  const initializer = WorkerClass as unknown as new () => {
-    env: Record<string, unknown>;
-  };
+) => {
+  const initializer = WorkerClass as unknown as new () => InstanceType<
+    typeof WorkerClass
+  >;
 
   const instance = new initializer();
-  instance.env = environment;
+  (instance as unknown as { env: Record<string, unknown> }).env = environment;
   return instance;
 };
 
@@ -187,7 +187,7 @@ describe("modlist WorkerEntrypoint", () => {
       const instance = createInstance();
       const result = await instance.deleteModList({ id: "ml1" });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
   });
 
@@ -232,7 +232,7 @@ describe("modlist WorkerEntrypoint", () => {
       const instance = createInstance();
       const result = await instance.deleteMod({ id: "m1" });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
   });
 
@@ -265,7 +265,7 @@ describe("modlist WorkerEntrypoint", () => {
       const instance = createInstance();
       const result = await instance.removeRequirement({ id: "r1" });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
   });
 
@@ -298,7 +298,7 @@ describe("modlist WorkerEntrypoint", () => {
       const instance = createInstance();
       const result = await instance.removeConflict({ id: "c1" });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
   });
 
@@ -332,7 +332,7 @@ describe("modlist WorkerEntrypoint", () => {
       const instance = createInstance();
       const result = await instance.removePatch({ id: "p1" });
 
-      expect(result).toBeUndefined();
+      expect(result).toBeNull();
     });
   });
 });

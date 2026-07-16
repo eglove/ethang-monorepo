@@ -51,7 +51,7 @@ type FeedResult = {
   };
 };
 
-export const normalizeLink = (item: FeedItem): string => {
+export const normalizeLink = (item: FeedItem) => {
   if (isString(item.link)) {
     return item.link;
   }
@@ -63,13 +63,13 @@ export const normalizeLink = (item: FeedItem): string => {
           return "alternate" === l["@_rel"];
         }) ?? item.link[0];
 
-      return (
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        (alternate as Record<string, string> | undefined)?.["@_href"] ??
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        (alternate as unknown as string) ??
-        ""
-      );
+      if (isNil(alternate)) {
+        return "";
+      }
+
+      const href = alternate["@_href"];
+      const fallback = isString(alternate) ? alternate : "";
+      return href ?? fallback;
     }
 
     return (
@@ -82,7 +82,7 @@ export const normalizeLink = (item: FeedItem): string => {
   return "";
 };
 
-export const normalizeGuid = (item: FeedItem, link: string): string => {
+export const normalizeGuid = (item: FeedItem, link: string) => {
   if (isString(item.guid)) {
     return item.guid;
   }
@@ -94,7 +94,7 @@ export const normalizeGuid = (item: FeedItem, link: string): string => {
   return item.id ?? link;
 };
 
-export const normalizeContent = (item: FeedItem): string => {
+export const normalizeContent = (item: FeedItem) => {
   if (isString(item.description)) {
     return item.description;
   }
@@ -110,7 +110,7 @@ export const normalizeContent = (item: FeedItem): string => {
   return item.summary ?? "";
 };
 
-export const normalizeTitle = (item: FeedItem): string => {
+export const normalizeTitle = (item: FeedItem) => {
   if (isString(item.title)) {
     return item.title;
   }
@@ -126,7 +126,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
   public override async run(
     _event: WorkflowEvent<unknown>,
     step: WorkflowStep
-  ): Promise<void> {
+  ) {
     const database = drizzle(this.env.ethang_rss);
 
     const feeds = await step.do("get-feeds", async () => {
@@ -136,16 +136,16 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     for (const feed of feeds) {
       // eslint-disable-next-line no-await-in-loop
       await step.do(`fetch-feed-${feed.id}`, async () => {
-        const fetchError: Error | undefined = await Effect.runPromise(
+        const fetchError: Error | null = await Effect.runPromise(
           Effect.tryPromise({
             catch: (error: unknown) => {
               return Error.isError(error) ? error : new Error(String(error));
             },
-            try: async (): Promise<void> => {
+            try: async () => {
               const response = await fetch(feed.xmlAddress);
               const xml = await response.text();
               const parsedMeta = parseFeedMetadata(xml);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@ethang/validate-unknown -- `parser.parse` returns `any` from `fast-xml-parser`; the downstream shape is already declared via the `FeedResult` type alias and consumed through manual narrowing in the normalizer helpers
               const parseResult = parser.parse(xml) as unknown as FeedResult;
 
               const rawItems =
@@ -176,11 +176,11 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
                 return !YOUTUBE_SHORTS_REGEX.test(item.link);
               });
 
-              const insertPromises = map(filteredItems, async (item) => {
-                if (isNil(item.guid) || "" === item.guid) {
-                  return;
-                }
+              const itemsToInsert = filter(filteredItems, (item) => {
+                return !isNil(item.guid) && "" !== item.guid;
+              });
 
+              const insertPromises = map(itemsToInsert, async (item) => {
                 return database
                   .insert(articlesTable)
                   .values(item)
@@ -212,13 +212,13 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
                 return Effect.succeed(error);
               },
               onSuccess: () => {
-                return Effect.succeed(undefined as Error | undefined);
+                return Effect.succeed(null as Error | null);
               }
             })
           )
         );
 
-        if (fetchError !== undefined) {
+        if (!isNil(fetchError)) {
           Effect.runSync(
             Effect.logError(`Failed to fetch feed ${feed.xmlAddress}`, {
               error: fetchError.message,
@@ -227,7 +227,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               stack: fetchError.stack
             })
           );
-          throw fetchError; // Rethrow so Workflow can retry if configured
+          Effect.runSync(Effect.die(fetchError));
         }
       });
     }

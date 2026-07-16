@@ -32,4 +32,5 @@ export const removeConflictMutation = async (
   await database
     .delete(conflictTable)
     .where(eq(conflictTable.id, parameters.id));
+  return null;
 };

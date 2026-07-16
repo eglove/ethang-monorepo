@@ -48,4 +48,5 @@ export const deleteModificationListMutation = async (
   await database
     .delete(moduleListTable)
     .where(eq(moduleListTable.id, parameters.id));
+  return null;
 };

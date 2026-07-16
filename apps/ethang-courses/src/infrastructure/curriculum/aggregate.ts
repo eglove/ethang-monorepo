@@ -21,7 +21,7 @@ export const createCurriculum = (
       curriculumId,
       learningPathIds: parameters.learningPathIds,
       name: parameters.name,
-      url: parameters.url === undefined ? null : parameters.url
+      url: parameters.url ?? null
     };
 
     return yield* repo.save(curriculum);

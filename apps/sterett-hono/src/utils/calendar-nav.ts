@@ -35,7 +35,7 @@ type TabHrefs = {
   tabWeekHref: string;
 };
 
-const parseDateToEpoch = (dateString: string): number => {
+const parseDateToEpoch = (dateString: string) => {
   return DateTime.toEpochMillis(DateTime.unsafeMake(dateString));
 };
 
@@ -43,7 +43,7 @@ export const buildCrossViewDate = (
   view: CalendarView,
   date: string,
   currentMonthDt: number
-): number => {
+) => {
   return "month" === view ? currentMonthDt : parseDateToEpoch(date);
 };
 
@@ -60,7 +60,7 @@ export const buildNavConfig = ({
   today,
   view,
   year
-}: BuildNavConfigArguments): NavConfig => {
+}: BuildNavConfigArguments) => {
   const todayParts = DateTime.toPartsUtc(DateTime.unsafeMake(today));
   const todayYear = todayParts.year;
   const todayMonth = todayParts.month;
@@ -96,7 +96,7 @@ export const buildPrefetchUrls = (
   navConfig: NavConfig,
   view: CalendarView,
   { tabDayHref, tabMonthHref, tabWeekHref }: TabHrefs
-): string[] => {
+) => {
   return filter(
     [
       navConfig.prevHref,

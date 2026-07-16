@@ -41,7 +41,7 @@ function createMockDatabase(result: unknown) {
   } as unknown as Record<string, unknown>;
 }
 
-function toArray(value: unknown): unknown[] {
+function toArray(value: unknown) {
   return "[object Array]" === Object.prototype.toString.call(value)
     ? (value as unknown[])
     : [value];

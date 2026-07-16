@@ -11,9 +11,7 @@ describe("blogCategoryType schema", () => {
   });
 
   it("requires the title field", () => {
-    const titleField = find(blogCategoryType.fields, (field) => {
-      return "title" === field.name;
-    });
+    const titleField = find(blogCategoryType.fields, { name: "title" });
     expect(titleField).toBeDefined();
 
     const mockRule = { required: vi.fn().mockReturnThis() };

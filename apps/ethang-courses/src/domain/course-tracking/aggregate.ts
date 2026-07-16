@@ -1,3 +1,5 @@
+import { Effect } from "effect";
+
 import type { CourseTrackingCommand } from "./commands.ts";
 import type { CourseTrackingEvent } from "./events.ts";
 
@@ -28,7 +30,7 @@ export const decide = (
 export const apply = (
   state: CourseTrackingState,
   event: CourseTrackingEvent
-): CourseTrackingState => {
+) => {
   switch (event.kind) {
     case "StatusChanged": {
       return { ...state, status: event.to };
@@ -38,7 +40,12 @@ export const apply = (
         courseUrl: event.courseUrl,
         status: "COMPLETE",
         userId: event.userId
-      };
+      } satisfies CourseTrackingState;
+    }
+    default: {
+      const _exhaustive: never = event;
+      const error = new Error(`Unknown event: ${String(_exhaustive)}`);
+      return Effect.runSync(Effect.die(error));
     }
   }
 };

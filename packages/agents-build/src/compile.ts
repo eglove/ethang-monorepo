@@ -16,16 +16,17 @@ const HOOKS_PATH = path.join(GITHUB_DIR, "hooks", "skills.json");
 const MANIFEST_PATH = path.join(AGENTS_DIR, ".manifest.json");
 
 const main = Effect.try({
-  catch: (error: unknown): never => {
+  catch: (error: unknown) => {
     if (error instanceof CompileError) {
       for (const failure of error.failures) {
         console.error(`FAIL: ${failure}`);
       }
-      return process.exit(1);
+      process.exit(1);
     }
+    // eslint-disable-next-line @ethang/no-try-catch -- re-throw unhandled errors for top-level crash
     throw error;
   },
-  try: (): void => {
+  try: () => {
     compile({
       hooksPath: HOOKS_PATH,
       manifestPath: MANIFEST_PATH,

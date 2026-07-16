@@ -101,13 +101,13 @@ vi.mock("./data/queries/curriculums.ts", () => {
 
 import WorkerClass from "./index.ts";
 
-const createInstance = (environment: Record<string, any> = {}): any => {
-  const initializer = WorkerClass as unknown as new () => {
-    env: Record<string, unknown>;
-  };
+const createInstance = (environment: Record<string, any> = {}) => {
+  const initializer = WorkerClass as unknown as new () => InstanceType<
+    typeof WorkerClass
+  >;
 
   const instance = new initializer();
-  instance.env = environment;
+  (instance as unknown as { env: Record<string, unknown> }).env = environment;
   return instance;
 };
 
@@ -141,25 +141,22 @@ describe("ethang-courses WorkerEntrypoint", () => {
 
     it("courses returns all courses", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.courses();
-      const result = await response.json();
+      const result = await instance.courses();
       expect(result).toEqual([TEST_COURSE_DATA]);
     });
 
     it("course returns a single course", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.course({ id: "c1" });
-      const result = await response.json();
+      const result = await instance.course({ id: "c1" });
       expect(result).toEqual(TEST_COURSE_DATA);
     });
 
     it("courseTracking returns tracking info", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.courseTracking({
+      const result = await instance.courseTracking({
         courseId: "c1",
         userId: "u1"
       });
-      const result = await response.json();
       expect(result).toEqual({
         courseId: "c1",
         courseUrl: EXAMPLE_URL,
@@ -170,46 +167,41 @@ describe("ethang-courses WorkerEntrypoint", () => {
 
     it("courseTrackings returns paginated trackings", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.courseTrackings({
+      const result = await instance.courseTrackings({
         after: "cursor1",
         first: 10,
         userId: "u1"
       });
-      const result = await response.json();
       expect(result).toEqual({ edges: [], pageInfo: {} });
     });
 
     it("curriculum returns a single curriculum", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.curriculum({ id: "cur1" });
-      const result = await response.json();
+      const result = await instance.curriculum({ id: "cur1" });
       expect(result).toEqual(TEST_CURRICULUM_DATA);
     });
 
     it("curriculums returns all curriculums", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.curriculums();
-      const result = await response.json();
+      const result = await instance.curriculums();
       expect(result).toEqual([TEST_CURRICULUM_DATA]);
     });
 
     it("createCurriculum creates a new curriculum", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.createCurriculum({
+      const result = await instance.createCurriculum({
         name: "New Curriculum",
         url: EXAMPLE_URL
       });
-      const result = await response.json();
       expect(result).toEqual({ id: "cur1" });
     });
 
     it("cycleCourseTrackingStatus cycles tracking status", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.cycleCourseTrackingStatus({
+      const result = await instance.cycleCourseTrackingStatus({
         courseId: "c1",
         userId: "u1"
       });
-      const result = await response.json();
       expect(result).toEqual({
         courseId: "c1",
         courseUrl: EXAMPLE_URL,
@@ -220,22 +212,19 @@ describe("ethang-courses WorkerEntrypoint", () => {
 
     it("learningPath returns a single learning path", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.learningPath({ id: "lp1" });
-      const result = await response.json();
+      const result = await instance.learningPath({ id: "lp1" });
       expect(result).toEqual({ id: "lp1" });
     });
 
     it("learningPaths returns all learning paths", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.learningPaths();
-      const result = await response.json();
+      const result = await instance.learningPaths();
       expect(result).toEqual([{ id: "lp1" }]);
     });
 
     it("coursesAll returns all courses with indices and learning path context", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.coursesAll();
-      const result = await response.json();
+      const result = await instance.coursesAll();
       expect(result).toHaveLength(1);
       expect(result[0]).toStrictEqual({
         author: TEST_COURSE_DATA.name,

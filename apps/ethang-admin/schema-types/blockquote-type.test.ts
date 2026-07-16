@@ -13,9 +13,7 @@ describe("blockquoteType schema", () => {
   it.each(["sourceUrl", "source", "author", "quote"])(
     "exposes the %s field with the expected type",
     (fieldName) => {
-      const field = find(blockquoteType.fields, (candidate) => {
-        return candidate.name === fieldName;
-      });
+      const field = find(blockquoteType.fields, { name: fieldName });
       expect(field).toBeDefined();
     }
   );

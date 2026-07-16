@@ -21,8 +21,6 @@ const customRules = [
   { name: "function-return-type", rule: "off" },
   { name: "max-union-size", rule: "off" },
   { name: "no-implicit-dependencies", rule: "off" },
-  { name: "no-inconsistent-returns", rule: "off" },
-  { name: "no-undefined-assignment", rule: "off" },
   { name: "shorthand-property-grouping", rule: "off" }, // Conflicts with perfectionist sorting
   { name: "todo-tag", rule: "off" },
   { name: "no-reference-error", rule: "off" }

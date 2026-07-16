@@ -16,9 +16,7 @@ const DATE = "2026-06-15";
 
 describe("newsUpdate schema", () => {
   it("validates title field is required", () => {
-    const titleField = find(schema.fields, (field) => {
-      return "title" === field.name;
-    });
+    const titleField = find(schema.fields, { name: "title" });
     expect(titleField).toBeDefined();
 
     const mockRule = {
@@ -32,9 +30,7 @@ describe("newsUpdate schema", () => {
   });
 
   it("sets initial value for date and validates it", () => {
-    const dateField = find(schema.fields, (field) => {
-      return "date" === field.name;
-    });
+    const dateField = find(schema.fields, { name: "date" });
     expect(dateField).toBeDefined();
 
     // @ts-expect-error for test
@@ -52,9 +48,7 @@ describe("newsUpdate schema", () => {
   });
 
   it("validates description field is required", () => {
-    const descriptionField = find(schema.fields, (field) => {
-      return "description" === field.name;
-    });
+    const descriptionField = find(schema.fields, { name: "description" });
     expect(descriptionField).toBeDefined();
 
     const mockRule = {
@@ -68,9 +62,7 @@ describe("newsUpdate schema", () => {
   });
 
   describe("expireDate custom validation", () => {
-    const expireDateField = find(schema.fields, (field) => {
-      return "expireDate" === field.name;
-    });
+    const expireDateField = find(schema.fields, { name: "expireDate" });
 
     const getValidator = () => {
       const mockRule = {
@@ -83,15 +75,15 @@ describe("newsUpdate schema", () => {
       return expireDateField.validation(mockRule);
     };
 
-    it("returns error if expireDate is undefined", async () => {
+    it("returns error if expireDate is null", async () => {
       const validator = getValidator();
-      const result = await validator(undefined, { document: {} });
+      const result = await validator(null, { document: {} });
       expect(result).toBe("Value is required");
     });
 
-    it("returns true if document context is undefined", async () => {
+    it("returns true if document context is null", async () => {
       const validator = getValidator();
-      const result = await validator("2026-06-16", { document: undefined });
+      const result = await validator("2026-06-16", { document: null });
       expect(result).toBe(true);
     });
 

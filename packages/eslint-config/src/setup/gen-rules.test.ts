@@ -22,7 +22,7 @@ describe("gen-rules", () => {
   describe(genRules, () => {
     it("should generate rules with prefix and default override", () => {
       const ruleNames = ["rule1", "rule2"];
-      const result = genRules(ruleNames, undefined, "my-plugin", "warn");
+      const result = genRules(ruleNames, null, "my-plugin", "warn");
 
       expect(result).toStrictEqual({
         "my-plugin/rule1": "warn",
@@ -59,7 +59,7 @@ describe("gen-rules", () => {
     it("should handle defaultOverride as null (falls back to error)", () => {
       const ruleNames = ["rule1"];
       // @ts-expect-error testing null
-      const result = genRules(ruleNames, undefined, undefined, null);
+      const result = genRules(ruleNames, null, null, null);
 
       expect(result["rule1"]).toBe("error");
     });
@@ -67,7 +67,7 @@ describe("gen-rules", () => {
     it("should handle defaultOverride as null with prefix", () => {
       const ruleNames = ["rule1"];
       // @ts-expect-error testing null
-      const result = genRules(ruleNames, undefined, "p", null);
+      const result = genRules(ruleNames, null, "p", null);
 
       expect(result["p/rule1"]).toBe("error");
     });

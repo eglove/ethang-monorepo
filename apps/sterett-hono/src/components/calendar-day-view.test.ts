@@ -20,9 +20,7 @@ import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
 
 import { renderCalendarDayView } from "../test-utilities/render.tsx";
 
-const makeEvent = (
-  overrides: Partial<CalendarEventRecord> = {}
-): CalendarEventRecord => {
+const makeEvent = (overrides: Partial<CalendarEventRecord> = {}) => {
   return {
     _id: "event-1",
     _updatedAt: "2024-06-15T12:00:00Z",

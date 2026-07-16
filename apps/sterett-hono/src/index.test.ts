@@ -127,8 +127,10 @@ describe("app routes", () => {
   });
 
   it("get /calendar returns 500 when CalendarPage throws", async () => {
+    const renderError = new Error("render error");
+
     vi.mocked(CalendarPage).mockImplementationOnce(() => {
-      throw new Error("render error");
+      throw renderError;
     });
     const response = await app.request(`${BASE}/calendar`);
 
