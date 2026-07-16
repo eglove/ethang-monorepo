@@ -289,7 +289,26 @@ try {
         if (-not [string]::IsNullOrWhiteSpace($raw)) {
             try {
                 $parsed = $raw | ConvertFrom-Json -ErrorAction Stop
-                if ($null -ne $parsed) {
+                if ($null -ne $parsed -and $null -ne $parsed.results) {
+                    # Shim shape: { cwd, files, results: [{ filePath, preFixMessages, postFixMessages }] }
+                    foreach ($entry in $parsed.results) {
+                        foreach ($msg in $entry.postFixMessages) {
+                            $issues.Add([PSCustomObject]@{
+                                file = $entry.filePath
+                                line = $msg.line
+                                column = $msg.column
+                                endLine = $msg.endLine
+                                endColumn = $msg.endColumn
+                                severity = $msg.severity
+                                ruleId = $msg.ruleId
+                                message = $msg.message
+                                fixable = [bool]$msg.fix
+                            })
+                        }
+                    }
+                }
+                elseif ($null -ne $parsed) {
+                    # Legacy shape: [{ filePath, messages }]
                     foreach ($file in $parsed) {
                         foreach ($msg in $file.messages) {
                             $issues.Add([PSCustomObject]@{
@@ -943,7 +962,26 @@ try {
             if (-not [string]::IsNullOrWhiteSpace($raw)) {
                 try {
                     $parsed = $raw | ConvertFrom-Json -ErrorAction Stop
-                    if ($null -ne $parsed) {
+                    if ($null -ne $parsed -and $null -ne $parsed.results) {
+                        # Shim shape: { cwd, files, results: [{ filePath, preFixMessages, postFixMessages }] }
+                        foreach ($entry in $parsed.results) {
+                            foreach ($msg in $entry.postFixMessages) {
+                                $issues.Add([PSCustomObject]@{
+                                    file = $entry.filePath
+                                    line = $msg.line
+                                    column = $msg.column
+                                    endLine = $msg.endLine
+                                    endColumn = $msg.endColumn
+                                    severity = $msg.severity
+                                    ruleId = $msg.ruleId
+                                    message = $msg.message
+                                    fixable = [bool]$msg.fix
+                                })
+                            }
+                        }
+                    }
+                    elseif ($null -ne $parsed) {
+                        # Legacy shape: [{ filePath, messages }]
                         foreach ($file in $parsed) {
                             foreach ($msg in $file.messages) {
                                 $issues.Add([PSCustomObject]@{

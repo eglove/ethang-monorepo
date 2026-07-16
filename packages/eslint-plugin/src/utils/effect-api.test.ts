@@ -3,8 +3,10 @@ import { describe, expect, it } from "vitest";
 import {
   effectApi,
   effectCoreMethods,
+  effectDateTimeApi,
   isEffectApiMethod,
-  isEffectCoreMethod
+  isEffectCoreMethod,
+  isEffectDateTimeApiKey
 } from "./effect-api.ts";
 
 describe("isEffectApiMethod", () => {
@@ -39,5 +41,36 @@ describe("isEffectCoreMethod", () => {
 
   it("has a non-empty set of effect core methods", () => {
     expect(effectCoreMethods.size).toBeGreaterThan(0);
+  });
+});
+
+describe("isEffectDateTimeApiKey", () => {
+  it.each([
+    "DateConstructor",
+    "DateNow",
+    "DateParse",
+    "DateUTC",
+    "DateReference",
+    "getTime",
+    "getFullYear",
+    "TemporalPlainDate",
+    "TemporalZonedDateTime"
+  ])("recognises Effect DateTime surface key %s", (key) => {
+    expect(isEffectDateTimeApiKey(key)).toBe(true);
+  });
+
+  it("returns false for unknown names", () => {
+    expect(isEffectDateTimeApiKey("notADateTimeKey")).toBe(false);
+  });
+});
+
+describe("effectDateTimeApi", () => {
+  it("exposes a map entry with import/name shape", () => {
+    expect(effectDateTimeApi.DateConstructor.import).toBe("DateTime");
+    expect(effectDateTimeApi.DateConstructor.name).toBe("make");
+  });
+
+  it("has a non-empty Date.prototype surface", () => {
+    expect(Object.keys(effectDateTimeApi).length).toBeGreaterThan(0);
   });
 });

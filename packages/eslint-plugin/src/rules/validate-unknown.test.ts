@@ -27,8 +27,17 @@ const ruleTester = new RuleTester({
 // information when the file content changes between tests (e.g., the parser
 // reports `Promise.resolve('hi')` as `any` for the second test even though
 // its real type is `Promise<string>`).
+//
+// Fixtures live in a sibling `.fixtures/validate-unknown/` directory so the
+// rules/ folder stays clean and the tsconfig can exclude them with a single
+// glob.
 const fixture = (name: string) => {
-  const filePath = path.join(pluginDirectory, `fixture-${name}.fixture.ts`);
+  const filePath = path.join(
+    pluginDirectory,
+    ".fixtures",
+    "validate-unknown",
+    `${name}.fixture.ts`
+  );
   return { code: "", filename: filePath };
 };
 

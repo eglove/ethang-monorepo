@@ -12,6 +12,7 @@ import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
+import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
 import { propertyShorthandRule } from "./rules/property-shorthand.ts";
@@ -33,6 +34,7 @@ export const rules = {
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
   "path-style": pathStyleRule,
+  "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-lodash": preferLodashRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
@@ -64,6 +66,7 @@ export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
+export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
 export { propertyShorthandRule } from "./rules/property-shorthand.ts";
@@ -73,8 +76,10 @@ export { validateUnknownRule } from "./rules/validate-unknown.ts";
 export {
   effectApi,
   effectCoreMethods,
+  effectDateTimeApi,
   isEffectApiMethod,
-  isEffectCoreMethod
+  isEffectCoreMethod,
+  isEffectDateTimeApiKey
 } from "./utils/effect-api.ts";
 export { isBarrelFilename, isInsideNodeModules } from "./utils/file.ts";
 export { isLodashFunction, lodashApi } from "./utils/lodash-api.ts";
