@@ -32,7 +32,9 @@
 .PARAMETER SkipFix
     When set, runs eslint without --fix so all issues are reported. By default
     eslint is run with --fix (auto-fixable issues are resolved silently and
-    only the unfixable ones appear in the report).
+    only the unfixable ones appear in the report). When -SkipFix is used the
+    autofix summary is omitted from the output (lint.autofix = null) because
+    no fixes were applied.
 
 .PARAMETER File
     Optional list of file paths to scope the run to. Paths may be repo-relative
@@ -42,6 +44,15 @@
     to the target files' diagnostics only. Vitest runs the sibling test files
     (same directory, *.test.ts / *.test.tsx) of each target; if no siblings
     exist for any target, vitest falls back to running the full workspace.
+
+.PARAMETER Format
+    Controls the format of the document the script writes to stdout. 'Markdown'
+    (the default) pipes the same JSON document through
+    scripts/render-check-report.mjs (which uses @ethang/markdown-generator) and
+    prints a tight, LLM-readable markdown report. 'Json' emits the raw
+    machine-parseable JSON document instead (useful for piping to `jq` or for
+    programmatic consumers). Stderr (human progress) is identical in both
+    modes. Exit code semantics are unchanged.
 
 .EXAMPLE
     ./repo-ai-check.ps1
@@ -53,7 +64,30 @@
     ./repo-ai-check.ps1 -File apps/auth/src/index.ts,packages/store/src/store.ts
 
 .EXAMPLE
-    ./repo-ai-check.ps1 | ConvertFrom-Json | Select-Object -ExpandProperty summary
+    ./repo-ai-check.ps1 -Format Json | ConvertFrom-Json | Select-Object -ExpandProperty summary
+
+.EXAMPLE
+    # Inspect what the autofix pass rewrote (only populated when -SkipFix is
+    # NOT set; null otherwise). Use -Format Json because ConvertFrom-Json only
+    # consumes JSON.
+    ./repo-ai-check.ps1 -Format Json -Workspace auth |
+        ConvertFrom-Json |
+        ForEach-Object workspaces |
+        Where-Object { $_.lint.autofix } |
+        ForEach-Object {
+            [PSCustomObject]@{
+                name = $_.name
+                fixedErrors = $_.lint.autofix.fixedErrorCount
+                fixedWarnings = $_.lint.autofix.fixedWarningCount
+                rules = ($_.lint.autofix.byRule | ForEach-Object { "$($_.ruleId): $($_.fixedErrorCount + $_.fixedWarningCount)" }) -join ', '
+            }
+        }
+
+.EXAMPLE
+    # Token-efficient markdown report (uses @ethang/markdown-generator via
+    # scripts/render-check-report.mjs). This is the default format. Pipe to a
+    # file for paste-into-context.
+    ./repo-ai-check.ps1 -Workspace auth,store > report.md
 #>
 
 [CmdletBinding()]
@@ -62,7 +96,9 @@ param(
     [int]$TimeoutSeconds = 600,
     [string[]]$Workspace = @(),
     [switch]$SkipFix,
-    [string[]]$File = @()
+    [string[]]$File = @(),
+    [ValidateSet('Json','Markdown')]
+    [string]$Format = 'Markdown'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -240,7 +276,15 @@ try {
             [int]$ExitCode,
 
             [Parameter(Mandatory)]
-            [int]$DurationMs
+            [int]$DurationMs,
+
+            [Parameter()]
+            [AllowNull()]
+            $AutofixPayload = $null,
+
+            [Parameter()]
+            [AllowNull()]
+            $AutofixSummary = $null
         )
 
         $issues = [System.Collections.Generic.List[object]]::new()
@@ -309,6 +353,136 @@ try {
             durationMs = $DurationMs
             exitCode = $ExitCode
             issues = $issues
+            autofix = $AutofixSummary
+        }
+    }
+
+    # -------------------------------------------------------------------------
+    # Autofix diff summarizer
+    #
+    # Consumes the JSON emitted by scripts/eslint-autofix.mjs and returns an
+    # object with per-file and per-rule counts of issues that were silenced by
+    # `eslint --fix`. Used so the LLM knows exactly what the script silently
+    # rewrote on disk instead of having to re-run lint to discover it.
+    # -------------------------------------------------------------------------
+
+    function Get-AutofixSummary {
+        [CmdletBinding()]
+        param(
+            [Parameter(Mandatory)]
+            [AllowNull()]
+            $Payload
+        )
+
+        if ($null -eq $Payload) { return $null }
+        if (-not ($Payload.PSObject.Properties['results'])) { return $null }
+
+        $byFileList = [System.Collections.Generic.List[object]]::new()
+        $byRuleMap = @{} # ruleId -> { ruleId, fixedErrorCount, fixedWarningCount, fileCount, files }
+        $totalFixedErrors = 0
+        $totalFixedWarnings = 0
+        $unfixableButFixable = 0
+
+        foreach ($entry in $Payload.results) {
+            $pre = @($entry.PSObject.Properties['preFixMessages'] | ForEach-Object { $_.Value })
+            $post = @($entry.PSObject.Properties['postFixMessages'] | ForEach-Object { $_.Value })
+            $file = [string]$entry.filePath
+
+            # Index post-fix messages by (ruleId, line, column, message) for O(1)
+            # membership. Multiple identical messages are tracked via a count
+            # so we still match them one-for-one instead of collapsing them.
+            $postIndex = @{}
+            foreach ($m in $post) {
+                $key = "$(if ($null -eq $m.ruleId) { '<unknown>' } else { [string]$m.ruleId })|$($m.line)|$($m.column)|$([string]$m.message)"
+                if (-not $postIndex.ContainsKey($key)) { $postIndex[$key] = 0 }
+                $postIndex[$key]++
+            }
+
+            $fileFixedErrors = 0
+            $fileFixedWarnings = 0
+            $fileFixedByRule = [ordered]@{}
+            $fileUnfixableButFixable = 0
+
+            foreach ($m in $pre) {
+                $ruleId = if ($null -eq $m.ruleId) { '<unknown>' } else { [string]$m.ruleId }
+                $key = "$ruleId|$($m.line)|$($m.column)|$([string]$m.message)"
+
+                $matched = $false
+                if ($postIndex.ContainsKey($key) -and $postIndex[$key] -gt 0) {
+                    $postIndex[$key]--
+                    $matched = $true
+                }
+
+                if (-not $matched) {
+                    # Silenced by --fix.
+                    if ($m.severity -eq 2) { $fileFixedErrors++ } elseif ($m.severity -eq 1) { $fileFixedWarnings++ }
+                    if (-not $fileFixedByRule.Contains($ruleId)) { $fileFixedByRule[$ruleId] = 0 }
+                    $fileFixedByRule[$ruleId]++
+
+                    if (-not $byRuleMap.ContainsKey($ruleId)) {
+                        $byRuleMap[$ruleId] = [PSCustomObject]@{
+                            ruleId = $ruleId
+                            fixedErrorCount = 0
+                            fixedWarningCount = 0
+                            fileCount = 0
+                            files = [System.Collections.Generic.List[string]]::new()
+                        }
+                    }
+                    $rec = $byRuleMap[$ruleId]
+                    if ($m.severity -eq 2) { $rec.fixedErrorCount++ } elseif ($m.severity -eq 1) { $rec.fixedWarningCount++ }
+                    if (-not $rec.files.Contains($file)) {
+                        $rec.files.Add($file)
+                        $rec.fileCount++
+                    }
+                }
+                elseif ($m.fixable -eq $true) {
+                    # Pre-fix message was fixable but still present after --fix
+                    # ran, so the fix could not be safely applied (conflict
+                    # with another rule, etc.). Surface this so the LLM knows
+                    # the rule fired even though the script did not silence it.
+                    $fileUnfixableButFixable++
+                }
+            }
+
+            $totalFixedErrors += $fileFixedErrors
+            $totalFixedWarnings += $fileFixedWarnings
+            $unfixableButFixable += $fileUnfixableButFixable
+
+            if ($fileFixedErrors -gt 0 -or $fileFixedWarnings -gt 0) {
+                $byFileList.Add([PSCustomObject]@{
+                    file = $file
+                    fixedErrorCount = $fileFixedErrors
+                    fixedWarningCount = $fileFixedWarnings
+                    unfixableButFixableCount = $fileUnfixableButFixable
+                    fixedByRule = $fileFixedByRule
+                })
+            }
+            elseif ($fileUnfixableButFixable -gt 0) {
+                $byFileList.Add([PSCustomObject]@{
+                    file = $file
+                    fixedErrorCount = 0
+                    fixedWarningCount = 0
+                    unfixableButFixableCount = $fileUnfixableButFixable
+                    fixedByRule = $fileFixedByRule
+                })
+            }
+        }
+
+        $byRuleList = @($byRuleMap.Values | ForEach-Object {
+            [PSCustomObject]@{
+                ruleId = $_.ruleId
+                fixedErrorCount = $_.fixedErrorCount
+                fixedWarningCount = $_.fixedWarningCount
+                fileCount = $_.fileCount
+            }
+        } | Sort-Object -Property { $_.fixedErrorCount + $_.fixedWarningCount } -Descending)
+
+        return [PSCustomObject]@{
+            fixedErrorCount = $totalFixedErrors
+            fixedWarningCount = $totalFixedWarnings
+            unfixableButFixableCount = $unfixableButFixable
+            byFile = $byFileList.ToArray()
+            byRule = $byRuleList
         }
     }
 
@@ -546,16 +720,35 @@ try {
             # ---- lint ---------------------------------------------------------
             if ($Workspace.HasLint) {
 
-                $lintArgs = @('.', '--format', 'json')
-                if ($UseFix) { $lintArgs += '--fix' }
+                $shimScript = Join-Path $repoRoot 'scripts/eslint-autofix.mjs'
+                $shimFilesJson = ConvertTo-Json -Compress -InputObject @('.')
+                $shimOut = & node $shimScript --cwd $Workspace.Path --files $shimFilesJson 2>&1
+                $shimExit = $LASTEXITCODE
+                $shimMs = [int]([DateTime]::UtcNow - $start).TotalMilliseconds
 
-                $lintOut = & pnpm exec eslint @lintArgs 2>&1
-                $lintExit = $LASTEXITCODE
-                $lintMs = [int]([DateTime]::UtcNow - $start).TotalMilliseconds
+                $shimStdout = ($shimOut | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.ToString() } else { $_ } }) -join "`n"
+                $shimStderr = ''
 
-                $lintStdout = ($lintOut | ForEach-Object { if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.ToString() } else { $_ } }) -join "`n"
+                # The shim writes a single JSON document on stdout. If we
+                # received any non-empty stderr, surface it as a fatal issue
+                # but still try to parse whatever stdout we got.
+                $autofixPayload = $null
+                $shimStdoutText = $shimStdout.Trim()
+                if (-not [string]::IsNullOrWhiteSpace($shimStdoutText)) {
+                    try {
+                        $autofixPayload = $shimStdoutText | ConvertFrom-Json -ErrorAction Stop
+                    }
+                    catch {
+                        $shimStderr = "eslint-autofix shim produced non-JSON output: $($_.Exception.Message)"
+                    }
+                }
+                elseif ($shimExit -ne 0) {
+                    $shimStderr = "eslint-autofix shim exited $shimExit with no stdout."
+                }
 
-                $result.lint = ConvertFrom-EslintJson -Stdout $lintStdout -Stderr '' -ExitCode $lintExit -DurationMs $lintMs
+                $autofixSummary = if ($UseFix) { Get-AutofixSummary -Payload $autofixPayload } else { $null }
+
+                $result.lint = ConvertFrom-EslintJson -Stdout $shimStdoutText -Stderr $shimStderr -ExitCode $shimExit -DurationMs $shimMs -AutofixPayload $autofixPayload -AutofixSummary $autofixSummary
             }
             else {
                 $result.lint = [PSCustomObject]@{
@@ -568,6 +761,7 @@ try {
                     durationMs = 0
                     exitCode = -1
                     issues = @()
+                    autofix = $null
                 }
             }
 
@@ -649,8 +843,105 @@ try {
 
         # Inline-copy of the parser functions so they are available in the
         # job's runspace.
+        function Get-AutofixSummaryLocal {
+            param($Payload)
+            if ($null -eq $Payload) { return $null }
+            if (-not ($Payload.PSObject.Properties['results'])) { return $null }
+
+            $byFileList = [System.Collections.Generic.List[object]]::new()
+            $byRuleMap = @{}
+            $totalFixedErrors = 0
+            $totalFixedWarnings = 0
+            $unfixableButFixable = 0
+
+            foreach ($entry in $Payload.results) {
+                $pre = @($entry.PSObject.Properties['preFixMessages'] | ForEach-Object { $_.Value })
+                $post = @($entry.PSObject.Properties['postFixMessages'] | ForEach-Object { $_.Value })
+                $file = [string]$entry.filePath
+
+                $postIndex = @{}
+                foreach ($m in $post) {
+                    $key = "$(if ($null -eq $m.ruleId) { '<unknown>' } else { [string]$m.ruleId })|$($m.line)|$($m.column)|$([string]$m.message)"
+                    if (-not $postIndex.ContainsKey($key)) { $postIndex[$key] = 0 }
+                    $postIndex[$key]++
+                }
+
+                $fileFixedErrors = 0
+                $fileFixedWarnings = 0
+                $fileFixedByRule = [ordered]@{}
+                $fileUnfixableButFixable = 0
+
+                foreach ($m in $pre) {
+                    $ruleId = if ($null -eq $m.ruleId) { '<unknown>' } else { [string]$m.ruleId }
+                    $key = "$ruleId|$($m.line)|$($m.column)|$([string]$m.message)"
+
+                    $matched = $false
+                    if ($postIndex.ContainsKey($key) -and $postIndex[$key] -gt 0) {
+                        $postIndex[$key]--
+                        $matched = $true
+                    }
+
+                    if (-not $matched) {
+                        if ($m.severity -eq 2) { $fileFixedErrors++ } elseif ($m.severity -eq 1) { $fileFixedWarnings++ }
+                        if (-not $fileFixedByRule.Contains($ruleId)) { $fileFixedByRule[$ruleId] = 0 }
+                        $fileFixedByRule[$ruleId]++
+
+                        if (-not $byRuleMap.ContainsKey($ruleId)) {
+                            $byRuleMap[$ruleId] = [PSCustomObject]@{
+                                ruleId = $ruleId
+                                fixedErrorCount = 0
+                                fixedWarningCount = 0
+                                fileCount = 0
+                                files = [System.Collections.Generic.List[string]]::new()
+                            }
+                        }
+                        $rec = $byRuleMap[$ruleId]
+                        if ($m.severity -eq 2) { $rec.fixedErrorCount++ } elseif ($m.severity -eq 1) { $rec.fixedWarningCount++ }
+                        if (-not $rec.files.Contains($file)) {
+                            $rec.files.Add($file)
+                            $rec.fileCount++
+                        }
+                    }
+                    elseif ($m.fixable -eq $true) {
+                        $fileUnfixableButFixable++
+                    }
+                }
+
+                $totalFixedErrors += $fileFixedErrors
+                $totalFixedWarnings += $fileFixedWarnings
+                $unfixableButFixable += $fileUnfixableButFixable
+
+                if ($fileFixedErrors -gt 0 -or $fileFixedWarnings -gt 0 -or $fileUnfixableButFixable -gt 0) {
+                    $byFileList.Add([PSCustomObject]@{
+                        file = $file
+                        fixedErrorCount = $fileFixedErrors
+                        fixedWarningCount = $fileFixedWarnings
+                        unfixableButFixableCount = $fileUnfixableButFixable
+                        fixedByRule = $fileFixedByRule
+                    })
+                }
+            }
+
+            $byRuleList = @($byRuleMap.Values | ForEach-Object {
+                [PSCustomObject]@{
+                    ruleId = $_.ruleId
+                    fixedErrorCount = $_.fixedErrorCount
+                    fixedWarningCount = $_.fixedWarningCount
+                    fileCount = $_.fileCount
+                }
+            } | Sort-Object -Property { $_.fixedErrorCount + $_.fixedWarningCount } -Descending)
+
+            return [PSCustomObject]@{
+                fixedErrorCount = $totalFixedErrors
+                fixedWarningCount = $totalFixedWarnings
+                unfixableButFixableCount = $unfixableButFixable
+                byFile = $byFileList.ToArray()
+                byRule = $byRuleList
+            }
+        }
+
         function ConvertFrom-EslintJsonLocal {
-            param($Stdout, $ExitCode, $DurationMs)
+            param($Stdout, $ExitCode, $DurationMs, $AutofixPayload, $AutofixSummary)
             $issues = [System.Collections.Generic.List[object]]::new()
             $raw = $Stdout.Trim()
             if (-not [string]::IsNullOrWhiteSpace($raw)) {
@@ -697,6 +988,7 @@ try {
                 durationMs = $DurationMs
                 exitCode = $ExitCode
                 issues = $issues
+                autofix = $AutofixSummary
             }
         }
 
@@ -836,18 +1128,41 @@ try {
 
             if ($Workspace.HasLint) {
                 $lintStart = [DateTime]::UtcNow
+                $shimScriptInner = Join-Path $ArgBag.RepoRoot 'scripts/eslint-autofix.mjs'
                 if ($TargetFiles.Count -gt 0) {
-                    $lintArgs = @('--format', 'json') + $TargetFiles
+                    # Convert absolute paths to workspace-relative POSIX paths
+                    # so the shim can resolve them under --cwd.
+                    $shimFilesList = @()
+                    foreach ($tf in $TargetFiles) {
+                        $rel = $tf.Substring($Workspace.Path.Length).TrimStart([System.IO.Path]::DirectorySeparatorChar, '/')
+                        $rel = $rel.Replace('\', '/')
+                        $shimFilesList += $rel
+                    }
                 }
                 else {
-                    $lintArgs = @('.', '--format', 'json')
+                    $shimFilesList = @('.')
                 }
-                if ($UseFix) { $lintArgs += '--fix' }
-                $lintOut = & pnpm exec eslint @lintArgs 2>&1
-                $lintExit = $LASTEXITCODE
-                $lintMs = [int]([DateTime]::UtcNow - $lintStart).TotalMilliseconds
-                $lintText = ($lintOut | ForEach-Object { "$_" }) -join "`n"
-                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $lintText -ExitCode $lintExit -DurationMs $lintMs
+                $shimFilesJson = ConvertTo-Json -Compress -InputObject @($shimFilesList)
+                $shimOut = & node $shimScriptInner --cwd $Workspace.Path --files $shimFilesJson 2>&1
+                $shimExit = $LASTEXITCODE
+                $shimMs = [int]([DateTime]::UtcNow - $lintStart).TotalMilliseconds
+                $shimText = ($shimOut | ForEach-Object { "$_" }) -join "`n"
+                $shimTextTrim = $shimText.Trim()
+                $shimStderr = ''
+                $autofixPayload = $null
+                if (-not [string]::IsNullOrWhiteSpace($shimTextTrim)) {
+                    try {
+                        $autofixPayload = $shimTextTrim | ConvertFrom-Json -ErrorAction Stop
+                    }
+                    catch {
+                        $shimStderr = "eslint-autofix shim produced non-JSON output: $($_.Exception.Message)"
+                    }
+                }
+                elseif ($shimExit -ne 0) {
+                    $shimStderr = "eslint-autofix shim exited $shimExit with no stdout."
+                }
+                $autofixSummary = if ($UseFix) { Get-AutofixSummaryLocal -Payload $autofixPayload } else { $null }
+                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $shimTextTrim -ExitCode $shimExit -DurationMs $shimMs -AutofixPayload $autofixPayload -AutofixSummary $autofixSummary
             }
             else {
                 $result.lint = [PSCustomObject]@{
@@ -1004,6 +1319,7 @@ try {
             TimeoutSeconds = $TimeoutSeconds
             UseFix = $useFix
             TargetFiles = $targets
+            RepoRoot = $repoRoot
         })
     }
 
@@ -1031,24 +1347,47 @@ try {
     $summary = [PSCustomObject]@{
         workspaces = @($workspaceResults).Count
         lint = [PSCustomObject]@{
-            ran = @($workspaceResults | Where-Object { $_.lint.ran }).Count
-            passed = @($workspaceResults | Where-Object { $_.lint.passed }).Count
-            failed = @($workspaceResults | Where-Object { $_.lint.ran -and -not $_.lint.passed }).Count
-            errorCount = [int](@($workspaceResults | ForEach-Object { $_.lint.errorCount } | Measure-Object -Sum).Sum)
-            warningCount = [int](@($workspaceResults | ForEach-Object { $_.lint.warningCount } | Measure-Object -Sum).Sum)
+            ran = @($workspaceResults | Where-Object { $null -ne $_.lint -and $_.lint.ran }).Count
+            passed = @($workspaceResults | Where-Object { $null -ne $_.lint -and $_.lint.passed }).Count
+            failed = @($workspaceResults | Where-Object { $null -ne $_.lint -and $_.lint.ran -and -not $_.lint.passed }).Count
+            errorCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.lint) { $_.lint.errorCount } else { 0 } } | Measure-Object -Sum).Sum)
+            warningCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.lint) { $_.lint.warningCount } else { 0 } } | Measure-Object -Sum).Sum)
+            autofix = [PSCustomObject]@{
+                ran = $useFix
+                ranInWorkspaces = @($workspaceResults | Where-Object { $null -ne $_.lint -and $null -ne $_.lint.PSObject.Properties['autofix'] -and $null -ne $_.lint.autofix }).Count
+                fixedErrorCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.lint -and $null -ne $_.lint.PSObject.Properties['autofix'] -and $null -ne $_.lint.autofix) { $_.lint.autofix.fixedErrorCount } else { 0 } } | Measure-Object -Sum).Sum)
+                fixedWarningCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.lint -and $null -ne $_.lint.PSObject.Properties['autofix'] -and $null -ne $_.lint.autofix) { $_.lint.autofix.fixedWarningCount } else { 0 } } | Measure-Object -Sum).Sum)
+                byRule = @(
+                    $workspaceResults |
+                        ForEach-Object { if ($null -ne $_.lint -and $null -ne $_.lint.PSObject.Properties['autofix'] -and $null -ne $_.lint.autofix) { $_.lint.autofix.byRule } else { @() } } |
+                        Group-Object -Property ruleId |
+                        ForEach-Object {
+                            $ruleName = $_.Name
+                            $ruleEntries = $_.Group
+                            [PSCustomObject]@{
+                                ruleId = $ruleName
+                                fixedErrorCount = [int](@($ruleEntries | ForEach-Object { $_.fixedErrorCount } | Measure-Object -Sum).Sum)
+                                fixedWarningCount = [int](@($ruleEntries | ForEach-Object { $_.fixedWarningCount } | Measure-Object -Sum).Sum)
+                                workspaceCount = $ruleEntries.Count
+                            }
+                        } |
+                        Sort-Object -Property @{Expression = { $_.fixedErrorCount + $_.fixedWarningCount }; Descending = $true} |
+                        Select-Object -First 10
+                )
+            }
         }
         tsc = [PSCustomObject]@{
-            ran = @($workspaceResults | Where-Object { $_.tsc.ran }).Count
-            passed = @($workspaceResults | Where-Object { $_.tsc.passed }).Count
-            failed = @($workspaceResults | Where-Object { $_.tsc.ran -and -not $_.tsc.passed }).Count
-            errorCount = [int](@($workspaceResults | ForEach-Object { $_.tsc.errorCount } | Measure-Object -Sum).Sum)
-            warningCount = [int](@($workspaceResults | ForEach-Object { $_.tsc.warningCount } | Measure-Object -Sum).Sum)
+            ran = @($workspaceResults | Where-Object { $null -ne $_.tsc -and $_.tsc.ran }).Count
+            passed = @($workspaceResults | Where-Object { $null -ne $_.tsc -and $_.tsc.passed }).Count
+            failed = @($workspaceResults | Where-Object { $null -ne $_.tsc -and $_.tsc.ran -and -not $_.tsc.passed }).Count
+            errorCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.tsc) { $_.tsc.errorCount } else { 0 } } | Measure-Object -Sum).Sum)
+            warningCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.tsc) { $_.tsc.warningCount } else { 0 } } | Measure-Object -Sum).Sum)
         }
         test = [PSCustomObject]@{
-            ran = @($workspaceResults | Where-Object { $_.test.ran }).Count
-            passed = @($workspaceResults | Where-Object { $_.test.ran -and $_.test.passed }).Count
-            failed = @($workspaceResults | Where-Object { $_.test.ran -and -not $_.test.passed }).Count
-            failedTestCount = [int](@($workspaceResults | ForEach-Object { $_.test.failingTests.Count } | Measure-Object -Sum).Sum)
+            ran = @($workspaceResults | Where-Object { $null -ne $_.test -and $_.test.ran }).Count
+            passed = @($workspaceResults | Where-Object { $null -ne $_.test -and $_.test.ran -and $_.test.passed }).Count
+            failed = @($workspaceResults | Where-Object { $null -ne $_.test -and $_.test.ran -and -not $_.test.passed }).Count
+            failedTestCount = [int](@($workspaceResults | ForEach-Object { if ($null -ne $_.test) { $_.test.failingTests.Count } else { 0 } } | Measure-Object -Sum).Sum)
         }
     }
 
@@ -1063,13 +1402,32 @@ try {
 
     # Only print summary to stderr if there are failures
     if ($summary.lint.failed -gt 0 -or $summary.tsc.failed -gt 0 -or $summary.test.failed -gt 0) {
-        [Console]::Error.WriteLine("Done. lint: $($summary.lint.errorCount) errors / $($summary.lint.warningCount) warnings across $($summary.lint.failed) workspace(s); tsc: $($summary.tsc.errorCount) errors across $($summary.tsc.failed); test: $($summary.test.failedTestCount) failing across $($summary.test.failed) workspace(s).")
+        $autofixSuffix = if ($useFix) { " | autofix: $($summary.lint.autofix.fixedErrorCount) errors / $($summary.lint.autofix.fixedWarningCount) warnings fixed" } else { '' }
+        [Console]::Error.WriteLine("Done. lint: $($summary.lint.errorCount) errors / $($summary.lint.warningCount) warnings across $($summary.lint.failed) workspace(s)$autofixSuffix; tsc: $($summary.tsc.errorCount) errors across $($summary.tsc.failed); test: $($summary.test.failedTestCount) failing across $($summary.test.failed) workspace(s).")
     } else {
         [Console]::Error.WriteLine("All checks passed.")
     }
 
-    # Reserve stdout exclusively for the JSON.
-    ConvertTo-Json -InputObject $finalResult -Depth 12
+    # Reserve stdout exclusively for the report document.
+    $jsonReport = ConvertTo-Json -InputObject $finalResult -Depth 12
+    if ($Format -eq 'Markdown') {
+        $renderShim = Join-Path $repoRoot 'scripts/render-check-report.mjs'
+        $rendered = $jsonReport | & node $renderShim 2>&1
+        $renderExit = $LASTEXITCODE
+        if ($renderExit -ne 0) {
+            # Shim already wrote the reason to stderr; surface a final note so
+            # the LLM doesn't see silent failure. Re-emit the JSON as a
+            # fallback so the data isn't lost.
+            [Console]::Error.WriteLine("render-check-report.mjs exited $renderExit; falling back to raw JSON on stdout.")
+            $jsonReport
+        }
+        else {
+            $rendered
+        }
+    }
+    else {
+        $jsonReport
+    }
 }
 finally {
     if (Test-Path $tempRoot) {
