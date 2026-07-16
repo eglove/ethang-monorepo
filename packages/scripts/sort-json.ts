@@ -1,4 +1,4 @@
-import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";
@@ -7,7 +7,7 @@ import path from "node:path";
 
 import { sortJson } from "./sort-json-utilities.ts";
 
-installCloudflareLogger();
+installLogger();
 
 export const run = (argv: string[]) => {
   const { 2: filePath } = argv;

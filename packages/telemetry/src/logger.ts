@@ -1,21 +1,23 @@
 import { Effect, Logger, LogLevel } from "effect";
 
 /**
-Replace the default Effect `Logger` with one that writes to
-Cloudflare Workers Logs via `console.*`.
+Replace Effect's default `Logger` with `Logger.prettyLogger({ colors: false })`
+so `Effect.log*` calls emit human-readable, color-free lines routed through
+`console.*`.
 
-Cloudflare automatically captures `console.log` / `console.warn` /
-`console.error` / `console.debug` when `observability.enabled: true`
-is set in `wrangler.jsonc`. By using `Effect.log*` (which emits
-structured log records) and routing them through `Logger.pretty` —
-which writes to `console.*` — we get both:
+`prettyLogger` writes to the host `console.*` methods, which means any
+runtime that captures `console.log` / `console.warn` / `console.error` /
+`console.debug` (Cloudflare Workers Logs, Node, browser devtools) will
+pick the output up automatically.
 
- - Structured, typed, `Effect.fn`-spanned logs in code.
- - Native delivery to Cloudflare Workers Logs in production.
+Call this once per process entrypoint before any `Effect.runPromise` so
+every later `Effect.log*` produces a pretty line instead of the default
+structured log record.
 
-Call this once per Worker entrypoint before any `Effect.runPromise`.
+General purpose: the function does not depend on Cloudflare-specific
+APIs and is safe to call from any environment where Effect runs.
 */
-export const installCloudflareLogger = () => {
+export const installLogger = () => {
   const { defaultLogger } = Logger;
   const prettyLogger = Logger.prettyLogger({ colors: false });
   const layer = Logger.replace(defaultLogger, prettyLogger);

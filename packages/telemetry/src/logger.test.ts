@@ -3,13 +3,13 @@ import isNil from "lodash/isNil.js";
 import noop from "lodash/noop.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { defaultLogLevel, installCloudflareLogger } from "./logger.js";
+import { defaultLogLevel, installLogger } from "./logger.js";
 
-describe("installCloudflareLogger", () => {
+describe("installLogger", () => {
   it("should run without throwing", () => {
     expect.assertions(1);
     expect(() => {
-      installCloudflareLogger();
+      installLogger();
     }).not.toThrow();
   });
 
@@ -17,8 +17,8 @@ describe("installCloudflareLogger", () => {
     expect.assertions(1);
     const logSpy = vi.spyOn(console, "log").mockImplementation(noop);
 
-    installCloudflareLogger();
-    installCloudflareLogger();
+    installLogger();
+    installLogger();
 
     expect(logSpy).toBeDefined();
     logSpy.mockRestore();

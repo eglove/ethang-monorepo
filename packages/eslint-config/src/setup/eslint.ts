@@ -28,6 +28,7 @@ const customRules = [
     "max-statements",
     "new-cap",
     "no-array-constructor",
+    "no-console", // replaced by @ethang/prefer-effect-log
     "no-dupe-class-members",
     "no-empty-function",
     "no-implicit-globals",

@@ -28,6 +28,7 @@ describe("plugin", () => {
         "no-try-catch",
         "path-style",
         "prefer-effect-datetime",
+        "prefer-effect-log",
         "prefer-lodash",
         "preferred-alias",
         "property-shorthand",
