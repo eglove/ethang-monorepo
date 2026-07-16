@@ -1,10 +1,10 @@
-import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import { build } from "esbuild";
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
-installCloudflareLogger();
+installLogger();
 
 const directoryName = import.meta.dirname;
 

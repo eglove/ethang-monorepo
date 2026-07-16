@@ -13,6 +13,8 @@ swebok-v4.md
 plan.md
 .agents
 .output.json
+.agents-check.json
+.agents-check-pretty.json
 reports
 .repos
 repo-plan.md
@@ -20,7 +22,6 @@ repo-plan.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,jetbrains+all,visualstudiocode,storybookjs
-
 ### JetBrains+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839

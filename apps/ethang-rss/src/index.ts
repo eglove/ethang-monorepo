@@ -1,4 +1,4 @@
-import { installCloudflareLogger } from "@ethang/telemetry/logger.ts";
+import { installLogger } from "@ethang/telemetry/logger.ts";
 import { fn } from "@ethang/telemetry/spans.ts";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
@@ -16,8 +16,8 @@ import { subscriptionsQuery } from "./data/queries/subscriptions.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
 import * as databaseSchema from "./db/schema.ts";
 
-// Route Effect logs through console.* so they reach Cloudflare Workers Logs.
-installCloudflareLogger();
+// Pretty-print Effect logs via console.* for Cloudflare Workers Logs.
+installLogger();
 
 export type User = {
   email: string;
