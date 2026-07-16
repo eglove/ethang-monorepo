@@ -1150,9 +1150,7 @@ try {
                         $autofixPayload = $shimTextTrim | ConvertFrom-Json -ErrorAction Stop
                     }
                     catch {
-                        # Swallowed: the lint parser below turns this into a
-                        # 'fatal' issue in $issues, which is enough to surface
-                        # the failure without needing a separate Stderr channel.
+                        Write-Error "eslint-autofix shim produced non-JSON output: $($_.Exception.Message)"
                     }
                 }
                 $autofixSummary = if ($UseFix) { Get-AutofixSummaryLocal -Payload $autofixPayload } else { $null }
