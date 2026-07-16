@@ -49,6 +49,8 @@ export default {
 
 | Rule | Description | Auto-fix |
 | --- | --- | --- |
+| `prefer-effect-datetime` | Prefer `Effect.DateTime` over the native `Date` / `Temporal` globals. | No |
+| `prefer-effect-log` | Prefer `Effect.log*` over `console.*`. Map `console.log`/`console.info`→`Effect.log`, `console.warn`→`Effect.logWarning`, `console.error`→`Effect.logError`, `console.debug`→`Effect.logDebug`. | No |
 | `prefer-lodash` | Prefer lodash (full API surface) over Array.prototype / Object.* / native methods when an equivalent exists. | Yes |
 
 ### No rules
