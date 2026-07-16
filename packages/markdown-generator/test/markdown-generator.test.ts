@@ -96,6 +96,21 @@ describe("Markdown Generator", () => {
         expect(generateMarkdown(document)).toBe(expected);
       });
 
+      it("sorts remaining frontmatter keys alphabetically when title is mixed in", () => {
+        const document = {
+          blocks: [],
+          frontmatter: {
+            alpha: "a",
+            description: "desc",
+            mango: "m",
+            title: "My Doc",
+            zebra: "z"
+          }
+        };
+        const expected = `---\ntitle: My Doc\nalpha: a\ndescription: desc\nmango: m\nzebra: z\n---\n`;
+        expect(generateMarkdown(document)).toBe(expected);
+      });
+
       it("throws error when a frontmatter value contains newlines", () => {
         const document = {
           blocks: [],

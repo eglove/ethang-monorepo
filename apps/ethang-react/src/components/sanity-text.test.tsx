@@ -262,6 +262,49 @@ describe("SanityText - Custom Quote and Code types", () => {
     const { container } = render(<SanityText value={value} />);
     expect(container).toBeEmptyDOMElement();
   });
+
+  it("renders custom code type with no language falls back to typescript", () => {
+    const value = [
+      {
+        _key: "code1",
+        _type: "code",
+        code: "const z = 99;"
+      }
+    ];
+
+    render(<SanityText value={value} />);
+    expect(screen.getByRole("code").textContent).toBe("const z = 99;");
+  });
+
+  it("renders the custom quote type used as a portable-text type entry", () => {
+    const value = [
+      {
+        _key: "quote2",
+        _type: "blockquote",
+        quote: "Blockquote Quote"
+      }
+    ];
+
+    render(<SanityText value={value} />);
+    expect(screen.getByText("Blockquote Quote")).toBeDefined();
+  });
+
+  it("renders the custom quote type with author and source", () => {
+    const value = [
+      {
+        _key: "quote3",
+        _type: "blockquote",
+        author: "Author",
+        quote: "Quote",
+        source: "Source"
+      }
+    ];
+
+    render(<SanityText value={value} />);
+    expect(screen.getByText("Quote")).toBeDefined();
+    expect(screen.getByText(/Author/u)).toBeDefined();
+    expect(screen.getByText(/Source/u)).toBeDefined();
+  });
 });
 
 describe("SanityText - Custom Image and Video types", () => {

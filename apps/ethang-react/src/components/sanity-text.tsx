@@ -23,20 +23,29 @@ const MarkValueSchema = Schema.Struct({
   href: Schema.optional(Schema.String)
 });
 
-const decodeMarkHref = (value: unknown) => {
+/**
+Decodes the `href` property of a portable-text mark value. Returns the href
+string when it is a string, otherwise `null`. Exported so tests can exercise
+the decode logic directly without going through PortableText.
+*/
+export const decodeMarkHref = (value: unknown) => {
   const decoded = Schema.decodeUnknownOption(MarkValueSchema)(value);
   return Option.isSome(decoded) && isString(decoded.value.href)
     ? decoded.value.href
     : null;
 };
 
-type BlockquoteFooterProperties = {
+/**
+Footer renderer for blockquote-style portable-text blocks. Exported for
+direct testing of the conditional layout branches.
+*/
+export type BlockquoteFooterProperties = {
   author: null | string;
   source: null | string;
   sourceUrl: null | string;
 };
 
-const BlockquoteFooter = ({
+export const BlockquoteFooter = ({
   author,
   source,
   sourceUrl

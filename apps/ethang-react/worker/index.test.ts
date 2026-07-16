@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import worker from "./index.ts";
+import worker, { handleRpcRequest } from "./index.ts";
 
 const APPLICATION_JSON = "application/json" as const;
 const CACHE_CONTROL_HEADER = "Cache-Control";
@@ -224,6 +224,32 @@ describe(`${HTTP_POST} /api/rpc - input validation`, () => {
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(400);
     expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
+  });
+
+  it("should return 400 when only service is missing", async () => {
+    const request = new Request(TEST_URL, {
+      body: '{"method":"courses","params":{}}',
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(400);
+    expect(await response.text()).toBe("Invalid JSON body");
+  });
+
+  it("should return 400 when only method is missing", async () => {
+    const request = new Request(TEST_URL, {
+      body: '{"params":{},"service":"ethang_courses"}',
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await worker.fetch(request, mockEnvironment);
+    expect(response.status).toBe(400);
+    expect(await response.text()).toBe("Invalid JSON body");
   });
 
   it("should return 400 for invalid service name", async () => {
@@ -618,5 +644,58 @@ describe(`${HTTP_POST} /api/rpc - routing`, () => {
     const response = await worker.fetch(request, mockEnvironment);
     expect(response.status).toBe(404);
     expect(response.headers.get(CACHE_CONTROL_HEADER)).toBeNull();
+  });
+});
+
+describe("handleRpcRequest - exported directly", () => {
+  it("delegates to the same logic as worker.fetch for POST /api/rpc", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(MOCK_USER, { status: 200 })
+    );
+
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await handleRpcRequest(request, mockEnvironment);
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body).toEqual([{ id: "c1", name: TEST_COURSE_NAME }]);
+  });
+
+  it("returns the Response when the rpc binding throws", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(MOCK_USER, { status: 200 })
+    );
+
+    const environment = {
+      ...mockEnvironment,
+      ethang_courses: {
+        courses: vi.fn().mockRejectedValue(new Error("Bad Gateway"))
+      }
+    };
+
+    const request = new Request(TEST_URL, {
+      body: JSON.stringify({
+        method: "courses",
+        params: {},
+        service: "ethang_courses"
+      }),
+      headers: { "Content-Type": APPLICATION_JSON, "X-Token": TEST_TOKEN },
+      method: HTTP_POST
+    });
+
+    // @ts-expect-error test double
+    const response = await handleRpcRequest(request, environment);
+    expect(response.status).toBe(500);
+    expect(await response.text()).toBe("Bad Gateway");
   });
 });

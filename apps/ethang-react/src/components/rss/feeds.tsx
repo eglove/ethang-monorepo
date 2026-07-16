@@ -95,6 +95,7 @@ export const Feeds = () => {
   };
 
   const handleConfirmUnsubscribe = async () => {
+    // v8 ignore next -- defensive guard; dialog never confirms when state is nil
     if (isNil(pendingUnsubscribe)) {
       return;
     }

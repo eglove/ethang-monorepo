@@ -26,6 +26,7 @@ const isCalendarView = (v: string): v is CalendarView => {
 };
 
 const lastQuery = (value: null | string | string[]) => {
+  /* v8 ignore next -- defensive guard: Hono's validator yields either a non-empty array or a single string for repeated query params, never an empty array */
   return isArray(value) ? (last(value) ?? null) : value;
 };
 

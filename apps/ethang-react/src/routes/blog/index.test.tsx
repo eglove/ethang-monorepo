@@ -1,8 +1,7 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Route } from "./index.tsx";
-
+import { formattedDateTime, Route, selectPage } from "./index.tsx";
 const mockBlogStore = {
   isPending: false,
   posts: [
@@ -12,6 +11,20 @@ const mockBlogStore = {
       blogCategory: { title: "Blog" },
       slug: { current: "test-blog" },
       title: "Test Blog Title"
+    },
+    {
+      _id: "2",
+      _updatedAt: "2024-02-01T12:00:00Z",
+      blogCategory: { title: "Dev Reads" },
+      slug: { current: "dev-reads" },
+      title: "Dev Reads Title"
+    },
+    {
+      _id: "3",
+      _updatedAt: "2024-03-01T12:00:00Z",
+      blogCategory: { title: "Other" },
+      slug: { current: "other" },
+      title: "Other Title"
     }
   ]
 };
@@ -120,5 +133,19 @@ describe("Blog Index Route", () => {
     const Component = Route.component;
     render(<Component />);
     expect(screen.getByTestId("spinner")).toBeDefined();
+  });
+
+  it("formats dates correctly", () => {
+    const result = formattedDateTime("2024-01-01T12:00:00Z");
+    expect(typeof result).toBe("string");
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it("selects the page from the blog store", () => {
+    expect(selectPage({ paginationPage: 7 })).toEqual({ page: 7 });
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 });

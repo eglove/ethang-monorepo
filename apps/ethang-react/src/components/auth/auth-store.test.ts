@@ -5,6 +5,7 @@ import { authStore, authStoreActions, readStoredUser } from "./auth-store.ts";
 const USER_KEY = "ethang-user";
 const TEST_EMAIL = "test@ethang.email";
 const STORED_EMAIL = "stored@ethang.email";
+const INVALID_RESPONSE_ERROR = "Invalid response from server";
 
 describe("AuthStore", () => {
   beforeEach(() => {
@@ -99,12 +100,109 @@ describe("AuthStore", () => {
     expect(authStore.state.error).toBe("Failed to sign in");
   });
 
-  it("should handle sign in error when request throws exception without message", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue({});
+  it("should handle sign in error when fetch rejects with an Error", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("boom"));
+
+    await authStoreActions.signIn(TEST_EMAIL, "password");
+
+    expect(authStore.state.error).toBe("boom");
+  });
+
+  it("should handle non-Error rejection from fetch", async () => {
+    vi.spyOn(globalThis, "fetch").mockRejectedValue("string-error");
 
     await authStoreActions.signIn(TEST_EMAIL, "password");
 
     expect(authStore.state.error).toBe("An unexpected error occurred");
+  });
+
+  it("should handle Error rejection from response.json()", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      json: async () => {
+        throw new Error("parse-error");
+      }
+    } as unknown as Response);
+
+    await authStoreActions.signIn(TEST_EMAIL, "password");
+
+    expect(authStore.state.error).toBe("parse-error");
+  });
+
+  it("should handle non-Error rejection from response.json()", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      json: async () => {
+        throw "string-error";
+      }
+    } as unknown as Response);
+
+    await authStoreActions.signIn(TEST_EMAIL, "password");
+
+    expect(authStore.state.error).toBe("An unexpected error occurred");
+  });
+
+  it("should use INVALID_RESPONSE when decoding the response schema fails", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ nope: "wrong-shape" }, { status: 200 })
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
+
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
+    expect(authStore.state.user).toBeNull();
+  });
+
+  it("should set Failed to sign in when response.ok is false and data.error is missing", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({}, { status: 500 })
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "wrongpassword");
+
+    expect(authStore.state.error).toBe("Failed to sign in");
+  });
+
+  it("should set Invalid response error when response schema is missing sessionToken", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ email: TEST_EMAIL, username: "u" }, { status: 200 })
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
+
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
+  });
+
+  it("should set Invalid response error when email is missing", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ sessionToken: "st", username: "u" }, { status: 200 })
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
+
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
+  });
+
+  it("should set Invalid response error when username is missing", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json({ email: TEST_EMAIL, sessionToken: "st" }, { status: 200 })
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
+
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
+  });
+
+  it("should set Invalid response error when one of the required string fields is the wrong type", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(
+        { email: TEST_EMAIL, sessionToken: "st", username: 42 },
+        { status: 200 }
+      )
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
+
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
+    expect(authStore.state.user).toBeNull();
   });
 
   it("should handle invalid response schema from server", async () => {
@@ -116,8 +214,22 @@ describe("AuthStore", () => {
 
     expect(authStore.state.user).toBeNull();
     expect(authStore.state.isPending).toBe(false);
-    expect(authStore.state.error).toBe("Invalid response from server");
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
     expect(localStorage.getItem(USER_KEY)).toBeNull();
+  });
+
+  it("should set Invalid response error when username is the wrong type", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      Response.json(
+        { email: TEST_EMAIL, sessionToken: "st", username: 42 },
+        { status: 200 }
+      )
+    );
+
+    await authStoreActions.signIn(TEST_EMAIL, "password123");
+
+    expect(authStore.state.error).toBe(INVALID_RESPONSE_ERROR);
+    expect(authStore.state.user).toBeNull();
   });
 
   it("should sign out and clear store/localStorage", () => {

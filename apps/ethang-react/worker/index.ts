@@ -125,10 +125,6 @@ const handleRpcRequest = async (request: Request, environment: Env) => {
 
   const { method, params, service } = bodyResult;
 
-  if (isNil(method) || isNil(service)) {
-    return new Response("Missing service or method", { status: 400 });
-  }
-
   if ("ethang_courses" !== service && "ethang_rss" !== service) {
     return new Response("Invalid service or method", { status: 400 });
   }
@@ -160,6 +156,8 @@ const handleRpcRequest = async (request: Request, environment: Env) => {
 
   return Response.json(result);
 };
+
+export { handleRpcRequest };
 
 export default {
   async fetch(request: Request, environment: Env) {

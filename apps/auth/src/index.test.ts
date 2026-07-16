@@ -3,6 +3,7 @@ import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
+import omit from "lodash/omit.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { app } from "./index.js";
@@ -323,6 +324,34 @@ describe("POST /sign-up", () => {
     const body: Record<string, unknown> = await response.json();
     expect(body["sessionToken"]).toBeNull();
   });
+
+  it("should return success when sign up result omits sessionToken property", async () => {
+    // strip sessionToken from the result to exercise the false branch of
+    // `"sessionToken" in result` in setAuthCookie
+    const withoutToken = omit(mockUser, "sessionToken");
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed(withoutToken as typeof mockUser);
+    });
+
+    const response = await sendRequest(
+      "/sign-up",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD,
+          username: TEST_USERNAME_VALUE
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get(SET_COOKIE)).toBeNull();
+  });
 });
 
 describe("POST /sign-in", () => {
@@ -349,6 +378,31 @@ describe("POST /sign-in", () => {
     expect(response.status).toBe(200);
     const body: Record<string, unknown> = await response.json();
     expect(body["sessionToken"]).toBeNull();
+  });
+
+  it("should return success when sign in result omits sessionToken property", async () => {
+    const withoutToken = omit(mockUser, "sessionToken");
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed(withoutToken as typeof mockUser);
+    });
+
+    const response = await sendRequest(
+      "/sign-in",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD
+        }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get(SET_COOKIE)).toBeNull();
   });
 
   it("should return success when sign in is valid", async () => {

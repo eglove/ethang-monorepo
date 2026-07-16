@@ -4,7 +4,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   AddFeedForm,
-  addSubscriptionMutationFunction
+  addSubscriptionMutationFunction,
+  sanitizeFeedUrl
 } from "./add-feed-form.tsx";
 
 const mockAddSubscription = vi.fn().mockResolvedValue({});
@@ -13,10 +14,20 @@ const mockInvalidateQueries = vi.fn().mockResolvedValue({});
 
 vi.mock("@tanstack/react-query", () => {
   return {
-    useMutation: () => {
+    useMutation: ({
+      onSuccess
+    }: {
+      onSuccess?: () => Promise<void> | void;
+    }) => {
       return {
         isPending: mockAddFeedFormStore.isMockLoading,
-        mutateAsync: mockAddSubscription
+        mutateAsync: async (input: unknown) => {
+          const result = await mockAddSubscription(input);
+          if (onSuccess) {
+            await onSuccess();
+          }
+          return result;
+        }
       };
     },
     useQueryClient: () => {
@@ -29,7 +40,10 @@ vi.mock("@tanstack/react-query", () => {
 
 const FEED_XML_URL_PLACEHOLDER = "Feed XML URL";
 const RSS_XML_URL = "https://example.com/rss.xml";
+const RSS_XML_URL_WITH_PADDING = `  ${RSS_XML_URL}  `;
 const SCOPE_FORM = ":scope form";
+const INVALID_URL = "::::not-a-url::::";
+const EMPTY_URL = "";
 
 describe("addSubscriptionMutationFn", () => {
   it("calls rpcRequest with the correct arguments and returns the result", async () => {
@@ -43,6 +57,18 @@ describe("addSubscriptionMutationFn", () => {
     });
 
     expect(result).toEqual(mockResponse);
+  });
+});
+
+describe("sanitizeFeedUrl", () => {
+  it.each([
+    { expected: null, input: EMPTY_URL },
+    { expected: null, input: repeat(" ", 3) },
+    { expected: null, input: INVALID_URL },
+    { expected: RSS_XML_URL, input: RSS_XML_URL },
+    { expected: RSS_XML_URL, input: RSS_XML_URL_WITH_PADDING }
+  ])("returns $expected when given $input", ({ expected, input }) => {
+    expect(sanitizeFeedUrl(input)).toBe(expected);
   });
 });
 
@@ -63,27 +89,25 @@ describe("AddFeedForm", () => {
     expect(button).toBeDefined();
   });
 
-  it("calls addSubscription with a valid URL on submit", () => {
-    render(<AddFeedForm />);
-
-    const input = screen.getByPlaceholderText(FEED_XML_URL_PLACEHOLDER);
-    const button = screen.getByRole("button", { name: "Add Feed" });
-
-    fireEvent.change(input, {
-      target: { value: RSS_XML_URL }
-    });
-    fireEvent.click(button);
-
-    expect(mockAddSubscription).toHaveBeenCalledWith({
-      xmlAddress: RSS_XML_URL
-    });
-  });
-
   it("does not call addSubscription with an invalid URL on submit", () => {
     const { container } = render(<AddFeedForm />);
 
     const input = screen.getByPlaceholderText(FEED_XML_URL_PLACEHOLDER);
     fireEvent.change(input, { target: { value: "invalid-url" } });
+
+    const form = container.querySelector(SCOPE_FORM);
+    if (form) {
+      fireEvent.submit(form);
+    }
+
+    expect(mockAddSubscription).not.toHaveBeenCalled();
+  });
+
+  it("does not call addSubscription when the URL cannot be parsed", () => {
+    const { container } = render(<AddFeedForm />);
+
+    const input = screen.getByPlaceholderText(FEED_XML_URL_PLACEHOLDER);
+    fireEvent.change(input, { target: { value: INVALID_URL } });
 
     const form = container.querySelector(SCOPE_FORM);
     if (form) {
@@ -116,5 +140,21 @@ describe("AddFeedForm", () => {
     }
 
     expect(mockAddSubscription).not.toHaveBeenCalled();
+  });
+
+  it("calls addSubscription with the sanitized URL when form is submitted", () => {
+    const { container } = render(<AddFeedForm />);
+
+    const input = screen.getByPlaceholderText(FEED_XML_URL_PLACEHOLDER);
+    fireEvent.change(input, { target: { value: RSS_XML_URL } });
+
+    const form = container.querySelector(SCOPE_FORM);
+    if (form) {
+      fireEvent.submit(form);
+    }
+
+    expect(mockAddSubscription).toHaveBeenCalledWith({
+      xmlAddress: RSS_XML_URL
+    });
   });
 });

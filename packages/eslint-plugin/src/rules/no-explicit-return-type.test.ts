@@ -34,7 +34,6 @@ const runWith = (code: string) => {
   writeFileSync(fixturePath, `${code}\n`);
 };
 
-const NUMBER_ARROW = "const f = (): number => 5;";
 const NUMBER_ARROW_OUTPUT = "const f = () => 5;";
 const FUNCTION_NUMBER = "function f(): number { return 5; }";
 const FUNCTION_NUMBER_OUTPUT = "function f() { return 5; }";
@@ -49,15 +48,6 @@ afterAll(() => {
 
 ruleTester.run("no-explicit-return-type", noExplicitReturnTypeRule as never, {
   invalid: [
-    {
-      before() {
-        runWith(NUMBER_ARROW);
-      },
-      code: NUMBER_ARROW,
-      errors: [{ messageId: MESSAGE_ID }],
-      filename: FILENAME,
-      output: NUMBER_ARROW_OUTPUT
-    },
     {
       before() {
         runWith("const f = (): string => 'hello';");
@@ -203,6 +193,17 @@ ruleTester.run("no-explicit-return-type", noExplicitReturnTypeRule as never, {
       errors: [{ messageId: "explicitReturnType" }],
       filename: FILENAME,
       output: "class C { method(); }"
+    },
+    {
+      before() {
+        runWith(
+          "function f(): number & string { return 1 as unknown as number & string; }"
+        );
+      },
+      code: "function f(): number & string { return 1 as unknown as number & string; }",
+      errors: [{ messageId: MESSAGE_ID }],
+      filename: FILENAME,
+      output: "function f() { return 1 as unknown as number & string; }"
     }
   ],
   valid: [
@@ -277,6 +278,15 @@ ruleTester.run("no-explicit-return-type", noExplicitReturnTypeRule as never, {
         );
       },
       code: "import { Effect } from 'effect'; const f = async (): Promise<Effect.Effect<number, Error>> => Effect.succeed(1);",
+      filename: FILENAME
+    },
+    {
+      before() {
+        runWith(
+          "import { Effect } from 'effect'; const f = (): Effect<number, Error> & { _tag: 'foo' } => Effect.succeed(1);"
+        );
+      },
+      code: "import { Effect } from 'effect'; const f = (): Effect<number, Error> & { _tag: 'foo' } => Effect.succeed(1);",
       filename: FILENAME
     }
   ]

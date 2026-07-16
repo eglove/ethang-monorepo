@@ -441,6 +441,29 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "xs.filter((x) => (x.a === 1 && x.b === 2) && x.c === 3)",
       errors: [{ messageId: "preferMatches" }]
     },
+    {
+      // shouldPreferMatches returns false because the top-level operator
+      // is not && — exercises the top-level guard inside isAllEqualityChecks.
+      code: "xs.filter((x) => (x.a === 1 || x.b === 2) && x.c === 3)",
+      errors: [
+        { data: { lodash: "overEvery" }, messageId: "preferOverQuantifier" }
+      ]
+    },
+    {
+      // The right subtree is `||` — exercises the non-&& guard inside
+      // processAllEqualityLeaf.
+      code: "xs.filter((x) => ((x.a === 1 && x.b === 2) || x.c === 3))",
+      errors: [
+        { data: { lodash: "overSome" }, messageId: "preferOverQuantifier" }
+      ]
+    },
+    {
+      // A leaf that is neither equality nor LogicalExpression (a comparison
+      // `>` here) trips the `return isEqualityComparison(current)` branch.
+      code: "xs.filter((x) => x.a > 1)",
+      errors: [{ messageId: "preferLodash" }],
+      output: "filter(xs, (x) => x.a > 1)"
+    },
 
     // --- prefer-invoke-map: map calling a method -> invokeMap ---
     {

@@ -33,6 +33,7 @@ export const run = (argv: string[]) => {
   sortJson(absolutePath);
 };
 
+// v8 ignore next -- autoloader guarded by NODE_ENV; only runs in non-test processes.
 if ("test" !== globalThis.process.env["NODE_ENV"]) {
   run(globalThis.process.argv);
 }

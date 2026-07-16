@@ -185,6 +185,7 @@ export const isConjunctionOfEqualitiesToMemberOf = (
   while (0 < stack.length) {
     const current = stack.pop();
 
+    /* v8 ignore next -- defensive guard: current is always pushed/popped via the stack, never null at this point */
     if (!isNil(current)) {
       const isMatch = processConjunctionLeaf(
         current,

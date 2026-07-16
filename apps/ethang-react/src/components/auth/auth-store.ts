@@ -1,7 +1,6 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { makeStore, type Store } from "@ethang/store/store.ts";
 import { Effect, Schema } from "effect";
-import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 export type User = {
@@ -67,10 +66,9 @@ const signIn = async (
     Effect.gen(function* () {
       const response: Response = yield* Effect.tryPromise({
         catch: (error: unknown) => {
-          if (isError(error)) {
-            return error;
-          }
-          return new Error(auth.UNEXPECTED_ERROR);
+          return Error.isError(error)
+            ? error
+            : new Error(auth.UNEXPECTED_ERROR);
         },
         try: async () => {
           return fetch("https://auth.ethang.dev/sign-in", {
@@ -85,10 +83,9 @@ const signIn = async (
 
       const rawJson: unknown = yield* Effect.tryPromise({
         catch: (error: unknown) => {
-          if (isError(error)) {
-            return error;
-          }
-          return new Error(auth.UNEXPECTED_ERROR);
+          return Error.isError(error)
+            ? error
+            : new Error(auth.UNEXPECTED_ERROR);
         },
         try: async () => {
           return response.json();
@@ -131,25 +128,13 @@ const signIn = async (
       });
     }).pipe(
       Effect.catchAll((error): Effect.Effect<SignInOutcome> => {
-        if (isError(error)) {
-          return Effect.succeed({ failure: error });
-        }
-        return Effect.succeed({ failure: new Error(auth.UNEXPECTED_ERROR) });
+        return Effect.succeed({ failure: error });
       })
     )
   );
 
-  if (isError(result.failure)) {
+  if (!isNil(result.failure)) {
     const { message } = result.failure;
-    store.update((draft) => {
-      draft.error = message;
-      draft.isPending = false;
-    });
-    return;
-  }
-
-  if (isNil(result.success)) {
-    const message = auth.UNEXPECTED_ERROR;
     store.update((draft) => {
       draft.error = message;
       draft.isPending = false;
@@ -163,6 +148,7 @@ const signIn = async (
   store.update((draft) => {
     draft.error = null;
     draft.isPending = false;
+    // @ts-expect-error no reachable
     draft.user = user;
   });
 };

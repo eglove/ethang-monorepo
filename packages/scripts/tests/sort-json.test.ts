@@ -73,10 +73,28 @@ vi.mock("node:fs", async (importOriginal) => {
 
 vi.mock("node:path", async (importOriginal) => {
   const original = await importOriginal<Record<string, unknown>>();
+
   return {
     ...original,
-    resolve: vi.fn((..._arguments) => {
-      return _arguments.join("/");
+    resolve: vi.fn((...segments: string[]) => {
+      // Mimic node path.resolve: left-to-right concat with "/" between
+      // segments, preserving each segment verbatim. This matches how the
+      // production code concatenates `path.resolve(import.meta.dirname,
+      // "../..")` and then `path.resolve(workspaceRoot, filePath)`.
+      let result = "";
+      for (const segment of segments) {
+        if (0 === segment.length) {
+          continue; // eslint-disable-line no-continue
+        }
+        if (0 === result.length) {
+          result = segment;
+        } else if (result.endsWith("/") || segment.startsWith("/")) {
+          result += segment;
+        } else {
+          result += `/${segment}`;
+        }
+      }
+      return result;
     })
   };
 });

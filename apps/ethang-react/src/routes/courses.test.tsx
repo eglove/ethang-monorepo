@@ -72,6 +72,7 @@ describe("Courses Route Component", () => {
         learningPathUrl: null,
         name: "Introduction to Testing",
         swebokFocus: "construction",
+        updatedAt: "2024-01-01T00:00:00Z",
         url: "https://example.com/testing"
       }
     ];
@@ -108,6 +109,7 @@ describe("Courses Route Component", () => {
         learningPathUrl: null,
         name: "Course 1",
         swebokFocus: "construction",
+        updatedAt: "2024-01-02T00:00:00Z",
         url: "https://example.com/c1"
       },
       {
@@ -120,6 +122,7 @@ describe("Courses Route Component", () => {
         learningPathUrl: null,
         name: "Course 2",
         swebokFocus: "construction",
+        updatedAt: "2024-02-15T00:00:00Z",
         url: "https://example.com/c2"
       },
       {
@@ -132,6 +135,7 @@ describe("Courses Route Component", () => {
         learningPathUrl: null,
         name: "Course 3",
         swebokFocus: "design",
+        updatedAt: "2024-02-10T00:00:00Z",
         url: "https://example.com/c3"
       }
     ];
@@ -146,5 +150,32 @@ describe("Courses Route Component", () => {
     expect(learningPaths[0]?.dataset["id"]).toBe("path-1");
 
     expect(learningPaths[1]?.dataset["id"]).toBe("path-2");
+
+    expect(screen.getByText(/Last Updated:/u)).toBeDefined();
+  });
+
+  it("renders an empty Last Updated string when no courses have timestamps", () => {
+    mockStore.data = [
+      {
+        author: "Author",
+        courseId: "c1",
+        courseIndex: 1,
+        learningPathId: "path-1",
+        learningPathName: null,
+        learningPathOrder: 1,
+        learningPathUrl: null,
+        name: "Course 1",
+        swebokFocus: null,
+        updatedAt: null,
+        url: "https://example.com/c1"
+      }
+    ];
+
+    // @ts-expect-error for test
+    const Component = Route.component;
+    const { container } = render(<Component />);
+
+    expect(screen.getByText("Last Updated:")).toBeDefined();
+    expect(container).toBeDefined();
   });
 });

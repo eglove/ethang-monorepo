@@ -104,4 +104,17 @@ describe("BlogPagination", () => {
     expect(screen.getByText("‹")).toBeDisabled();
     expect(screen.getByText("›")).toBeDisabled();
   });
+
+  it("falls back to a single page when no maxPages is reported", () => {
+    mockUseQuery.mockReturnValue({
+      data: null,
+      isPending: false,
+      isPlaceholderData: false
+    });
+
+    render(<BlogPagination />);
+    expect(screen.getByText("1")).toBeDefined();
+    expect(screen.getByText("‹")).toBeDefined();
+    expect(screen.getByText("›")).toBeDefined();
+  });
 });

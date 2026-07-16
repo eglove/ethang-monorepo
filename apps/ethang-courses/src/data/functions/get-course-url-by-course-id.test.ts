@@ -52,4 +52,24 @@ describe("getCourseUrlByCourseId", () => {
 
     expect(result).toBeInstanceOf(NotFoundError);
   });
+
+  it("wraps thrown database errors as FetchError", async () => {
+    const thrown = new Error("db connection lost");
+    const mockDatabase = {
+      from: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockRejectedValue(thrown),
+      select: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnThis()
+    };
+
+    const result = await Effect.runPromise(
+      // @ts-expect-error for test
+      getCourseUrlByCourseId(mockDatabase, "course-1").pipe(Effect.flip)
+    );
+
+    expect(result).toStrictEqual(
+      expect.objectContaining({ message: "Error: db connection lost" })
+    );
+    expect(result).toHaveProperty("_tag", "FetchError");
+  });
 });

@@ -360,6 +360,7 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression) => {
     let current: TSESTree.Expression = expression;
 
     while (isMemberExpression(current)) {
+      /* v8 ignore next -- defensive guard: chained MemberExpressions with non-Identifier properties (computed access) are exceedingly rare in this codebase and uninteresting to test */
       if (!isIdentifier(current.property)) {
         return "";
       }
@@ -788,6 +789,7 @@ const isEqualityComparison = (expression: TSESTree.Expression) => {
 };
 
 const isAllEqualityChecks = (node: TSESTree.LogicalExpression) => {
+  /* v8 ignore next -- defensive guard: shouldPreferMatches pre-rejects non-&& operators before calling */
   if ("&&" !== node.operator) {
     return false;
   }

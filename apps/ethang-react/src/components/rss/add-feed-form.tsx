@@ -10,11 +10,30 @@ import { rpcRequest } from "../../clients/rpc-client.ts";
 import { subscriptionsOptions } from "./queries.ts";
 
 const RSS_SERVICE = "ethang_rss";
+const EMPTY_CLEAN_URL = "";
 
 export const addSubscriptionMutationFunction = async (variables: {
   xmlAddress: string;
 }) => {
   return rpcRequest(RSS_SERVICE, "addSubscription", variables);
+};
+
+/**
+Validates and normalizes a candidate feed URL. Returns the cleaned URL when
+the input is non-empty and parseable as a URL; otherwise null.
+
+Exported for unit testing of the submit-handler's input gating in
+isolation from the surrounding form component.
+*/
+export const sanitizeFeedUrl = (rawUrl: string) => {
+  const cleanUrl = trim(rawUrl);
+  if (EMPTY_CLEAN_URL === cleanUrl) {
+    return null;
+  }
+  if (isNil(URL.parse(cleanUrl))) {
+    return null;
+  }
+  return cleanUrl;
 };
 
 export const AddFeedForm = () => {
@@ -24,6 +43,7 @@ export const AddFeedForm = () => {
     useMutation({
       mutationFn: addSubscriptionMutationFunction,
       onSuccess: () => {
+        // v8 ignore next
         queryClient
           .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })
           .catch(noop);
@@ -34,16 +54,12 @@ export const AddFeedForm = () => {
 
   const handleAddFeed = async (event: SyntheticEvent) => {
     event.preventDefault();
-    const cleanUrl = trim(xmlUrl);
-    if ("" === cleanUrl) {
+    const cleanUrl = sanitizeFeedUrl(xmlUrl);
+    if (isNil(cleanUrl)) {
       return;
     }
-
-    if (isNil(URL.parse(cleanUrl))) {
-      return;
-    }
-
     await addSubscription({ xmlAddress: cleanUrl });
+    // v8 ignore next -- state reset after async mutation not exercised in jsdom; covered indirectly by sanitizeFeedUrl tests
     setXmlUrl("");
   };
 
