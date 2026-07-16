@@ -25,25 +25,11 @@ workspaces, frameworks, or scripts are current.
    - **Green**: Implement the minimum code to make the test pass. This directly addresses the hypothesis and fixes the identified issue.
    - **Refactor**: Simplify the implementation, run ESLint to ensure code quality, optimize performance, and enforce codebase standards without changing behavior.
 
-3. **Library Preferences**: Always prefer lodash and `/effect-ts` wherever they can be used.
+3. **100% Coverage Discipline**: Every workspace enforces 100% line/branch/function/statement coverage as a CI gate. To meet it, prefer to **extract logic into small, individually testable helper/utility functions** and **export previously unexported functions and classes** so the test suite can reach them. Reaching for `/* v8 ignore next */` is acceptable only for branches that are genuinely unreachable from any legal input (e.g. a defensive check for a node kind the parser cannot produce in that position). Before adding an ignore comment, prove the branch is unreachable by tracing all producers of that AST node kind; do not use ignores to paper over missing test cases.
 
 4. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
 
 5. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) and reference the `/ddd` skill for everything.
-
-6. **TypeScript Coding Standards**: Do not annotate explicit return types on functions, methods, or arrow functions. Let TypeScript infer the return type. This avoids redundancy and keeps signatures concise.
-
-   ```typescript
-   // ❌ Avoid – explicit return type annotation
-   const getUsers = async (): Promise<User[]> => db.select().from(users);
-
-   // ✅ Prefer – inferred return type
-   const getUsers = async () => db.select().from(users);
-   ```
-
-7. **Full Monorepo Ownership**: AI agents are responsible for the **entire** monorepo. Nothing in the repository should be skipped, ignored, or left untouched as a "preexisting issue", "out of scope", "unrelated problem", or "pre-existing drift". Every failure surfaced by lint, type-check, tests, coverage thresholds, audits, or any other verification gate MUST be fixed as part of the work. Do not defer to a follow-up issue, do not suppress with `// eslint-disable` / `@ts-expect-error` / `it.skip` / threshold bumps unless that *is* the root-cause fix; investigate the failure, design a real solution, and ship it green. When a verification command fails for any reason in any workspace, the task is not complete until it passes — including coverage thresholds, dependency audits, build commands, and any custom script wired into the workspace's `package.json`.
-
-8. **No Barrel Files**: Do not use barrel files. A barrel is an `index.ts` that re-exports from multiple sibling files (e.g. `export { foo } from "./foo.js"; export { bar } from "./bar.js";`). Always import directly from the source file (e.g. `import { foo } from "./foo.js"` and `import { bar } from "./bar.js"`). This applies to package entry points, route segments, component folders, and any other folder boundary. Barrels hide the dependency graph, defeat tree-shaking, make code review harder, and create circular import hazards. The `@ethang/store` package exposes its files via `package.json` `"exports"` subpaths (`./*` mapping to `./src/*`); consumers must import from `@ethang/store/store` and `@ethang/store/use-store`, never from `@ethang/store`.
 
 ---
 
@@ -75,10 +61,10 @@ integrity, and drift checks.
 
 Skills are available in two locations:
 
-* **`.github/skills/`** — Custom skills specific to this repository
-* **`.agents/skills/`** — Generated skills from the compiler
+* **`.github/skills/`** — Generated skills from the compiler
+* **`.agents/skills/`** — External skills installed by skills.sh
 
-When resolving skill references, check both locations. The `.agents/skills/` directory contains built-in and generated skills (402 items), while `.github/skills/` contains repository-specific custom skills (7 items).
+When resolving skill references, check both locations. The `.agents/skills/` directory contains external skills (402 items), while `.github/skills/` contains repository-specific custom skills (7 items).
 
 ---
 
