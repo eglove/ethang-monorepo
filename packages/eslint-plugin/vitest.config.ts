@@ -6,7 +6,7 @@ export default defineConfig({
       exclude: [
         "src/**/*.test.ts",
         "src/index.test.ts",
-        "src/rules/fixture.fixture.ts"
+        "src/rules/**/*.fixture.ts"
       ],
       include: ["src/**/*.ts"],
       provider: "v8",

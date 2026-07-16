@@ -4,7 +4,6 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
-import isNil from "lodash/isNil.js";
 import {
   type Signature,
   type Type,
@@ -13,6 +12,10 @@ import {
 } from "typescript";
 
 import { getParserServices } from "../utils/ast.ts";
+import {
+  isSchemaDecodeCall,
+  isSchemaDecodeCallee
+} from "../utils/schema-decode.ts";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
@@ -20,87 +23,6 @@ const createRule = ESLintUtils.RuleCreator((name) => {
 
 type MessageIds = "validateUnknown";
 type Options = [];
-
-// Schema decode-style methods. A call to one of these is treated as the
-// validation boundary: any unknown/any expression passed to it (either as a
-// direct argument or as the argument of the curried form) is considered
-// validated.
-const SCHEMA_DECODE_METHODS = new Set([
-  "decode",
-  "decodeEither",
-  "decodeExit",
-  "decodeOption",
-  "decodePromise",
-  "decodeSync",
-  "decodeUnknown",
-  "decodeUnknownEither",
-  "decodeUnknownExit",
-  "decodeUnknownOption",
-  "decodeUnknownPromise",
-  "decodeUnknownSync",
-  "is",
-  "validate",
-  "validateEither",
-  "validateExit",
-  "validateOption",
-  "validatePromise",
-  "validateSync"
-]);
-
-const DECODE_ALIASES = new Set(["S", "Schema", "Schema$"]);
-
-const getPropertyName = (callee: TSESTree.MemberExpression) => {
-  if (callee.computed) {
-    // Computed form like `Schema["decodeUnknownSync"]` or
-    // `Schema[\`decodeUnknownSync\`]`. Only static string names are
-    // recognised as decode methods.
-    const { property } = callee;
-    if (
-      AST_NODE_TYPES.Literal === property.type &&
-      "string" === typeof property.value
-    ) {
-      return property.value;
-    }
-    if (
-      AST_NODE_TYPES.TemplateLiteral === property.type &&
-      0 === property.expressions.length &&
-      property.quasis[0]
-    ) {
-      return property.quasis[0].value.cooked ?? null;
-    }
-    return null;
-  }
-  if (AST_NODE_TYPES.Identifier === callee.property.type) {
-    return callee.property.name;
-  }
-  return null;
-};
-
-const isSchemaDecodeCall = (node: TSESTree.CallExpression) => {
-  const { callee } = node;
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (AST_NODE_TYPES.Identifier !== callee.object.type) {
-    return false;
-  }
-  if (!DECODE_ALIASES.has(callee.object.name)) {
-    return false;
-  }
-  const propertyName = getPropertyName(callee);
-  if (isNil(propertyName)) {
-    return false;
-  }
-  return SCHEMA_DECODE_METHODS.has(propertyName);
-};
-
-const isSchemaDecodeCallee = (node: TSESTree.Node) => {
-  // Curried form: Schema.decode*(args)(value) — the outer call's callee is
-  // itself a Schema decode call.
-  return (
-    AST_NODE_TYPES.CallExpression === node.type && isSchemaDecodeCall(node)
-  );
-};
 
 const isUnknownOrAny = (flags: TypeFlags) => {
   // eslint-disable-next-line no-bitwise -- TypeFlags is a bitfield enum
