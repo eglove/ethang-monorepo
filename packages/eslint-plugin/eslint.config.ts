@@ -4,6 +4,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 export default defineConfig(
   globalIgnores([
     "src/rules/**/*.fixture.ts",
+    "src/rules/.fixtures/**",
     "tsconfig.json",
     "coverage",
     "dist",
@@ -32,7 +33,6 @@ export default defineConfig(
       }
     },
     rules: {
-      "@ethang/prefer-effect": "off",
       "@ethang/prefer-lodash": "off",
       "sonar/function-name": "off"
     }

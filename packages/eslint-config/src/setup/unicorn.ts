@@ -46,7 +46,8 @@ const customRules = [
   { name: "consistent-class-member-order", rule: "off" },
   { name: "no-top-level-side-effects", rule: "off" },
   { name: "prefer-await", rule: "off" },
-  { name: "default-export-style", rule: "off" }
+  { name: "default-export-style", rule: "off" },
+  { name: "prefer-temporal", rule: "off" }
 ];
 
 export const unicornRules = genRules(ruleNames, customRules, "unicorn");

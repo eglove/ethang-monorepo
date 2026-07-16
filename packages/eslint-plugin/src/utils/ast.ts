@@ -451,7 +451,7 @@ const resolveArrayCall = (
 
   // If the receiver is an identifier imported from "effect" (e.g. Schema,
   // Stream, DateTime, Chunk, Option, etc.), this is an Effect namespace call
-  // — not an array call — so it should not trigger prefer-effect/lodash.
+  // — not an array call — so it should not trigger prefer-lodash.
   if (
     !isNil(program) &&
     AST_NODE_TYPES.Identifier === callee.object.type &&

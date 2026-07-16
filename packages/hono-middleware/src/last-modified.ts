@@ -15,14 +15,15 @@ const setLastModifiedHeader = (headers: Headers, content: string) => {
     return;
   }
 
-  // Fall back to Date.parse for RFC 2822 / RFC 850 / asctime
-  // eslint-disable-next-line unicorn/prefer-temporal
+  // Fall back to `Date.parse` for RFC 2822 / RFC 850 / asctime
+  // (DateTime.make only handles ISO 8601, so we need the native parser
+  // for legacy date formats here).
   const epoch = Date.parse(content);
   if (Number.isNaN(epoch)) {
     return;
   }
-  const parsedDate = DateTime.toDateUtc(DateTime.unsafeMake(epoch));
-  headers.set("Last-Modified", parsedDate.toUTCString());
+  const parsedDate = DateTime.unsafeMake(epoch);
+  headers.set("Last-Modified", DateTime.toDateUtc(parsedDate).toUTCString());
 };
 
 export const lastModifiedMiddleware: MiddlewareHandler = async (

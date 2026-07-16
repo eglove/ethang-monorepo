@@ -17,7 +17,6 @@ export const normalizeDate = (dateString?: null | string) => {
     return DateTime.formatIso(parsedIso.value);
   }
 
-  // eslint-disable-next-line unicorn/prefer-temporal
   const timestamp = Date.parse(cleanedString);
   if (!Number.isNaN(timestamp)) {
     return DateTime.formatIso(DateTime.unsafeMake(timestamp));

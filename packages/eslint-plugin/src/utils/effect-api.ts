@@ -1,7 +1,8 @@
 // Map of native Array.prototype / Set / Map methods to the equivalent
-// `effect` functions. The disambiguation logic in the prefer-effect rule
-// consults this table to decide whether an Array.prototype call should
-// really be rewritten to an Effect call.
+// `effect` functions. The disambiguation logic in prefer-lodash consults
+// this table to decide whether a CallExpression on a native receiver is
+// already an Effect call (and should be left alone) or a true native array
+// method that should be rewritten to a lodash deep import.
 //
 // The keys are Array.prototype method names (lowercase, no `Array.prototype.`
 // prefix); the values are the canonical effect module exports to use.
@@ -169,4 +170,177 @@ export const effectCoreMethods = new Set<string>([
 
 export const isEffectCoreMethod = (name: string) => {
   return effectCoreMethods.has(name);
+};
+
+// Map of native `Date` constructor, `Date.prototype` methods, and `Temporal`
+// API surface to the closest `effect/DateTime` (or related) export. The new
+// `prefer-effect-datetime` rule consults this table to drive its message
+// suggestions; other future rules can reuse the table to disambiguate
+// DateTime-shaped calls.
+//
+// Keys mirror the *unfamiliar* surface: "DateConstructor" for `new Date(...)`,
+// the lowercase `Date.prototype` method names, and the PascalCase `Temporal.*`
+// namespaces/types. Values identify the canonical Effect export to recommend.
+export const effectDateTimeApi = {
+  // `Date` static methods and the constructor itself.
+  DateConstructor: {
+    description: "Prefer Effect DateTime over the JavaScript Date constructor.",
+    import: "DateTime",
+    name: "make"
+  },
+  DateNow: {
+    description: "Prefer `DateTime.now()` over `Date.now()`.",
+    import: "DateTime",
+    name: "now"
+  },
+  DateParse: {
+    description: "Prefer `DateTime.make(string)` over `Date.parse(string)`.",
+    import: "DateTime",
+    name: "make"
+  },
+  DateReference: {
+    description:
+      "Prefer `DateTime.Utc` over the legacy `Date` global type/name.",
+    import: "DateTime",
+    name: "Utc"
+  },
+  DateUTC: {
+    description:
+      "Prefer `DateTime.unsafeMakeZoned({...})` over `Date.UTC(...)`.",
+    import: "DateTime",
+    name: "unsafeMakeZoned"
+  },
+  // `Date.prototype` methods → Effect `DateTime` pipeline helpers.
+  getDate: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).day` over `date.getDate()`.",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getDay: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).weekDay` over `date.getDay()` (0-6 → 1-7).",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getFullYear: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).year` over `date.getFullYear()`.",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getHours: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).hours` over `date.getHours()`.",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getMilliseconds: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).milliseconds` over `date.getMilliseconds()`.",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getMinutes: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).minutes` over `date.getMinutes()`.",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getMonth: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).month` over `date.getMonth()` (Effect is 1-indexed).",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getSeconds: {
+    description:
+      "Prefer `DateTime.toPartsUtc(date).seconds` over `date.getSeconds()`.",
+    import: "DateTime",
+    name: "toPartsUtc"
+  },
+  getTime: {
+    description: "Prefer `DateTime.toEpochMillis(date)` over `date.getTime()`.",
+    import: "DateTime",
+    name: "toEpochMillis"
+  },
+  toISOString: {
+    description: "Prefer `DateTime.formatIso(date)` over `date.toISOString()`.",
+    import: "DateTime",
+    name: "formatIso"
+  },
+  toJSON: {
+    description: "Prefer `DateTime.formatIso(date)` over `date.toJSON()`.",
+    import: "DateTime",
+    name: "formatIso"
+  },
+  // `Temporal.*` namespace → Effect DateTime. The trailing segment is what
+  // is suggested; the namespace is captured by the rule from the source.
+  TemporalCalendar: {
+    description:
+      "Use `DateTime` with explicit calendar handling instead of `Temporal.Calendar`.",
+    import: "DateTime",
+    name: "makeZoned"
+  },
+  TemporalDuration: {
+    description: "Use `effect/Duration` instead of `Temporal.Duration`.",
+    import: "Duration",
+    name: "millis"
+  },
+  TemporalInstant: {
+    description:
+      "Prefer `DateTime.unsafeFromEpochMilliseconds(ms)` or `.makeZoned(...)` over `Temporal.Instant`.",
+    import: "DateTime",
+    name: "unsafeFromEpochMilliseconds"
+  },
+  TemporalNow: {
+    description: "Prefer `DateTime.now()` over `Temporal.Now.instant()`.",
+    import: "DateTime",
+    name: "now"
+  },
+  TemporalPlainDate: {
+    description:
+      "Prefer `DateTime.unsafeMake({year, month, day})` over `Temporal.PlainDate`.",
+    import: "DateTime",
+    name: "unsafeMake"
+  },
+  TemporalPlainDateTime: {
+    description:
+      "Prefer `DateTime.unsafeMake({...})` over `Temporal.PlainDateTime`.",
+    import: "DateTime",
+    name: "unsafeMake"
+  },
+  TemporalPlainTime: {
+    description:
+      "Prefer `DateTime` over `Temporal.PlainTime` (no direct equivalent; consider whether you need a date).",
+    import: "DateTime",
+    name: "unsafeMake"
+  },
+  TemporalTimeZone: {
+    description:
+      "Use `DateTime.TimeZone.Named` instead of `Temporal.TimeZone`.",
+    import: "DateTime",
+    name: "TimeZone.Named"
+  },
+  TemporalZonedDateTime: {
+    description:
+      "Prefer `DateTime.unsafeMakeZoned(input, { timeZone })` over `Temporal.ZonedDateTime`.",
+    import: "DateTime",
+    name: "unsafeMakeZoned"
+  }
+} as const satisfies Record<
+  string,
+  {
+    readonly description: string;
+    readonly import: string;
+    readonly name: string;
+  }
+>;
+
+export type EffectDateTimeApiKey = keyof typeof effectDateTimeApi;
+
+export const isEffectDateTimeApiKey = (
+  name: string
+): name is EffectDateTimeApiKey => {
+  return Object.hasOwn(effectDateTimeApi, name);
 };

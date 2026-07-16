@@ -117,7 +117,9 @@ const cookieStoreMock = () => {
             }
             if (true === value) {
               segments.push(`; ${key}`);
+              // eslint-disable-next-line @ethang/prefer-effect-datetime
             } else if (value instanceof Date) {
+              // eslint-disable-next-line @ethang/prefer-effect-datetime
               segments.push(`; ${key}=${value.toUTCString()}`);
             } else if (isString(value) || isNumber(value)) {
               segments.push(`; ${key}=${String(value)}`);

@@ -49,9 +49,8 @@ describe("calendarPage", () => {
     }
   );
 
-  // eslint-disable-next-line unicorn/prefer-temporal
   const OUTSIDE_WEEK_TIMESTAMP = Date.parse("2099-01-04T12:00:00Z");
-  // eslint-disable-next-line unicorn/prefer-temporal
+
   const INSIDE_WEEK_TIMESTAMP = Date.parse(`${DATE}T12:00:00Z`);
 
   it("renders the calendar page for week view when today is outside the current week", async () => {

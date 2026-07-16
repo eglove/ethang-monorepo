@@ -1,5 +1,5 @@
 import { urls } from "@ethang/intl/en/urls.ts";
-import { Effect } from "effect";
+import { DateTime, Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { authenticate, UnauthorizedError } from "./authenticate.ts";
@@ -46,8 +46,10 @@ describe("authenticate", () => {
 
     const expiredUser = {
       email: "test@test.com",
-      exp: Math.floor(Date.now() / 1000) - 3600,
-      iat: Math.floor(Date.now() / 1000) - 7200,
+      exp:
+        Math.floor(DateTime.toEpochMillis(DateTime.unsafeNow()) / 1000) - 3600,
+      iat:
+        Math.floor(DateTime.toEpochMillis(DateTime.unsafeNow()) / 1000) - 7200,
       sub: "123",
       username: "testuser"
     };
@@ -121,8 +123,10 @@ describe("authenticate", () => {
 
     const validUser = {
       email: "test@test.com",
-      exp: Math.floor(Date.now() / 1000) + 3600,
-      iat: Math.floor(Date.now() / 1000) - 3600,
+      exp:
+        Math.floor(DateTime.toEpochMillis(DateTime.unsafeNow()) / 1000) + 3600,
+      iat:
+        Math.floor(DateTime.toEpochMillis(DateTime.unsafeNow()) / 1000) - 3600,
       sub: "123",
       username: "testuser"
     };
