@@ -1,7 +1,7 @@
 import { SignInSchema as AppSignInSchema } from "@ethang/schemas/auth/sign-in-schema.ts";
 import { SignUpSchema } from "@ethang/schemas/auth/sign-up-schema.ts";
 import { VerifySchema } from "@ethang/schemas/auth/verify-schema.ts";
-import { Effect, Option, Schema } from "effect";
+import { DateTime, Effect, Option, Schema } from "effect";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import isNil from "lodash/isNil.js";
@@ -57,7 +57,7 @@ const setAuthCookie = async (token: null | string) => {
   }
   // eslint-disable-next-line compat/compat
   await cookieStore.set({
-    expires: Date.now() + ONE_YEAR_MS,
+    expires: DateTime.toEpochMillis(DateTime.unsafeNow()) + ONE_YEAR_MS,
     name: AUTH_COOKIE_NAME,
     path: "/",
     sameSite: "none",

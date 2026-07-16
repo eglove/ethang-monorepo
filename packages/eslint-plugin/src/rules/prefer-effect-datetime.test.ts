@@ -103,7 +103,7 @@ ruleTester.run("prefer-effect-datetime", preferEffectDateTimeRule as never, {
       errors: [{ messageId: "preferDateType" }, { messageId: "preferNewDate" }]
     },
 
-    // ---------------- Date(...) / Date.now / Date.parse / Date.UTC ----------------
+    // ---------------- Date(...) / Date.now / Date.UTC ----------------
     {
       before() {
         runWith("date-call", "const d = Date();");
@@ -118,14 +118,6 @@ ruleTester.run("prefer-effect-datetime", preferEffectDateTimeRule as never, {
       },
       ...fixture("date-now"),
       code: "const ms = Date.now();",
-      errors: [{ messageId: "preferDateStatic" }]
-    },
-    {
-      before() {
-        runWith("date-parse", "const ts = Date.parse('2024-01-15');");
-      },
-      ...fixture("date-parse"),
-      code: "const ts = Date.parse('2024-01-15');",
       errors: [{ messageId: "preferDateStatic" }]
     },
     {
@@ -424,6 +416,25 @@ ruleTester.run("prefer-effect-datetime", preferEffectDateTimeRule as never, {
       ...fixture("date-instance-computed-property"),
       code: 'declare const date: Date; export const y = date["getFullYear"]();',
       errors: [{ messageId: "preferDateType" }]
+    },
+    // Negative case: receiver is a `Date` that is NOT produced by the
+    // `DateTime.toDate*` bridge. Even though `DateTime` is imported above,
+    // the `inner` binding is the bare `Date` global, so `.toUTCString()`
+    // must still be flagged (twice: once for the `Date` type, once for
+    // the `Date.prototype` method).
+    {
+      before() {
+        runWith(
+          "date-instance-non-bridge",
+          "import { DateTime } from 'effect'; declare const inner: Date; export const v = inner.toUTCString();"
+        );
+      },
+      ...fixture("date-instance-non-bridge"),
+      code: "import { DateTime } from 'effect'; declare const inner: Date; export const v = inner.toUTCString();",
+      errors: [
+        { messageId: "preferDateType" },
+        { messageId: "preferDateMember" }
+      ]
     }
   ],
   valid: [
@@ -668,6 +679,73 @@ ruleTester.run("prefer-effect-datetime", preferEffectDateTimeRule as never, {
       },
       ...fixture("valid-non-date-receiver"),
       code: "declare const date: string; export const y = date.getFullYear();"
+    },
+
+    // ---------------- Date.parse is allowed: only built-in that handles legacy formats ----------------
+    {
+      before() {
+        runWith(
+          "valid-date-parse",
+          "const ts = Date.parse('Sun, 06 Nov 1994 08:49:37 GMT');"
+        );
+      },
+      ...fixture("valid-date-parse"),
+      code: "const ts = Date.parse('Sun, 06 Nov 1994 08:49:37 GMT');"
+    },
+
+    // ---------------- Effect → native Date bridge: `DateTime.toDate*(...)` ----------------
+    // The rule must not flag `Date.prototype` methods on values produced by
+    // the documented Effect → native Date bridge, because the user is
+    // intentionally producing a legacy `Date` for HTTP / third-party interop.
+    {
+      before() {
+        runWith(
+          "valid-datetime-to-date-utc-chained-to-utcstring",
+          "import { DateTime } from 'effect'; export const s = DateTime.toDateUtc(DateTime.unsafeMake(0)).toUTCString();"
+        );
+      },
+      ...fixture("valid-datetime-to-date-utc-chained-to-utcstring"),
+      code: "import { DateTime } from 'effect'; export const s = DateTime.toDateUtc(DateTime.unsafeMake(0)).toUTCString();"
+    },
+    {
+      before() {
+        runWith(
+          "valid-datetime-to-date-chained-to-utcstring",
+          "import { DateTime } from 'effect'; export const s = DateTime.toDate(DateTime.unsafeMake(0)).toUTCString();"
+        );
+      },
+      ...fixture("valid-datetime-to-date-chained-to-utcstring"),
+      code: "import { DateTime } from 'effect'; export const s = DateTime.toDate(DateTime.unsafeMake(0)).toUTCString();"
+    },
+    {
+      before() {
+        runWith(
+          "valid-datetime-to-date-utc-chained-get-time",
+          "import { DateTime } from 'effect'; export const ms = DateTime.toDateUtc(DateTime.unsafeMake(0)).getTime();"
+        );
+      },
+      ...fixture("valid-datetime-to-date-utc-chained-get-time"),
+      code: "import { DateTime } from 'effect'; export const ms = DateTime.toDateUtc(DateTime.unsafeMake(0)).getTime();"
+    },
+    {
+      before() {
+        runWith(
+          "valid-datetime-to-date-utc-stored-then-utcstring",
+          "import { DateTime } from 'effect'; const d = DateTime.toDateUtc(DateTime.unsafeMake(0)); export const s = d.toUTCString();"
+        );
+      },
+      ...fixture("valid-datetime-to-date-utc-stored-then-utcstring"),
+      code: "import { DateTime } from 'effect'; const d = DateTime.toDateUtc(DateTime.unsafeMake(0)); export const s = d.toUTCString();"
+    },
+    {
+      before() {
+        runWith(
+          "valid-datetime-to-date-stored-then-get-time",
+          "import { DateTime } from 'effect'; const d = DateTime.toDate(DateTime.unsafeMake(0)); export const ms = d.getTime();"
+        );
+      },
+      ...fixture("valid-datetime-to-date-stored-then-get-time"),
+      code: "import { DateTime } from 'effect'; const d = DateTime.toDate(DateTime.unsafeMake(0)); export const ms = d.getTime();"
     },
 
     // ---------------- eslint-disable directive (must be in the source it disables) ----------------

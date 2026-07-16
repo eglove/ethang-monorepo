@@ -14,7 +14,11 @@ import {
   effectDateTimeApi,
   isEffectDateTimeApiKey
 } from "./../utils/effect-api.ts";
-import { isIdentifier, isMemberExpression } from "./../utils/type-guards.ts";
+import {
+  isCallExpression,
+  isIdentifier,
+  isMemberExpression
+} from "./../utils/type-guards.ts";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
@@ -30,7 +34,12 @@ type MessageIds =
 
 type Options = [];
 
-const DATE_STATIC_METHODS = ["now", "parse", "UTC"] as const;
+// `Date.parse` is intentionally excluded: Effect's `DateTime.make` only
+// parses ISO 8601 strings, but `Date.parse` is the only built-in way to
+// parse legacy formats (RFC 2822, RFC 850, asctime) such as those emitted
+// by `<meta name="last-modified">` headers. Callers that need the legacy
+// parser must use `Date.parse` directly.
+const DATE_STATIC_METHODS = ["now", "UTC"] as const;
 
 type DateStaticMethod = (typeof DATE_STATIC_METHODS)[number];
 
@@ -151,9 +160,6 @@ const checkNewDateExpression = (
 const staticMethodTarget = (propertyName: DateStaticMethod) => {
   if ("now" === propertyName) {
     return formatTarget("DateTime", "now");
-  }
-  if ("parse" === propertyName) {
-    return formatTarget("DateTime", "make");
   }
   return formatTarget("DateTime", "unsafeMakeZoned");
 };
@@ -372,6 +378,79 @@ const dateInstanceMemberTarget = (propertyName: string) => {
   return formatTarget("DateTime", "make");
 };
 
+// `Effect.DateTime.toDate(...)` and `Effect.DateTime.toDateUtc(...)` are
+// the documented Effect → native `Date` bridge used for HTTP interop and
+// similar contexts where the legacy `Date.prototype` surface is required.
+// Methods that intentionally produce a native `Date` (the bridge).
+const DATE_PRODUCING_METHODS = ["toDate", "toDateUtc"] as const;
+
+type DateProducingMethod = (typeof DATE_PRODUCING_METHODS)[number];
+
+const isDateProducingMethod = (name: string): name is DateProducingMethod => {
+  return includes(DATE_PRODUCING_METHODS, name);
+};
+
+// True iff `node` is a CallExpression of the form
+// `DateTime.toDate(...)` / `DateTime.toDateUtc(...)`. The namespace
+// identifier `DateTime` is matched by name only; if a project shadows it
+// the type checker will still route the receiver to a non-`Date` type
+// and the upstream guard will not fire.
+const isDateProducingCallExpression = (node: TSESTree.CallExpression) => {
+  if (!isMemberExpression(node.callee)) {
+    return false;
+  }
+  if (!isIdentifier(node.callee.object)) {
+    return false;
+  }
+  if ("DateTime" !== node.callee.object.name) {
+    return false;
+  }
+  if (!isIdentifier(node.callee.property)) {
+    return false;
+  }
+  return isDateProducingMethod(node.callee.property.name);
+};
+
+// True iff `identifier` is bound to a CallExpression of the form
+// `DateTime.toDate(...)` / `DateTime.toDateUtc(...)`. Handles the
+// `const d = DateTime.toDateUtc(...); d.toUTCString();` shape.
+// True iff `identifier` is bound to a CallExpression of the form
+// `DateTime.toDate(...)` / `DateTime.toDateUtc(...)`. Handles the
+// `const d = DateTime.toDateUtc(...); d.toUTCString();` shape.
+const isAssignedFromDateProducingCall = (
+  context: TSESLint.RuleContext<MessageIds, Options>,
+  identifier: TSESTree.Identifier
+) => {
+  const variable = context.sourceCode
+    .getScope(identifier)
+    .variables.find((scopeVariable) => {
+      return scopeVariable.name === identifier.name;
+    });
+  if (isNil(variable)) {
+    return false;
+  }
+  const [definition] = variable.defs;
+  /* v8 ignore next -- a scope variable resolved from an Identifier reference always has at least one definition (the binding site). */
+  if (isNil(definition)) {
+    return false;
+  }
+  // Only `const`/`let`/`var` bindings have a `VariableDeclarator` `init`
+  // we can inspect; function parameters, catch clauses, and `import`
+  // bindings have a different `definition.node` shape and can never
+  // resolve to a `DateTime.toDate*(...)` call.
+  if (definition.node.type !== AST_NODE_TYPES.VariableDeclarator) {
+    return false;
+  }
+  const declarator = definition.node;
+  if (isNil(declarator.init)) {
+    return false;
+  }
+  if (!isCallExpression(declarator.init)) {
+    return false;
+  }
+  return isDateProducingCallExpression(declarator.init);
+};
+
 const checkDateInstanceMemberCall = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   services: ReturnType<typeof getParserServices>,
@@ -393,13 +472,35 @@ const checkDateInstanceMemberCall = (
   if (isIdentifier(callee.object) && isDateIdentifier(callee.object)) {
     return;
   }
+  // Effect → native `Date` bridge. `DateTime.toDateUtc(x).toUTCString()` and
+  // `const d = DateTime.toDateUtc(...); d.toUTCString()` are the documented
+  // pattern for HTTP interop; skip the instance-member check because the
+  // native `Date.prototype` call is intentional.
+  if (
+    isCallExpression(callee.object) &&
+    isDateProducingCallExpression(callee.object)
+  ) {
+    return;
+  }
+  if (
+    isIdentifier(callee.object) &&
+    isAssignedFromDateProducingCall(context, callee.object)
+  ) {
+    return;
+  }
   if (!isReceiverIncludingDate(services, callee.object)) {
     return;
   }
   context.report({
     data: { target: dateInstanceMemberTarget(callee.property.name) },
     messageId: "preferDateMember",
-    node
+    // Report on the property identifier (e.g. `.toUTCString`) rather than the
+    // whole call expression so the diagnostic points at the actual
+    // `Date.prototype` method being called. The full call site (e.g.
+    // `DateTime.toDateUtc(...).toUTCString()`) starts far to the left of the
+    // offending method, which makes the report look like it is flagging
+    // `DateTime.toDateUtc` itself.
+    node: callee.property
   });
 };
 
