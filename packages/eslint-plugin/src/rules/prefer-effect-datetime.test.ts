@@ -1,5 +1,5 @@
 import { RuleTester } from "eslint";
-import { writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { parser as tsParser } from "typescript-eslint";
 
@@ -42,6 +42,7 @@ const fixture = (name: string) => {
 
 const runWith = (name: string, code: string) => {
   const { filename } = fixture(name);
+  mkdirSync(path.dirname(filename), { recursive: true });
   writeFileSync(filename, `${code}\n`);
 };
 
