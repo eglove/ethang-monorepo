@@ -4,6 +4,7 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 import {
   type Signature,
   type Type,
@@ -48,6 +49,33 @@ const SCHEMA_DECODE_METHODS = new Set([
 
 const DECODE_ALIASES = new Set(["S", "Schema", "Schema$"]);
 
+const getPropertyName = (callee: TSESTree.MemberExpression) => {
+  if (callee.computed) {
+    // Computed form like `Schema["decodeUnknownSync"]` or
+    // `Schema[\`decodeUnknownSync\`]`. Only static string names are
+    // recognised as decode methods.
+    const { property } = callee;
+    if (
+      AST_NODE_TYPES.Literal === property.type &&
+      "string" === typeof property.value
+    ) {
+      return property.value;
+    }
+    if (
+      AST_NODE_TYPES.TemplateLiteral === property.type &&
+      0 === property.expressions.length &&
+      property.quasis[0]
+    ) {
+      return property.quasis[0].value.cooked ?? null;
+    }
+    return null;
+  }
+  if (AST_NODE_TYPES.Identifier === callee.property.type) {
+    return callee.property.name;
+  }
+  return null;
+};
+
 const isSchemaDecodeCall = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   if (AST_NODE_TYPES.MemberExpression !== callee.type) {
@@ -59,10 +87,11 @@ const isSchemaDecodeCall = (node: TSESTree.CallExpression) => {
   if (!DECODE_ALIASES.has(callee.object.name)) {
     return false;
   }
-  if (AST_NODE_TYPES.Identifier !== callee.property.type || callee.computed) {
+  const propertyName = getPropertyName(callee);
+  if (isNil(propertyName)) {
     return false;
   }
-  return SCHEMA_DECODE_METHODS.has(callee.property.name);
+  return SCHEMA_DECODE_METHODS.has(propertyName);
 };
 
 const isSchemaDecodeCallee = (node: TSESTree.Node) => {
