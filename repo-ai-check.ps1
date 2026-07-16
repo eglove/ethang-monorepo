@@ -280,10 +280,6 @@ try {
 
             [Parameter()]
             [AllowNull()]
-            $AutofixPayload = $null,
-
-            [Parameter()]
-            [AllowNull()]
             $AutofixSummary = $null
         )
 
@@ -748,7 +744,7 @@ try {
 
                 $autofixSummary = if ($UseFix) { Get-AutofixSummary -Payload $autofixPayload } else { $null }
 
-                $result.lint = ConvertFrom-EslintJson -Stdout $shimStdoutText -Stderr $shimStderr -ExitCode $shimExit -DurationMs $shimMs -AutofixPayload $autofixPayload -AutofixSummary $autofixSummary
+                $result.lint = ConvertFrom-EslintJson -Stdout $shimStdoutText -Stderr $shimStderr -ExitCode $shimExit -DurationMs $shimMs -AutofixSummary $autofixSummary
             }
             else {
                 $result.lint = [PSCustomObject]@{
@@ -941,7 +937,7 @@ try {
         }
 
         function ConvertFrom-EslintJsonLocal {
-            param($Stdout, $ExitCode, $DurationMs, $AutofixPayload, $AutofixSummary)
+            param($Stdout, $Stderr, $ExitCode, $DurationMs, $AutofixSummary)
             $issues = [System.Collections.Generic.List[object]]::new()
             $raw = $Stdout.Trim()
             if (-not [string]::IsNullOrWhiteSpace($raw)) {
@@ -1162,7 +1158,7 @@ try {
                     $shimStderr = "eslint-autofix shim exited $shimExit with no stdout."
                 }
                 $autofixSummary = if ($UseFix) { Get-AutofixSummaryLocal -Payload $autofixPayload } else { $null }
-                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $shimTextTrim -ExitCode $shimExit -DurationMs $shimMs -AutofixPayload $autofixPayload -AutofixSummary $autofixSummary
+                $result.lint = ConvertFrom-EslintJsonLocal -Stdout $shimTextTrim -Stderr $shimStderr -ExitCode $shimExit -DurationMs $shimMs -AutofixSummary $autofixSummary
             }
             else {
                 $result.lint = [PSCustomObject]@{
