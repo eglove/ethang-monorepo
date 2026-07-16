@@ -13,8 +13,6 @@ swebok-v4.md
 plan.md
 .agents
 .output.json
-.agents-check.json
-.agents-check-pretty.json
 reports
 .repos
 repo-plan.md
