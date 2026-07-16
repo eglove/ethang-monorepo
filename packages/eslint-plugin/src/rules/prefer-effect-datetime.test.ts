@@ -259,6 +259,44 @@ ruleTester.run("prefer-effect-datetime", preferEffectDateTimeRule as never, {
         { messageId: "preferDateType" },
         { messageId: "preferDateMember" }
       ]
+    },
+    // ---------------- Bridge miss: shape coverage for `isDateProducingCallExpression` ----------------
+    // Each of these stores a `Date` into a binding that is NOT a
+    // `DateTime.toDate*(...)` call, so the bridge guard returns `false` and
+    // the rule must still flag the `.toUTCString()` member call. They exist
+    // to exercise the four short-circuit branches of the
+    // `isDateProducingCallExpression` predicate so coverage reaches 100%.
+    {
+      ...fixture("date-instance-bridge-miss-global-call"),
+      code: "declare const makeDate: () => Date; const d = makeDate(); export const s = d.toUTCString();",
+      errors: [
+        { messageId: "preferDateType" },
+        { messageId: "preferDateMember" }
+      ]
+    },
+    {
+      ...fixture("date-instance-bridge-miss-nested-member"),
+      code: "declare const factory: { make: { date: () => Date } }; const d = factory.make.date(); export const s = d.toUTCString();",
+      errors: [
+        { messageId: "preferDateType" },
+        { messageId: "preferDateMember" }
+      ]
+    },
+    {
+      ...fixture("date-instance-bridge-miss-other-namespace"),
+      code: "declare const Other: { toDate: () => Date }; const d = Other.toDate(); export const s = d.toUTCString();",
+      errors: [
+        { messageId: "preferDateType" },
+        { messageId: "preferDateMember" }
+      ]
+    },
+    {
+      ...fixture("date-instance-bridge-miss-computed-property"),
+      code: "declare const DateTime: { toDate: () => Date }; const d = DateTime['toDate'](); export const s = d.toUTCString();",
+      errors: [
+        { messageId: "preferDateType" },
+        { messageId: "preferDateMember" }
+      ]
     }
   ],
   valid: [
