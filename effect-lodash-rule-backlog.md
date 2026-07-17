@@ -36,7 +36,6 @@
 | 12 | `prefer-lodash-pick` | `const { a, b } = obj` → `pick(obj, ["a","b"])` | S | ✅ | S |
 | 13 | `prefer-lodash-omit` | `const { a, ...rest } = obj` → `omit(obj, ["a"])` | S | ✅ | S |
 | 14 | `prefer-lodash-groupBy` | `reduce` accumulator building a keyed map → `groupBy(arr, fn)` | S | ⚠ | M |
-| 15 | `prefer-lodash-clamp` | `Math.min(max, Math.max(min, x))` → `clamp(x, min, max)` | S | ✅ | S |
 | 22 | `prefer-lodash-trim` / `prefer-lodash-trimStart` / `prefer-lodash-trimEnd` | Native `s.trim()` / `trimStart()` / `trimEnd()` → `trim(s, chars?)` etc. | S | ⚠ | M |
 | 23 | `prefer-lodash-escapeRegExp` | Hand-rolled `[].escape` pattern → `escapeRegExp(s)` | S | ✅ | S |
 
@@ -97,7 +96,7 @@ The order below is the suggested wave rollout. Each wave is a focused PR with te
 - [x] **Wave 1** — `prefer-effect-predicate` for `_.isBigInt` / `_.isSymbol` / `_.isNotNullable`.
 - [x] **Wave 2** — `prefer-lodash-findKey` (`Object.keys(o).find(...)` → `findKey(o, v => v ...)`).
 - [x] **Wave 3** — umbrella `prefer-lodash` extensions: `preferUniq`, `preferUnzip`, `preferZip`, `preferPartition`, `preferCountBy`, `preferKeyBy`, `preferChunk`, `preferIsEmpty`.
-- [ ] **Wave 4** — remaining safe + helpers. Candidates ordered by smallest impact first: #7, #8, #9, #10, #11, #15, #23, #25, #27, #28, #29, #6 (with `toSorted` / `toReversed` / `toSpliced`), #22, #12, #13, #14, #26 (after overlap check), plus H1, H2, H3.
+- [ ] **Wave 4** — remaining safe + helpers. Candidates ordered by smallest impact first: #7, #8, #9, #10, #11, #23, #25, #27, #28, #29, #6 (with `toSorted` / `toReversed` / `toSpliced`), #22, #12, #13, #14, #26 (after overlap check), plus H1, H2, H3.
 - [ ] **Policy wave** — smallest-first from the policy bucket: #45 (`mapKeys`) and #46 (`mapValues`), then #43 (`debounce` / `throttle` / `memoize`), then #37 (`effect.match` always over `switch`).
 - [ ] **Optional policy decisions** — promote `find` / `findLast` (#5), `at` (M3), `keys` / `values` / `entries` (M4) from native-acceptable to lodash-required by removing them from `NATIVE_EQUIVALENT_METHODS`. Requires explicit user buy-in per method.
 

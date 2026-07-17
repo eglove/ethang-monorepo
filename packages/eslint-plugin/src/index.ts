@@ -15,6 +15,7 @@ import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 import { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
+import { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
 import { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
@@ -41,6 +42,7 @@ export const rules = {
   "prefer-effect-log": preferEffectLogRule,
   "prefer-effect-predicate": preferEffectPredicateRule,
   "prefer-lodash": preferLodashRule,
+  "prefer-lodash-clamp": preferLodashClampRule,
   "prefer-lodash-find-key": preferLodashFindKeyRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
@@ -75,6 +77,7 @@ export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 export { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
+export { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
 export { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
