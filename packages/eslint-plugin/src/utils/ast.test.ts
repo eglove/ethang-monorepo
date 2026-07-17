@@ -9,6 +9,8 @@ import {
   ensureLodashImport,
   getImportedKind,
   isEffectImportedIdentifier,
+  isEffectNamespace,
+  isEffectSource,
   isLodashCall,
   lodashDeepImport,
   lookupLodashEntry,
@@ -361,5 +363,34 @@ describe("isEffectImportedIdentifier", () => {
     const program = parseProgram('import * as effect from "effect";');
     const node = { name: "effect", type: AST_NODE_TYPES.Identifier } as never;
     expect(isEffectImportedIdentifier(node, program)).toBe(false);
+  });
+});
+
+describe("isEffectSource", () => {
+  it.each([
+    ["effect", true],
+    ["effect/DateTime", true],
+    ["effect/Stream", true],
+    ["lodash", false],
+    ["react", false],
+    ["", false]
+  ])("returns %s for source %s", (source, expected) => {
+    expect(isEffectSource(source)).toBe(expected);
+  });
+});
+
+describe("isEffectNamespace", () => {
+  it.each([
+    ["BigInt", true],
+    ["Effect", true],
+    ["Match", true],
+    ["Option", true],
+    ["Stream", true],
+    ["Tracer", true],
+    ["MyNamespace", false],
+    ["BigInteger", false],
+    ["", false]
+  ])("returns %s for name %s", (name, expected) => {
+    expect(isEffectNamespace(name)).toBe(expected);
   });
 });

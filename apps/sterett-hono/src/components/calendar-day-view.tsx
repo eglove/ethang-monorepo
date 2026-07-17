@@ -1,3 +1,4 @@
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
@@ -11,7 +12,7 @@ export const DayView = async ({
 }) => {
   return (
     <div class="flex flex-col gap-3">
-      {0 === events.length && (
+      {isEmpty(events) && (
         <p class="text-sm text-white/60">No events scheduled.</p>
       )}
       {map(events, async (event) => {

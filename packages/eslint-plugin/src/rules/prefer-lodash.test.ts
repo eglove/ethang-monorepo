@@ -559,6 +559,117 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "xs.filter(() => {})",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferNoop" }],
       output: "filter(xs, () => {})"
+    },
+
+    // --- Wave 3: prefer-uniq ([...new Set(arr)]) ---
+    {
+      code: "const arr = [1, 2, 3]; const deduped = [...new Set(arr)];",
+      errors: [{ messageId: "preferUniq" }]
+    },
+    {
+      code: "const m = new Map(); const deduped = [...new Set(m.keys())];",
+      errors: [{ messageId: "preferUniq" }]
+    },
+
+    // --- Wave 3: prefer-unzip / prefer-zip (nested map) ---
+    // Note: the inner `arr.map(...)` is independently flagged by preferLodash;
+    // preferUnzip is reported at the outer call site. Both `unzip` and `zip`
+    // share the same shape; the detector fires `preferUnzip` and the developer
+    // can choose `_.zip(...arrs)` if the receiver is an array of arrays.
+    {
+      code: "const arr = [[1, 2], [3, 4]]; arr[0].map((_, i) => arr.map((r) => r[i]));",
+      errors: [{ messageId: "preferUnzip" }, { messageId: "preferLodash" }],
+      output:
+        "const arr = [[1, 2], [3, 4]]; arr[0].map((_, i) => map(arr, (r) => r[i]));"
+    },
+    {
+      code: "const arrs = [[1, 2], [3, 4]]; arrs[0].map((_, i) => arrs.map((a) => a[i]));",
+      errors: [{ messageId: "preferUnzip" }, { messageId: "preferLodash" }],
+      output:
+        "const arrs = [[1, 2], [3, 4]]; arrs[0].map((_, i) => map(arrs, (a) => a[i]));"
+    },
+    // Reject: outer receiver doesn't match inner — both maps fall through to preferLodash
+    {
+      code: "const a = [[1, 2]]; const b = [[3, 4]]; a[0].map((_, i) => b.map((r) => r[i]));",
+      errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
+      output:
+        "const a = [[1, 2]]; const b = [[3, 4]]; map(a[0], (_, i) => b.map((r) => r[i]));"
+    },
+    // Reject: outer isn't arr[0] but a non-zero index — both maps fall through
+    {
+      code: "const arr = [[1, 2]]; arr[1].map((_, i) => arr.map((r) => r[i]));",
+      errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
+      output:
+        "const arr = [[1, 2]]; map(arr[1], (_, i) => arr.map((r) => r[i]));"
+    },
+
+    // --- Wave 3: prefer-partition (filter + negated filter) ---
+    {
+      code: "const arr = [1, 2, 3]; const evens = arr.filter((x) => isEven(x)); const odds = arr.filter((x) => !isEven(x));",
+      errors: [{ messageId: "preferPartition" }, { messageId: "preferReject" }]
+    },
+    // Reject: only one filter (no partner) — fires preferLodash on the lone filter
+    {
+      code: "const arr = [1, 2, 3]; const evens = arr.filter((x) => isEven(x));",
+      errors: [{ messageId: "preferLodash" }],
+      output:
+        "const arr = [1, 2, 3]; const evens = filter(arr, (x) => isEven(x));"
+    },
+    // Reject: predicate is a block body (not a single call expression) — preferPartition
+    // does not fire. The non-negated form falls through to preferLodash; the
+    // negated form matches the preferReject shape.
+    {
+      code: "const arr = [1]; const a = arr.filter((x) => { return isEven(x); }); const b = arr.filter((x) => { return !isEven(x); });",
+      errors: [{ messageId: "preferLodash" }, { messageId: "preferReject" }],
+      output:
+        "const arr = [1]; const a = filter(arr, (x) => { return isEven(x); }); const b = arr.filter((x) => { return !isEven(x); });"
+    },
+
+    // --- Wave 3: prefer-count-by (reduce building counts) ---
+    {
+      code: "const arr = [1, 2, 3]; const counts = arr.reduce((acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, {});",
+      errors: [{ messageId: "preferCountBy" }]
+    },
+    // Reject: initial value is not {} (e.g. []) — falls through to preferLodash
+    {
+      code: "const arr = [1]; const counts = arr.reduce((acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, []);",
+      errors: [{ messageId: "preferLodash" }],
+      output:
+        "const arr = [1]; const counts = reduce(arr, (acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, []);"
+    },
+
+    // --- Wave 3: prefer-key-by (reduce building dict) ---
+    {
+      code: "const arr = [{ id: 1, name: 'a' }]; const byId = arr.reduce((acc, x) => { acc[x.id] = x; return acc; }, {});",
+      errors: [{ messageId: "preferKeyBy" }]
+    },
+    // Reject: assignment has the +1 accumulator (that's countBy, not keyBy)
+    {
+      code: "const arr = [1, 2]; const c = arr.reduce((acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, {});",
+      errors: [{ messageId: "preferCountBy" }]
+    },
+
+    // --- Wave 3: prefer-chunk (canonical while loop) ---
+    {
+      code: "let i = 0; const out = []; while (i < arr.length) { out.push(arr.slice(i, i + 2)); i += 2; }",
+      errors: [{ messageId: "preferChunk" }]
+    },
+
+    // --- Wave 3: prefer-is-empty (length === 0) ---
+    {
+      code: "if (xs.length === 0) { foo(); }",
+      errors: [{ messageId: "preferIsEmpty" }],
+      output: "if (isEmpty(xs)) { foo(); }"
+    },
+    {
+      code: "if (0 === xs.length) { foo(); }",
+      errors: [{ messageId: "preferIsEmpty" }],
+      output: "if (isEmpty(xs)) { foo(); }"
+    },
+    {
+      code: "if (Object.keys(obj).length === 0) { foo(); }",
+      errors: [{ messageId: "preferIsEmpty" }],
+      output: "if (isEmpty(obj)) { foo(); }"
     }
   ],
   valid: [
@@ -771,6 +882,66 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       // performance.now() is a Web API, not Array.prototype.now — lodash's
       // `now` is an alias for Date.now() and would silently break timing code.
       code: "const t = performance.now();"
+    },
+
+    // --- Wave 3: prefer-uniq valid (already lodash / not the pattern) ---
+    {
+      // Already lodash
+      code: 'import uniq from "lodash/uniq.js"; uniq(arr);'
+    },
+    {
+      // new Set used outside spread — not the canonical pattern
+      code: "const s = new Set(arr);"
+    },
+    {
+      // new Set with multiple args — different semantics, not canonical uniq
+      code: "const deduped = [...new Set(arr1, arr2)];"
+    },
+
+    // --- Wave 3: prefer-unzip / prefer-zip valid ---
+    {
+      code: 'import unzip from "lodash/unzip.js"; unzip(arr);'
+    },
+    {
+      code: 'import zip from "lodash/zip.js"; zip(arrs);'
+    },
+
+    // --- Wave 3: prefer-partition valid ---
+    {
+      code: 'import partition from "lodash/partition.js"; partition(arr, isEven);'
+    },
+
+    // --- Wave 3: prefer-count-by / prefer-key-by valid ---
+    {
+      code: 'import countBy from "lodash/countBy.js"; countBy(arr, x => x % 2);'
+    },
+    {
+      code: 'import keyBy from "lodash/keyBy.js"; keyBy(arr, x => x.id);'
+    },
+
+    // --- Wave 3: prefer-chunk valid ---
+    {
+      code: 'import chunk from "lodash/chunk.js"; chunk(arr, 2);'
+    },
+
+    // --- Wave 3: prefer-is-empty valid ---
+    {
+      code: 'import isEmpty from "lodash/isEmpty.js"; isEmpty(xs);'
+    },
+    {
+      code: 'import isEmpty from "lodash/isEmpty.js"; isEmpty(obj);'
+    },
+    {
+      // non-zero comparison — not the pattern
+      code: "if (xs.length === 1) { foo(); }"
+    },
+    {
+      // undefined literal receiver (null/undefined is footgun)
+      code: "if (undefined.length === 0) { foo(); }"
+    },
+    {
+      // negated comparison is fine if it's not a binary === 0
+      code: "if (xs.length > 0) { foo(); }"
     }
   ]
 });

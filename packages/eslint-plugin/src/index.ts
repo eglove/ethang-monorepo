@@ -14,6 +14,8 @@ import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
+import { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
+import { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
 import { propertyShorthandRule } from "./rules/property-shorthand.ts";
@@ -37,7 +39,9 @@ export const rules = {
   "path-style": pathStyleRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-log": preferEffectLogRule,
+  "prefer-effect-predicate": preferEffectPredicateRule,
   "prefer-lodash": preferLodashRule,
+  "prefer-lodash-find-key": preferLodashFindKeyRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
   unwrap: unwrapRule,
@@ -70,6 +74,8 @@ export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
+export { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
+export { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
 export { propertyShorthandRule } from "./rules/property-shorthand.ts";
@@ -78,11 +84,27 @@ export { validateUnknownRule } from "./rules/validate-unknown.ts";
 
 export {
   effectApi,
-  effectCoreMethods,
+  effectBigIntApi,
   effectDateTimeApi,
+  effectDurationApi,
+  effectEncodingApi,
+  effectNumberApi,
+  effectPredicateApi,
+  effectRedactedApi,
+  effectStringApi,
   isEffectApiMethod,
-  isEffectCoreMethod,
-  isEffectDateTimeApiKey
+  isEffectBigIntApiName,
+  isEffectDateTimeApiKey,
+  isEffectDurationApiName,
+  isEffectEncodingApiName,
+  isEffectNumberApiName,
+  isEffectPredicateApiName,
+  isEffectRedactedApiName,
+  isEffectStringApiName
 } from "./utils/effect-api.ts";
 export { isBarrelFilename, isInsideNodeModules } from "./utils/file.ts";
-export { isLodashFunction, lodashApi } from "./utils/lodash-api.ts";
+export {
+  isLodashFunction,
+  isRuntimeOnlyLodashMethod,
+  lodashApi
+} from "./utils/lodash-api.ts";

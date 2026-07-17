@@ -29,6 +29,8 @@ describe("plugin", () => {
         "path-style",
         "prefer-effect-datetime",
         "prefer-effect-log",
+        "prefer-effect-predicate",
+        "prefer-lodash-find-key",
         "prefer-lodash",
         "preferred-alias",
         "property-shorthand",

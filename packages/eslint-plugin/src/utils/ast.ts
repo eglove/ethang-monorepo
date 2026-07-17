@@ -85,7 +85,45 @@ const BUILTIN_NAMESPACES = new Set([
   "WeakSet"
 ]);
 
-const isEffectSource = (name: string) => {
+// Effect-side namespaces exported by `effect` (and `effect/<module>`). The
+// future `prefer-effect-predicate-*` / `prefer-effect-duration-*` rules
+// (backlog Wave 1+) consume this set so the disambiguation layer in
+// `resolveArrayCall` short-circuits calls on these identifiers as Effect
+// calls rather than falling through to `unknown-member`.
+const EFFECT_NAMESPACES = new Set([
+  "BigInt",
+  "Cause",
+  "Config",
+  "Data",
+  "Duration",
+  "Effect",
+  "Either",
+  "Encoding",
+  "Equal",
+  "Equivalence",
+  "FiberRef",
+  "Hash",
+  "Layer",
+  "ManagedRuntime",
+  "Match",
+  "Option",
+  "Order",
+  "Pool",
+  "Predicate",
+  "PubSub",
+  "Queue",
+  "Redacted",
+  "Schedule",
+  "STM",
+  "Stream",
+  "Tracer"
+]);
+
+export const isEffectNamespace = (name: string) => {
+  return EFFECT_NAMESPACES.has(name);
+};
+
+export const isEffectSource = (name: string) => {
   return "effect" === name || startsWith(name, "effect/");
 };
 

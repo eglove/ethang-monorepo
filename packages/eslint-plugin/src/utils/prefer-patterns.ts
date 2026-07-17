@@ -865,6 +865,19 @@ const getMapFunctionIteratee = (node: TSESTree.CallExpression) => {
   return iteratee;
 };
 
+// Re-export shape-pattern detectors (multi-statement / non-method-call rewrites).
+export {
+  getIsEmptyReceiver,
+  shouldPreferChunk,
+  shouldPreferCountBy,
+  shouldPreferIsEmpty,
+  shouldPreferKeyBy,
+  shouldPreferPartition,
+  shouldPreferUniq,
+  shouldPreferUnzip,
+  shouldPreferZip
+} from "./prefer-patterns-shape.ts";
+
 // --- Helpers ---
 
 function isMemberCallOnNamed(node: TSESTree.CallExpression, name: string) {

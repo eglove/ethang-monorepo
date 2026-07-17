@@ -2,6 +2,7 @@ import { asc, eq, inArray } from "drizzle-orm";
 import { Effect } from "effect";
 import filter from "lodash/filter.js";
 import flatMap from "lodash/flatMap.js";
+import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
@@ -87,7 +88,7 @@ const populateCurriculumLps = async (
 
   const learningPathIds = map(curriculumLearningPaths, "learningPathId");
 
-  if (0 === learningPathIds.length) {
+  if (isEmpty(learningPathIds)) {
     return [];
   }
 

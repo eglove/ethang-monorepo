@@ -8,6 +8,11 @@
 // prefix); the values are the canonical effect module exports to use.
 export const effectApi = {
   // Array.prototype -> Effect / Array module
+  allocate: {
+    description: "Effect-friendly allocate.",
+    import: "Array",
+    name: "allocate"
+  },
   chunk: {
     description: "Effect-friendly chunk.",
     import: "Array",
@@ -69,6 +74,11 @@ export const effectApi = {
     import: "Array",
     name: "includes"
   },
+  intersperse: {
+    description: "Effect-friendly intersperse.",
+    import: "Array",
+    name: "intersperse"
+  },
   isEmptyArray: {
     description: "Effect-friendly isEmptyArray.",
     import: "Array",
@@ -96,7 +106,27 @@ export const effectApi = {
     import: "Array",
     name: "reduce"
   },
+  reverse: {
+    description: "Effect-friendly reverse.",
+    import: "Array",
+    name: "reverse"
+  },
+  scan: {
+    description: "Effect-friendly scan.",
+    import: "Array",
+    name: "scan"
+  },
+  scanRight: {
+    description: "Effect-friendly scanRight.",
+    import: "Array",
+    name: "scanRight"
+  },
   some: { description: "Effect-friendly some.", import: "Array", name: "some" },
+  sort: {
+    description: "Effect-friendly sort.",
+    import: "Array",
+    name: "sort"
+  },
   sortBy: {
     description: "Effect-friendly sortBy.",
     import: "Array",
@@ -108,7 +138,17 @@ export const effectApi = {
     import: "Array",
     name: "uniqBy"
   },
-  zip: { description: "Effect-friendly zip.", import: "Array", name: "zip" }
+  unzip: {
+    description: "Effect-friendly unzip.",
+    import: "Array",
+    name: "unzip"
+  },
+  zip: { description: "Effect-friendly zip.", import: "Array", name: "zip" },
+  zipWith: {
+    description: "Effect-friendly zipWith.",
+    import: "Array",
+    name: "zipWith"
+  }
 } as const satisfies Record<
   string,
   {
@@ -124,52 +164,6 @@ export const isEffectApiMethod = (
   name: string
 ): name is EffectApiMethodName => {
   return Object.hasOwn(effectApi, name);
-};
-
-export const effectCoreMethods = new Set<string>([
-  "all",
-  "allSuccesses",
-  "annotateCurrentSpan",
-  "catchAll",
-  "catchTag",
-  "catchTags",
-  "die",
-  "dieSync",
-  "fail",
-  "flatMap",
-  "fn",
-  "fnUntraced",
-  "forEach",
-  "gen",
-  "interrupt",
-  "log",
-  "logDebug",
-  "logError",
-  "logInfo",
-  "logWarning",
-  "map",
-  "orDie",
-  "orElse",
-  "orFail",
-  "orSucceed",
-  "provide",
-  "provideService",
-  "race",
-  "service",
-  "services",
-  "sleep",
-  "succeed",
-  "sync",
-  "tap",
-  "tapError",
-  "try",
-  "tryPromise",
-  "withSpan",
-  "zip"
-]);
-
-export const isEffectCoreMethod = (name: string) => {
-  return effectCoreMethods.has(name);
 };
 
 // Map of native `Date` constructor, `Date.prototype` methods, and `Temporal`
@@ -343,4 +337,179 @@ export const isEffectDateTimeApiKey = (
   name: string
 ): name is EffectDateTimeApiKey => {
   return Object.hasOwn(effectDateTimeApi, name);
+};
+
+// `effect/Predicate` namespace exports. The future `prefer-effect-predicate-*`
+// rules will consume this table to drive their message suggestions. Keys are
+// the bare function names as exported by the module (e.g. `isBigInt`); values
+// capture the full `Predicate.<name>` import.
+export const effectPredicateApi = {
+  isBigInt: { import: "Predicate", name: "isBigInt" },
+  isBoolean: { import: "Predicate", name: "isBoolean" },
+  isDate: { import: "Predicate", name: "isDate" },
+  isError: { import: "Predicate", name: "isError" },
+  isFunction: { import: "Predicate", name: "isFunction" },
+  isIterable: { import: "Predicate", name: "isIterable" },
+  isMap: { import: "Predicate", name: "isMap" },
+  isNotNullable: { import: "Predicate", name: "isNotNullable" },
+  isNull: { import: "Predicate", name: "isNull" },
+  isNullable: { import: "Predicate", name: "isNullable" },
+  isNumber: { import: "Predicate", name: "isNumber" },
+  isObject: { import: "Predicate", name: "isObject" },
+  isPromise: { import: "Predicate", name: "isPromise" },
+  isRecord: { import: "Predicate", name: "isRecord" },
+  isSet: { import: "Predicate", name: "isSet" },
+  isString: { import: "Predicate", name: "isString" },
+  isSymbol: { import: "Predicate", name: "isSymbol" },
+  isUndefined: { import: "Predicate", name: "isUndefined" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectPredicateApiName = keyof typeof effectPredicateApi;
+
+export const isEffectPredicateApiName = (
+  name: string
+): name is EffectPredicateApiName => {
+  return Object.hasOwn(effectPredicateApi, name);
+};
+
+// `effect/String` namespace exports. Keys are the bare function names; values
+// are `{ import, name }` to match the `effectApi` shape.
+export const effectStringApi = {
+  endsWith: { import: "String", name: "endsWith" },
+  includes: { import: "String", name: "includes" },
+  isEmpty: { import: "String", name: "isEmpty" },
+  isNonEmpty: { import: "String", name: "isNonEmpty" },
+  split: { import: "String", name: "split" },
+  startsWith: { import: "String", name: "startsWith" },
+  toLowerCase: { import: "String", name: "toLowerCase" },
+  toUpperCase: { import: "String", name: "toUpperCase" },
+  trim: { import: "String", name: "trim" },
+  trimEnd: { import: "String", name: "trimEnd" },
+  trimStart: { import: "String", name: "trimStart" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectStringApiName = keyof typeof effectStringApi;
+
+export const isEffectStringApiName = (
+  name: string
+): name is EffectStringApiName => {
+  return Object.hasOwn(effectStringApi, name);
+};
+
+// `effect/Number` namespace exports.
+export const effectNumberApi = {
+  clamp: { import: "Number", name: "clamp" },
+  isFinite: { import: "Number", name: "isFinite" },
+  isInteger: { import: "Number", name: "isInteger" },
+  isNaN: { import: "Number", name: "isNaN" },
+  isSafeInteger: { import: "Number", name: "isSafeInteger" },
+  parse: { import: "Number", name: "parse" },
+  unsafeFromString: { import: "Number", name: "unsafeFromString" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectNumberApiName = keyof typeof effectNumberApi;
+
+export const isEffectNumberApiName = (
+  name: string
+): name is EffectNumberApiName => {
+  return Object.hasOwn(effectNumberApi, name);
+};
+
+// `effect/BigInt` namespace exports.
+export const effectBigIntApi = {
+  clamp: { import: "BigInt", name: "clamp" },
+  fromString: { import: "BigInt", name: "fromString" },
+  isBigInt: { import: "BigInt", name: "isBigInt" },
+  make: { import: "BigInt", name: "make" },
+  sign: { import: "BigInt", name: "sign" },
+  unsafeFromString: { import: "BigInt", name: "unsafeFromString" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectBigIntApiName = keyof typeof effectBigIntApi;
+
+export const isEffectBigIntApiName = (
+  name: string
+): name is EffectBigIntApiName => {
+  return Object.hasOwn(effectBigIntApi, name);
+};
+
+// `effect/Encoding` namespace exports.
+export const effectEncodingApi = {
+  decodeBase64: { import: "Encoding", name: "decodeBase64" },
+  decodeHex: { import: "Encoding", name: "decodeHex" },
+  decodeUrl: { import: "Encoding", name: "decodeUrl" },
+  encodeBase64: { import: "Encoding", name: "encodeBase64" },
+  encodeBase64Url: { import: "Encoding", name: "encodeBase64Url" },
+  encodeHex: { import: "Encoding", name: "encodeHex" },
+  encodeUrl: { import: "Encoding", name: "encodeUrl" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectEncodingApiName = keyof typeof effectEncodingApi;
+
+export const isEffectEncodingApiName = (
+  name: string
+): name is EffectEncodingApiName => {
+  return Object.hasOwn(effectEncodingApi, name);
+};
+
+// `effect/Duration` namespace exports. The future
+// `prefer-effect-duration-*` rules will read from this table.
+export const effectDurationApi = {
+  days: { import: "Duration", name: "days" },
+  fromHours: { import: "Duration", name: "fromHours" },
+  fromMillis: { import: "Duration", name: "fromMillis" },
+  fromMinutes: { import: "Duration", name: "fromMinutes" },
+  fromSeconds: { import: "Duration", name: "fromSeconds" },
+  hours: { import: "Duration", name: "hours" },
+  millis: { import: "Duration", name: "millis" },
+  minutes: { import: "Duration", name: "minutes" },
+  seconds: { import: "Duration", name: "seconds" },
+  toHours: { import: "Duration", name: "toHours" },
+  toMillis: { import: "Duration", name: "toMillis" },
+  toMinutes: { import: "Duration", name: "toMinutes" },
+  toSeconds: { import: "Duration", name: "toSeconds" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectDurationApiName = keyof typeof effectDurationApi;
+
+export const isEffectDurationApiName = (
+  name: string
+): name is EffectDurationApiName => {
+  return Object.hasOwn(effectDurationApi, name);
+};
+
+// `effect/Redacted` namespace exports. The `prefer-effect-redacted` rule is
+// a heuristic (string-literal locals); this table gives it the import set.
+export const effectRedactedApi = {
+  make: { import: "Redacted", name: "make" },
+  value: { import: "Redacted", name: "value" }
+} as const satisfies Record<
+  string,
+  { readonly import: string; readonly name: string }
+>;
+
+export type EffectRedactedApiName = keyof typeof effectRedactedApi;
+
+export const isEffectRedactedApiName = (
+  name: string
+): name is EffectRedactedApiName => {
+  return Object.hasOwn(effectRedactedApi, name);
 };

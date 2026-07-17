@@ -1,4 +1,5 @@
 import { DateTime } from "effect";
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 import slice from "lodash/slice.js";
 import { twMerge } from "tailwind-merge";
@@ -66,7 +67,7 @@ export const WeekView = async ({
                   </span>
                 )}
               </div>
-              {0 === cellEvents.length ? (
+              {isEmpty(cellEvents) ? (
                 <p class="text-xs text-white/60">No events</p>
               ) : (
                 <div class="flex flex-col gap-1">

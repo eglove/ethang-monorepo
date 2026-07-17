@@ -1,6 +1,7 @@
 import { generateMarkdown } from "@ethang/markdown-generator";
 import { Effect, Option, Schema } from "effect";
 import constant from "lodash/constant.js";
+import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import {
@@ -208,7 +209,7 @@ const canRemoveDirectory = (directory: string) => {
     Effect.match({
       onFailure: constant(false),
       onSuccess: (files) => {
-        return 0 === files.length;
+        return isEmpty(files);
       }
     }),
     Effect.runSync

@@ -1,5 +1,6 @@
 import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
+import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
@@ -153,7 +154,7 @@ afterEach(() => {
 
 const lastSetCookie = () => {
   const list = asGlobal().__capturedCookies;
-  if (list === undefined || 0 === list.length) {
+  if (list === undefined || isEmpty(list)) {
     return null;
   }
   return list.at(-1) ?? null;
