@@ -33,6 +33,16 @@ workspaces, frameworks, or scripts are current.
 
 6. **Tests as Finite State Machines**: Treat every unit under test as a finite state machine and exhaustively enumerate every reachable state, transition, and edge in the test suite. Use `vitest it.each` (or equivalent parameterized tests) to table-drive inputs across the full input domain — valid, invalid, boundary, empty, max-length, unicode, null/undefined, concurrent, error, and recovery states — so that "all states covered" is a structural property of the test, not an aspiration. When a function's behavior branches on a discriminated union, exhaust the union; when it loops, cover the zero-iteration, single-iteration, and N-iteration cases; when it composes side effects, assert both happy-path state and rollback/failure state. A test suite is incomplete until every state is either explicitly asserted or proven unreachable from every legal input via reasoning about the producer of that state. Do not leave a state untested because it is "obvious" — the rule's job is to catch regressions, not to be obvious.
 
+7. **ESLint Autofix Runs on Edits (intentional)**: When an agent (human or AI) saves a file in any workspace, ESLint autofix runs against that file before the next read. This is **intentional**, not a bug. Autofix may rewrite code in ways that look like the author "lost" something — concrete examples observed in this repo:
+   - `npm run check:fix` (`./repo-ai-check.ps1`) runs `eslint --fix`, which can silently strip explicit return type annotations (per `@ethang/eslint-config`'s `no-restricted-syntax` rules), collapse inline type assertions, or swap hand-written code for `lodash` / `effect` library equivalents (`prefer-lodash-*`, `prefer-effect-*` rules).
+   - `pnpm -r lint --fix` (or any equivalent that passes `--fix`) does the same per-file before `tsc` / `vitest` re-runs.
+   - Hooks wired into the IDE / editor may also trigger autofix on save (see `.github/hooks/`).
+
+   **When you encounter this:**
+   - Treat the post-autofix diff as expected, not adversarial. Do not re-introduce a removed return type or undo a `prefer-*` migration just to "match what you wrote" — the autofix is enforcing `@ethang/eslint-config`, which is the source of truth.
+   - When fixing a tsc / lint / test failure, read `lint.autofix` (from `./repo-ai-check.ps1` JSON output, or `pnpm -r lint:fix` summary) **before** re-running the script — it tells you what was already rewritten so you don't get a different fix set.
+   - This is why the rules above say "examine the surrounding context and design a better solution" rather than "fix what the linter complained about" — the linter and its autofix are tools; you are responsible for the result.
+
 ---
 
 ## CRITICAL: `.agents/` is a Generated Artifact
@@ -46,7 +56,7 @@ in the manifest are left untouched.
 
 All changes to agent rules, commands, skills, and configuration must go through the compiler package:
 
-* **Source Path:** [packages/agents-build/](packages/agents-build/)
+* **Source Path:** `packages/agents-build/`
 
 After modifying TypeScript definitions in the builder, compile the changes with:
 
