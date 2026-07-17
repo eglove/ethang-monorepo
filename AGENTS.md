@@ -29,18 +29,18 @@ workspaces, frameworks, or scripts are current.
 
 4. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
 
-5. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) and reference the `/ddd` skill for everything.
+5. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) and reference the `/ddd` skill for everything. **Use `/effect-ts` as the vehicle to build DDD patterns** — model aggregates, value objects, domain services, and repositories as `Effect`s, `Layer`s, `Ref`s, and `Schema`s so that bounded contexts, invariants, and side effects are expressed declaratively in the type system. Prefer Effect primitives (e.g. `Effect.gen` for domain workflows, `Layer` for dependency injection of repositories and infrastructure ports, `Ref` for aggregate state, `Schema` for value object and command/query validation, `Schedule` for retry/policy on repository calls, `Stream` for domain event publishing) over hand-rolled classes, factories, and promises. This keeps the ubiquitous language, aggregates, and anti-corruption layers composable, testable, and resource-safe by construction.
 
 6. **Tests as Finite State Machines**: Treat every unit under test as a finite state machine and exhaustively enumerate every reachable state, transition, and edge in the test suite. Use `vitest it.each` (or equivalent parameterized tests) to table-drive inputs across the full input domain — valid, invalid, boundary, empty, max-length, unicode, null/undefined, concurrent, error, and recovery states — so that "all states covered" is a structural property of the test, not an aspiration. When a function's behavior branches on a discriminated union, exhaust the union; when it loops, cover the zero-iteration, single-iteration, and N-iteration cases; when it composes side effects, assert both happy-path state and rollback/failure state. A test suite is incomplete until every state is either explicitly asserted or proven unreachable from every legal input via reasoning about the producer of that state. Do not leave a state untested because it is "obvious" — the rule's job is to catch regressions, not to be obvious.
 
 7. **ESLint Autofix Runs on Edits (intentional)**: When an agent (human or AI) saves a file in any workspace, ESLint autofix runs against that file before the next read. This is **intentional**, not a bug. Autofix may rewrite code in ways that look like the author "lost" something — concrete examples observed in this repo:
-   - `npm run check:fix` (`./repo-ai-check.ps1`) runs `eslint --fix`, which can silently strip explicit return type annotations (per `@ethang/eslint-config`'s `no-restricted-syntax` rules), collapse inline type assertions, or swap hand-written code for `lodash` / `effect` library equivalents (`prefer-lodash-*`, `prefer-effect-*` rules).
+   - `pnpm --filter @ethang/monorepo-tools check` runs `eslint --fix`, which can silently strip explicit return type annotations (per `@ethang/eslint-config`'s `no-restricted-syntax` rules), collapse inline type assertions, or swap hand-written code for `lodash` / `effect` library equivalents (`prefer-lodash-*`, `prefer-effect-*` rules).
    - `pnpm -r lint --fix` (or any equivalent that passes `--fix`) does the same per-file before `tsc` / `vitest` re-runs.
    - Hooks wired into the IDE / editor may also trigger autofix on save (see `.github/hooks/`).
 
    **When you encounter this:**
    - Treat the post-autofix diff as expected, not adversarial. Do not re-introduce a removed return type or undo a `prefer-*` migration just to "match what you wrote" — the autofix is enforcing `@ethang/eslint-config`, which is the source of truth.
-   - When fixing a tsc / lint / test failure, read `lint.autofix` (from `./repo-ai-check.ps1` JSON output, or `pnpm -r lint:fix` summary) **before** re-running the script — it tells you what was already rewritten so you don't get a different fix set.
+   - When fixing a tsc / lint / test failure, read `lint.autofix` (from the monorepo-tools checker's JSON output, or `pnpm -r lint:fix` summary) **before** re-running the script — it tells you what was already rewritten so you don't get a different fix set.
    - This is why the rules above say "examine the surrounding context and design a better solution" rather than "fix what the linter complained about" — the linter and its autofix are tools; you are responsible for the result.
 
 ---
@@ -102,9 +102,9 @@ When installing and using packages in this repository, **do not assume the `work
 
 ## CRITICAL: Monorepo Quality Checks
 
-When validating code in this monorepo, **AI agents should prefer `./repo-ai-check.ps1` over running `pnpm -r lint` / `pnpm test` / `pnpm -r tsc` individually.** The script runs eslint, tsc, and vitest in parallel across every workspace and emits a single report document on stdout, so you can see *all* failures (lint + tsc + test) at once instead of fixing one class of error, rerunning, and discovering the next. Human-readable progress is on stderr; stdout is reserved for the report. The default output is a tight markdown document rendered via `scripts/render-check-report.mjs` (which uses `@ethang/markdown-generator`); pass `-Format Json` to get the raw JSON instead. See the script's comment-based help (`Get-Help ./repo-ai-check.ps1`) and the README "AI-assisted check script" section for the JSON shape.
+When validating code in this monorepo, **AI agents should prefer `pnpm --filter @ethang/monorepo-tools check --` over running `pnpm -r lint` / `pnpm test` / `pnpm -r tsc` individually.** The checker at `packages/monorepo-tools/src/cli/repo-ai-check.cli.ts` runs eslint, tsc, and vitest in parallel across every workspace and emits a single combined document on stdout, so you can see *all* failures (lint + tsc + test) at once instead of fixing one class of error, rerunning, and discovering the next. Human-readable progress is on stderr; stdout is reserved for the report. The default output is a tight markdown document rendered through `packages/monorepo-tools/src/cli/render-check-report.cli.ts` (which uses `@ethang/markdown-generator`); pass `--format Json` to get the raw JSON instead. See `packages/monorepo-tools/README.md` for usage.
 
-To narrow scope while iterating, pass `-Workspace <name1,name2,...` and/or `-File <relative-or-absolute-path>` (comma-separated). eslint is fully targeted to the given files; tsc still type-checks the whole workspace but only surfaces diagnostics for the targeted files; vitest runs the co-located `*.test.ts`/`*.test.tsx` siblings of each file (or the full workspace vitest if none exist). Both flags are combinable and intersect: `-File foo.ts -Workspace auth,store` only runs files inside the listed workspaces.
+To narrow scope while iterating, repeat `--workspace <name>` and/or `--file <relative-or-absolute-path>`. eslint is fully targeted to the given files; tsc still type-checks the whole workspace but only surfaces diagnostics for the targeted files; vitest runs the co-located `*.test.ts`/`*.test.tsx` siblings of each file (or the full workspace vitest if none exist). Both flags are combinable and intersect: `--file foo.ts --workspace auth --workspace store` only runs files inside the listed workspaces.
 
 ### Lint autofix telemetry
 
@@ -115,15 +115,15 @@ The default invocation runs `eslint --fix` so auto-fixable issues get rewritten 
 - `byRule[]`: `{ ruleId, fixedErrorCount, fixedWarningCount, fileCount }` aggregated across the workspace.
 - `unfixableButFixable[]`: pre-fix messages where the rule was `fixable:true` but the message still appears in the post-fix pass (often a rule conflict).
 
-`lint.autofix` is `null` when `-SkipFix` is used (so the LLM can tell the difference between "no fixes applied" and "telemetry unavailable"). The script's helper `Get-AutofixSummary` (and its runspace-local twin) lives next to the eslint parser in `repo-ai-check.ps1` and diffs pre/post messages by `(ruleId, line, column, message)`.
+`lint.autofix` is `null` when `--skip-fix` is used (so the LLM can tell the difference between "no fixes applied" and "telemetry unavailable"). The checker aggregates the telemetry produced by the package ESLint CLI and diffs pre/post messages by `(ruleId, line, column, message)`.
 
 The root-level `summary.lint.autofix` aggregates across all workspaces: `ran`, `ranInWorkspaces`, summed `fixedErrorCount` / `fixedWarningCount`, and a top-10 `byRule` list. **Read `lint.autofix` instead of re-running `eslint --fix` to discover what the script silently rewrote** — re-running risks producing a different fix set if the rules have moved on since the last invocation.
 
-The autofix telemetry is produced by `scripts/eslint-autofix.mjs`, a small Node ESM shim that wraps the ESLint Node API (`ESLint.lintFiles({fix:true})` followed by `ESLint.outputFixes()` and a second `lintFiles` pass). If the shim file is missing, the parent script fails fast with a clear stderr message.
+The autofix telemetry is produced by `packages/monorepo-tools/src/cli/eslint-autofix.cli.ts`, a Bun TypeScript entry point backed by the ESLint Node API (`ESLint.lintFiles({fix:true})` followed by `ESLint.outputFixes()` and a second `lintFiles` pass). If the entry point is missing, the parent checker fails fast with a clear stderr message.
 
 ### Output format
 
-The default is **`-Format Markdown`**: the same JSON document is piped through `scripts/render-check-report.mjs` (a Node ESM shim that imports `@ethang/markdown-generator` via its file URL) and rendered as a tight, LLM-readable report on stdout. Pass `-Format Json` to get the raw JSON instead — useful for piping to `jq` or programmatic consumers.
+The default is **`-Format Markdown`**: the same JSON document is piped through `packages/monorepo-tools/src/cli/render-check-report.cli.ts` (a Bun TypeScript entry point that imports `@ethang/markdown-generator` via its file URL) and rendered as a tight, LLM-readable report on stdout. Pass `-Format Json` to get the raw JSON instead — useful for piping to `jq` or programmatic consumers.
 
 The markdown shape (kept deliberately minimal so the LLM has only the information needed to make fixes):
 
@@ -136,5 +136,4 @@ The markdown shape (kept deliberately minimal so the LLM has only the informatio
   - test: failing test names + first error line; falls back to a parse-error / exit-code note when no test-level detail is available.
 - "Passed (N)" bullet list of the workspaces that ran clean.
 
-Excluded from the markdown (still in `-Format Json`): per-issue `fix: { range, text }` payloads, vitest's per-test `testResults[]`, every `durationMs`, `cwd`/`configPath` from the shim, `parseError` stacks. For a typical 4-workspace failure, the JSON is ~40 KB / ~10K tokens and the markdown is ~3 KB / ~700 tokens. Use `-Format Json` whenever you need to drill in (e.g. `jq '.workspaces[].lint.autofix.byFile'`); use the markdown default whenever you just need to see "what to fix next".
-
+Excluded from the markdown (still in `--format Json`): per-issue `fix: { range, text }` payloads, vitest's per-test `testResults[]`, every `durationMs`, `cwd`/`configPath` from the shim, `parseError` stacks. For a typical 4-workspace failure, the JSON is ~40 KB / ~10K tokens and the markdown is ~3 KB / ~700 tokens. Use `--format Json` whenever you need to drill in (e.g. `jq '.workspaces[].lint.autofix.byFile'`); use the markdown default whenever you just need to see "what to fix next".

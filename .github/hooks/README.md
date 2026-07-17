@@ -9,7 +9,7 @@
 ## Files
 
 - `.github/hooks/post-tool-inspect.json` — hook config (matcher, command, timeout).
-- `scripts/post-tool-inspect.mjs` — the hook handler.
+- `packages/monorepo-tools/src/cli/post-tool-inspect.cli.ts` — active Bun/TypeScript hook handler.
 
 ## Payload shape
 
@@ -23,8 +23,8 @@ stdin (PostToolUse):
 }
 ```
 
-`toolArgs` is a *string* of JSON, not a JS object — `post-tool-inspect.mjs`
-parses it once before reading the file path.
+`toolArgs` is a *string* of JSON, not a JS object — the TypeScript handler
+validates and decodes it before reading the file path.
 
 ## stdout envelope
 

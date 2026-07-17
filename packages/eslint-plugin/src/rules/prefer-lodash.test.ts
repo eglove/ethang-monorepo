@@ -4,7 +4,10 @@ import { parser as tsParser } from "typescript-eslint";
 import { preferLodashRule } from "./prefer-lodash.ts";
 
 const UNKNOWN_METHOD = "xs.unknownMethod();";
-const CHAIN_OUTPUT = "map(xs, (x) => x).filter((x) => x);";
+const CHAIN_OUTPUT =
+  'import map from "lodash/map.js";\nmap(xs, (x) => x).filter((x) => x);';
+const CHAIN_OUTPUT_BRACKET =
+  'import map from "lodash/map.js";\nmap(xs, (x) => x).filter((x) => x);';
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -24,17 +27,19 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "[1, 2, 3].map((x) => x * 2);",
       errors: [{ messageId: "preferLodash" }],
       options: [{ importStyle: "deep" }],
-      output: "map([1, 2, 3], (x) => x * 2);"
+      output: 'import map from "lodash/map.js";\nmap([1, 2, 3], (x) => x * 2);'
     },
     {
       code: "const xs = [1, 2, 3]; xs.filter((x) => x > 1);",
       errors: [{ messageId: "preferLodash" }],
-      output: "const xs = [1, 2, 3]; filter(xs, (x) => x > 1);"
+      output:
+        'import filter from "lodash/filter.js";\nconst xs = [1, 2, 3]; filter(xs, (x) => x > 1);'
     },
     {
       code: "const xs = [1, 2, 3]; xs.groupBy((x) => x % 2);",
       errors: [{ messageId: "preferLodash" }],
-      output: "const xs = [1, 2, 3]; groupBy(xs, (x) => x % 2);"
+      output:
+        'import groupBy from "lodash/groupBy.js";\nconst xs = [1, 2, 3]; groupBy(xs, (x) => x % 2);'
     },
     {
       code: "xs.map((x) => x).filter((x) => x);",
@@ -50,7 +55,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "[1, 2, 3].map((x) => x * 2);",
       errors: [{ messageId: "preferLodash" }],
       options: [{ importStyle: "namespace" }],
-      output: "map([1, 2, 3], (x) => x * 2);"
+      output: 'import map from "lodash/map.js";\nmap([1, 2, 3], (x) => x * 2);'
     },
     {
       code: "xs.map((x) => x).filter((x) => x);",
@@ -65,7 +70,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "xs.map((x) => x);",
       errors: [{ messageId: "preferLodash" }],
       options: [{ chainStyle: "never" }],
-      output: "map(xs, (x) => x);"
+      output: 'import map from "lodash/map.js";\nmap(xs, (x) => x);'
     },
     {
       code: "getArray().map((x) => x).filter((x) => x);",
@@ -75,7 +80,8 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
         { messageId: "preferLodash" }
       ],
       options: [{ chainStyle: "as-needed" }],
-      output: "map(getArray(), (x) => x).filter((x) => x);"
+      output:
+        'import map from "lodash/map.js";\nmap(getArray(), (x) => x).filter((x) => x);'
     },
     {
       code: "xs.map((x) => x).forEach((x) => x);",
@@ -83,37 +89,41 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
         { messageId: "preferLodashMethod" },
         { messageId: "preferLodash" }
       ],
-      output: "map(xs, (x) => x).forEach((x) => x);"
+      output:
+        'import map from "lodash/map.js";\nmap(xs, (x) => x).forEach((x) => x);'
     },
     {
       code: "xs.filter((x) => x > 1).unknownChain();",
       errors: [{ messageId: "preferLodash" }],
       options: [{ chainStyle: "always" }],
-      output: "filter(xs, (x) => x > 1).unknownChain();"
+      output:
+        'import filter from "lodash/filter.js";\nfilter(xs, (x) => x > 1).unknownChain();'
     },
     {
       code: "const fn = () => 1; xs.map((x) => x)[fn()];",
       errors: [{ messageId: "preferLodash" }],
       options: [{ chainStyle: "always" }],
-      output: "const fn = () => 1; map(xs, (x) => x)[fn()];"
+      output:
+        'import map from "lodash/map.js";\nconst fn = () => 1; map(xs, (x) => x)[fn()];'
     },
     {
       code: "const k = 'foo'; xs.map((x) => x)[k];",
       errors: [{ messageId: "preferLodash" }],
       options: [{ chainStyle: "always" }],
-      output: "const k = 'foo'; map(xs, (x) => x)[k];"
+      output: `import map from "lodash/map.js";\nconst k = 'foo'; map(xs, (x) => x)[k];`
     },
     {
       code: "xs.filter((x) => x > 1).someMethod((x) => x);",
       errors: [{ messageId: "preferLodash" }],
       options: [{ chainStyle: "always" }],
-      output: "filter(xs, (x) => x > 1).someMethod((x) => x);"
+      output:
+        'import filter from "lodash/filter.js";\nfilter(xs, (x) => x > 1).someMethod((x) => x);'
     },
     {
       code: "xs['map']((x) => x).filter((x) => x);",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
       options: [{ chainStyle: "always" }],
-      output: CHAIN_OUTPUT
+      output: CHAIN_OUTPUT_BRACKET
     },
 
     // --- prefer-is-nil: typeof x === 'undefined' || x === null ---
@@ -294,22 +304,22 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       code: "xs.map(() => 42);",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferConstant" }],
-      output: "map(xs, () => 42);"
+      output: 'import map from "lodash/map.js";\nmap(xs, () => 42);'
     },
     {
       code: "xs.map(() => 'hello');",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferConstant" }],
-      output: "map(xs, () => 'hello');"
+      output: `import map from "lodash/map.js";\nmap(xs, () => 'hello');`
     },
     {
       code: "xs.map(() => true);",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferConstant" }],
-      output: "map(xs, () => true);"
+      output: 'import map from "lodash/map.js";\nmap(xs, () => true);'
     },
     {
       code: "xs.map(() => null);",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferConstant" }],
-      output: "map(xs, () => null);"
+      output: 'import map from "lodash/map.js";\nmap(xs, () => null);'
     },
 
     // --- prefer-noop: empty function body, used as callback ---
@@ -413,7 +423,8 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       code: "xs.filter((x) => x ?? y)",
       errors: [{ messageId: "preferLodash" }],
-      output: "filter(xs, (x) => x ?? y)"
+      output:
+        'import filter from "lodash/filter.js";\nfilter(xs, (x) => x ?? y)'
     },
 
     // --- prefer-flat-map: map + flatten -> flatMap ---
@@ -462,7 +473,8 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       // `>` here) trips the `return isEqualityComparison(current)` branch.
       code: "xs.filter((x) => x.a > 1)",
       errors: [{ messageId: "preferLodash" }],
-      output: "filter(xs, (x) => x.a > 1)"
+      output:
+        'import filter from "lodash/filter.js";\nfilter(xs, (x) => x.a > 1)'
     },
 
     // --- prefer-invoke-map: map calling a method -> invokeMap ---
@@ -478,7 +490,8 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       code: "xs.filter((x) => x > 1)[1]",
       errors: [{ messageId: "preferLodash" }],
-      output: "filter(xs, (x) => x > 1)[1]"
+      output:
+        'import filter from "lodash/filter.js";\nfilter(xs, (x) => x > 1)[1]'
     },
     {
       code: "xs.map((x) => x.camelCase().trim())",
@@ -488,7 +501,8 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
         { messageId: "preferLodashMethod" },
         { messageId: "preferLodash" }
       ],
-      output: "map(xs, (x) => x.camelCase().trim())"
+      output:
+        'import camelCase from "lodash/camelCase.js";\nxs.map((x) => camelCase(x).trim())'
     },
     {
       code: "xs.map(function(x) { return x.camelCase(); })",
@@ -497,42 +511,44 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       code: "xs.map((x) => x)",
       errors: [{ messageId: "preferLodash" }],
-      output: "map(xs, (x) => x)"
+      output: 'import map from "lodash/map.js";\nmap(xs, (x) => x)'
     },
     {
       code: "xs.map(({ a }) => a.camelCase())",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
-      output: "map(xs, ({ a }) => a.camelCase())"
+      output:
+        'import camelCase from "lodash/camelCase.js";\nxs.map(({ a }) => camelCase(a))'
     },
     {
       code: "xs.map((x) => y.camelCase())",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
-      output: "map(xs, (x) => y.camelCase())"
+      output:
+        'import camelCase from "lodash/camelCase.js";\nxs.map((x) => camelCase(y))'
     },
     {
       code: "xs.map(42)",
       errors: [{ messageId: "preferLodash" }],
-      output: "map(xs, 42)"
+      output: 'import map from "lodash/map.js";\nmap(xs, 42)'
     },
     {
       code: "xs.map(() => { })",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferNoop" }],
-      output: "map(xs, () => { })"
+      output: 'import map from "lodash/map.js";\nmap(xs, () => { })'
     },
     {
       code: "xs.map((x) => foo(x))",
       errors: [{ messageId: "preferLodash" }],
-      output: "map(xs, (x) => foo(x))"
+      output: 'import map from "lodash/map.js";\nmap(xs, (x) => foo(x))'
     },
     {
       code: "xs.filter(42)",
       errors: [{ messageId: "preferLodash" }],
-      output: "filter(xs, 42)"
+      output: 'import filter from "lodash/filter.js";\nfilter(xs, 42)'
     },
     {
       code: "xs.filter((x) => x > 1)",
       errors: [{ messageId: "preferLodash" }],
-      output: "filter(xs, (x) => x > 1)"
+      output: 'import filter from "lodash/filter.js";\nfilter(xs, (x) => x > 1)'
     },
     {
       code: "xs.filter(({a}) => typeof a === 'string')",
@@ -543,22 +559,23 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
           messageId: "preferTypecheck"
         }
       ],
-      output: "filter(xs, ({a}) => typeof a === 'string')"
+      output:
+        "import filter from \"lodash/filter.js\";\nfilter(xs, ({a}) => typeof a === 'string')"
     },
     {
       code: "xs.map()",
       errors: [{ messageId: "preferLodash" }],
-      output: "map(xs)"
+      output: 'import map from "lodash/map.js";\nmap(xs)'
     },
     {
       code: "xs.filter()",
       errors: [{ messageId: "preferLodash" }],
-      output: "filter(xs)"
+      output: 'import filter from "lodash/filter.js";\nfilter(xs)'
     },
     {
       code: "xs.filter(() => {})",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferNoop" }],
-      output: "filter(xs, () => {})"
+      output: 'import filter from "lodash/filter.js";\nfilter(xs, () => {})'
     },
 
     // --- Wave 3: prefer-uniq ([...new Set(arr)]) ---
@@ -580,27 +597,27 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "const arr = [[1, 2], [3, 4]]; arr[0].map((_, i) => arr.map((r) => r[i]));",
       errors: [{ messageId: "preferUnzip" }, { messageId: "preferLodash" }],
       output:
-        "const arr = [[1, 2], [3, 4]]; arr[0].map((_, i) => map(arr, (r) => r[i]));"
+        'import map from "lodash/map.js";\nconst arr = [[1, 2], [3, 4]]; arr[0].map((_, i) => map(arr, (r) => r[i]));'
     },
     {
       code: "const arrs = [[1, 2], [3, 4]]; arrs[0].map((_, i) => arrs.map((a) => a[i]));",
       errors: [{ messageId: "preferUnzip" }, { messageId: "preferLodash" }],
       output:
-        "const arrs = [[1, 2], [3, 4]]; arrs[0].map((_, i) => map(arrs, (a) => a[i]));"
+        'import map from "lodash/map.js";\nconst arrs = [[1, 2], [3, 4]]; arrs[0].map((_, i) => map(arrs, (a) => a[i]));'
     },
     // Reject: outer receiver doesn't match inner — both maps fall through to preferLodash
     {
       code: "const a = [[1, 2]]; const b = [[3, 4]]; a[0].map((_, i) => b.map((r) => r[i]));",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
       output:
-        "const a = [[1, 2]]; const b = [[3, 4]]; map(a[0], (_, i) => b.map((r) => r[i]));"
+        'import map from "lodash/map.js";\nconst a = [[1, 2]]; const b = [[3, 4]]; a[0].map((_, i) => map(b, (r) => r[i]));'
     },
     // Reject: outer isn't arr[0] but a non-zero index — both maps fall through
     {
       code: "const arr = [[1, 2]]; arr[1].map((_, i) => arr.map((r) => r[i]));",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferLodash" }],
       output:
-        "const arr = [[1, 2]]; map(arr[1], (_, i) => arr.map((r) => r[i]));"
+        'import map from "lodash/map.js";\nconst arr = [[1, 2]]; arr[1].map((_, i) => map(arr, (r) => r[i]));'
     },
 
     // --- Wave 3: prefer-partition (filter + negated filter) ---
@@ -613,7 +630,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "const arr = [1, 2, 3]; const evens = arr.filter((x) => isEven(x));",
       errors: [{ messageId: "preferLodash" }],
       output:
-        "const arr = [1, 2, 3]; const evens = filter(arr, (x) => isEven(x));"
+        'import filter from "lodash/filter.js";\nconst arr = [1, 2, 3]; const evens = filter(arr, (x) => isEven(x));'
     },
     // Reject: predicate is a block body (not a single call expression) — preferPartition
     // does not fire. The non-negated form falls through to preferLodash; the
@@ -622,7 +639,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "const arr = [1]; const a = arr.filter((x) => { return isEven(x); }); const b = arr.filter((x) => { return !isEven(x); });",
       errors: [{ messageId: "preferLodash" }, { messageId: "preferReject" }],
       output:
-        "const arr = [1]; const a = filter(arr, (x) => { return isEven(x); }); const b = arr.filter((x) => { return !isEven(x); });"
+        'import filter from "lodash/filter.js";\nconst arr = [1]; const a = filter(arr, (x) => { return isEven(x); }); const b = arr.filter((x) => { return !isEven(x); });'
     },
 
     // --- Wave 3: prefer-count-by (reduce building counts) ---
@@ -635,7 +652,7 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "const arr = [1]; const counts = arr.reduce((acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, []);",
       errors: [{ messageId: "preferLodash" }],
       output:
-        "const arr = [1]; const counts = reduce(arr, (acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, []);"
+        'import reduce from "lodash/reduce.js";\nconst arr = [1]; const counts = reduce(arr, (acc, x) => { acc[x] = (acc[x] ?? 0) + 1; return acc; }, []);'
     },
 
     // --- Wave 3: prefer-key-by (reduce building dict) ---
@@ -659,17 +676,20 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       code: "if (xs.length === 0) { foo(); }",
       errors: [{ messageId: "preferIsEmpty" }],
-      output: "if (isEmpty(xs)) { foo(); }"
+      output:
+        'import isEmpty from "lodash/isEmpty.js";\nif (isEmpty(xs)) { foo(); }'
     },
     {
       code: "if (0 === xs.length) { foo(); }",
       errors: [{ messageId: "preferIsEmpty" }],
-      output: "if (isEmpty(xs)) { foo(); }"
+      output:
+        'import isEmpty from "lodash/isEmpty.js";\nif (isEmpty(xs)) { foo(); }'
     },
     {
       code: "if (Object.keys(obj).length === 0) { foo(); }",
       errors: [{ messageId: "preferIsEmpty" }],
-      output: "if (isEmpty(obj)) { foo(); }"
+      output:
+        'import isEmpty from "lodash/isEmpty.js";\nif (isEmpty(obj)) { foo(); }'
     }
   ],
   valid: [
@@ -776,6 +796,12 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     },
     {
       code: "xs.forEach((x) => { console.log(x); });"
+    },
+    {
+      code: "Buffer.concat(chunks).toString('utf8');"
+    },
+    {
+      code: "JSON.parse(text).toString();"
     },
     {
       code: "_.filter(xs, (x) => x);"

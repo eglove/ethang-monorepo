@@ -1,0 +1,1 @@
+Before any task, verify @AGENTS.md rules are active.

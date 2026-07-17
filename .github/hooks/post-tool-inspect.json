@@ -1,15 +1,15 @@
 {
-  "version": 1,
   "hooks": {
     "postToolUse": [
       {
-        "type": "command",
-        "matcher": "^(edit|create)$",
-        "powershell": "node scripts/post-tool-inspect.mjs",
-        "bash": "node scripts/post-tool-inspect.mjs",
+        "bash": "bun packages/monorepo-tools/src/cli/post-tool-inspect.cli.ts",
         "cwd": ".",
-        "timeoutSec": 15
+        "matcher": "^(edit|create)$",
+        "powershell": "bun packages/monorepo-tools/src/cli/post-tool-inspect.cli.ts",
+        "timeoutSec": 15,
+        "type": "command"
       }
     ]
-  }
+  },
+  "version": 1
 }

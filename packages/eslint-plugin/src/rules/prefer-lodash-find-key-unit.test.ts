@@ -15,6 +15,7 @@ import {
   collectObjectParameterAccesses,
   detectFindKeyPattern,
   getExpressionBody,
+  getFindCallTarget,
   getFirstArrowCallbackArgument,
   getFirstIdentifierArgument,
   getMemberExpressionCallee,
@@ -80,6 +81,12 @@ describe("isObjectKeysCall", () => {
   it("returns false for a bare identifier", () => {
     expect(isObjectKeysCall(findIdentifier("Object;"))).toBe(false);
   });
+  it("returns false for a private property", () => {
+    const { call } = findCall(
+      "class Object { static #keys() {} static run() { Object.#keys(); } }"
+    );
+    expect(isObjectKeysCall(call)).toBe(false);
+  });
 });
 
 const FIND_CALL_CASES = [
@@ -96,6 +103,12 @@ describe("isFindCall", () => {
   it("returns false for a bare identifier", () => {
     expect(isFindCall(findIdentifier("arr.find;"))).toBe(false);
   });
+  it("returns false for a private property", () => {
+    const { call } = findCall(
+      "class Values { #find() {} run() { this.#find(); } }"
+    );
+    expect(isFindCall(call)).toBe(false);
+  });
 });
 
 describe("getMemberExpressionCallee", () => {
@@ -110,6 +123,25 @@ describe("getMemberExpressionCallee", () => {
   it("returns null for an identifier callee", () => {
     const { call } = findCall("find(x);");
     expect(getMemberExpressionCallee(call)).toBeNull();
+  });
+});
+
+describe("getFindCallTarget", () => {
+  it("returns the member callee for canonical find calls", () => {
+    const { call } = findCall("obj.find((value) => value);");
+    expect(getFindCallTarget(call)?.property.type).toBe(
+      AST_NODE_TYPES.Identifier
+    );
+  });
+
+  it("returns null for computed find calls", () => {
+    const { call } = findCall("obj['find']((value) => value);");
+    expect(getFindCallTarget(call)).toBeNull();
+  });
+
+  it("returns null for non-find calls", () => {
+    const { call } = findCall("obj.filter((value) => value);");
+    expect(getFindCallTarget(call)).toBeNull();
   });
 });
 
@@ -249,9 +281,23 @@ const DETECT_CASES = [
 ] as const;
 
 describe("detectFindKeyPattern", () => {
+  it("returns null for computed find access", () => {
+    const { call } = findCall(
+      "Object.keys(obj)['find']((k) => obj[k] === 'v');"
+    );
+    expect(detectFindKeyPattern(call)).toBeNull();
+  });
+
   it.each(DETECT_CASES)(EACH_TITLE, (code, expectedDetected) => {
     const { call } = findCall(code);
     expect(!isNil(detectFindKeyPattern(call))).toBe(expectedDetected);
+  });
+
+  it("detects nested computed accesses that all stay value-oriented", () => {
+    const { call } = findCall(
+      "Object.keys(obj).find((k) => obj[k].nested[obj[k].id] === obj[k]);"
+    );
+    expect(detectFindKeyPattern(call)?.accesses).toHaveLength(3);
   });
 });
 
@@ -277,4 +323,10 @@ describe("isObjectParameterAccess", () => {
       ).toBe(expected);
     }
   );
+
+  it("returns false for computed access with a member-expression object", () => {
+    expect(
+      isObjectParameterAccess(firstExpression("obj.nested[k];"), "obj", "k")
+    ).toBe(false);
+  });
 });

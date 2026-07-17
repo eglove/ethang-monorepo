@@ -14,12 +14,13 @@ miktex packages update
 # NPM globals
 corepack install -g npm@latest yarn@latest pnpm@latest
 pnpm store prune
-npm i -g wrangler @google/gemini-cli @angular/cli sanity chrome-devtools-mcp@latest @playwright/cli@latest
+npm i -g -y wrangler @google/gemini-cli @angular/cli sanity chrome-devtools-mcp@latest @playwright/cli@latest
 
 Set-Location ~/projects/ethang-monorepo/
+Remove-Item -Recurse -Force ./.agents/skills
 npx skills add effect-ts/skills -y
 npx skills add cloudflare/skills -y
-npx skills add github/awesome-copilot -y
+npx skills add https://github.com/github/awesome-copilot --skill git-commit -y
 npx skills add microsoft/playwright-cli -y
 npx skills add tanstack-skills/tanstack-skills -y
 npx skills add chromedevtools/chrome-devtools-mcp -y

@@ -9,6 +9,7 @@ import join from "lodash/join.js";
 import map from "lodash/map.js";
 
 import {
+  ensureLodashImport,
   markInnerCallExpressions,
   NATIVE_EQUIVALENT_METHODS,
   resolveCall
@@ -151,7 +152,10 @@ const reportArray = (
           ? `(${sourceText}, ${join(argumentsText, ", ")})`
           : `(${sourceText})`;
 
-      return fixer.replaceText(node, `${methodName}${callText}`);
+      const replace = fixer.replaceText(node, `${methodName}${callText}`);
+      const program = context.sourceCode.ast;
+      const importFix = ensureLodashImport(program, methodName, fixer);
+      return importFix ? [replace, importFix] : replace;
     },
     messageId: "preferLodash",
     node
@@ -390,13 +394,19 @@ const checkBinaryExpression = (
   // prefer-is-empty
   if (shouldPreferIsEmpty(node)) {
     const receiver = getIsEmptyReceiver(node);
+    // getIsEmptyReceiver only returns null when shouldPreferIsEmpty returns
+    // false (mutually exclusive by construction).
+    /* v8 ignore next */
     if (isNil(receiver)) {
       context.report({ messageId: "preferIsEmpty", node });
     } else {
       const receiverText = context.sourceCode.getText(receiver);
       context.report({
         fix: (fixer) => {
-          return fixer.replaceText(node, `isEmpty(${receiverText})`);
+          const replace = fixer.replaceText(node, `isEmpty(${receiverText})`);
+          const program = context.sourceCode.ast;
+          const importFix = ensureLodashImport(program, "isEmpty", fixer);
+          return importFix ? [replace, importFix] : replace;
         },
         messageId: "preferIsEmpty",
         node
@@ -454,6 +464,17 @@ const checkLodashChain = (
     NON_ARRAY_NATIVE_METHODS.has(firstName) ||
     NON_ARRAY_NATIVE_METHODS.has(secondName)
   ) {
+    return;
+  }
+
+  // If the chain's root receiver is a builtin namespace (Math, Buffer,
+  // JSON, etc.) the chain is being applied to a non-array receiver, so the
+  // "prefer lodash chain" suggestion does not apply. Walk past any
+  // intermediate MemberExpression / CallExpression layers to the root
+  // identifier and check `BUILTIN_NAMESPACES` via the resolver.
+  const program = context.sourceCode.ast;
+  const resolved = resolveCall(node.object, program);
+  if ("unknown-member" === resolved.kind) {
     return;
   }
 

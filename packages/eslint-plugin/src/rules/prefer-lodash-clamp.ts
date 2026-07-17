@@ -27,16 +27,18 @@ export const isMathMemberCall = (
   if (node.computed) {
     return false;
   }
-  if (AST_NODE_TYPES.Identifier !== node.object.type) {
+  const { object } = node;
+  if (AST_NODE_TYPES.Identifier !== object.type) {
     return false;
   }
-  if ("Math" !== node.object.name) {
+  if ("Math" !== object.name) {
     return false;
   }
-  if (AST_NODE_TYPES.Identifier !== node.property.type) {
+  const { property } = node;
+  if (AST_NODE_TYPES.Identifier !== property.type) {
     return false;
   }
-  return method === node.property.name;
+  return method === property.name;
 };
 
 export const isMathMinCall = (node: TSESTree.Node) => {
@@ -53,7 +55,7 @@ export const isMathMaxCall = (node: TSESTree.Node) => {
   return isMathMemberCall(node.callee, "max");
 };
 
-const isNestedMathCall = (node: TSESTree.Node) => {
+export const isNestedMathCall = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.CallExpression !== node.type) {
     return false;
   }
@@ -75,7 +77,7 @@ export type ClampMatch = {
 // Read the inner `Math.max(lower, x)` / `Math.min(upper, x)` and pull out
 // the bound + the value being clamped. Refuses to rewrite when either
 // argument is itself a clamp call (we'd silently drop a bound).
-const readInnerCall = (
+export const readInnerCall = (
   innerCall: TSESTree.CallExpression,
   kind: "max" | "min"
 ) => {
@@ -118,7 +120,7 @@ const outerSideIndex = (shape: ClampShape) => {
   return 1 - shape.innerIndex;
 };
 
-const tryShape = (
+export const tryShape = (
   callee: TSESTree.Expression,
   argumentList: readonly TSESTree.CallExpressionArgument[],
   shape: ClampShape

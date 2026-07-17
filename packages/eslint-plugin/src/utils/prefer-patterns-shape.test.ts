@@ -8,6 +8,7 @@ import {
   findCall,
   findIdentifier,
   findSliceCall,
+  firstExpression,
   firstStatement,
   identifierExpression,
   linkParents,
@@ -15,11 +16,18 @@ import {
 } from "../rules/.fixture.ts";
 import {
   getAccumulatorAssignment,
+  getBlockBodyTwoParameterCallback,
+  getCallToPredicate,
   getFilterCallReceiver,
   getNegatedPredicateArgument,
+  getOneParameterArrow,
   getPartitionIterateeInfo,
+  getReduceCallInitial,
   getReturnedValue,
   getSingleParameterArrow,
+  getTwoParameterArrow,
+  getUnzipIndexName,
+  hasMatchingExpressionStatement,
   hasMatchingVariableDeclarator,
   isChunkBlockBody,
   isChunkIncrementStatement,
@@ -30,6 +38,7 @@ import {
   isCountByAssignment,
   isCountOrKeyByPattern,
   isKeyByShape,
+  isMatchingIndexedAccess,
   isMatchingNegatedFilter,
   isNegatedPredicateCall,
   isProgramWithNegatedFilter,
@@ -409,6 +418,17 @@ describe("isCountOrKeyByPattern", () => {
   });
 });
 
+describe("getAccumulatorAssignment", () => {
+  it("returns null for assignments to a different accumulator", () => {
+    const block = buildBlock("other[key] = 1;");
+    const [statement] = block.body;
+    if (!statement) {
+      throw new Error("expected assignment statement");
+    }
+    expect(getAccumulatorAssignment(statement, "acc")).toBeNull();
+  });
+});
+
 describe("shouldPreferCountBy", () => {
   it("canonical", () => {
     const { call } = findCall(
@@ -535,15 +555,21 @@ describe("isChunkBlockBody", () => {
 });
 
 describe("shouldPreferChunk", () => {
-  it("canonical", () => {
-    const code = `let i = 0; const out = []; while (i < arr.length) { ${OUT_PUSH}(${ARR_SLICE}(i, i + 2)); i += 2; }`;
+  const getLinkedSliceCall = (code: string) => {
     const program = parseProgram(code);
     linkParents(program);
-    const whileStatement = program.body[2] as TSESTree.WhileStatement;
+    const whileStatement = program.body.at(-1) as TSESTree.WhileStatement;
     const sliceCall = findSliceCall(whileStatement);
     if (isNil(sliceCall)) {
       throw new Error("expected slice call in chunk pattern");
     }
+    return sliceCall;
+  };
+
+  it("canonical", () => {
+    const sliceCall = getLinkedSliceCall(
+      `let i = 0; const out = []; while (i < arr.length) { ${OUT_PUSH}(${ARR_SLICE}(i, i + 2)); i += 2; }`
+    );
     expect(shouldPreferChunk(sliceCall)).toBe(true);
   });
   it("non-slice", () => {
@@ -553,5 +579,131 @@ describe("shouldPreferChunk", () => {
   it("not in push", () => {
     const { call } = findCall(`${ARR_SLICE}(0, 2);`);
     expect(shouldPreferChunk(call)).toBe(false);
+  });
+  it("returns false when the push call is not wrapped in an expression statement", () => {
+    const sliceCall = getLinkedSliceCall(
+      `let i = 0; const out = []; while (i < arr.length) { const pushed = ${OUT_PUSH}(${ARR_SLICE}(i, i + 2)); i += 2; }`
+    );
+    expect(shouldPreferChunk(sliceCall)).toBe(false);
+  });
+
+  it("returns false when the block is not inside a loop", () => {
+    const sliceCall = getLinkedSliceCall(
+      `let i = 0; const out = []; while (i < arr.length) { if (ready) { ${OUT_PUSH}(${ARR_SLICE}(i, i + 2)); i += 2; } i += 2; }`
+    );
+    expect(shouldPreferChunk(sliceCall)).toBe(false);
+  });
+});
+
+describe("defensive shape boundaries", () => {
+  it("covers callable and indexed-access rejection states", () => {
+    expect(getTwoParameterArrow(firstExpression("(a) => a;"))).toBeNull();
+    expect(
+      getTwoParameterArrow(firstExpression("(function (a, b) { return a; });"))
+    ).not.toBeNull();
+    expect(
+      getOneParameterArrow(firstExpression("(function (a) { return a; });"))
+    ).not.toBeNull();
+    expect(isMatchingIndexedAccess(firstExpression("[row][i];"), "row")).toBe(
+      false
+    );
+    expect(getCallToPredicate(firstExpression("pred(1);"))).toBeNull();
+  });
+
+  it("rejects mismatched unzip and partition shapes", () => {
+    const { call: mapCall } = findCall("rows.map((row) => row[j]);");
+    expect(getUnzipIndexName(mapCall, "rows", "i")).toBeNull();
+    expect(
+      getNegatedPredicateArgument(firstExpression("!pred(1);"), "pred")
+    ).toBeNull();
+    const { call: emptyFilter } = findCall("arr.filter();");
+    expect(
+      isMatchingNegatedFilter(
+        emptyFilter,
+        identifierExpression("arr"),
+        "pred",
+        "value"
+      )
+    ).toBe(false);
+  });
+
+  it("covers program statement and reduce callback rejection states", () => {
+    expect(
+      hasMatchingExpressionStatement(
+        expressionStatement("value;"),
+        identifierExpression("arr"),
+        "pred",
+        "value"
+      )
+    ).toBe(false);
+    expect(
+      hasMatchingExpressionStatement(
+        expressionStatement("run();"),
+        identifierExpression("arr"),
+        "pred",
+        "value"
+      )
+    ).toBe(false);
+    expect(
+      isProgramWithNegatedFilter(
+        parseProgram("debugger;"),
+        identifierExpression("arr"),
+        "pred",
+        "value"
+      )
+    ).toBe(false);
+    expect(
+      isProgramWithNegatedFilter(
+        parseProgram("run();"),
+        identifierExpression("arr"),
+        "pred",
+        "value"
+      )
+    ).toBe(false);
+    expect(
+      getReduceCallInitial(findCall("arr.reduce((acc, value) => acc);").call)
+    ).toBeNull();
+    expect(
+      getBlockBodyTwoParameterCallback(firstExpression("value;"))
+    ).toBeNull();
+    expect(
+      getBlockBodyTwoParameterCallback(firstExpression("(a, b) => a;"))
+    ).toBeNull();
+    expect(
+      getBlockBodyTwoParameterCallback(firstExpression("(a) => { return a; };"))
+    ).toBeNull();
+    expect(
+      getBlockBodyTwoParameterCallback(
+        firstExpression("({ value }, key) => { return key; };")
+      )
+    ).toBeNull();
+  });
+
+  it("rejects canonical slices with invalid parent chains and block bodies", () => {
+    const standalone = parseProgram("arr.slice(i, i + 2);");
+    linkParents(standalone);
+    const standaloneSlice = findSliceCall(standalone);
+    if (isNil(standaloneSlice)) {
+      throw new Error("expected standalone slice call");
+    }
+    expect(shouldPreferChunk(standaloneSlice)).toBe(false);
+
+    const outsideBlock = parseProgram("out.push(arr.slice(i, i + 2)); i += 2;");
+    linkParents(outsideBlock);
+    const outsideSlice = findSliceCall(outsideBlock);
+    if (isNil(outsideSlice)) {
+      throw new Error("expected outside slice call");
+    }
+    expect(shouldPreferChunk(outsideSlice)).toBe(false);
+
+    const malformedLoop = parseProgram(
+      "while (ready) { out.push(arr.slice(i, i + 2)); run(); }"
+    );
+    linkParents(malformedLoop);
+    const malformedSlice = findSliceCall(malformedLoop);
+    if (isNil(malformedSlice)) {
+      throw new Error("expected malformed slice call");
+    }
+    expect(shouldPreferChunk(malformedSlice)).toBe(false);
   });
 });

@@ -35,13 +35,15 @@ export const isObjectKeysCall = (node: TSESTree.Node) => {
   if (callee.computed) {
     return false;
   }
-  if (!isIdentifier(callee.object)) {
+  const { object } = callee;
+  if (!isIdentifier(object)) {
     return false;
   }
-  if (!isIdentifier(callee.property)) {
+  const { property } = callee;
+  if (!isIdentifier(property)) {
     return false;
   }
-  return "Object" === callee.object.name && "keys" === callee.property.name;
+  return "Object" === object.name && "keys" === property.name;
 };
 
 export const isFindCall = (node: TSESTree.Node) => {
@@ -55,14 +57,22 @@ export const isFindCall = (node: TSESTree.Node) => {
   if (callee.computed) {
     return false;
   }
-  if (!isIdentifier(callee.property)) {
+  const { property } = callee;
+  if (!isIdentifier(property)) {
     return false;
   }
-  return "find" === callee.property.name;
+  return "find" === property.name;
 };
 
 export const getMemberExpressionCallee = (node: TSESTree.CallExpression) => {
   return isMemberExpression(node.callee) ? node.callee : null;
+};
+
+export const getFindCallTarget = (node: TSESTree.Node) => {
+  if (!isCallExpression(node) || !isFindCall(node)) {
+    return null;
+  }
+  return getMemberExpressionCallee(node);
 };
 
 // Computed-member shape `<objectName>[<parameterName>]` — the only form
@@ -219,7 +229,8 @@ export const detectFindKeyPattern = (node: TSESTree.CallExpression) => {
   if (!isFindCall(node)) {
     return null;
   }
-  const outerCallee = getMemberExpressionCallee(node);
+  const outerCallee = getFindCallTarget(node);
+  /* v8 ignore next 3 -- isFindCall above guarantees a member-expression callee. */
   if (!outerCallee) {
     return null;
   }

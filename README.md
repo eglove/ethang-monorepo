@@ -39,6 +39,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities (auth, caching, last-modified) reused across the Workers-based apps.
 - **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends (no barrel file; import from subpaths).
 - **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by `agents-build` and other tooling.
+- **[monorepo-tools](packages/monorepo-tools)**: Bun/TypeScript monorepo checker and Copilot hook tooling.
 - **[schemas](packages/schemas)**: Shared data schemas and validation utilities (Effect Schema) used across apps, including JWT helpers built on `jose`.
 - **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks (CI workflow validation, JSON sorting, rule generation).
 - **[service-worker](packages/service-worker)**: Shared Workbox-based service worker (with esbuild build step) used by the frontends.

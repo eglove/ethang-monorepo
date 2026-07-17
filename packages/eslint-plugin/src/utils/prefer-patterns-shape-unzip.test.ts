@@ -42,6 +42,10 @@ describe("isZeroLiteral", () => {
 });
 
 describe("isValidUniqArgument", () => {
+  it("rejects an absent argument", () => {
+    expect(isValidUniqArgument(null)).toBe(false);
+  });
+
   it.each([
     { code: FOO_ARR, expected: true },
     { code: "foo(a.b);", expected: true },
@@ -178,6 +182,10 @@ describe("shouldPreferUnzip / shouldPreferZip", () => {
   it("unzip non-matching", () => {
     const { call } = findCall(UNZIP_ARROW_BODY_1);
     expect(shouldPreferUnzip(call)).toBe(false);
+  });
+  it("zip non-matching", () => {
+    const { call } = findCall(UNZIP_ARROW_BODY_1);
+    expect(shouldPreferZip(call)).toBe(false);
   });
 });
 

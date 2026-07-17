@@ -1,3 +1,5 @@
+import type { RuleFixer } from "@typescript-eslint/utils/ts-eslint";
+
 import { parseForESLint } from "@typescript-eslint/parser";
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 import { Effect } from "effect";
@@ -27,12 +29,26 @@ const parseProgram = (code: string) => {
   }).ast;
 };
 
-const NOOP_FIX = constant(null);
+const NOOP_FIX = constant({ range: [0, 0], text: "" } as never);
 const FAKE_FIX = constant({ range: [10, 10], text: "" } as never);
 const NO_CALL_EXPRESSION_FOUND = "no call expression found in:";
 const METHOD_MAP = "map";
 const SOURCE_CODE_AST_CONTEXT = (program: TSESTree.Program) => {
   return { sourceCode: { ast: program } };
+};
+
+const buildFakeFixer = (overrides: Partial<RuleFixer> = {}) => {
+  return {
+    insertTextAfter: NOOP_FIX,
+    insertTextAfterRange: NOOP_FIX,
+    insertTextBefore: NOOP_FIX,
+    insertTextBeforeRange: NOOP_FIX,
+    remove: NOOP_FIX,
+    removeRange: NOOP_FIX,
+    replaceText: NOOP_FIX,
+    replaceTextRange: NOOP_FIX,
+    ...overrides
+  };
 };
 
 const importedKindOf = (code: string) => {
@@ -92,44 +108,104 @@ describe("getImportedKind", () => {
 describe("ensureEffectImport", () => {
   it("returns null when effect is already imported", () => {
     const program = parseProgram(EFFECT_FOO_IMPORT);
-    const fixer = { insertTextAfter: NOOP_FIX } as never;
+    const fixer = buildFakeFixer({ insertTextAfter: NOOP_FIX });
     expect(ensureEffectImport(program, fixer)).toBeNull();
   });
 
-  it("inserts an import when program is empty", () => {
+  it("inserts an import at the start when program is empty", () => {
+    const calls: string[] = [];
     const program = parseProgram("");
-    const fixer = { insertTextAfter: FAKE_FIX } as never;
+    const fixer = buildFakeFixer({
+      insertTextBeforeRange: (range, text) => {
+        calls.push(`insertTextBeforeRange:${range[0]}:${text}`);
+        return FAKE_FIX();
+      }
+    });
     const fix = ensureEffectImport(program, fixer);
     expect(fix).toBeDefined();
+    expect(calls[0]).toMatch(/^insertTextBeforeRange:0:/u);
   });
 
-  it("inserts an import when effect is missing", () => {
-    const program = parseProgram(CONST_X);
-    const fixer = { insertTextAfter: FAKE_FIX } as never;
+  it("inserts an import after the last import declaration", () => {
+    const calls: string[] = [];
+    const program = parseProgram(
+      `import a from "lodash/map.js";\nimport b from "lodash/filter.js";\n${CONST_X}`
+    );
+    const fixer = buildFakeFixer({
+      insertTextAfter: (_node, text) => {
+        calls.push(`insertTextAfter:${text}`);
+        return FAKE_FIX();
+      }
+    });
     const fix = ensureEffectImport(program, fixer);
     expect(fix).toBeDefined();
+    expect(calls[0]).toBe('insertTextAfter:import { Array } from "effect";\n');
+  });
+
+  it("inserts an import before the first node when no imports exist", () => {
+    const calls: string[] = [];
+    const program = parseProgram(CONST_X);
+    const fixer = buildFakeFixer({
+      insertTextBefore: (_node, text) => {
+        calls.push(`insertTextBefore:${text}`);
+        return FAKE_FIX();
+      }
+    });
+    const fix = ensureEffectImport(program, fixer);
+    expect(fix).toBeDefined();
+    expect(calls[0]).toBe('insertTextBefore:import { Array } from "effect";\n');
   });
 });
 
 describe("ensureLodashImport", () => {
   it("returns null when the deep import is already present", () => {
     const program = parseProgram('import map from "lodash/map.js";');
-    const fixer = { insertTextAfter: NOOP_FIX } as never;
+    const fixer = buildFakeFixer({ insertTextAfter: NOOP_FIX });
     expect(ensureLodashImport(program, METHOD_MAP, fixer)).toBeNull();
   });
 
-  it("inserts a deep import when missing", () => {
-    const program = parseProgram(CONST_X);
-    const fixer = { insertTextAfter: FAKE_FIX } as never;
+  it("inserts a deep import after the last import", () => {
+    const calls: string[] = [];
+    const program = parseProgram('import filter from "lodash/filter.js";');
+    const fixer = buildFakeFixer({
+      insertTextAfter: (_node, text) => {
+        calls.push(`insertTextAfter:${text}`);
+        return FAKE_FIX();
+      }
+    });
     const fix = ensureLodashImport(program, METHOD_MAP, fixer);
     expect(fix).toBeDefined();
+    expect(calls[0]).toBe('insertTextAfter:import map from "lodash/map.js";\n');
   });
 
-  it("inserts a deep import when a different lodash import exists", () => {
-    const program = parseProgram('import filter from "lodash/filter.js";');
-    const fixer = { insertTextAfter: FAKE_FIX } as never;
+  it("inserts a deep import before the first node when no imports exist", () => {
+    const calls: string[] = [];
+    const program = parseProgram(CONST_X);
+    const fixer = buildFakeFixer({
+      insertTextBefore: (_node, text) => {
+        calls.push(`insertTextBefore:${text}`);
+        return FAKE_FIX();
+      }
+    });
     const fix = ensureLodashImport(program, METHOD_MAP, fixer);
     expect(fix).toBeDefined();
+    expect(calls[0]).toBe(
+      'insertTextBefore:import map from "lodash/map.js";\n'
+    );
+  });
+
+  it("inserts a deep import at the start when program is empty", () => {
+    const calls: string[] = [];
+    const program = parseProgram("");
+    const fixer = buildFakeFixer({
+      insertTextBeforeRange: (range, text) => {
+        calls.push(`insertTextBeforeRange:${range[0]}:${text}`);
+        return FAKE_FIX();
+      }
+    });
+    const fix = ensureLodashImport(program, METHOD_MAP, fixer);
+    expect(fix).toBeDefined();
+    expect(calls[0]).toMatch(/^insertTextBeforeRange:0:/u);
   });
 });
 
@@ -280,6 +356,15 @@ describe("resolveCall", () => {
     const resolved = resolveCall(call, program);
     expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
     expect(resolved.methodName).toBe("now");
+  });
+
+  it("returns 'unknown-member' for Buffer.concat()", () => {
+    const { call, program } = firstCallExpression(
+      'import { Buffer } from "node:buffer"; Buffer.concat(chunks);'
+    );
+    const resolved = resolveCall(call, program);
+    expect(resolved.kind).toBe(KIND_UNKNOWN_MEMBER);
+    expect(resolved.methodName).toBe("concat");
   });
 });
 

@@ -1,4 +1,4 @@
-import type { RuleFix } from "@typescript-eslint/utils/ts-eslint";
+import type { RuleFixer } from "@typescript-eslint/utils/ts-eslint";
 
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 import filter from "lodash/filter.js";
@@ -21,35 +21,6 @@ import {
 } from "./lodash-api.ts";
 import { isCallExpression } from "./type-guards.ts";
 
-type RuleFixer = {
-  insertTextAfter: (
-    nodeOrToken: TSESTree.Node | TSESTree.Token,
-    text: string
-  ) => RuleFix;
-  insertTextAfterRange: (
-    range: Readonly<[number, number]>,
-    text: string
-  ) => RuleFix;
-  insertTextBefore: (
-    nodeOrToken: TSESTree.Node | TSESTree.Token,
-    text: string
-  ) => RuleFix;
-  insertTextBeforeRange: (
-    range: Readonly<[number, number]>,
-    text: string
-  ) => RuleFix;
-  remove: (nodeOrToken: TSESTree.Node | TSESTree.Token) => RuleFix;
-  removeRange: (range: Readonly<[number, number]>) => RuleFix;
-  replaceText: (
-    nodeOrToken: TSESTree.Node | TSESTree.Token,
-    text: string
-  ) => RuleFix;
-  replaceTextRange: (
-    range: Readonly<[number, number]>,
-    text: string
-  ) => RuleFix;
-};
-
 const isLodashDefaultImport = (name: string) => {
   return "lodash" === name || startsWith(name, "lodash/");
 };
@@ -64,6 +35,7 @@ const isLodashNamespaceReceiver = (callee: TSESTree.MemberExpression) => {
 const BUILTIN_NAMESPACES = new Set([
   "Array",
   "Boolean",
+  "Buffer",
   "console",
   "CSS",
   "Date",
@@ -191,15 +163,28 @@ const hasLodashDeepImport = (program: TSESTree.Program, importName: string) => {
   });
 };
 
-const insertImportAfterLastStatement = (
+const insertImportAfterLastImport = (
   program: TSESTree.Program,
   fixer: RuleFixer,
   text: string
 ) => {
-  const lastNode = program.body.at(-1);
-  const anchor = lastNode ?? program;
+  let lastImport: null | TSESTree.ImportDeclaration = null;
+  for (const node of program.body) {
+    if (AST_NODE_TYPES.ImportDeclaration === node.type) {
+      lastImport = node;
+    }
+  }
 
-  return fixer.insertTextAfter(anchor, text);
+  if (lastImport) {
+    return fixer.insertTextAfter(lastImport, text);
+  }
+
+  const [firstNode] = program.body;
+  if (firstNode) {
+    return fixer.insertTextBefore(firstNode, text);
+  }
+
+  return fixer.insertTextBeforeRange(program.range, text);
 };
 
 export const ensureEffectImport = (
@@ -210,10 +195,10 @@ export const ensureEffectImport = (
     return null;
   }
 
-  return insertImportAfterLastStatement(
+  return insertImportAfterLastImport(
     program,
     fixer,
-    '\nimport { Array } from "effect";'
+    'import { Array } from "effect";\n'
   );
 };
 
@@ -226,10 +211,10 @@ export const ensureLodashImport = (
     return null;
   }
 
-  return insertImportAfterLastStatement(
+  return insertImportAfterLastImport(
     program,
     fixer,
-    `\nimport ${importName} from "lodash/${importName}.js";`
+    `import ${importName} from "lodash/${importName}.js";\n`
   );
 };
 
@@ -553,12 +538,11 @@ export const resolveMemberExpressionCall = (
   }
   const methodName = resolveMemberMethod(callee);
 
-  const resolved =
+  return (
     resolveEffectArray(node, callee, methodName) ??
     resolveEffectCore(node, callee, methodName) ??
-    resolveArrayCall(node, callee, methodName, program);
-  const result: ResolvedCall = resolved;
-  return result;
+    resolveArrayCall(node, callee, methodName, program)
+  );
 };
 
 const resolveIdentifierCall = (node: TSESTree.CallExpression) => {

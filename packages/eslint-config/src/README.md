@@ -5,14 +5,14 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-* 953 rules.
-* 310 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
-* 246 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
+* 954 rules.
+* 309 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
+* 245 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
 * 145 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
 * 111 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
 * 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
+* 24 rules from [@ethang/eslint-plugin](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-plugin)
 * 22 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
-* 21 rules from [@ethang/eslint-plugin](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-plugin)
 * 21 rules from [@eslint/markdown](https://github.com/eslint/markdown)
 * 13 rules from [@eslint/css](https://github.com/eslint/css)
 * 8 rules from [@tanstack/eslint-plugin-query](https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query)

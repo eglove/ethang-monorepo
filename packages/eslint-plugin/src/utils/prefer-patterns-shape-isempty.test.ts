@@ -10,6 +10,7 @@ import {
 } from "../rules/.fixture.ts";
 import {
   getIsEmptyReceiver,
+  getObjectKeysArgument,
   isLengthEqualsZero,
   isLengthMemberAccess,
   isObjectKeysLengthEqualsZero,
@@ -62,6 +63,20 @@ describe("isLengthEqualsZero", () => {
   });
 });
 
+describe("getObjectKeysArgument", () => {
+  it("returns undefined when Object.keys is called without an argument", () => {
+    const innerCall = findMember("Object.keys().length;")
+      .object as TSESTree.CallExpression;
+    expect(getObjectKeysArgument(innerCall)).toBeUndefined();
+  });
+
+  it("returns null for computed Object['keys'] access", () => {
+    const innerCall = findMember("Object['keys']().length;")
+      .object as TSESTree.CallExpression;
+    expect(getObjectKeysArgument(innerCall)).toBeNull();
+  });
+});
+
 describe("isObjectKeysLengthEqualsZero", () => {
   it.each([
     { code: OBJECT_KEYS_ARR_LENGTH_0, expected: true },
@@ -70,7 +85,8 @@ describe("isObjectKeysLengthEqualsZero", () => {
     { code: ARR_LENGTH_EQ_0, expected: false },
     { code: "Object.values(arr).length === 0;", expected: false },
     { code: "Other.keys(arr).length === 0;", expected: false },
-    { code: "Object.keys(undefined).length === 0;", expected: false }
+    { code: "Object.keys(undefined).length === 0;", expected: false },
+    { code: "0 === Object.keys(arr).length;", expected: false }
   ])(EACH_TITLE, ({ code, expected }) => {
     const { binary } = findBinary(code);
     expect(isObjectKeysLengthEqualsZero(binary)).toBe(expected);
@@ -104,6 +120,14 @@ describe("getIsEmptyReceiver", () => {
     const { binary } = findBinary(OBJECT_KEYS_ARR_LENGTH_0);
     const receiver = getIsEmptyReceiver(binary);
     expect((receiver as TSESTree.Identifier).name).toBe("arr");
+  });
+  it("returns null for reversed Object.keys comparison", () => {
+    const { binary } = findBinary("0 === Object.keys(arr).length;");
+    expect(getIsEmptyReceiver(binary)).toBeNull();
+  });
+  it("returns null when neither side keeps the canonical receiver shape", () => {
+    const { binary } = findBinary("0 === 0;");
+    expect(getIsEmptyReceiver(binary)).toBeNull();
   });
   it("non-matching", () => {
     const { binary } = findBinary(ARR_LENGTH_EQ_1);
