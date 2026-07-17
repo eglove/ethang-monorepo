@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "hooks": {
+    "postToolUse": [
+      {
+        "type": "command",
+        "matcher": "^(edit|create)$",
+        "powershell": "node scripts/post-tool-inspect.mjs",
+        "bash": "node scripts/post-tool-inspect.mjs",
+        "cwd": ".",
+        "timeoutSec": 15
+      }
+    ]
+  }
+}

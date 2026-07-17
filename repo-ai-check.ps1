@@ -856,8 +856,6 @@ try {
             Get-ChildItem -Path $dir -File -Filter '*.test.tsx' -ErrorAction SilentlyContinue | ForEach-Object { $siblingTestFiles.Add($_.FullName) }
         }
 
-        # Inline-copy of the parser functions so they are available in the
-        # job's runspace.
         function Get-AutofixSummaryLocal {
             param($Payload)
             if ($null -eq $Payload) { return $null }
