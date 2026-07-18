@@ -28,7 +28,6 @@ export default {
     const client = createClient({
       apiVersion: "1",
       dataset: "production",
-      // cspell:disable-next-line
       projectId: "540gjnt8",
       useCdn: true
     });
