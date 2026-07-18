@@ -3,6 +3,7 @@ import filter from "lodash/filter.js";
 import isNil from "lodash/isNil.js";
 import partition from "lodash/partition.js";
 import sumBy from "lodash/sumBy.js";
+import take from "lodash/take.js";
 
 import type { AutofixSummary } from "./eslint-autofix.ts";
 
@@ -13,7 +14,7 @@ export type AutofixRuleAggregate = {
   workspaceCount: number;
 };
 
-export type CheckKind = "lint" | "test" | "tsc";
+export type CheckKind = "coverage" | "lint" | "test" | "tsc";
 
 export type CheckReport = {
   durationMs: number;
@@ -25,10 +26,33 @@ export type CheckReport = {
 };
 
 export type CheckSummary = {
+  coverage: CoverageSummary;
   lint: LintSummary;
   test: TestSummary;
   tsc: TscSummary;
   workspaces: number;
+};
+
+export type CoverageSummary = {
+  failed: number;
+  passed: number;
+  ran: number;
+};
+
+export type CoverageWorkspaceReport = {
+  passed: boolean;
+  ran: boolean;
+  summary: {
+    branches: { covered: number; pct: number; total: number };
+    functions: { covered: number; pct: number; total: number };
+    lines: { covered: number; pct: number; total: number };
+    statements: { covered: number; pct: number; total: number };
+  } | null;
+  violations: readonly {
+    actual: number;
+    metric: "branches" | "functions" | "lines" | "statements";
+    required: number;
+  }[];
 };
 
 export type LintSummary = {
@@ -83,6 +107,7 @@ export type TscWorkspaceReport = {
 };
 
 export type WorkspaceReport = {
+  coverage?: CoverageWorkspaceReport | null;
   lint: LintWorkspaceReport | null;
   name: string;
   test: null | TestWorkspaceReport;
@@ -253,7 +278,7 @@ const buildAggregateByRule = (reports: readonly WorkspaceReport[]) => {
     }
     return left.ruleId.localeCompare(right.ruleId);
   });
-  return aggregates.slice(0, AUTOFIX_TOP_RULE_LIMIT);
+  return take(aggregates, AUTOFIX_TOP_RULE_LIMIT);
 };
 
 const computeLintSummary = (
@@ -296,9 +321,21 @@ const computeTestSummary = (reports: readonly WorkspaceReport[]) => {
 };
 
 const computeExitCode = (summary: CheckSummary) => {
-  return 0 < summary.lint.failed + summary.tsc.failed + summary.test.failed
+  return 0 <
+    summary.lint.failed +
+      summary.tsc.failed +
+      summary.test.failed +
+      summary.coverage.failed
     ? (1 as const)
     : (0 as const);
+};
+
+const computeCoverageSummary = (reports: readonly WorkspaceReport[]) => {
+  return {
+    failed: failedReports(reports, "coverage").length,
+    passed: passedReports(reports, "coverage").length,
+    ran: ranReports(reports, "coverage").length
+  };
 };
 
 export const buildCheckReport = (
@@ -308,6 +345,7 @@ export const buildCheckReport = (
   isAutofixRan: boolean
 ) => {
   const summary: CheckSummary = {
+    coverage: computeCoverageSummary(workspaces),
     lint: computeLintSummary(workspaces, isAutofixRan),
     test: computeTestSummary(workspaces),
     tsc: computeTscSummary(workspaces),

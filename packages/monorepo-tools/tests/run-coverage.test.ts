@@ -20,25 +20,27 @@ const PASSING_SUMMARY = (overrides: {
   statements?: number;
 }) => {
   return JSON.stringify({
-    branches: {
-      covered: 0,
-      pct: overrides.branches ?? 100,
-      total: 1
-    },
-    functions: {
-      covered: 0,
-      pct: overrides.functions ?? 100,
-      total: 1
-    },
-    lines: {
-      covered: 0,
-      pct: overrides.lines ?? 100,
-      total: 1
-    },
-    statements: {
-      covered: 0,
-      pct: overrides.statements ?? 100,
-      total: 1
+    total: {
+      branches: {
+        covered: 0,
+        pct: overrides.branches ?? 100,
+        total: 1
+      },
+      functions: {
+        covered: 0,
+        pct: overrides.functions ?? 100,
+        total: 1
+      },
+      lines: {
+        covered: 0,
+        pct: overrides.lines ?? 100,
+        total: 1
+      },
+      statements: {
+        covered: 0,
+        pct: overrides.statements ?? 100,
+        total: 1
+      }
     }
   });
 };

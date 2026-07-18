@@ -10,10 +10,12 @@ const COVERAGE_FILE = "coverage-summary.json";
 const NOT_JSON = "{not valid json";
 
 const sampleSummary = {
-  branches: { covered: 90, pct: 95, total: 100 },
-  functions: { covered: 50, pct: 100, total: 50 },
-  lines: { covered: 200, pct: 100, total: 200 },
-  statements: { covered: 200, pct: 100, total: 200 }
+  total: {
+    branches: { covered: 90, pct: 95, total: 100 },
+    functions: { covered: 50, pct: 100, total: 50 },
+    lines: { covered: 200, pct: 100, total: 200 },
+    statements: { covered: 200, pct: 100, total: 200 }
+  }
 };
 
 const makeTemporaryRoot = () => {
@@ -43,7 +45,9 @@ describe(readCoverageSummary, () => {
       const filePath = path.join(temporaryRoot, COVERAGE_FILE);
       writeSummaryFile(filePath, sampleSummary);
 
-      expect(readCoverageSummary({ filePath })).toStrictEqual(sampleSummary);
+      expect(readCoverageSummary({ filePath })).toStrictEqual(
+        sampleSummary.total
+      );
     });
   });
 

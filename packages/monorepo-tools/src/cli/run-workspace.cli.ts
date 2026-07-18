@@ -15,9 +15,15 @@ import split from "lodash/split.js";
 import trim from "lodash/trim.js";
 import uniq from "lodash/uniq.js";
 import { execFile } from "node:child_process";
+import path from "node:path";
 import process from "node:process";
 
 import { runAutofix } from "../application/run-autofix.ts";
+import {
+  runCoverage,
+  type RunCoverageResult
+} from "../application/run-coverage.ts";
+import { DEFAULT_THRESHOLDS } from "../domain/coverage-thresholds.ts";
 import {
   type AutofixPayload,
   summarizeAutofix
@@ -358,7 +364,7 @@ const diagnosticFrom = (line: string) => {
   const decoded = decodeTscDiagnostic({
     code,
     column,
-    file: location.slice(0, locationStart),
+    file: split(location, "(")[0],
     line: lineNumber,
     message,
     severity
@@ -596,6 +602,32 @@ const toDisabledVitestResult = () => {
   };
 };
 
+const toDisabledCoverageResult = () => {
+  return {
+    passed: true,
+    ran: false,
+    summary: null,
+    violations: []
+  };
+};
+
+const DEFAULT_COVERAGE_FILE = "coverage/coverage-summary.json";
+
+const toCoverageResult = (
+  result: RunCoverageResult,
+  isRanFullWorkspace: boolean
+) => {
+  if (!isRanFullWorkspace) {
+    return toDisabledCoverageResult();
+  }
+  return {
+    passed: result.passed,
+    ran: true,
+    summary: result.summary,
+    violations: result.violations
+  };
+};
+
 const runLint = Effect.fn("run-workspace.lint")(function* (
   cwd: string,
   files: readonly string[],
@@ -637,15 +669,8 @@ const runTsc = Effect.fn("run-workspace.tsc")(function* (
 
 const vitestArguments = (testFiles: readonly string[]) => {
   return isEmpty(testFiles)
-    ? ["exec", "vitest", "run", "--reporter=json", "--coverage=false"]
-    : [
-        "exec",
-        "vitest",
-        "run",
-        "--reporter=json",
-        "--coverage=false",
-        ...testFiles
-      ];
+    ? ["exec", "vitest", "run", "--reporter=json", "--coverage"]
+    : ["exec", "vitest", "run", "--reporter=json", "--coverage", ...testFiles];
 };
 
 const testResultFrom = (
@@ -660,16 +685,38 @@ const runTest = Effect.fn("run-workspace.test")(function* (
   runner: WorkspaceRunner,
   testFiles: readonly string[]
 ) {
+  const isFullWorkspace = isEmpty(testFiles);
   const commandEffect = runner.run({
     arguments: vitestArguments(testFiles),
     cwd
   });
-  return yield* withDuration(
-    Effect.map(commandEffect, (command) => {
-      return testResultFrom(command, testFiles);
+  const coverageEffect = runCoverage({
+    filePath: path.resolve(cwd, DEFAULT_COVERAGE_FILE),
+    thresholds: DEFAULT_THRESHOLDS
+  }).pipe(
+    Effect.map((result) => {
+      return toCoverageResult(result, isFullWorkspace);
+    }),
+    Effect.orElseSucceed(() => {
+      return toDisabledCoverageResult();
     })
   );
+  const testEffect = Effect.map(commandEffect, (command) => {
+    return testResultFrom(command, testFiles);
+  });
+  const [test, coverage] = yield* Effect.all([
+    withDuration(testEffect),
+    coverageEffect
+  ]);
+  return { coverage, test };
 });
+
+const toDisabledTestWithCoverage = () => {
+  return {
+    coverage: toDisabledCoverageResult(),
+    test: toDisabledVitestResult()
+  };
+};
 
 const shouldRunCheck = (checks: readonly CliCheck[], check: CliCheck) => {
   return checks.includes(check);
@@ -679,26 +726,25 @@ export const runWorkspace = Effect.fn("run-workspace")(function* (
   options: ParsedArguments,
   runner: WorkspaceRunner = defaultRunner
 ) {
-  const checks = yield* Effect.all([
-    shouldRunCheck(options.checks, CHECK_LINT)
-      ? runLint(options.cwd, options.files, options.fix)
-      : Effect.succeed(toDisabledLintResult()),
-    shouldRunCheck(options.checks, CHECK_TSC)
-      ? runTsc(options.cwd, runner, options.targetedFiles)
-      : Effect.succeed(toDisabledTscResult()),
-    shouldRunCheck(options.checks, CHECK_TEST)
-      ? runTest(options.cwd, runner, options.testFiles)
-      : Effect.succeed(toDisabledVitestResult())
-  ]);
+  const lintResult = shouldRunCheck(options.checks, CHECK_LINT)
+    ? yield* runLint(options.cwd, options.files, options.fix)
+    : toDisabledLintResult();
+  const tscResult = shouldRunCheck(options.checks, CHECK_TSC)
+    ? yield* runTsc(options.cwd, runner, options.targetedFiles)
+    : toDisabledTscResult();
+  const testResult = shouldRunCheck(options.checks, CHECK_TEST)
+    ? yield* runTest(options.cwd, runner, options.testFiles)
+    : toDisabledTestWithCoverage();
   return {
     checks: options.checks,
+    coverage: testResult.coverage,
     cwd: options.cwd,
     files: options.files,
-    lint: checks[0],
+    lint: lintResult,
     targetedFiles: options.targetedFiles,
-    test: checks[2],
+    test: testResult.test,
     testFiles: options.testFiles,
-    tsc: checks[1]
+    tsc: tscResult
   };
 });
 
@@ -706,7 +752,12 @@ export const main = async (argv: readonly string[]) => {
   const result = await Effect.runPromise(runWorkspace(parseArguments(argv)));
   process.stdout.write(`${JSON.stringify(result)}\n`);
   if (
-    [result.lint.passed, result.test.passed, result.tsc.passed].includes(false)
+    [
+      result.coverage.passed,
+      result.lint.passed,
+      result.test.passed,
+      result.tsc.passed
+    ].includes(false)
   ) {
     process.exit(EXIT_FAIL);
   }

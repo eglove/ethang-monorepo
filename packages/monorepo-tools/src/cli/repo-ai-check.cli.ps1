@@ -228,6 +228,9 @@ function Build-CheckReport {
     $testRan = @($WorkspaceReports | Where-Object { $_.test -and $_.test.ran })
     $testPassed = @($WorkspaceReports | Where-Object { $_.test -and $_.test.passed })
     $testFailed = @($WorkspaceReports | Where-Object { $_.test -and $_.test.ran -and -not $_.test.passed })
+    $coverageRan = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran })
+    $coveragePassed = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran -and $_.coverage.passed })
+    $coverageFailed = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran -and -not $_.coverage.passed })
 
     $lintErrorCount = ($lintRan | Measure-Object -Property errorCount -Sum).Sum
     $lintWarningCount = ($lintRan | Measure-Object -Property warningCount -Sum).Sum
@@ -290,8 +293,13 @@ function Build-CheckReport {
         passed         = $testPassed.Count
         ran            = $testRan.Count
     }
+    $coverageSummary = [pscustomobject]@{
+        failed = $coverageFailed.Count
+        passed = $coveragePassed.Count
+        ran    = $coverageRan.Count
+    }
 
-    $exitCode = if (($lintSummary.failed + $tscSummary.failed + $testSummary.failed) -gt 0) { 1 } else { 0 }
+    $exitCode = if (($lintSummary.failed + $tscSummary.failed + $testSummary.failed + $coverageSummary.failed) -gt 0) { 1 } else { 0 }
 
     $startedMs = [System.DateTime]::Parse($StartedAt).ToUniversalTime().Subtract((Get-Date "1970-01-01")).TotalMilliseconds
     $finishedMs = [System.DateTime]::Parse($FinishedAt).ToUniversalTime().Subtract((Get-Date "1970-01-01")).TotalMilliseconds
@@ -302,7 +310,7 @@ function Build-CheckReport {
         exitCode   = $exitCode
         finishedAt = $FinishedAt
         startedAt  = $StartedAt
-        summary    = [pscustomobject]@{ lint = $lintSummary; test = $testSummary; tsc = $tscSummary; workspaces = $WorkspaceReports.Count }
+        summary    = [pscustomobject]@{ coverage = $coverageSummary; lint = $lintSummary; test = $testSummary; tsc = $tscSummary; workspaces = $WorkspaceReports.Count }
         workspaces = $WorkspaceReports
     }
 }
@@ -342,6 +350,7 @@ function Build-FailedReport {
         lint  = [pscustomobject]@{ autofix = $null; errorCount = 1; fixableErrorCount = 0; fixableWarningCount = 0; issues = @(); passed = $false; ran = $true; warningCount = 0 }
         test  = [pscustomobject]@{ failedTests = @(); passed = $false; ran = $true }
         tsc   = [pscustomobject]@{ errorCount = 1; passed = $false; ran = $true; warningCount = 0 }
+        coverage = [pscustomobject]@{ passed = $false; ran = $true; summary = $null; violations = @() }
     }
 }
 
@@ -468,6 +477,12 @@ foreach ($ws in $scoped.selected) {
             passed       = [bool] $result.tsc.passed
             ran          = [bool] $result.tsc.ran
             warningCount = [int] $result.tsc.warningCount
+        }
+        coverage = [pscustomobject]@{
+            passed    = [bool] $result.coverage.passed
+            ran       = [bool] $result.coverage.ran
+            summary   = if ($null -ne $result.coverage.summary) { $result.coverage.summary } else { $null }
+            violations = if ($null -ne $result.coverage.violations) { $result.coverage.violations } else { @() }
         }
     }
 }

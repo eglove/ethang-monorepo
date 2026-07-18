@@ -5,11 +5,24 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const { execFile, loadAutofixResults, runAutofix, runCoverage } = vi.hoisted(
   () => {
+    const passingCoverage = {
+      coverage: { covered: 1, total: 1 },
+      passed: true,
+      summary: {
+        branches: { covered: 1, pct: 100, total: 1 },
+        functions: { covered: 1, pct: 100, total: 1 },
+        lines: { covered: 1, pct: 100, total: 1 },
+        statements: { covered: 1, pct: 100, total: 1 }
+      },
+      violations: []
+    };
     return {
       execFile: vi.fn(),
       loadAutofixResults: vi.fn(),
       runAutofix: vi.fn(),
-      runCoverage: vi.fn()
+      runCoverage: vi.fn(() => {
+        return Effect.succeed(passingCoverage);
+      })
     };
   }
 );
@@ -213,6 +226,17 @@ describe("run-workspace CLI", () => {
       )
     ).resolves.toStrictEqual({
       checks: ["lint", "tsc", "test"],
+      coverage: {
+        passed: true,
+        ran: true,
+        summary: {
+          branches: { covered: 1, pct: 100, total: 1 },
+          functions: { covered: 1, pct: 100, total: 1 },
+          lines: { covered: 1, pct: 100, total: 1 },
+          statements: { covered: 1, pct: 100, total: 1 }
+        },
+        violations: []
+      },
       cwd: "repo",
       files: ["a.ts"],
       lint: {
@@ -339,6 +363,12 @@ describe("vitest-coverage CLI", () => {
       Effect.succeed({
         coverage: { covered: 1, total: 1 },
         passed: true,
+        summary: {
+          branches: { covered: 1, pct: 100, total: 1 },
+          functions: { covered: 1, pct: 100, total: 1 },
+          lines: { covered: 1, pct: 100, total: 1 },
+          statements: { covered: 1, pct: 100, total: 1 }
+        },
         violations: []
       })
     );
@@ -367,6 +397,12 @@ describe("vitest-coverage CLI", () => {
         Effect.succeed({
           coverage: { covered: 1, total: 1 },
           passed,
+          summary: {
+            branches: { covered: 1, pct: 100, total: 1 },
+            functions: { covered: 1, pct: 100, total: 1 },
+            lines: { covered: 1, pct: 100, total: 1 },
+            statements: { covered: 1, pct: 100, total: 1 }
+          },
           violations: []
         })
       );

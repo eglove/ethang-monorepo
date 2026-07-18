@@ -2,8 +2,28 @@ import { Effect } from "effect";
 import process from "node:process";
 import { describe, expect, it, vi } from "vitest";
 
-const { execFile, runAutofix } = vi.hoisted(() => {
-  return { execFile: vi.fn(), runAutofix: vi.fn() };
+const { execFile, runAutofix, runCoverage } = vi.hoisted(() => {
+  const passingCoverage: RunCoverageResult = {
+    coverage: { covered: 1, total: 1 },
+    passed: true,
+    summary: {
+      branches: { covered: 1, pct: 100, total: 1 },
+      functions: { covered: 1, pct: 100, total: 1 },
+      lines: { covered: 1, pct: 100, total: 1 },
+      statements: { covered: 1, pct: 100, total: 1 }
+    },
+    violations: []
+  };
+
+  return {
+    execFile: vi.fn(),
+    runAutofix: vi.fn(),
+    runCoverage: vi.fn(
+      (): Effect.Effect<RunCoverageResult, RunCoverageError> => {
+        return Effect.succeed(passingCoverage);
+      }
+    )
+  };
 });
 
 vi.mock(import("node:child_process"), async (importOriginal) => {
@@ -15,9 +35,22 @@ vi.mock(import("node:child_process"), async (importOriginal) => {
 vi.mock(import("../src/application/run-autofix.ts"), async (importOriginal) => {
   return { ...(await importOriginal()), runAutofix };
 });
+vi.mock(
+  import("../src/application/run-coverage.ts"),
+  async (importOriginal) => {
+    return {
+      ...(await importOriginal()),
+      runCoverage
+    } as unknown as typeof import("../src/application/run-coverage.ts");
+  }
+);
 
 import isEmpty from "lodash/isEmpty.js";
 
+import {
+  RunCoverageError,
+  type RunCoverageResult
+} from "../src/application/run-coverage.ts";
 import {
   main,
   packageManagerExecutable,
@@ -388,13 +421,7 @@ describe(runWorkspace, () => {
       cwd: WORKSPACE
     });
     expect(workspaceRunner.run).toHaveBeenNthCalledWith(2, {
-      arguments: [
-        "exec",
-        "vitest",
-        "run",
-        "--reporter=json",
-        "--coverage=false"
-      ],
+      arguments: ["exec", "vitest", "run", "--reporter=json", "--coverage"],
       cwd: WORKSPACE
     });
   });
@@ -428,7 +455,7 @@ describe(runWorkspace, () => {
         "vitest",
         "run",
         "--reporter=json",
-        "--coverage=false",
+        "--coverage",
         SELECTED_TEST_FILE
       ],
       cwd: WORKSPACE
@@ -529,6 +556,64 @@ describe(runWorkspace, () => {
   });
 });
 
+describe("runWorkspace coverage", () => {
+  it("emits a passing coverage slot when coverage meets the threshold", async () => {
+    const workspaceRunner = {
+      run: vi
+        .fn()
+        .mockReturnValue(Effect.succeed(command({ stdout: SUCCESS_REPORT })))
+    };
+
+    const result = await Effect.runPromise(
+      runWorkspace(
+        {
+          checks: ["test"],
+          cwd: WORKSPACE,
+          files: [],
+          fix: false,
+          targetedFiles: [],
+          testFiles: []
+        },
+        workspaceRunner
+      )
+    );
+
+    expect(result.coverage).toMatchObject({ passed: true, ran: true });
+  });
+
+  it("exits when coverage is below the 100% threshold", async () => {
+    runCoverage.mockReturnValueOnce(
+      Effect.succeed({
+        coverage: { covered: 0, total: 1 },
+        passed: false,
+        ran: true,
+        summary: {
+          branches: { covered: 0, pct: 0, total: 1 },
+          functions: { covered: 0, pct: 0, total: 1 },
+          lines: { covered: 0, pct: 0, total: 1 },
+          statements: { covered: 0, pct: 0, total: 1 }
+        },
+        violations: [{ actual: 0, metric: "lines", required: 100 }]
+      })
+    );
+    const exit = vi.spyOn(process, "exit").mockImplementation((code) => {
+      throw new Error(`exit:${code}`);
+    });
+    runAutofix.mockReturnValueOnce(Effect.succeed(cleanPayload));
+    execFile
+      .mockImplementationOnce((_, __, ___, callback) => {
+        callback(null, SUCCESS_REPORT, "");
+      })
+      .mockImplementationOnce((_, __, ___, callback) => {
+        callback(null, SUCCESS_REPORT, "");
+      });
+
+    await expect(main(["--cwd", WORKSPACE])).rejects.toThrow("exit:1");
+
+    exit.mockRestore();
+  });
+});
+
 describe(main, () => {
   it("runs the default subprocess adapter and writes its result", async () => {
     runAutofix.mockReturnValueOnce(Effect.succeed(cleanPayload));
@@ -540,6 +625,7 @@ describe(main, () => {
       callback(null, stdout, "");
     });
 
+    execFile.mockClear();
     await main(["--cwd", WORKSPACE]);
 
     expect(execFile).toHaveBeenCalledTimes(2);
@@ -624,6 +710,41 @@ describe(main, () => {
       ])
     ).resolves.toBeUndefined();
   });
+
+  it("exits when coverage is below threshold", async () => {
+    const exit = vi.spyOn(process, "exit").mockImplementation((code) => {
+      throw new Error(`exit:${code}`);
+    });
+    const failingCoverage: RunCoverageResult = {
+      coverage: { covered: 95, total: 100 },
+      passed: false,
+      summary: {
+        branches: { covered: 95, pct: 95, total: 100 },
+        functions: { covered: 96, pct: 96, total: 100 },
+        lines: { covered: 95, pct: 95, total: 100 },
+        statements: { covered: 95, pct: 95, total: 100 }
+      },
+      violations: [{ actual: 95, metric: "lines", required: 100 }]
+    };
+    runCoverage.mockReturnValueOnce(Effect.succeed(failingCoverage));
+    runAutofix.mockReturnValueOnce(Effect.succeed(cleanPayload));
+    execFile.mockImplementation((_file, arguments_, _options, callback) => {
+      callback(
+        null,
+        Array.isArray(arguments_) && arguments_.includes("vitest")
+          ? SUCCESS_REPORT
+          : "",
+        ""
+      );
+    });
+
+    await expect(main(["--cwd", WORKSPACE])).rejects.toThrow("exit:1");
+    expect(process.stdout.write).toHaveBeenCalledWith(
+      expect.stringContaining('"passed":false')
+    );
+
+    exit.mockRestore();
+  });
 });
 
 describe("coverage helpers", () => {
@@ -698,5 +819,52 @@ describe("coverage helpers", () => {
     expect(result.lint.ran).toBe(expected.lint);
     expect(result.tsc.ran).toBe(expected.tsc);
     expect(result.test.ran).toBe(expected.test);
+  });
+
+  it("disables coverage alongside the test check when tests are skipped", async () => {
+    runAutofix.mockReturnValueOnce(Effect.succeed(cleanPayload));
+
+    const result = await Effect.runPromise(
+      runWorkspace(
+        {
+          checks: ["lint", "tsc"],
+          cwd: WORKSPACE,
+          files: [],
+          fix: false,
+          targetedFiles: [],
+          testFiles: []
+        },
+        makeRunner(command(), command({ stdout: SUCCESS_REPORT }))
+      )
+    );
+
+    expect(result.test.ran).toBe(false);
+    expect(result.coverage.ran).toBe(false);
+    expect(result.coverage.passed).toBe(true);
+  });
+
+  it("falls back to a disabled coverage result when coverage reading fails", async () => {
+    runAutofix.mockReturnValueOnce(Effect.succeed(cleanPayload));
+    runCoverage.mockReturnValueOnce(
+      Effect.fail(new RunCoverageError("run-coverage: boom"))
+    );
+
+    const result = await Effect.runPromise(
+      runWorkspace(
+        {
+          checks: ["lint", "tsc", "test"],
+          cwd: WORKSPACE,
+          files: [],
+          fix: false,
+          targetedFiles: [],
+          testFiles: []
+        },
+        makeRunner(command(), command({ stdout: SUCCESS_REPORT }))
+      )
+    );
+
+    expect(result.test.ran).toBe(true);
+    expect(result.coverage.ran).toBe(false);
+    expect(result.coverage.passed).toBe(true);
   });
 });

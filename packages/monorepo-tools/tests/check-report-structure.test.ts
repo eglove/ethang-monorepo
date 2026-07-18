@@ -132,6 +132,7 @@ describe("buildCheckReport structure", () => {
 
     expect(report.exitCode).toBe(0);
     expect(report.summary).toStrictEqual({
+      coverage: { failed: 0, passed: 0, ran: 0 },
       lint: {
         autofix: {
           byRule: [],

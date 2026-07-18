@@ -26,9 +26,19 @@ const CoverageSummarySchema = Schema.Struct({
 
 export type CoverageSummary = Schema.Schema.Type<typeof CoverageSummarySchema>;
 
+const CoverageFileSchema = Schema.Record({
+  key: Schema.String,
+  value: Schema.Unknown
+});
+
 const decodeSummary = (raw: string) => {
   return Effect.runSync(
-    Schema.decodeUnknown(Schema.parseJson(CoverageSummarySchema))(raw).pipe(
+    Schema.decodeUnknown(Schema.parseJson(CoverageFileSchema))(raw).pipe(
+      Effect.flatMap((file) => {
+        return Schema.decodeUnknown(CoverageSummarySchema)(
+          file["total"] ?? file
+        );
+      }),
       Effect.mapError((error) => {
         return new Error(`coverage-summary: ${String(error)}`);
       })

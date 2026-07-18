@@ -24,7 +24,7 @@ export const trimMessage = (s: null | string, n: number) => {
   if (!isString(s)) {
     return "";
   }
-  return s.length > n ? `${s.slice(0, n - 3)}...` : s;
+  return s.length > n ? `${s.slice(0, Math.max(0, n - 3))}...` : s;
 };
 
 const pluralize = (n: number, singular: string) => {
@@ -43,6 +43,7 @@ export type ReportJson = {
 };
 
 export type WorkspaceReport = {
+  readonly coverage?: WorkspaceCoverage;
   readonly error?: string;
   readonly lint?: WorkspaceLint;
   readonly name?: string;
@@ -52,6 +53,7 @@ export type WorkspaceReport = {
 };
 
 type Summary = {
+  readonly coverage?: SummaryCoverage;
   readonly lint?: SummaryLint;
   readonly test?: SummaryTest;
   readonly tsc?: SummaryTsc;
@@ -68,6 +70,12 @@ type SummaryAutofix = {
   readonly fixedWarningCount?: number;
   readonly ran?: boolean;
   readonly ranInWorkspaces?: number;
+};
+
+type SummaryCoverage = {
+  readonly failed?: number;
+  readonly passed?: number;
+  readonly ran?: number;
 };
 
 type SummaryLint = {
@@ -91,6 +99,22 @@ type SummaryTsc = {
   readonly passed?: number;
   readonly ran?: number;
   readonly warningCount?: number;
+};
+
+type WorkspaceCoverage = {
+  readonly passed?: boolean;
+  readonly ran?: boolean;
+  readonly summary?: {
+    readonly branches?: { readonly pct?: number };
+    readonly functions?: { readonly pct?: number };
+    readonly lines?: { readonly pct?: number };
+    readonly statements?: { readonly pct?: number };
+  } | null;
+  readonly violations?: readonly {
+    readonly actual?: number;
+    readonly metric?: string;
+    readonly required?: number;
+  }[];
 };
 
 type WorkspaceLint = {
@@ -177,6 +201,7 @@ const buildSummaryTableBlock = (summary: Summary) => {
   const lintStats = summary?.lint ?? {};
   const tscStats = summary?.tsc ?? {};
   const testStats = summary?.test ?? {};
+  const coverageStats = summary?.coverage ?? {};
   return {
     headers: [
       { align: "left" as const, text: "check" },
@@ -208,6 +233,14 @@ const buildSummaryTableBlock = (summary: Summary) => {
         String(testStats.ran ?? 0),
         String(testStats.passed ?? 0),
         String(testStats.failed ?? 0),
+        "-",
+        "-"
+      ],
+      [
+        "coverage",
+        String(coverageStats.ran ?? 0),
+        String(coverageStats.passed ?? 0),
+        String(coverageStats.failed ?? 0),
         "-",
         "-"
       ]
@@ -410,13 +443,46 @@ const formatTests = (test: WorkspaceTest) => {
   return lines;
 };
 
+const formatCoverage = (coverage: WorkspaceCoverage) => {
+  const lines: MarkdownBlock[] = [];
+  const { summary } = coverage;
+  const pctOf = (key: "branches" | "functions" | "lines" | "statements") => {
+    return summary?.[key]?.pct ?? 100;
+  };
+  const violations = Array.isArray(coverage.violations)
+    ? coverage.violations
+    : [];
+  lines.push({
+    level: 3,
+    text: `coverage - ${pctOf("lines").toFixed(0)}% lines / ${pctOf("branches").toFixed(0)}% branches / ${pctOf("functions").toFixed(0)}% functions / ${pctOf("statements").toFixed(0)}% statements`,
+    type: "header"
+  });
+  if (isEmpty(violations)) {
+    lines.push({ text: "(meets 100% thresholds)", type: "text" });
+    return lines;
+  }
+  let index = 1;
+  for (const violation of violations) {
+    const metric = violation.metric ?? "unknown";
+    const actual = violation.actual ?? 0;
+    const required = violation.required ?? 100;
+    lines.push({
+      text: `${index.toString()}. ${metric} ${actual.toFixed(0)}% < required ${required.toFixed(0)}%`,
+      type: "text"
+    });
+    index += 1;
+  }
+  return lines;
+};
+
 const buildWorkspaceBlocks = (workspaces: readonly WorkspaceReport[]) => {
   const blocks: MarkdownBlock[] = [];
   const failedWorkspaces = workspaces.filter((ws) => {
     return (
       (ws.lint && !ws.lint.passed) ||
       (ws.tsc && !ws.tsc.passed) ||
-      (ws.test && !ws.test.passed)
+      (ws.test && !ws.test.passed) ||
+      (ws.coverage && !ws.coverage.passed)
     );
   });
   const passedWorkspaces = workspaces.filter((ws) => {
@@ -441,6 +507,11 @@ const buildWorkspaceBlocks = (workspaces: readonly WorkspaceReport[]) => {
     }
     if (ws.test?.ran) {
       for (const b of formatTests(ws.test)) {
+        blocks.push(b);
+      }
+    }
+    if (ws.coverage?.ran) {
+      for (const b of formatCoverage(ws.coverage)) {
         blocks.push(b);
       }
     }
