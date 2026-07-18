@@ -4,6 +4,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "src/rules/estree.tsx",
     "src/rules/.fixtures/**/*.fixture.ts"
   ]
 }
