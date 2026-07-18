@@ -23,9 +23,19 @@ one TypeScript codebase organised along DDD layers:
 - `src/cli/post-tool-inspect.cli.ts` implements the active PostToolUse hook.
 - `src/cli/run-workspace.cli.ts` runs selected lint, TypeScript, and Vitest
   checks for one workspace on behalf of the checker, including scoped files
-  and per-check timing.
-- `src/cli/repo-ai-check.cli.ts` discovers workspaces, applies file scopes,
-  throttles workspace checks, and emits the aggregate JSON or Markdown report.
+  and per-check timing. It exports `runWorkspace`, which the worker reuses.
+- `src/cli/run-workspace.worker.ts` is the long-lived Bun worker. The
+  PowerShell orchestrator launches it once with a `--jobs <path>` file holding
+  every workspace job (each `{ id, args }`); the worker reads the file, runs
+  the jobs with bounded internal concurrency (the `--throttle` value, or the
+  `CHECK_WORKER_THROTTLE` env var) and reuses `runWorkspace`, so there is only
+  one `bun` process for the whole check instead of one per workspace. Because
+  it is a single persistent process, it is also the natural home for a future
+  shared WebStorm MCP connection (one SSE session reused across every
+  workspace) — the check stays lint/tsc/test only for now.
+- `src/cli/repo-ai-check.cli.ps1` is the PowerShell orchestrator: it discovers
+  workspaces, applies file/workspace scopes, launches the single worker, and
+  emits the aggregate JSON or Markdown report.
 - `src/cli/vitest-coverage.cli.ts` wraps `vitest run --coverage` for the
   parent checker.
 
@@ -34,14 +44,19 @@ one TypeScript codebase organised along DDD layers:
 ```bash
 pnpm -F @ethang/monorepo-tools test         # vitest with 100/100/100/100 gate
 pnpm -F @ethang/monorepo-tools lint         # eslint + tsc
-pnpm -F @ethang/monorepo-tools check        # invoke the Bun checker
+pnpm -F @ethang/monorepo-tools check        # invoke the PowerShell orchestrator
 ```
 
 ## Checker runtime
 
-`src/cli/repo-ai-check.cli.ts` is the checker implementation. It delegates
-per-workspace checks to `run-workspace.cli.ts` and report rendering to
-`render-check-report.cli.ts`.
+`src/cli/repo-ai-check.cli.ps1` is the checker orchestrator. It owns workspace
+discovery, file/workspace scoping, and launches a single long-lived Bun worker
+(`run-workspace.worker.ts`) that runs every workspace's checks with bounded
+internal concurrency (the `--throttle` value). The worker reuses `runWorkspace`
+from `run-workspace.cli.ts`, so the JSON report shape and ESLint autofix
+telemetry are unchanged. The orchestrator pipes the aggregated JSON to
+`render-check-report.cli.ts` for Markdown (or emits the JSON directly with
+`--format Json`). The orchestrator requires PowerShell 7+ and `bun` on PATH.
 
 Run the checker through its package script:
 
@@ -49,8 +64,10 @@ Run the checker through its package script:
 pnpm --filter @ethang/monorepo-tools check -- --workspace monorepo-tools --skip-fix --format Json
 ```
 
-The Bun CLI accepts `--workspace` and `--file` repeatedly, plus `--throttle`,
-`--timeout-seconds`, `--skip-fix`, and `--format Json|Markdown`.
+The PowerShell CLI accepts `--workspace` and `--file` repeatedly, plus
+`--throttle`, `--timeout-seconds`, `--skip-fix`, and `--format Json|Markdown`.
+The default format is Markdown and the default throttle is the logical CPU
+count (`$env:NUMBER_OF_PROCESSORS`).
 
 ## Coverage
 
