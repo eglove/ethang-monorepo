@@ -2,6 +2,7 @@ import { and, desc, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+import slice from "lodash/slice.js";
 
 import type { User } from "../../index.ts";
 
@@ -98,7 +99,7 @@ export const allArticlesQuery = async (
     .limit(limit);
 
   const hasNextPage = articles.length > first;
-  const items = articles.slice(0, first);
+  const items = slice(articles, 0, first);
 
   const edges = map(items, (article) => {
     const {

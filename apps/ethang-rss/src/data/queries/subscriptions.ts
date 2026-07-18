@@ -2,6 +2,7 @@ import { and, desc, eq, gt, lt, or, sql, type SQLWrapper } from "drizzle-orm";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+import slice from "lodash/slice.js";
 
 import type { User } from "../../index.ts";
 
@@ -296,7 +297,7 @@ export const subscriptionsQuery = async (
   }
 
   const hasNextPage = subscriptions.length > first;
-  const items = subscriptions.slice(0, first);
+  const items = slice(subscriptions, 0, first);
 
   const edges = buildEdges(items, sortBy);
 

@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import map from "lodash/map.js";
+import slice from "lodash/slice.js";
 import { describe, expect, it, vi } from "vitest";
 
 import { Route } from "./index.tsx";
@@ -194,7 +195,7 @@ describe("Index Route", () => {
         return textContent;
       }
     );
-    const resumeNames = names.slice(0, 13);
+    const resumeNames = slice(names, 0, 13);
     expect(resumeNames[0]).toContain("Telecom provisioning platform");
     expect(resumeNames[12]).toContain("CMS-driven village trustee site");
   });

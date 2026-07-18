@@ -4,59 +4,157 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import { Option, Schema } from "effect";
 import isNil from "lodash/isNil.js";
+import isObjectLike from "lodash/isObjectLike.js";
 
 import { ensureLodashImport } from "./../utils/ast.ts";
 import { isIdentifier, isMemberExpression } from "./../utils/type-guards.ts";
+
+// Shape of the parser services object as exposed by `@typescript-eslint`.
+// Either projectService mode (`getTypeAtLocation` directly) or classic mode
+// (`esTreeNodeToTSNodeMap` + `program`). We validate the loosely-typed
+// `unknown` services through an Effect Schema before touching any member so
+// the result is concrete rather than `unknown` (satisfies `validate-unknown`).
+type ParserServices = {
+  readonly esTreeNodeToTSNodeMap?: Map<TSESTree.Node, TSESTree.Node>;
+  readonly getTypeAtLocation?: (node: TSESTree.Node) => unknown;
+  readonly program?: {
+    getTypeChecker: () => unknown;
+  };
+};
+
+const ParserServicesSchema = Schema.declare(
+  (input: unknown): input is ParserServices => {
+    if (!isObjectLike(input)) {
+      return false;
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing `unknown` to an index-signature record for structural inspection
+    const record = input as Record<string, unknown>;
+    const hasProjectService = "function" === typeof record["getTypeAtLocation"];
+    const hasClassic =
+      "object" === typeof record["esTreeNodeToTSNodeMap"] &&
+      "object" === typeof record["program"];
+    return hasProjectService || hasClassic;
+  }
+);
+
+// A resolved TypeScript `Type`. We only need `isUnion` and its `types` for the
+// string-union branch; the concrete TS `Type` type is intentionally avoided so
+// this rule has no hard dependency on the `typescript` compiler types.
+type TsType = {
+  readonly isUnion: () => boolean;
+  readonly types?: readonly unknown[];
+};
+
+const TsTypeSchema = Schema.declare((input: unknown): input is TsType => {
+  if (!isObjectLike(input)) {
+    return false;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing `unknown` to an index-signature record for structural inspection
+  const record = input as Record<string, unknown>;
+  return "function" === typeof record["isUnion"];
+});
+
+// A resolved TypeScript `TypeChecker`, narrowed to the methods we use. In
+// projectService mode only `typeToString` is needed; in classic mode
+// `getTypeAtLocation` is also required to map the ESTree node back to a TS node.
+type TsChecker = {
+  readonly getTypeAtLocation?: (node: unknown) => unknown;
+  readonly typeToString: (type: unknown) => string;
+};
+
+const TsCheckerSchema = Schema.declare((input: unknown): input is TsChecker => {
+  if (!isObjectLike(input)) {
+    return false;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- narrowing `unknown` to an index-signature record for structural inspection
+  const record = input as Record<string, unknown>;
+  return "function" === typeof record["typeToString"];
+});
 
 // Resolve the TypeScript type of a node via the linter's parser services. When
 // type information is unavailable (untyped lint run), this returns null and
 // callers stay conservative. We intentionally do NOT rewrite string receivers:
 // lodash `slice`/`take` coerce a string to `string[]`, which is wrong for
 // `String.prototype.slice`. Only array-typed receivers are safe to rewrite.
-const getNodeType = (
+export const getNodeType = (
   node: TSESTree.Node,
   context: Readonly<TSESLint.RuleContext<string, unknown[]>>
 ) => {
-  const services = context.sourceCode.parserServices as unknown as {
-    esTreeNodeToTSNodeMap?: Map<TSESTree.Node, unknown>;
-    getTypeAtLocation?: (node: TSESTree.Node) => unknown;
-    program?: {
-      getTypeChecker: () => {
-        getTypeAtLocation: (node: unknown) => unknown;
-        typeToString: (type: unknown) => string;
-      };
-    };
-  };
-  // projectService mode exposes getTypeAtLocation directly.
-  if (!isNil(services.getTypeAtLocation)) {
-    try {
-      const checker: { typeToString: (type: unknown) => string } =
-        services.program?.getTypeChecker() ?? { typeToString: String };
-      return {
-        checker,
-        type: services.getTypeAtLocation(node)
-      };
-    } catch {
-      return null;
+  const servicesOption = Schema.decodeUnknownOption(ParserServicesSchema)(
+    context.sourceCode.parserServices
+  );
+  const services = Option.getOrNull(servicesOption);
+  if (isNil(services)) {
+    return null;
+  }
+  // Classic mode (`esTreeNodeToTSNodeMap` + `program`) is tried first; if it
+  // yields nothing and projectService mode (`getTypeAtLocation` directly) is
+  // available, resolve through that path instead.
+  if (!isNil(services.program)) {
+    const classic = resolveClassicType(services, services.program, node);
+    if (!isNil(classic)) {
+      return classic;
     }
   }
+  if ("function" === typeof services.getTypeAtLocation) {
+    const typeOption = Schema.decodeUnknownOption(TsTypeSchema)(
+      services.getTypeAtLocation(node)
+    );
+    const type = Option.getOrNull(typeOption);
+    if (isNil(type)) {
+      return null;
+    }
+    const { program } = services;
+    if (isNil(program)) {
+      return { checker: { typeToString: String }, type };
+    }
+    const checkerOption = Schema.decodeUnknownOption(TsCheckerSchema)(
+      program.getTypeChecker()
+    );
+    const checker = Option.getOrNull(checkerOption);
+    if (isNil(checker)) {
+      return { checker: { typeToString: String }, type };
+    }
+    return { checker, type };
+  }
+  return null;
+};
+
+// Classic mode resolves the type via `esTreeNodeToTSNodeMap` + `program`.
+const resolveClassicType = (
+  services: ParserServices,
+  program: { getTypeChecker: () => unknown },
+  node: TSESTree.Node
+) => {
   const map = services.esTreeNodeToTSNodeMap;
-  const { program } = services;
-  if (isNil(map) || isNil(program)) {
+  const tsNode = isNil(map) ? null : map.get(node);
+  const { getTypeChecker } = program;
+  const checkerOption =
+    Schema.decodeUnknownOption(TsCheckerSchema)(getTypeChecker());
+  const checker = Option.getOrNull(checkerOption);
+  if (isNil(checker)) {
     return null;
   }
-  try {
-    const checker = program.getTypeChecker();
-    return { checker, type: checker.getTypeAtLocation(map.get(node)) };
-  } catch {
+  const { getTypeAtLocation } = checker;
+  if (isNil(getTypeAtLocation)) {
     return null;
   }
+  const target = isNil(tsNode) ? node : tsNode;
+  const typeOption = Schema.decodeUnknownOption(TsTypeSchema)(
+    getTypeAtLocation(target)
+  );
+  const type = Option.getOrNull(typeOption);
+  if (isNil(type)) {
+    return null;
+  }
+  return { checker, type };
 };
 
 // A type is treated as a string when its rendered form is `string`, a string
 // literal (`"..."`), a template literal, or a union/template containing one.
-const stringText = (text: string) => {
+export const isStringText = (text: string) => {
   return (
     "string" === text ||
     text.startsWith('"') ||
@@ -64,8 +162,6 @@ const stringText = (text: string) => {
     text.startsWith("`")
   );
 };
-
-export { stringText };
 
 export const isStringType = (
   node: TSESTree.Node,
@@ -76,17 +172,13 @@ export const isStringType = (
     return false;
   }
   const { checker, type } = resolved;
-  const tsType = type as {
-    isUnion: () => boolean;
-    types?: unknown[];
-  };
-  if (tsType.isUnion()) {
+  if (type.isUnion()) {
     /* v8 ignore next -- defensive: a union type always has members */
-    return (tsType.types ?? []).some((member) => {
-      return stringText(checker.typeToString(member));
+    return (type.types ?? []).some((member) => {
+      return isStringText(checker.typeToString(member));
     });
   }
-  return stringText(checker.typeToString(type));
+  return isStringText(checker.typeToString(type));
 };
 
 const createRule = ESLintUtils.RuleCreator((name) => {
@@ -270,8 +362,9 @@ const buildSliceFix = (
 ) => {
   const receiverText = getNodeText(match.receiver, sourceText);
   const startText = getNodeText(match.startNode, sourceText);
-  const endText =
-    null === match.endNode ? "" : getNodeText(match.endNode, sourceText);
+  const endText = isNil(match.endNode)
+    ? ""
+    : getNodeText(match.endNode, sourceText);
   const replacement = formatSliceCall(receiverText, startText, endText);
   const replace = fixer.replaceText(node, replacement);
   const importFix = ensureLodashImport(program, SLICE, fixer);
