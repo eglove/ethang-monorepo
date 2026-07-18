@@ -36,6 +36,7 @@ export default {
     "@ethang/path-style": "error",
     "@ethang/prefer-lodash": "error",
     "@ethang/prefer-lodash-clamp": "error",
+    "@ethang/prefer-lodash-take": "error",
     "@ethang/preferred-alias": "error",
     "@ethang/property-shorthand": "error",
         "@ethang/unwrap": "error",
@@ -54,6 +55,7 @@ export default {
 | `prefer-effect-log`      | Prefer `Effect.log*` over `console.*`. Map `console.log`/`console.info`→`Effect.log`, `console.warn`→`Effect.logWarning`, `console.error`→`Effect.logError`, `console.debug`→`Effect.logDebug`. | No       |
 | `prefer-lodash`          | Prefer lodash (full API surface) over Array.prototype / Object.* / native methods when an equivalent exists.                                                                                    | Yes      |
 | `prefer-lodash-clamp`    | Prefer `clamp(value, lower, upper)` over the native `Math.min(upper, Math.max(lower, value))` clamp idiom in any of its four rearrangements.                                                    | Yes      |
+| `prefer-lodash-take`     | Prefer `take(arr, n)` / `takeRight(arr, n)` over the native `arr.slice(0, n)` / `arr.slice(-n)` prefix/suffix idiom.                                                                                                    | Yes      |
 
 ### No rules
 

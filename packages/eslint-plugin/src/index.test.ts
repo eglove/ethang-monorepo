@@ -32,6 +32,7 @@ describe("plugin", () => {
         "prefer-effect-predicate",
         "prefer-lodash-clamp",
         "prefer-lodash-find-key",
+        "prefer-lodash-take",
         "prefer-lodash",
         "preferred-alias",
         "property-shorthand",
