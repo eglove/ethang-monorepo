@@ -20,7 +20,8 @@ workspaces, frameworks, or scripts are current.
 
 1. **ESLint Issue Resolution**: When fixing eslint issues, never take error messages or suggestions literally unless using autofix. Instead, examine the surrounding context and design a better solution that addresses the root cause.
 
-2. **Hypothesis-Driven Development (Red -> Green -> Refactor)**:
+2. **Write Tests First — No Exceptions (Red -> Green -> Refactor)**:
+   Every change begins with a failing test. **Never write or modify implementation/production code before a failing test exists that captures the desired behavior or exposes the bug.** This applies to all changes without exception — including docs, generated code, configuration, and trivial formatting edits (write the smallest test that proves the change is correct).
    - **Red**: Write a failing test that captures the desired behavior or exposes a bug (hypothesis). For bugs, the bug itself is the hypothesis — write the test to prove it exists. For new features, the hypothesis is that X results in Y. Use `vitest it.each` liberally to consider all possible states (treat it like a state machine).
    - **Green**: Implement the minimum code to make the test pass. This directly addresses the hypothesis and fixes the identified issue.
    - **Refactor**: Simplify the implementation, run ESLint to ensure code quality, optimize performance, and enforce codebase standards without changing behavior.
