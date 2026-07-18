@@ -8,7 +8,7 @@ export default defineConfig({
       exclude: ["src/clients/apollo.ts"],
       include: ["src", "worker"],
       provider: "v8",
-      reporter: ["text", "json", "html", "lcov"],
+      reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 100,

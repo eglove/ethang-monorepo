@@ -5,7 +5,7 @@ export default defineConfig({
     coverage: {
       exclude: ["**/*.mock.ts", "src/db/database-schema.ts"],
       provider: "v8",
-      reporter: ["text", "json", "html", "lcov"],
+      reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 100,
