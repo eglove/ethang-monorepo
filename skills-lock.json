@@ -2087,7 +2087,7 @@
       "source": "harshanandak/forge",
       "sourceType": "github",
       "skillPath": "skills/sonarcloud-analysis/SKILL.md",
-      "computedHash": "c212b0407bb355a28abcfd1fa74f442599775f7f5bd5b2376cedc8f6e175ee50"
+      "computedHash": "196fc21d3b0f30a11cb2169d66e9f3dab7aafcf84a2528dc789cd0a074d41fb6"
     },
     "sponsor-finder": {
       "source": "github/awesome-copilot",
