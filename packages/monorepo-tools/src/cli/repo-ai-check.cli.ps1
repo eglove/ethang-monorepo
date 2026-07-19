@@ -123,29 +123,29 @@ $workspacesFilter = if ($Workspace) { @($Workspace) | ForEach-Object { $_.Split(
 # --- paths -------------------------------------------------------------------
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$repoRoot = Resolve-Path (Join-Path $scriptDir ".." ".." ".." "..")
-$workerPath = Join-Path $scriptDir "run-workspace.worker.ts"
-$renderPath = Join-Path $scriptDir "render-check-report.cli.ts"
+$repoRoot = Resolve-Path (Join-Path -Path $scriptDir -ChildPath ".." ".." ".." "..")
+$workerPath = Join-Path -Path $scriptDir -ChildPath "run-workspace.worker.ts"
+$renderPath = Join-Path -Path $scriptDir -ChildPath "render-check-report.cli.ts"
 $bunExecutable = "bun"
 
 function Test-HasFile {
     param([string] $Directory, [string] $Name)
-    return Test-Path (Join-Path $Directory $Name) -PathType Leaf
+    return Test-Path (Join-Path -Path $Directory -ChildPath $Name) -PathType Leaf
 }
 
 # --- discovery --------------------------------------------------------------
 
-function Find-Workspaces {
+function Find-Workspace {
     param([string] $Root)
     $prefixes = @("apps", "packages")
     $found = @()
     foreach ($prefix in $prefixes) {
-        $base = Join-Path $Root $prefix
+        $base = Join-Path -Path $Root -ChildPath $prefix
         if (-not (Test-Path $base -PathType Container)) { continue }
         foreach ($entry in Get-ChildItem -Path $base -Directory) {
             $wsPath = $entry.FullName
             if (-not (Test-HasFile $wsPath "package.json")) { continue }
-            $pkg = Get-Content (Join-Path $wsPath "package.json") -Raw | ConvertFrom-Json
+            $pkg = Get-Content (Join-Path -Path $wsPath -ChildPath "package.json") -Raw | ConvertFrom-Json
             $scripts = if ($pkg.scripts) { $pkg.scripts } else { @{} }
             $found += [pscustomobject]@{
                 name          = $entry.Name
@@ -163,7 +163,7 @@ function Find-Workspaces {
 
 # --- scoping ----------------------------------------------------------------
 
-function Resolve-FileTargets {
+function Resolve-FileTarget {
     param(
         [string[]] $RawFiles,
         [string] $Root,
@@ -179,8 +179,8 @@ function Resolve-FileTargets {
 
     $targetsByWorkspace = @{}
     foreach ($rawFile in $RawFiles) {
-        $file = [System.IO.Path]::GetFullPath((Join-Path $Root $rawFile))
-        $owners = @($selected | Where-Object { Is-Within $file $_.path } |
+        $file = [System.IO.Path]::GetFullPath((Join-Path -Path $Root -ChildPath $rawFile))
+        $owners = @($selected | Where-Object { Test-Within $file $_.path } |
             Sort-Object { $_.path.Length } -Descending)
         $candidateOwner = $owners[0]
         $scope = if ($SelectedNames.Count -eq 0) { "any workspace" } else { "the selected workspace" }
@@ -203,7 +203,7 @@ function Resolve-FileTargets {
     return @{ selected = $targeted; targetsByWorkspace = $targetsByWorkspace }
 }
 
-function Is-Within {
+function Test-Within {
     param([string] $Candidate, [string] $WorkspacePath)
     $relative = [System.IO.Path]::GetRelativePath($WorkspacePath, $Candidate)
     return -not $relative.StartsWith("..") -and -not [System.IO.Path]::IsPathRooted($relative)
@@ -317,8 +317,8 @@ function Build-CheckReport {
 
 # --- main --------------------------------------------------------------------
 
-$allWorkspaces = Find-Workspaces $repoRoot
-$scoped = Resolve-FileTargets $files $repoRoot $allWorkspaces $workspacesFilter
+$allWorkspaces = Find-Workspace -Root $repoRoot
+$scoped = Resolve-FileTarget -RawFiles $files -Root $repoRoot -Workspaces $allWorkspaces -SelectedNames $workspacesFilter
 
 [Console]::Error.WriteLine("Discovered $($scoped.selected.Count) workspace(s); running with throttle=$throttleLimit, timeout=$TimeoutSeconds`s.")
 
@@ -326,7 +326,7 @@ $startedAt = [System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
 # --- single long-lived Bun worker (one process for the whole check) ----------
 
-function Find-TestSiblings {
+function Find-TestSibling {
     param([string[]] $Files)
     $siblings = @()
     foreach ($file in $Files) {
@@ -360,8 +360,8 @@ foreach ($ws in $scoped.selected) {
     $targets = $scoped.targetsByWorkspace[$ws.name]
     if ($null -eq $targets) { $targets = @() }
     $testFiles = if ($targets.Count -eq 0) { @() } else {
-        $abs = $targets | ForEach-Object { Join-Path $ws.path $_ }
-        Find-TestSiblings $abs | ForEach-Object { [System.IO.Path]::GetRelativePath($ws.path, $_) -replace "\\", "/" }
+        $abs = $targets | ForEach-Object { Join-Path -Path $ws.path -ChildPath $_ }
+        Find-TestSibling -Files $abs | ForEach-Object { [System.IO.Path]::GetRelativePath($ws.path, $_) -replace "\\", "/" }
     }
 
     $checks = @()
@@ -495,7 +495,7 @@ Remove-Item $jobsFile -ErrorAction SilentlyContinue
 
 $finishedAt = [System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 
-$report = Build-CheckReport $startedAt $finishedAt $reports (-not $SkipFix)
+$report = Build-CheckReport -StartedAt $startedAt -FinishedAt $finishedAt -WorkspaceReports $reports -IsAutofixRan (-not $SkipFix)
 
 $json = $report | ConvertTo-Json -Depth 12 -Compress
 
