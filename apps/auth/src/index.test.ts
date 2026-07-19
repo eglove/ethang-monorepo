@@ -620,48 +620,21 @@ describe("auth API", () => {
     expect(response.status).toBe(204);
   });
 
-  it("should return 400 when /sign-up body is invalid", async () => {
-    const response = await sendRequest(
-      "/sign-up",
-      {
-        body: INVALID_BODY,
-        headers: JSON_CONTENT_TYPE_HEADERS,
-        method: "POST"
-      },
-      { "token-auth": TEST_SECRET }
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-  });
-
-  it("should return 400 when /sign-in body is invalid", async () => {
-    const response = await sendRequest(
-      "/sign-in",
-      {
-        body: INVALID_BODY,
-        headers: JSON_CONTENT_TYPE_HEADERS,
-        method: "POST"
-      },
-      { "token-auth": TEST_SECRET }
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-  });
-
-  it("should return 400 when POST /verify body is invalid", async () => {
-    const response = await sendRequest(
-      "/verify",
-      {
-        body: INVALID_BODY,
-        headers: JSON_CONTENT_TYPE_HEADERS,
-        method: "POST"
-      },
-      { "token-auth": TEST_SECRET }
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-  });
+  it.each(["/sign-up", "/sign-in", "/verify"])(
+    "should return 400 when %s body is invalid",
+    async (path) => {
+      const response = await sendRequest(
+        path,
+        {
+          body: INVALID_BODY,
+          headers: JSON_CONTENT_TYPE_HEADERS,
+          method: "POST"
+        },
+        { "token-auth": TEST_SECRET }
+      );
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
+    }
+  );
 });

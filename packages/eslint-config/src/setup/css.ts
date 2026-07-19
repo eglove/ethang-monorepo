@@ -27,3 +27,19 @@ export const cssPlugin = new Plugin({
   rules: cssRules,
   url: "https://github.com/eslint/css"
 });
+
+// The unicorn rule is a JS-AST rule; registering it on the CSS block lets ESLint run it
+// against CSS files parsed by @eslint/css. It is turned off for JS/TS in unicorn.ts.
+export const unicornViewportPlugin = new Plugin({
+  files: "**/*.css",
+  importString: 'import unicorn from "eslint-plugin-unicorn";',
+  language: "css/css",
+  name: "sindresorhus/eslint-plugin-unicorn",
+  order: 0,
+  pluginName: "unicorn",
+  pluginValue: "unicorn",
+  rules: {
+    "unicorn/prefer-explicit-viewport-units": "error"
+  },
+  url: "https://github.com/sindresorhus/eslint-plugin-unicorn"
+});

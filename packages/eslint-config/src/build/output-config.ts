@@ -7,7 +7,7 @@ import { a11yPlugin } from "../setup/a11y.ts";
 import { angularTemplatePlugin, angularTsPlugin } from "../setup/angular.ts";
 import { astroPlugin } from "../setup/astro.ts";
 import { compatPlugin } from "../setup/compat.ts";
-import { cssPlugin } from "../setup/css.ts";
+import { cssPlugin, unicornViewportPlugin } from "../setup/css.ts";
 import { eslintPlugin } from "../setup/eslint.ts";
 import { ethangPluginConfig } from "../setup/ethang-plugin.ts";
 import { htmlPlugin } from "../setup/html.ts";
@@ -132,6 +132,7 @@ export const outputConfigs: OutputConfig[] = [
       a11yPlugin,
       markdownPlugin,
       cssPlugin,
+      unicornViewportPlugin,
       jsonPlugin,
       jsoncPlugin,
       json5Plugin,

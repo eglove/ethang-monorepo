@@ -9,24 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RssRouteImport } from './routes/rss'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TipsIndexRouteImport } from './routes/tips/index'
+import { Route as CoursesRouteImport } from './routes/courses'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RssRouteImport } from './routes/rss'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
-import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
-import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as TipsIndexRouteImport } from './routes/tips/index'
+import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
+import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
 
-const RssRoute = RssRouteImport.update({
-  id: '/rss',
-  path: '/rss',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesRoute = CoursesRouteImport.update({
@@ -34,14 +29,14 @@ const CoursesRoute = CoursesRouteImport.update({
   path: '/courses',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TipsIndexRoute = TipsIndexRouteImport.update({
-  id: '/tips/',
-  path: '/tips/',
+const RssRoute = RssRouteImport.update({
+  id: '/rss',
+  path: '/rss',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -49,9 +44,14 @@ const BlogIndexRoute = BlogIndexRouteImport.update({
   path: '/blog/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
-  id: '/tips/scrollbar-gutter',
-  path: '/tips/scrollbar-gutter',
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/blog/$slug',
+  path: '/blog/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TipsIndexRoute = TipsIndexRouteImport.update({
+  id: '/tips/',
+  path: '/tips/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TipsScrollContainersRoute = TipsScrollContainersRouteImport.update({
@@ -59,9 +59,9 @@ const TipsScrollContainersRoute = TipsScrollContainersRouteImport.update({
   path: '/tips/scroll-containers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const BlogSlugRoute = BlogSlugRouteImport.update({
-  id: '/blog/$slug',
-  path: '/blog/$slug',
+const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
+  id: '/tips/scrollbar-gutter',
+  path: '/tips/scrollbar-gutter',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -149,18 +149,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/rss': {
-      id: '/rss'
-      path: '/rss'
-      fullPath: '/rss'
-      preLoaderRoute: typeof RssRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/courses': {
@@ -170,18 +163,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tips/': {
-      id: '/tips/'
-      path: '/tips'
-      fullPath: '/tips/'
-      preLoaderRoute: typeof TipsIndexRouteImport
+    '/rss': {
+      id: '/rss'
+      path: '/rss'
+      fullPath: '/rss'
+      preLoaderRoute: typeof RssRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -191,11 +184,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/tips/scrollbar-gutter': {
-      id: '/tips/scrollbar-gutter'
-      path: '/tips/scrollbar-gutter'
-      fullPath: '/tips/scrollbar-gutter'
-      preLoaderRoute: typeof TipsScrollbarGutterRouteImport
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/blog/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/': {
+      id: '/tips/'
+      path: '/tips'
+      fullPath: '/tips/'
+      preLoaderRoute: typeof TipsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/tips/scroll-containers': {
@@ -205,11 +205,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TipsScrollContainersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/blog/$slug': {
-      id: '/blog/$slug'
-      path: '/blog/$slug'
-      fullPath: '/blog/$slug'
-      preLoaderRoute: typeof BlogSlugRouteImport
+    '/tips/scrollbar-gutter': {
+      id: '/tips/scrollbar-gutter'
+      path: '/tips/scrollbar-gutter'
+      fullPath: '/tips/scrollbar-gutter'
+      preLoaderRoute: typeof TipsScrollbarGutterRouteImport
       parentRoute: typeof rootRouteImport
     }
   }

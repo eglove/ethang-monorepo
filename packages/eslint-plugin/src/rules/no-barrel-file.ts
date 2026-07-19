@@ -65,7 +65,7 @@ export const noBarrelFileRule = createRule<Options, MessageIds>({
     const segments = filter(split(filename, /[\\/]/u), Boolean);
     const parent = segments.at(-2) ?? "";
     const messageId: "noBarrelFile" | "noDeepBarrelFile" =
-      2 <= segments.length && "src" !== parent
+      "src" !== parent && 2 <= segments.length
         ? "noDeepBarrelFile"
         : "noBarrelFile";
 

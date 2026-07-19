@@ -10,7 +10,7 @@ export const validateUrlUniqueness = (
   documentType: string
 ) => {
   return rule.custom(async (value, context) => {
-    if (isNil(value) || "" === value) {
+    if ("" === value || isNil(value)) {
       return isRequired ? "URL is required." : true;
     }
 

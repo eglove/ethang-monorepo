@@ -241,7 +241,7 @@ export const formatDayHeading = (dateString: string) => {
 export const formatWeekHeading = (dateString: string) => {
   const days = getWeekDays(dateString);
   const { 0: firstDay, 6: lastDay } = days;
-  if (isNil(firstDay) || isNil(lastDay) || "" === firstDay || "" === lastDay) {
+  if ("" === firstDay || "" === lastDay || isNil(firstDay) || isNil(lastDay)) {
     return "";
   }
   const startDate = DateTime.unsafeMakeZoned(firstDay, {

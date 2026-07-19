@@ -25,44 +25,39 @@ const NOW_MS = DateTime.toEpochMillis(
 );
 
 describe(eventRangeFormat, () => {
-  it("formats a same-day event with start datetime and end time only", () => {
-    const result = eventRangeFormat(
-      "2024-06-15T14:00:00.000Z",
-      "2024-06-15T16:30:00.000Z"
-    );
-
-    expect(result).toContain("–");
-
-    // End portion should not repeat the date
-    const [, end] = split(result, " – ");
-
-    expect(end).not.toMatch(/\d{4}/u); // no year in end portion
-  });
-
-  it("formats a multi-day event with full datetime on both ends", () => {
-    const result = eventRangeFormat(
-      "2024-06-15T14:00:00.000Z",
-      "2024-06-16T16:00:00.000Z"
-    );
+  it.each([
+    {
+      assertion:
+        "does not repeat the year in the end portion for same-day events",
+      endsAt: "2024-06-15T16:30:00.000Z",
+      startsAt: "2024-06-15T14:00:00.000Z",
+      yearInEnd: false,
+      yearInStart: false
+    },
+    {
+      assertion: "includes the year on both ends for multi-day events",
+      endsAt: "2024-06-16T16:00:00.000Z",
+      startsAt: "2024-06-15T14:00:00.000Z",
+      yearInEnd: true,
+      yearInStart: true
+    },
+    {
+      assertion:
+        "treats events crossing midnight UTC but same day in Chicago as same-day",
+      endsAt: "2024-06-16T04:00:00.000Z", // 11 PM Chicago Jun 15
+      startsAt: "2024-06-16T02:00:00.000Z", // 9 PM Chicago Jun 15
+      yearInEnd: false,
+      yearInStart: false
+    }
+  ])("$assertion", ({ endsAt, startsAt, yearInEnd, yearInStart }) => {
+    const result = eventRangeFormat(startsAt, endsAt);
 
     expect(result).toContain("–");
 
     const [start, end] = split(result, " – ");
 
-    expect(start).toMatch(/\d{4}/u); // year in start
-    expect(end).toMatch(/\d{4}/u); // year in end
-  });
-
-  it("treats events crossing midnight UTC but same day in Chicago as same-day", () => {
-    // 11 PM Chicago = 4 AM UTC next day — this start/end pair is same Chicago day
-    const result = eventRangeFormat(
-      "2024-06-16T02:00:00.000Z", // 9 PM Chicago Jun 15
-      "2024-06-16T04:00:00.000Z" // 11 PM Chicago Jun 15
-    );
-
-    const [, end] = split(result, " – ");
-
-    expect(end).not.toMatch(/\d{4}/u);
+    expect(start).toMatch(yearInStart ? /\d{4}/u : /^[^-–]+$/u);
+    expect(end).toMatch(yearInEnd ? /\d{4}/u : /^[^-–]+$/u);
   });
 });
 
@@ -71,58 +66,38 @@ const makeIso = (epoch: number) => {
 };
 
 describe(getRelativeDate, () => {
-  it('returns "Today" for the current moment', () => {
+  it.each([
+    { assertion: "Today", label: "the current moment", offset: 0 },
+    {
+      assertion: "Today",
+      label: "a date within the same rounding boundary",
+      offset: 11 * 3_600_000
+    },
+    {
+      assertion: "tomorrow",
+      label: "1 day in the future",
+      offset: 24 * 3_600_000
+    },
+    {
+      assertion: "yesterday",
+      label: "1 day in the past",
+      offset: -24 * 3_600_000
+    },
+    {
+      assertion: "in 3 days",
+      label: "2–6 days in the future",
+      offset: 72 * 3_600_000
+    },
+    {
+      assertion: "3 days ago",
+      label: "2–6 days in the past",
+      offset: -72 * 3_600_000
+    }
+  ])('returns "$assertion" for $label', ({ assertion, offset }) => {
     vi.useFakeTimers();
     vi.setSystemTime(NOW_MS);
 
-    expect(getRelativeDate(makeIso(NOW_MS))).toBe("Today");
-
-    vi.useRealTimers();
-  });
-
-  it('returns "Today" for a date within the same rounding boundary', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    expect(getRelativeDate(makeIso(NOW_MS + 11 * 3_600_000))).toBe("Today");
-
-    vi.useRealTimers();
-  });
-
-  it('returns "tomorrow" for 1 day in the future', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    expect(getRelativeDate(makeIso(NOW_MS + 24 * 3_600_000))).toBe("tomorrow");
-
-    vi.useRealTimers();
-  });
-
-  it('returns "yesterday" for 1 day in the past', () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    expect(getRelativeDate(makeIso(NOW_MS - 24 * 3_600_000))).toBe("yesterday");
-
-    vi.useRealTimers();
-  });
-
-  it("returns days for 2–6 days in the future", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    expect(getRelativeDate(makeIso(NOW_MS + 72 * 3_600_000))).toBe("in 3 days");
-
-    vi.useRealTimers();
-  });
-
-  it("returns days for 2–6 days in the past", () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    expect(getRelativeDate(makeIso(NOW_MS - 72 * 3_600_000))).toBe(
-      "3 days ago"
-    );
+    expect(getRelativeDate(makeIso(NOW_MS + offset))).toBe(assertion);
 
     vi.useRealTimers();
   });

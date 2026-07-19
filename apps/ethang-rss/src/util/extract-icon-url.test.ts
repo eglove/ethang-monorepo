@@ -78,27 +78,32 @@ describe("extractIconUrl - sizes preference", () => {
     expect(extractIconUrl(html, BASE_URL)).toBe("https://example.com/big.png");
   });
 
-  it("returns null when pickBestIcon finds no icon link tags", () => {
-    const html = '<link rel="stylesheet" href="/style.css">';
-    expect(extractIconUrl(html, BASE_URL)).toBe(FAVICON_URL);
-  });
-
-  it("ignores link tags without a rel attribute", () => {
-    const html = '<link href="/preconnect.css">';
-    expect(extractIconUrl(html, BASE_URL)).toBe(FAVICON_URL);
-  });
-
-  it("ignores link tags with an empty rel attribute", () => {
-    const html = '<link rel="" href="/empty.png">';
-    expect(extractIconUrl(html, BASE_URL)).toBe(FAVICON_URL);
-  });
-
-  it("ignores link tags whose sizes attribute has no parseable dimensions", () => {
-    const html = `
+  it.each([
+    {
+      expected: FAVICON_URL,
+      html: '<link rel="stylesheet" href="/style.css">',
+      name: "returns null when pickBestIcon finds no icon link tags"
+    },
+    {
+      expected: FAVICON_URL,
+      html: '<link href="/preconnect.css">',
+      name: "ignores link tags without a rel attribute"
+    },
+    {
+      expected: FAVICON_URL,
+      html: '<link rel="" href="/empty.png">',
+      name: "ignores link tags with an empty rel attribute"
+    },
+    {
+      expected: "https://example.com/any.png",
+      html: `
       <link rel="icon" sizes="any" href="/any.png">
       <link rel="icon" href="/second.png">
-    `;
-    expect(extractIconUrl(html, BASE_URL)).toBe("https://example.com/any.png");
+    `,
+      name: "ignores link tags whose sizes attribute has no parseable dimensions"
+    }
+  ])("$name", ({ expected, html }) => {
+    expect(extractIconUrl(html, BASE_URL)).toBe(expected);
   });
 
   it("matches rel values with extra descriptors (suffix match)", () => {

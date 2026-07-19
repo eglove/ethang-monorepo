@@ -73,7 +73,7 @@ const buildConfigBlockOptionals = (
     return !isNil(p.includeAngularLanguageOptions);
   });
 
-  if (!isNil(output.includeLanguageOptions) && !hasAngularLang) {
+  if (!hasAngularLang && !isNil(output.includeLanguageOptions)) {
     optionals += "\nlanguageOptions,";
   }
 

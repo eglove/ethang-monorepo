@@ -1,19 +1,19 @@
 {
-  "name": "@ethang/tsconfig",
   "author": "Ethan Glover",
-  "devDependencies": {
-    "@tsconfig/node-lts": "^24.0.0",
-    "@tsconfig/strictest": "^2.0.8",
-    "@tsconfig/vite-react": "^8.0.6",
-    "browserslist-config-baseline": "^0.5.0"
-  },
   "browserslist": [
     "extends browserslist-config-baseline",
     "current node"
   ],
+  "devDependencies": {
+    "@tsconfig/node-lts": "^24.0.0",
+    "@tsconfig/strictest": "^2.0.8",
+    "@tsconfig/vite-react": "^8.1.1",
+    "browserslist-config-baseline": "^0.5.0"
+  },
   "engines": {
     "node": ">=24"
   },
+  "name": "@ethang/tsconfig",
   "type": "module",
   "version": "1.0.0"
 }

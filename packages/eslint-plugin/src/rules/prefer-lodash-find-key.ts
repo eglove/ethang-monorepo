@@ -165,7 +165,7 @@ export const getSingleIdentifierArrowParameter = (
   callback: TSESTree.ArrowFunctionExpression
 ) => {
   const [first] = callback.params;
-  if (1 !== callback.params.length || !first || !isIdentifier(first)) {
+  if (!first || 1 !== callback.params.length || !isIdentifier(first)) {
     return null;
   }
   return first;

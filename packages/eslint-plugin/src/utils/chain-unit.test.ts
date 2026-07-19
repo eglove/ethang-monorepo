@@ -216,32 +216,16 @@ describe("chain utility tests", () => {
 
 describe("chain breaker and chainable tests", () => {
   describe("isChainBreaker", () => {
-    it("returns true for value method call", () => {
+    it.each([
+      { expected: true, method: "value" },
+      { expected: true, method: "toJSON" },
+      { expected: true, method: "valueOf" },
+      { expected: false, method: "map" }
+    ])("returns $expected for $method method call", ({ expected, method }) => {
       const call = mockCallExpression(
-        mockMemberExpression(mockIdentifier("chain"), mockIdentifier("value"))
+        mockMemberExpression(mockIdentifier("chain"), mockIdentifier(method))
       );
-      expect(isChainBreaker(call)).toBe(true);
-    });
-
-    it("returns true for toJSON method call", () => {
-      const call = mockCallExpression(
-        mockMemberExpression(mockIdentifier("chain"), mockIdentifier("toJSON"))
-      );
-      expect(isChainBreaker(call)).toBe(true);
-    });
-
-    it("returns true for valueOf method call", () => {
-      const call = mockCallExpression(
-        mockMemberExpression(mockIdentifier("chain"), mockIdentifier("valueOf"))
-      );
-      expect(isChainBreaker(call)).toBe(true);
-    });
-
-    it("returns false for non-chain-breaker method call", () => {
-      const call = mockCallExpression(
-        mockMemberExpression(mockIdentifier("chain"), mockIdentifier("map"))
-      );
-      expect(isChainBreaker(call)).toBe(false);
+      expect(isChainBreaker(call)).toBe(expected);
     });
 
     it(nullMethodNameTestDescription, () => {

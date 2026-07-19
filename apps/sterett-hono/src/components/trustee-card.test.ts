@@ -48,23 +48,14 @@ const makeTrustee = (overrides: Partial<TrusteeRecord> = {}) => {
 };
 
 describe("trusteeCard", () => {
-  it("renders the trustee name", async () => {
+  it.each([
+    { assertion: "Jane Smith", label: "name" },
+    { assertion: 'href="tel:555-123-4567"', label: "phone number tel link" },
+    { assertion: "Secretary", label: "duties" }
+  ])("renders the trustee $label", async ({ assertion }) => {
     const html = await renderTrusteeCard(makeTrustee());
 
-    expect(html).toContain("Jane Smith");
-  });
-
-  it("renders phone number as a tel: link", async () => {
-    const html = await renderTrusteeCard(makeTrustee());
-
-    expect(html).toContain('href="tel:555-123-4567"');
-    expect(html).toContain("555-123-4567");
-  });
-
-  it("renders the trustee duties", async () => {
-    const html = await renderTrusteeCard(makeTrustee());
-
-    expect(html).toContain("Secretary");
+    expect(html).toContain(assertion);
   });
 
   it("renders an img with the trustee name as alt text", async () => {

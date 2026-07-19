@@ -5,14 +5,14 @@
   ],
   "dependencies": {
     "@ethang/intl": "workspace:*",
-    "@sanity/client": "^7.23.0",
+    "@sanity/client": "^7.23.2",
     "drizzle-orm": "^0.45.2",
-    "effect": "^3.21.4",
+    "effect": "^3.22.0",
     "lodash": "^4.18.1",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260708.1",
+    "@cloudflare/workers-types": "^5.20260719.1",
     "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
@@ -21,10 +21,10 @@
     "browserslist-config-baseline": "^0.5.0",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
-    "wrangler": "^4.108.0"
+    "wrangler": "^4.112.0"
   },
   "engines": {
     "node": ">=24"

@@ -98,7 +98,7 @@ describe("Database Schema Definitions", () => {
         return null;
       }
       // @ts-expect-error for test
-      return table[sym as symbol];
+      return Reflect.get(table, sym);
     };
 
     const articlesBuilder = getExtraBuilder(articlesTable);

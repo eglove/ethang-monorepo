@@ -12,7 +12,7 @@ const getSessionToken = (request: Request, environment: Env) => {
   return Effect.gen(function* () {
     const clientToken = request.headers.get("X-Token");
 
-    if (!isNil(clientToken) && "" !== clientToken) {
+    if ("" !== clientToken && !isNil(clientToken)) {
       return clientToken;
     }
 

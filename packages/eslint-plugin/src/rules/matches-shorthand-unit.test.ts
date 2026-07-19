@@ -526,30 +526,17 @@ describe("isLodashMatchesCall", () => {
     expect(isLodashMatchesCall(node)).toBe(false);
   });
 
-  it("returns true for _.matches call", () => {
-    const callee = memberExpression(identifier("_"), identifier("matches"));
-    const node = callExpression(callee, []);
-    expect(isLodashMatchesCall(node)).toBe(true);
-  });
-
-  it("returns true for lodash.matches call", () => {
-    const callee = memberExpression(
-      identifier("lodash"),
-      identifier("matches")
-    );
-    const node = callExpression(callee, []);
-    expect(isLodashMatchesCall(node)).toBe(true);
-  });
-
-  it("returns false for non-matches method", () => {
-    const callee = memberExpression(identifier("_"), identifier("filter"));
-    const node = callExpression(callee, []);
-    expect(isLodashMatchesCall(node)).toBe(false);
-  });
-
-  it("returns false for non-lodash object", () => {
-    const callee = memberExpression(identifier("foo"), identifier("matches"));
-    const node = callExpression(callee, []);
-    expect(isLodashMatchesCall(node)).toBe(false);
-  });
+  it.each([
+    { expected: true, method: "matches", object: "_" },
+    { expected: true, method: "matches", object: "lodash" },
+    { expected: false, method: "filter", object: "_" },
+    { expected: false, method: "matches", object: "foo" }
+  ])(
+    "returns $expected for $object.$method call",
+    ({ expected, method, object }) => {
+      const callee = memberExpression(identifier(object), identifier(method));
+      const node = callExpression(callee, []);
+      expect(isLodashMatchesCall(node)).toBe(expected);
+    }
+  );
 });

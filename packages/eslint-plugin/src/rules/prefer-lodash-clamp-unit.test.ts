@@ -313,29 +313,18 @@ describe("buildClampFix", () => {
     });
   });
 
-  it("preserves the order: Math.min(upper, Math.max(lower, x)) => clamp(x, lower, upper)", () => {
-    const [first] = buildFix(MIN_OF_MAX);
-    expect(first.text).toBe(EXPECTED_CLAMP);
-  });
-
-  it("preserves the order: Math.min(Math.max(lower, x), upper) => clamp(x, lower, upper)", () => {
-    const [first] = buildFix("Math.min(Math.max(0, x), 10);");
-    expect(first.text).toBe(EXPECTED_CLAMP);
-  });
-
-  it("preserves the order: Math.max(lower, Math.min(upper, x)) => clamp(x, lower, upper)", () => {
-    const [first] = buildFix("Math.max(0, Math.min(10, x));");
-    expect(first.text).toBe(EXPECTED_CLAMP);
-  });
-
-  it("preserves the order: Math.max(Math.min(upper, x), lower) => clamp(x, lower, upper)", () => {
-    const [first] = buildFix("Math.max(Math.min(10, x), 0);");
-    expect(first.text).toBe(EXPECTED_CLAMP);
-  });
-
-  it("handles expression operands", () => {
-    const [first] = buildFix("Math.min(MAX, Math.max(MIN, score));");
-    expect(first.text).toBe("clamp(score, MIN, MAX)");
+  it.each([
+    { expected: EXPECTED_CLAMP, input: MIN_OF_MAX },
+    { expected: EXPECTED_CLAMP, input: "Math.min(Math.max(0, x), 10);" },
+    { expected: EXPECTED_CLAMP, input: "Math.max(0, Math.min(10, x));" },
+    { expected: EXPECTED_CLAMP, input: "Math.max(Math.min(10, x), 0);" },
+    {
+      expected: "clamp(score, MIN, MAX)",
+      input: "Math.min(MAX, Math.max(MIN, score));"
+    }
+  ])("preserves the order: $input => clamp", ({ expected, input }) => {
+    const [first] = buildFix(input);
+    expect(first.text).toBe(expected);
   });
 
   it("includes the disable-comment fix for the umbrella rule", () => {

@@ -95,7 +95,7 @@ export const reportOnSingleChain = (
       isMethodCall(grandParent) &&
       isChainBreaker(grandParent));
 
-  if (isMethodCall(node) && isStandaloneChain) {
+  if (isStandaloneChain && isMethodCall(node)) {
     context.report({ messageId: "single", node });
   }
 };
