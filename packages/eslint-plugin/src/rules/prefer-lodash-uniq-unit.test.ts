@@ -1,130 +1,111 @@
-import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
-import {
-  detectUniqPattern,
-  getSetArgument,
-  isArrayFromNewSet,
-  isSpreadOfNewSet
-} from "./prefer-lodash-uniq.ts";
+import { isArrayExpression, isNewExpression } from "./../utils/type-guards.ts";
 import { findCall, findFirstNode, parseProgram } from "./.fixture.ts";
+import {
+  ARRAY_FROM_SET,
+  detectUniqPattern,
+  getArrayFromNewSet,
+  getSetArgument,
+  getSpreadOfNewSet,
+  SPREAD_SET
+} from "./prefer-lodash-uniq.ts";
+
+const MATCH = "match";
+const NULL = "null";
+const RETURNS_FMT = "returns %s for %s";
+
+const findArrayExpression = (code: string) => {
+  const program = parseProgram(code);
+  return findFirstNode(program, isArrayExpression);
+};
 
 describe("prefer-lodash-uniq", () => {
-  describe("isSpreadOfNewSet", () => {
-    it("returns true for [...new Set(arr)]", () => {
-      const program = parseProgram("[...new Set(arr)]");
-      const arrayExpr = findFirstNode(program, (n): n is TSESTree.ArrayExpression => AST_NODE_TYPES.ArrayExpression === n.type);
-      expect(arrayExpr).not.toBeNull();
-      if (arrayExpr) {
-        expect(isSpreadOfNewSet(arrayExpr)).toBe(true);
-      }
-    });
-
-    it("returns false for [...new Map(arr)]", () => {
-      const program = parseProgram("[...new Map(arr)]");
-      const arrayExpr = findFirstNode(program, (n): n is TSESTree.ArrayExpression => AST_NODE_TYPES.ArrayExpression === n.type);
-      expect(arrayExpr).not.toBeNull();
-      if (arrayExpr) {
-        expect(isSpreadOfNewSet(arrayExpr)).toBe(false);
-      }
-    });
-
-    it("returns false for plain array literal", () => {
-      const program = parseProgram("[a, b]");
-      const arrayExpr = findFirstNode(program, (n): n is TSESTree.ArrayExpression => AST_NODE_TYPES.ArrayExpression === n.type);
-      expect(arrayExpr).not.toBeNull();
-      if (arrayExpr) {
-        expect(isSpreadOfNewSet(arrayExpr)).toBe(false);
-      }
-    });
-
-    it("returns false for spread of non-Set", () => {
-      const program = parseProgram("[...fn()]");
-      const arrayExpr = findFirstNode(program, (n): n is TSESTree.ArrayExpression => AST_NODE_TYPES.ArrayExpression === n.type);
-      expect(arrayExpr).not.toBeNull();
-      if (arrayExpr) {
-        expect(isSpreadOfNewSet(arrayExpr)).toBe(false);
+  describe("getSpreadOfNewSet", () => {
+    it.each([
+      [SPREAD_SET, MATCH],
+      ["[...new Map(arr)]", NULL],
+      ["[a, b]", NULL],
+      ["[...fn()]", NULL]
+    ])(RETURNS_FMT, (code, expectation) => {
+      const arrayExpression = findArrayExpression(code);
+      expect(arrayExpression).not.toBeNull();
+      if (arrayExpression) {
+        const result = getSpreadOfNewSet(arrayExpression);
+        if (MATCH === expectation) {
+          expect(result).not.toBeNull();
+          expect(result?.arrayExpr).toBe(arrayExpression);
+        } else {
+          expect(result).toBeNull();
+        }
       }
     });
   });
 
-  describe("isArrayFromNewSet", () => {
-    it("returns true for Array.from(new Set(arr))", () => {
-      const { call } = findCall("Array.from(new Set(arr))");
-      expect(isArrayFromNewSet(call)).toBe(true);
-    });
-
-    it("returns false for Array.from(arr)", () => {
-      const { call } = findCall("Array.from(arr)");
-      expect(isArrayFromNewSet(call)).toBe(false);
-    });
-
-    it("returns false for Array.from(new Map(arr))", () => {
-      const { call } = findCall("Array.from(new Map(arr))");
-      expect(isArrayFromNewSet(call)).toBe(false);
+  describe("getArrayFromNewSet", () => {
+    it.each([
+      [ARRAY_FROM_SET, MATCH],
+      ["Array.from(arr)", NULL],
+      ["Array.from(new Map(arr))", NULL],
+      ["Array.from(new a.b())", NULL],
+      ["Array.from()", NULL],
+      ["Array.from(new Set(arr), mapper)", NULL],
+      ['Array["from"](new Set(arr))', NULL],
+      ["Array.of(new Set(arr))", NULL]
+    ])(RETURNS_FMT, (code, expectation) => {
+      const { call } = findCall(code);
+      const result = getArrayFromNewSet(call);
+      if (MATCH === expectation) {
+        expect(result).not.toBeNull();
+        expect(result?.callExpr).toBe(call);
+      } else {
+        expect(result).toBeNull();
+      }
     });
   });
 
   describe("getSetArgument", () => {
-    it("extracts inner expression from new Set(arr)", () => {
-      const { call } = findCall("Array.from(new Set(arr))");
-      const setArg = call.arguments[0];
-      if (setArg && setArg.type === AST_NODE_TYPES.NewExpression) {
-        const inner = getSetArgument(setArg);
-        expect(inner).not.toBeNull();
-      }
-    });
-
-    it("returns null when Set has no arguments", () => {
-      const { call } = findCall("Array.from(new Set())");
-      const setArg = call.arguments[0];
-      if (setArg && setArg.type === AST_NODE_TYPES.NewExpression) {
-        expect(getSetArgument(setArg)).toBeNull();
+    it.each([
+      [ARRAY_FROM_SET, MATCH],
+      ["Array.from(new Set())", NULL],
+      ["Array.from(new Set(...arr))", NULL]
+    ])(RETURNS_FMT, (code, expectation) => {
+      const { call } = findCall(code);
+      const [newSetNode] = call.arguments;
+      if (newSetNode && isNewExpression(newSetNode)) {
+        const inner = getSetArgument(newSetNode);
+        if (NULL === expectation) {
+          expect(inner).toBeNull();
+        } else {
+          expect(inner).not.toBeNull();
+        }
       }
     });
   });
 
   describe("detectUniqPattern", () => {
-    it("detects spread-set pattern", () => {
-      const program = parseProgram("[...new Set(arr)]");
-      const arrayExpr = findFirstNode(program, (n): n is TSESTree.ArrayExpression => AST_NODE_TYPES.ArrayExpression === n.type);
-      expect(arrayExpr).not.toBeNull();
-      if (arrayExpr) {
-        const match = detectUniqPattern(arrayExpr);
-        expect(match).not.toBeNull();
-        expect(match?.kind).toBe("spread-set");
+    it.each([
+      [SPREAD_SET, "spread-set"],
+      [ARRAY_FROM_SET, "array-from-set"],
+      ["[1, 2, 3]", null],
+      ["[...new Map(arr)]", null],
+      ["Array.from(arr)", null],
+      ["Array.from(new Set())", null],
+      ["[...new Set(...arr)]", null],
+      ["Array.from(new Set(...arr))", null]
+    ])("classifies %s as %s", (code, expectedKind) => {
+      if (code.startsWith("Array.from")) {
+        const { call } = findCall(code);
+        const match = detectUniqPattern(call);
+        expect(match?.kind ?? null).toBe(expectedKind);
+      } else {
+        const arrayExpression = findArrayExpression(code);
+        expect(arrayExpression).not.toBeNull();
+        if (arrayExpression) {
+          const match = detectUniqPattern(arrayExpression);
+          expect(match?.kind ?? null).toBe(expectedKind);
+        }
       }
-    });
-
-    it("detects array-from-set pattern", () => {
-      const { call } = findCall("Array.from(new Set(arr))");
-      const match = detectUniqPattern(call);
-      expect(match).not.toBeNull();
-      expect(match?.kind).toBe("array-from-set");
-    });
-
-    it("returns null for unrelated call", () => {
-      const { call } = findCall("arr.map(x => x * 2)");
-      expect(detectUniqPattern(call)).toBeNull();
-    });
-
-    it("returns null for [...new Map(arr)]", () => {
-      const program = parseProgram("[...new Map(arr)]");
-      const arrayExpr = findFirstNode(program, (n): n is TSESTree.ArrayExpression => AST_NODE_TYPES.ArrayExpression === n.type);
-      expect(arrayExpr).not.toBeNull();
-      if (arrayExpr) {
-        expect(detectUniqPattern(arrayExpr)).toBeNull();
-      }
-    });
-
-    it("returns null for Array.from(arr)", () => {
-      const { call } = findCall("Array.from(arr)");
-      expect(detectUniqPattern(call)).toBeNull();
-    });
-
-    it("returns null for new Set() with no arguments", () => {
-      const { call } = findCall("Array.from(new Set())");
-      expect(detectUniqPattern(call)).toBeNull();
     });
   });
 });

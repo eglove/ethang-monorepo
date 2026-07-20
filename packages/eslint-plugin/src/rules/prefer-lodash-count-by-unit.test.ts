@@ -1,57 +1,40 @@
-import { type TSESTree } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
-import { detectCountByPattern } from "./prefer-lodash-count-by.ts";
+import { isMemberExpression } from "./../utils/type-guards.ts";
 import { findCall, findFirstNode, parseProgram } from "./.fixture.ts";
+import { detectCountByPattern } from "./prefer-lodash-count-by.ts";
 
 describe("prefer-lodash-count-by", () => {
   describe("detectCountByPattern", () => {
-    it("detects reduce with acc[item.key] = (acc[item.key] || 0) + 1 pattern", () => {
+    it.each([
+      ["acc[item.key] = (acc[item.key] || 0) + 1", true],
+      ["acc[item.category] = (acc[item.category] || 0) + 1", true]
+    ])("detects countBy pattern for '%s", (code) => {
       const { call } = findCall(
-        "const x = arr.reduce((acc, item) => { acc[item.key] = (acc[item.key] || 0) + 1; return acc; }, {})"
+        `const x = arr.reduce((acc, item) => { ${code}; return acc; }, {})`
       );
       expect(detectCountByPattern(call)).not.toBeNull();
     });
 
-    it("detects reduce with acc[item.category] = (acc[item.category] || 0) + 1 pattern", () => {
+    it.each([
+      ["acc[item.key] = item"],
+      ["(acc[item.category] ||= []).push(item)"],
+      ["acc.push(item)"]
+    ])("does not detect non-countBy reduce pattern for '%s", (code) => {
       const { call } = findCall(
-        "const x = arr.reduce((acc, item) => { acc[item.category] = (acc[item.category] || 0) + 1; return acc; }, {})"
-      );
-      expect(detectCountByPattern(call)).not.toBeNull();
-    });
-
-    it("does not detect reduce with keyBy pattern", () => {
-      const { call } = findCall(
-        "const x = arr.reduce((acc, item) => { acc[item.key] = item; return acc; }, {})"
+        `const x = arr.reduce((acc, item) => { ${code}; return acc; }, {})`
       );
       expect(detectCountByPattern(call)).toBeNull();
     });
 
-    it("does not detect reduce with groupBy pattern", () => {
-      const { call } = findCall(
-        "const x = arr.reduce((acc, item) => { (acc[item.category] ||= []).push(item); return acc; }, {})"
-      );
-      expect(detectCountByPattern(call)).toBeNull();
-    });
-
-    it("does not detect reduce with different accumulator pattern", () => {
-      const { call } = findCall(
-        "const x = arr.reduce((acc, item) => { acc.push(item); return acc; }, [])"
-      );
-      expect(detectCountByPattern(call)).toBeNull();
-    });
-
-    it("does not detect non-reduce call", () => {
+    it("does not detect non-reduce call expression", () => {
       const { call } = findCall("const x = arr.map(item => item * 2)");
       expect(detectCountByPattern(call)).toBeNull();
     });
 
     it("does not detect non-call expression", () => {
       const program = parseProgram("const x = arr.length;");
-      const member = findFirstNode(
-        program,
-        (n): n is TSESTree.MemberExpression => n.type === "MemberExpression"
-      );
+      const member = findFirstNode(program, isMemberExpression);
       expect(member).not.toBeNull();
       if (member) {
         expect(detectCountByPattern(member)).toBeNull();

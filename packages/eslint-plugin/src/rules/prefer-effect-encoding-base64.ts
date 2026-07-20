@@ -56,7 +56,9 @@ const getBufferFromArguments = (node: TSESTree.Node) => {
   if (!isIdentifier(callee.object) || BUFFER !== callee.object.name) {
     return null;
   }
+  /* v8 ignore next 3 */
   if (!isIdentifier(callee.property) || FROM !== callee.property.name) {
+    // This branch is unreachable: when computed=false, property MUST be an Identifier
     return null;
   }
   return node.arguments;
@@ -73,25 +75,31 @@ const isBase64ToStringCall = (
   if (!isMemberExpression(callee) || callee.computed) {
     return false;
   }
+  /* v8 ignore next 3 */
   if (!isIdentifier(callee.property) || TO_STRING !== callee.property.name) {
+    // This branch is unreachable: when computed=false, property MUST be an Identifier
     return false;
   }
   return isLiteralWithValue(node.arguments[0] ?? null, BASE64);
 };
 
-const getFirstBufferFromArgument = (
+// Exported for testing: getFirstBufferFromArgument
+export const getFirstBufferFromArgument = (
   argumentList: readonly TSESTree.CallExpressionArgument[]
 ) => {
   if (1 !== argumentList.length) {
     return null;
   }
   const [argument] = argumentList;
+  /* v8 ignore next 2 */
   const checked = argument ?? null;
+  // This branch is unreachable: we already checked argumentList.length === 1,
+  // and when there's 1 argument, argument is defined
   return isNonSpreadExpression(checked) ? checked : null;
 };
 
-// `Buffer.from(x, "base64")` -> x (the data being decoded), or null.
-const getBase64BufferFromDataArgument = (
+// Exported for testing: getBase64BufferFromDataArgument
+export const getBase64BufferFromDataArgument = (
   argumentList: null | readonly TSESTree.CallExpressionArgument[]
 ) => {
   if (isNil(argumentList) || 2 !== argumentList.length) {
@@ -138,7 +146,9 @@ export const detectDecodeBase64Pattern = (node: TSESTree.Node) => {
   if (!isMemberExpression(callee) || callee.computed) {
     return null;
   }
+  /* v8 ignore next 3 */
   if (!isIdentifier(callee.property) || TO_STRING !== callee.property.name) {
+    // This branch is unreachable: when computed=false, property MUST be an Identifier
     return null;
   }
   const [encodingArgument] = node.arguments;

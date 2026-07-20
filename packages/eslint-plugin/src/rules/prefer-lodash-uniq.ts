@@ -4,8 +4,17 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
-import { isCallExpression, isIdentifier } from "./../utils/type-guards.ts";
+import {
+  isCallExpression,
+  isIdentifier,
+  isNewExpression,
+  isSpreadElement
+} from "./../utils/type-guards.ts";
+
+const SPREAD_SET = "[...new Set(arr)]";
+const ARRAY_FROM_SET = "Array.from(new Set(arr))";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
@@ -15,46 +24,38 @@ type MessageIds = "preferLodashUniq";
 
 type Options = [];
 
-// Detect `[...new Set(expr)]` spread-of-set pattern
-export const isSpreadOfNewSet = (
-  node: TSESTree.Node
-): node is TSESTree.ArrayExpression => {
-  if (AST_NODE_TYPES.ArrayExpression !== node.type) {
-    return false;
+const getSetCalleeName = (newExpression: TSESTree.NewExpression) => {
+  if (!isIdentifier(newExpression.callee)) {
+    return null;
   }
-  const elements = node.elements;
-  if (1 !== elements.length) {
-    return false;
-  }
-  const [only] = elements;
-  if (!only) {
-    return false;
-  }
-  if (AST_NODE_TYPES.SpreadElement !== only.type) {
-    return false;
-  }
-  if (AST_NODE_TYPES.NewExpression !== only.argument.type) {
-    return false;
-  }
-  const newExpr = only.argument;
-  if (AST_NODE_TYPES.Identifier !== newExpr.callee.type) {
-    return false;
-  }
-  return "Set" === newExpr.callee.name;
+  return newExpression.callee.name;
 };
 
-// Detect `Array.from(new Set(expr))` pattern
-export const isArrayFromNewSet = (
-  node: TSESTree.Node
-): node is TSESTree.CallExpression => {
-  if (!isCallExpression(node)) {
-    return false;
+// Detect `[...new Set(expr)]` spread-of-set pattern. Returns the outer
+// ArrayExpression plus the inner `new Set(expr)` NewExpression, or null.
+export const getSpreadOfNewSet = (node: TSESTree.Node) => {
+  if (AST_NODE_TYPES.ArrayExpression !== node.type) {
+    return null;
   }
-  const { callee, arguments: args } = node;
-  if (1 !== args.length) {
-    return false;
+  const { elements } = node;
+  const [only] = elements;
+  if (isNil(only) || !isSpreadElement(only)) {
+    return null;
   }
-  // callee is `Array.from` — a MemberExpression
+  if (AST_NODE_TYPES.NewExpression !== only.argument.type) {
+    return null;
+  }
+  if ("Set" !== getSetCalleeName(only.argument)) {
+    return null;
+  }
+  return { arrayExpr: node, newSet: only.argument };
+};
+
+// Whether `callee` is exactly `Array.from` (a non-computed MemberExpression
+// whose object is the `Array` identifier and property is the `from` identifier).
+const isArrayFromCallee = (
+  callee: TSESTree.Node
+): callee is TSESTree.MemberExpression => {
   if (AST_NODE_TYPES.MemberExpression !== callee.type) {
     return false;
   }
@@ -62,62 +63,91 @@ export const isArrayFromNewSet = (
     return false;
   }
   const { object, property } = callee;
-  if (!isIdentifier(object) || "Array" !== object.name) {
-    return false;
-  }
-  if (!isIdentifier(property) || "from" !== property.name) {
-    return false;
-  }
-  if (AST_NODE_TYPES.NewExpression !== args[0].type) {
-    return false;
-  }
-  const newExpr = args[0] as TSESTree.NewExpression;
-  if (AST_NODE_TYPES.Identifier !== newExpr.callee.type) {
-    return false;
-  }
-  return "Set" === newExpr.callee.name;
+  return (
+    isIdentifier(object) &&
+    "Array" === object.name &&
+    isIdentifier(property) &&
+    "from" === property.name
+  );
 };
 
-// Extract the inner expression from `new Set(expr)`
-export const getSetArgument = (
-  newExpr: TSESTree.NewExpression
-): TSESTree.Expression | null => {
-  const [arg] = newExpr.arguments;
-  if (!arg) {
+// Detect `Array.from(new Set(expr))` pattern. Returns the outer CallExpression
+// plus the inner `new Set(expr)` NewExpression, or null.
+export const getArrayFromNewSet = (node: TSESTree.Node) => {
+  if (!isCallExpression(node)) {
     return null;
   }
-  if (AST_NODE_TYPES.SpreadElement === arg.type) {
+  const { arguments: callArguments, callee } = node;
+  const [firstArgument] = callArguments;
+  if (isNil(firstArgument)) {
     return null;
   }
-  return arg;
+  if (1 !== callArguments.length) {
+    return null;
+  }
+  if (!isArrayFromCallee(callee)) {
+    return null;
+  }
+  if (!isNewExpression(firstArgument)) {
+    return null;
+  }
+  if ("Set" !== getSetCalleeName(firstArgument)) {
+    return null;
+  }
+  return { callExpr: node, newSet: firstArgument };
+};
+
+// Extract the inner expression from `new Set(expr)` (the `expr`),
+// or null when the Set call has no usable argument.
+export const getSetArgument = (newExpression: TSESTree.NewExpression) => {
+  const [argument] = newExpression.arguments;
+  if (isNil(argument)) {
+    return null;
+  }
+  if (AST_NODE_TYPES.SpreadElement === argument.type) {
+    return null;
+  }
+  return argument;
 };
 
 export type UniqMatch =
-  | { readonly kind: "spread-set"; readonly arrayExpr: TSESTree.ArrayExpression; readonly innerExpr: TSESTree.Expression }
-  | { readonly kind: "array-from-set"; readonly callExpr: TSESTree.CallExpression; readonly innerExpr: TSESTree.Expression };
+  | {
+      readonly arrayExpr: TSESTree.ArrayExpression;
+      readonly innerExpr: TSESTree.Expression;
+      readonly kind: "spread-set";
+    }
+  | {
+      readonly callExpr: TSESTree.CallExpression;
+      readonly innerExpr: TSESTree.Expression;
+      readonly kind: "array-from-set";
+    };
 
-export const detectUniqPattern = (node: TSESTree.Node): UniqMatch | null => {
-  if (isSpreadOfNewSet(node)) {
-    const [only] = node.elements;
-    if (!only || AST_NODE_TYPES.SpreadElement !== only.type) {
+export const detectUniqPattern = (node: TSESTree.Node) => {
+  const spread = getSpreadOfNewSet(node);
+  if (!isNil(spread)) {
+    const innerExpression = getSetArgument(spread.newSet);
+    if (isNil(innerExpression)) {
       return null;
     }
-    const innerExpr = getSetArgument(only.argument);
-    if (!innerExpr) {
-      return null;
-    }
-    return { kind: "spread-set", arrayExpr: node, innerExpr };
+    const match: UniqMatch = {
+      arrayExpr: spread.arrayExpr,
+      innerExpr: innerExpression,
+      kind: "spread-set"
+    };
+    return match;
   }
-  if (isArrayFromNewSet(node)) {
-    const [arg] = node.arguments;
-    if (!arg || AST_NODE_TYPES.NewExpression !== arg.type) {
+  const arrayFrom = getArrayFromNewSet(node);
+  if (!isNil(arrayFrom)) {
+    const innerExpression = getSetArgument(arrayFrom.newSet);
+    if (isNil(innerExpression)) {
       return null;
     }
-    const innerExpr = getSetArgument(arg);
-    if (!innerExpr) {
-      return null;
-    }
-    return { kind: "array-from-set", callExpr: node, innerExpr };
+    const match: UniqMatch = {
+      callExpr: arrayFrom.callExpr,
+      innerExpr: innerExpression,
+      kind: "array-from-set"
+    };
+    return match;
   }
   return null;
 };
@@ -125,25 +155,30 @@ export const detectUniqPattern = (node: TSESTree.Node): UniqMatch | null => {
 const buildFix = (
   fixer: TSESLint.RuleFixer,
   node: TSESTree.Node,
-  innerExpr: TSESTree.Expression,
+  innerExpression: TSESTree.Expression,
   sourceCode: TSESLint.SourceCode
-): TSESLint.RuleFix => {
-  const innerText = sourceCode.getText(innerExpr);
+) => {
+  const innerText = sourceCode.getText(innerExpression);
   return fixer.replaceText(node, `uniq(${innerText})`);
 };
 
 export const preferLodashUniqRule = createRule<Options, MessageIds>({
   create(context) {
-    const sourceCode = context.sourceCode;
+    const { sourceCode } = context;
     const listener: TSESLint.RuleListener = {
       ArrayExpression: (node) => {
         const match = detectUniqPattern(node);
-        if (!match) {
+        if (isNil(match) || "spread-set" !== match.kind) {
           return;
         }
         context.report({
           fix: (fixer) => {
-            return buildFix(fixer, match.arrayExpr, match.innerExpr, sourceCode);
+            return buildFix(
+              fixer,
+              match.arrayExpr,
+              match.innerExpr,
+              sourceCode
+            );
           },
           messageId: "preferLodashUniq",
           node: match.arrayExpr
@@ -151,7 +186,7 @@ export const preferLodashUniqRule = createRule<Options, MessageIds>({
       },
       CallExpression: (node) => {
         const match = detectUniqPattern(node);
-        if (!match) {
+        if (isNil(match) || "array-from-set" !== match.kind) {
           return;
         }
         context.report({
@@ -168,16 +203,16 @@ export const preferLodashUniqRule = createRule<Options, MessageIds>({
   defaultOptions: [],
   meta: {
     docs: {
-      description:
-        "Prefer `_.uniq` over `[...new Set(arr)]` or `Array.from(new Set(arr))`."
+      description: `Prefer \`_.uniq\` over \`${SPREAD_SET}\` or \`${ARRAY_FROM_SET}\`.`
     },
     fixable: "code",
     messages: {
-      preferLodashUniq:
-        "Prefer `uniq(arr)` over `[...new Set(arr)]` or `Array.from(new Set(arr))`. Lodash handles deduplication directly."
+      preferLodashUniq: `Prefer \`uniq(arr)\` over \`${SPREAD_SET}\` or \`${ARRAY_FROM_SET}\`. Lodash handles deduplication directly.`
     },
     schema: [],
     type: "problem"
   },
   name: "prefer-lodash-uniq"
 });
+
+export { ARRAY_FROM_SET, SPREAD_SET };

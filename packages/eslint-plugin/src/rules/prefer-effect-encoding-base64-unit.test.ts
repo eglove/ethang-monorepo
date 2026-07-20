@@ -1,11 +1,16 @@
+import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
-import { findCall } from "./.fixture.ts";
+import { findFirstNode, parseProgram } from "./.fixture.ts";
 import {
   detectDecodeBase64Pattern,
   detectEncodeBase64Pattern,
-  detectEncodingBase64Pattern
+  detectEncodingBase64Pattern,
+  getBase64BufferFromDataArgument,
+  getFirstBufferFromArgument
 } from "./prefer-effect-encoding-base64.ts";
+
+const BASE64 = "base64";
 
 const encodeSamples = [
   'Buffer.from(s).toString("base64")',
@@ -35,7 +40,11 @@ const encodeNegatives = [
   {
     code: 'Buffer.from(s, "utf8").toString("base64")',
     label: "Buffer.from with two args (not a plain encode)"
-  }
+  },
+  // Line 54: callee.computed=true - computed property on .from itself
+  { code: 'Buffer["from"](s).toString("base64")', label: "computed .from property" },
+  // Line 56: callee.object is not "Buffer"
+  { code: 'obj.from(s).toString("base64")', label: "non-Identifier callee.object" }
 ];
 
 const decodeNegatives = [
@@ -52,6 +61,15 @@ const decodeNegatives = [
     label: "a bare Buffer.from encode call"
   }
 ];
+
+const findCall = (
+  code: string
+): { call: TSESTree.CallExpression; program: TSESTree.Program } => {
+  const program = parseProgram(code);
+  const call = findFirstNode(program, (n) => n.type === AST_NODE_TYPES.CallExpression);
+  expect(call).not.toBeNull();
+  return { call: call!, program };
+};
 
 describe("prefer-effect-encoding-base64", () => {
   describe("detectEncodeBase64Pattern", () => {
@@ -80,6 +98,14 @@ describe("prefer-effect-encoding-base64", () => {
       const { call } = findCall(code);
       expect(detectDecodeBase64Pattern(call)).toBeNull();
     });
+
+    it("returns null when node is not a CallExpression (line 135)", () => {
+      // This tests the early return for non-CallExpression nodes in detectDecodeBase64Pattern
+      const program = parseProgram("Symbol.iterator in x;");
+      const binary = findFirstNode(program, (n) => n.type === "BinaryExpression");
+      expect(binary).not.toBeNull();
+      expect(binary && detectDecodeBase64Pattern(binary)).toBeNull();
+    });
   });
 
   describe("detectEncodingBase64Pattern (combined)", () => {
@@ -96,6 +122,42 @@ describe("prefer-effect-encoding-base64", () => {
     it("returns null for an unrelated call", () => {
       const { call } = findCall("arr.map((x) => x * 2)");
       expect(detectEncodingBase64Pattern(call)).toBeNull();
+    });
+  });
+
+  describe("getFirstBufferFromArgument edge cases", () => {
+    it("returns null when argument is a SpreadElement (line 96)", () => {
+      // Create a mock argument list with a SpreadElement
+      const spreadElement = {
+        type: AST_NODE_TYPES.SpreadElement,
+        argument: {
+          type: AST_NODE_TYPES.Identifier,
+          name: "arr"
+        }
+      } as unknown as TSESTree.SpreadElement;
+      const args = [spreadElement] as unknown as TSESTree.CallExpressionArgument[];
+      // This hits line 109-110: isNonSpreadExpression returns false for SpreadElement
+      expect(getFirstBufferFromArgument(args)).toBeNull();
+    });
+  });
+
+  describe("getBase64BufferFromDataArgument edge cases", () => {
+    it("returns null when input is a SpreadElement (line 110)", () => {
+      // Create a mock argument list with a SpreadElement as first arg
+      const spreadElement = {
+        type: AST_NODE_TYPES.SpreadElement,
+        argument: {
+          type: AST_NODE_TYPES.Identifier,
+          name: "arr"
+        }
+      } as unknown as TSESTree.SpreadElement;
+      const innerEncoding = {
+        type: AST_NODE_TYPES.Literal,
+        value: "base64"
+      } as unknown as TSESTree.Literal;
+      const args = [spreadElement, innerEncoding] as unknown as TSESTree.CallExpressionArgument[];
+      // This hits line 110: isNonSpreadExpression returns false
+      expect(getBase64BufferFromDataArgument(args)).toBeNull();
     });
   });
 });

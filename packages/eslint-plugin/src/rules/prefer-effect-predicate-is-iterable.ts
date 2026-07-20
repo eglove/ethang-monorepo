@@ -5,10 +5,7 @@ import {
   type TSESTree
 } from "@typescript-eslint/utils";
 
-import {
-  isIdentifier,
-  isMemberExpression
-} from "./../utils/type-guards.ts";
+import { isIdentifier, isMemberExpression } from "./../utils/type-guards.ts";
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
@@ -19,13 +16,11 @@ type MessageIds = "preferEffectPredicateIsIterable";
 type Options = [];
 
 // Detect `Symbol.iterator in x` pattern
-export const detectSymbolIteratorIn = (
-  node: TSESTree.Node
-): boolean => {
+export const detectSymbolIteratorIn = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.BinaryExpression !== node.type) {
     return false;
   }
-  const binary = node as TSESTree.BinaryExpression;
+  const binary = node;
   if ("in" !== binary.operator) {
     return false;
   }
@@ -33,7 +28,7 @@ export const detectSymbolIteratorIn = (
   if (!isMemberExpression(binary.left)) {
     return false;
   }
-  const left = binary.left as TSESTree.MemberExpression;
+  const { left } = binary;
   if (!isIdentifier(left.object)) {
     return false;
   }

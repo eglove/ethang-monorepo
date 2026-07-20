@@ -3,6 +3,7 @@ import {
   ESLintUtils,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import {
   isCallExpression,
@@ -61,7 +62,7 @@ const returnsAccumulator = (
   accumulatorName: string
 ) => {
   const last = block.body.at(-1);
-  if (!last || AST_NODE_TYPES.ReturnStatement !== last.type) {
+  if (last?.type !== AST_NODE_TYPES.ReturnStatement) {
     return false;
   }
   if (!last.argument || !isIdentifier(last.argument)) {
@@ -232,10 +233,7 @@ const validateBlockStructure = (
     return null;
   }
   const [firstStatement] = block.body;
-  if (
-    !firstStatement ||
-    AST_NODE_TYPES.ExpressionStatement !== firstStatement.type
-  ) {
+  if (firstStatement?.type !== AST_NODE_TYPES.ExpressionStatement) {
     return null;
   }
   return firstStatement;
@@ -249,7 +247,7 @@ export const detectGroupByPattern = (node: TSESTree.Node) => {
   }
 
   const arrayInfo = validateReduceCallStructure(node);
-  if (null === arrayInfo) {
+  if (isNil(arrayInfo)) {
     return null;
   }
 
@@ -258,7 +256,7 @@ export const detectGroupByPattern = (node: TSESTree.Node) => {
     return null;
   }
   const callbackInfo = validateCallbackStructure(firstArgument);
-  if (null === callbackInfo) {
+  if (isNil(callbackInfo)) {
     return null;
   }
 
@@ -266,7 +264,7 @@ export const detectGroupByPattern = (node: TSESTree.Node) => {
     callbackInfo.block,
     callbackInfo.accumulatorName
   );
-  if (null === firstStatement) {
+  if (isNil(firstStatement)) {
     return null;
   }
 
@@ -275,7 +273,7 @@ export const detectGroupByPattern = (node: TSESTree.Node) => {
     callbackInfo.accumulatorName,
     callbackInfo.itemName
   );
-  if (null === key) {
+  if (isNil(key)) {
     return null;
   }
 

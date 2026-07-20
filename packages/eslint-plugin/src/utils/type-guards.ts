@@ -75,3 +75,27 @@ export const isArrayExpression = (
 ): node is TSESTree.ArrayExpression => {
   return AST_NODE_TYPES.ArrayExpression === node.type;
 };
+
+export const isSpreadElement = (
+  node: TSESTree.Node
+): node is TSESTree.SpreadElement => {
+  return AST_NODE_TYPES.SpreadElement === node.type;
+};
+
+export const isNewExpression = (
+  node: TSESTree.Node
+): node is TSESTree.NewExpression => {
+  return AST_NODE_TYPES.NewExpression === node.type;
+};
+
+export const isBinaryExpression = (
+  node: TSESTree.Node
+): node is TSESTree.BinaryExpression => {
+  return AST_NODE_TYPES.BinaryExpression === node.type;
+};
+
+export const isUnaryExpression = (
+  node: TSESTree.Node
+): node is TSESTree.UnaryExpression => {
+  return AST_NODE_TYPES.UnaryExpression === node.type;
+};

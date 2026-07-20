@@ -1,90 +1,125 @@
-import { type TSESTree } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
+import {
+  isBinaryExpression,
+  isCallExpression,
+  isUnaryExpression
+} from "./../utils/type-guards.ts";
+import { findFirstNode, parseProgram } from "./.fixture.ts";
 import {
   detectInstanceofPredicate,
   detectPredicateRecommendation,
   getTypeofLiteral,
+  getStringLiteral,
   isTypeofExpression,
   resolveTypeofPredicate
 } from "./prefer-effect-predicate.ts";
-import { findFirstNode, parseProgram } from "./.fixture.ts";
+
+const BIGINT = "bigint";
+const SYMBOL = "symbol";
+const STRING = "string";
+const NUMBER = "number";
 
 describe("prefer-effect-predicate", () => {
   describe("isTypeofExpression", () => {
-    it.each([
-      "typeof x",
-      "typeof foo()"
-    ])("detects typeof expression for '%s'", (code) => {
-      const program = parseProgram(`${code};`);
-      const expr = findFirstNode(program, (n): n is TSESTree.UnaryExpression => n.type === "UnaryExpression");
-      expect(expr).not.toBeNull();
-      if (expr) {
-        expect(isTypeofExpression(expr)).toBe(true);
+    it.each(["typeof x", "typeof foo()"])(
+      "detects typeof expression for '%s'",
+      (code) => {
+        const program = parseProgram(`${code};`);
+        const expression = findFirstNode(program, isUnaryExpression);
+        expect(expression).not.toBeNull();
+        expect(expression && isTypeofExpression(expression)).toBe(true);
       }
+    );
+
+    it.each(["void x", "delete obj.key", "!x"])(
+      "does not detect non-typeof unary expression for '%s'",
+      (code) => {
+        const program = parseProgram(`${code};`);
+        const expression = findFirstNode(program, isUnaryExpression);
+        expect(expression).not.toBeNull();
+        expect(expression && isTypeofExpression(expression)).toBe(false);
+      }
+    );
+  });
+
+  describe("getStringLiteral", () => {
+    it.each([
+      [`"hello"`, "hello"],
+      [`"world"`, "world"],
+      [`"key"`, "key"]
+    ])("returns string value for string literal '%s'", (code, expected) => {
+      const program = parseProgram(`${code};`);
+      const literal = findFirstNode(program, (n) => n.type === "Literal");
+      expect(literal).not.toBeNull();
+      expect(literal && getStringLiteral(literal)).toBe(expected);
     });
 
-    it.each([
-      "void x",
-      "delete obj.key",
-      "!x"
-    ])("does not detect non-typeof unary expression for '%s'", (code) => {
-      const program = parseProgram(`${code};`);
-      const expr = findFirstNode(program, (n): n is TSESTree.UnaryExpression => n.type === "UnaryExpression");
-      expect(expr).not.toBeNull();
-      if (expr) {
-        expect(isTypeofExpression(expr)).toBe(false);
-      }
+    it("returns null when literal value is not a string (line 60)", () => {
+      // This tests when expression.type is Literal but expression.value is not a string
+      const program = parseProgram("typeof x === 123;");
+      const binary = findFirstNode(program, isBinaryExpression);
+      expect(binary).not.toBeNull();
+      // binary.left is UnaryExpression, binary.right is Literal(123) - a number
+      // This tests the branch where expression.value is a number, not a string
+      expect(binary && getTypeofLiteral(binary)).toBeNull();
+    });
+
+    it("returns null for non-literal expression", () => {
+      const program = parseProgram("typeof x;");
+      const unary = findFirstNode(program, isUnaryExpression);
+      expect(unary).not.toBeNull();
+      expect(unary && getStringLiteral(unary)).toBeNull();
     });
   });
 
   describe("getTypeofLiteral", () => {
     it.each([
-      ['typeof x === "bigint"', "bigint"],
-      ['typeof x === "symbol"', "symbol"],
-      ['typeof x === "string"', "string"],
-      ['typeof x === "number"', "number"],
-      ['"bigint" === typeof x', "bigint"],
-      ['typeof x !== "bigint"', "bigint"],
-      ['"symbol" !== typeof x', "symbol"]
+      [`typeof x === "${BIGINT}"`, BIGINT],
+      [`typeof x === "${SYMBOL}"`, SYMBOL],
+      [`typeof x === "${STRING}"`, STRING],
+      [`typeof x === "${NUMBER}"`, NUMBER],
+      [`"${BIGINT}" === typeof x`, BIGINT],
+      [`typeof x !== "${BIGINT}"`, BIGINT],
+      [`"${SYMBOL}" !== typeof x`, SYMBOL]
     ])("getTypeofLiteral('%s') → '%s'", (code, expected) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        expect(getTypeofLiteral(binary)).toBe(expected);
-      }
+      expect(binary && getTypeofLiteral(binary)).toBe(expected);
     });
 
     it.each([
       'typeof x == "bigint"',
       'x === "bigint"',
-      'typeof x',
-      'x === y'
+      "typeof x",
+      "x === y"
     ])("returns null for non-matching pattern '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
-      if (binary) {
-        expect(getTypeofLiteral(binary)).toBeNull();
-      } else {
-        // No binary expression — that's fine, test passes
-      }
+      const binary = findFirstNode(program, isBinaryExpression);
+      expect(binary && getTypeofLiteral(binary)).toBeNull();
+    });
+
+    it("returns null when typeof expression value is not a string literal", () => {
+      const program = parseProgram("typeof x === foo;");
+      const binary = findFirstNode(program, isBinaryExpression);
+      expect(binary).not.toBeNull();
+      // binary.left is UnaryExpression (typeof x), binary.right is Identifier (foo)
+      expect(binary && getTypeofLiteral(binary)).toBeNull();
     });
   });
 
   describe("resolveTypeofPredicate", () => {
     it.each([
-      'typeof x === "bigint"',
-      'typeof x === "symbol"'
+      `typeof x === "${BIGINT}"`,
+      `typeof x === "${SYMBOL}"`
     ])("resolves predicate for '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        const result = resolveTypeofPredicate(binary);
-        expect(result).not.toBeNull();
-        expect(result?.messageId).toBeDefined();
-      }
+      const result = binary && resolveTypeofPredicate(binary);
+      expect(result).not.toBeNull();
+      expect(result?.messageId).toBeDefined();
     });
 
     it.each([
@@ -93,45 +128,46 @@ describe("prefer-effect-predicate", () => {
       'typeof x === "object"',
       'typeof x === "boolean"',
       'typeof x === "function"',
-      'typeof x === "undefined"',
-      'typeof x === "object"'
+      'typeof x === "undefined"'
     ])("returns null for non-predicate typeof '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        expect(resolveTypeofPredicate(binary)).toBeNull();
-      }
+      expect(binary && resolveTypeofPredicate(binary)).toBeNull();
+    });
+
+    it("returns null for non-string literal from typeof expression", () => {
+      const program = parseProgram("typeof x === foo;");
+      const binary = findFirstNode(program, isBinaryExpression);
+      expect(binary).not.toBeNull();
+      // Tests the branch where expression.value is not a string at line 60
+      expect(binary && resolveTypeofPredicate(binary)).toBeNull();
     });
   });
 
   describe("detectPredicateRecommendation", () => {
     it.each([
-      'typeof x === "bigint"',
-      'typeof x === "symbol"'
+      `typeof x === "${BIGINT}"`,
+      `typeof x === "${SYMBOL}"`
     ])("detects typeof predicate for '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        expect(detectPredicateRecommendation(binary)).not.toBeNull();
-      }
+      expect(binary && detectPredicateRecommendation(binary)).not.toBeNull();
     });
 
     it.each([
       'typeof x === "string"',
       'typeof x === "number"',
-      'x instanceof Object',
-      'x instanceof Array',
-      'x === y',
-      'x > 0'
+      "x instanceof Object",
+      "x instanceof Array",
+      "x === y",
+      "x > 0"
     ])("returns null for non-predicate '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        expect(detectPredicateRecommendation(binary)).toBeNull();
-      }
+      expect(binary && detectPredicateRecommendation(binary)).toBeNull();
     });
   });
 
@@ -144,11 +180,9 @@ describe("prefer-effect-predicate", () => {
       "x instanceof Set"
     ])("detects instanceof predicate for '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        expect(detectInstanceofPredicate(binary)).not.toBeNull();
-      }
+      expect(binary && detectInstanceofPredicate(binary)).not.toBeNull();
     });
 
     it.each([
@@ -161,20 +195,24 @@ describe("prefer-effect-predicate", () => {
       "x > 0"
     ])("returns null for non-predicate '%s'", (code) => {
       const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, (n): n is TSESTree.BinaryExpression => n.type === "BinaryExpression");
+      const binary = findFirstNode(program, isBinaryExpression);
       expect(binary).not.toBeNull();
-      if (binary) {
-        expect(detectInstanceofPredicate(binary)).toBeNull();
-      }
+      expect(binary && detectInstanceofPredicate(binary)).toBeNull();
     });
 
     it("returns null for non-binary expression", () => {
       const program = parseProgram("Date.now();");
-      const call = findFirstNode(program, (n): n is TSESTree.CallExpression => n.type === "CallExpression");
+      const call = findFirstNode(program, isCallExpression);
       expect(call).not.toBeNull();
-      if (call) {
-        expect(detectInstanceofPredicate(call)).toBeNull();
-      }
+      expect(call && detectInstanceofPredicate(call)).toBeNull();
+    });
+
+    it("returns null when instanceof right side is not an identifier", () => {
+      const program = parseProgram("x instanceof (Date || Error);");
+      const binary = findFirstNode(program, isBinaryExpression);
+      expect(binary).not.toBeNull();
+      // Tests the branch where right.type is not Identifier (line 129)
+      expect(binary && detectInstanceofPredicate(binary)).toBeNull();
     });
   });
 });

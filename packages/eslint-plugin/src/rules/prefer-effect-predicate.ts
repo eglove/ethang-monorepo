@@ -19,12 +19,12 @@ const createRule = ESLintUtils.RuleCreator((name) => {
 // Function, Map, Set — Effect Predicate provides safer alternatives.
 type MessageIds =
   | "preferEffectPredicateIsBigInt"
-  | "preferEffectPredicateIsSymbol"
   | "preferEffectPredicateIsDate"
   | "preferEffectPredicateIsError"
   | "preferEffectPredicateIsFunction"
   | "preferEffectPredicateIsMap"
-  | "preferEffectPredicateIsSet";
+  | "preferEffectPredicateIsSet"
+  | "preferEffectPredicateIsSymbol";
 
 type Options = [];
 
@@ -108,22 +108,28 @@ const INSTANCEOF_MESSAGE_IDS = {
   Set: "preferEffectPredicateIsSet"
 } as const satisfies Record<string, MessageIds>;
 
-export const detectInstanceofPredicate = (
-  node: TSESTree.Node
-): { messageId: MessageIds; node: TSESTree.BinaryExpression } | null => {
+type InstanceofPredicateLiteral = keyof typeof INSTANCEOF_MESSAGE_IDS;
+
+const isInstanceofPredicateLiteral = (
+  name: string
+): name is InstanceofPredicateLiteral => {
+  return Object.hasOwn(INSTANCEOF_MESSAGE_IDS, name);
+};
+
+export const detectInstanceofPredicate = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.BinaryExpression !== node.type) {
     return null;
   }
-  const binary = node as TSESTree.BinaryExpression;
+  const binary = node;
   if ("instanceof" !== binary.operator) {
     return null;
   }
-  const right = binary.right;
+  const { right } = binary;
   if (AST_NODE_TYPES.Identifier !== right.type) {
     return null;
   }
-  const name = right.name;
-  if (!Object.hasOwn(INSTANCEOF_MESSAGE_IDS, name)) {
+  const { name } = right;
+  if (!isInstanceofPredicateLiteral(name)) {
     return null;
   }
   return { messageId: INSTANCEOF_MESSAGE_IDS[name], node: binary };
@@ -155,18 +161,18 @@ export const preferEffectPredicateRule = createRule<Options, MessageIds>({
     messages: {
       preferEffectPredicateIsBigInt:
         'Use `Predicate.isBigInt(value)` instead of `typeof value === "bigint"`. Lodash has no equivalent — Effect\'s predicate is the canonical check.',
-      preferEffectPredicateIsSymbol:
-        'Use `Predicate.isSymbol(value)` instead of `typeof value === "symbol"`. Lodash has no equivalent — Effect\'s predicate is the canonical check.',
       preferEffectPredicateIsDate:
-        'Use `Predicate.isDate(value)` instead of `value instanceof Date`. Effect\'s predicate is the canonical check.',
+        "Use `Predicate.isDate(value)` instead of `value instanceof Date`. Effect's predicate is the canonical check.",
       preferEffectPredicateIsError:
-        'Use `Predicate.isError(value)` instead of `value instanceof Error`. Effect\'s predicate is the canonical check.',
+        "Use `Predicate.isError(value)` instead of `value instanceof Error`. Effect's predicate is the canonical check.",
       preferEffectPredicateIsFunction:
-        'Use `Predicate.isFunction(value)` instead of `value instanceof Function`. Effect\'s predicate is the canonical check.',
+        "Use `Predicate.isFunction(value)` instead of `value instanceof Function`. Effect's predicate is the canonical check.",
       preferEffectPredicateIsMap:
-        'Use `Predicate.isMap(value)` instead of `value instanceof Map`. Effect\'s predicate is the canonical check.',
+        "Use `Predicate.isMap(value)` instead of `value instanceof Map`. Effect's predicate is the canonical check.",
       preferEffectPredicateIsSet:
-        'Use `Predicate.isSet(value)` instead of `value instanceof Set`. Effect\'s predicate is the canonical check.'
+        "Use `Predicate.isSet(value)` instead of `value instanceof Set`. Effect's predicate is the canonical check.",
+      preferEffectPredicateIsSymbol:
+        'Use `Predicate.isSymbol(value)` instead of `typeof value === "symbol"`. Lodash has no equivalent — Effect\'s predicate is the canonical check.'
     },
     schema: [],
     type: "problem"

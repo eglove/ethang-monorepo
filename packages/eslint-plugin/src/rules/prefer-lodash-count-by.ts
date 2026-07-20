@@ -3,6 +3,7 @@ import {
   ESLintUtils,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import {
   isCallExpression,
@@ -159,7 +160,7 @@ const extractCountByKey = (
   }
   const member = expression.left;
   const key = extractKeyFromMember(member, itemName);
-  if (!key) {
+  if (isNil(key)) {
     return null;
   }
   return validateCountByRightSide(
@@ -198,7 +199,7 @@ const validateCountByRightSide = (
   }
   const logLeft = logical.left;
   const logKey = extractKeyFromMember(logLeft, itemName);
-  if (!logKey || logKey !== key) {
+  if (logKey !== key || isNil(logKey)) {
     return null;
   }
   return key;
@@ -262,7 +263,7 @@ export const detectCountByPattern = (node: TSESTree.Node) => {
     return null;
   }
   const arrayInfo = validateReduceCallStructure(node);
-  if (null === arrayInfo) {
+  if (isNil(arrayInfo)) {
     return null;
   }
   const [firstArgument] = node.arguments;
@@ -270,7 +271,7 @@ export const detectCountByPattern = (node: TSESTree.Node) => {
     return null;
   }
   const callbackInfo = validateCallbackStructure(firstArgument);
-  if (null === callbackInfo) {
+  if (isNil(callbackInfo)) {
     return null;
   }
   const firstStatement = validateBlockStructure(
@@ -285,7 +286,7 @@ export const detectCountByPattern = (node: TSESTree.Node) => {
     callbackInfo.accumulatorName,
     callbackInfo.itemName
   );
-  if (!key) {
+  if (isNil(key)) {
     return null;
   }
   return { arr: arrayInfo.arr, key };
