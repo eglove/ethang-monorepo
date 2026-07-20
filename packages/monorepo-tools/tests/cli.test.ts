@@ -525,14 +525,9 @@ describe("stdin CLI adapters", () => {
   it("writes the inspection envelope", async () => {
     await inspectAfterTool(chunks("not json"));
 
+    // Hermes post_tool_call hooks ignore return values, so we expect empty JSON
     expect(process.stdout.write).toHaveBeenCalledWith(
-      `${JSON.stringify({
-        hookSpecificOutput: {
-          additionalContext: "",
-          hookEventName: "PostToolUse",
-          resultsFile: null
-        }
-      })}\n`
+      '{}\n'
     );
   });
 });
