@@ -46,6 +46,36 @@ workspaces, frameworks, or scripts are current.
 
 ---
 
+## Hermes Hooks (Repo-Local)
+
+This repo uses a Hermes shell hook for post-edit inspections:
+
+- **Hook event:** `post_tool_call` (fires after patch/write_file tools)
+- **Matcher:** `^(patch|write_file)$`
+- **Script:** `.hermes/agent-hooks/post-tool-inspect.sh` (repo-local)
+- **Behavior:** Runs ESLint --fix and WebStorm MCP inspections after file edits
+- **Scope:** Only activates when cwd is inside this repo (checked in script)
+- **Config:** `~/.hermes/config.yaml` (user-level, references repo-local script)
+
+### Setup
+
+1. Ensure `~/.hermes/config.yaml` has the hook configured:
+   ```yaml
+   hooks:
+     post_tool_call:
+       - matcher: "^(patch|write_file)$"
+         command: "sh /c/Users/glove/projects/ethang-monorepo/.hermes/agent-hooks/post-tool-inspect.sh"
+         timeout: 15
+   ```
+
+2. Verify with `hermes hooks list`
+
+3. To modify hook behavior, edit:
+   - `.hermes/agent-hooks/post-tool-inspect.sh` (shell wrapper)
+   - `packages/monorepo-tools/src/cli/post-tool-inspect.cli.ts` (inspection logic)
+
+---
+
 ## CRITICAL: `.agents/` is a Generated Artifact
 
 **Never edit files in `.agents/` directly.** The `.agents/` directory (which contains workspace rules, commands, skills,
