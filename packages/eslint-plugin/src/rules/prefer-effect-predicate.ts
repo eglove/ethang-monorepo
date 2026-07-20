@@ -15,8 +15,16 @@ const createRule = ESLintUtils.RuleCreator((name) => {
 // Object checks fall to `_.isObject` via the umbrella `prefer-lodash`
 // rule. Only the two native-`typeof` predicates lodash doesn't expose
 // remain: `bigint` and `symbol`.
+// Wave 2 (consolidated #25-29): `instanceof` predicates for Date, Error,
+// Function, Map, Set — Effect Predicate provides safer alternatives.
 type MessageIds =
-  "preferEffectPredicateIsBigInt" | "preferEffectPredicateIsSymbol";
+  | "preferEffectPredicateIsBigInt"
+  | "preferEffectPredicateIsSymbol"
+  | "preferEffectPredicateIsDate"
+  | "preferEffectPredicateIsError"
+  | "preferEffectPredicateIsFunction"
+  | "preferEffectPredicateIsMap"
+  | "preferEffectPredicateIsSet";
 
 type Options = [];
 
@@ -82,7 +90,43 @@ export const resolveTypeofPredicate = (node: TSESTree.BinaryExpression) => {
 export const detectPredicateRecommendation = (
   node: TSESTree.BinaryExpression
 ) => {
-  return resolveTypeofPredicate(node);
+  const typeofResult = resolveTypeofPredicate(node);
+  if (typeofResult) {
+    return typeofResult;
+  }
+  return detectInstanceofPredicate(node);
+};
+
+// `x instanceof <Name>` → `Predicate.is<Name>(x)` for the set of
+// `instanceof` targets Effect ships a predicate for. Date, Error,
+// Function, Map, Set are the targets in that set.
+const INSTANCEOF_MESSAGE_IDS = {
+  Date: "preferEffectPredicateIsDate",
+  Error: "preferEffectPredicateIsError",
+  Function: "preferEffectPredicateIsFunction",
+  Map: "preferEffectPredicateIsMap",
+  Set: "preferEffectPredicateIsSet"
+} as const satisfies Record<string, MessageIds>;
+
+export const detectInstanceofPredicate = (
+  node: TSESTree.Node
+): { messageId: MessageIds; node: TSESTree.BinaryExpression } | null => {
+  if (AST_NODE_TYPES.BinaryExpression !== node.type) {
+    return null;
+  }
+  const binary = node as TSESTree.BinaryExpression;
+  if ("instanceof" !== binary.operator) {
+    return null;
+  }
+  const right = binary.right;
+  if (AST_NODE_TYPES.Identifier !== right.type) {
+    return null;
+  }
+  const name = right.name;
+  if (!Object.hasOwn(INSTANCEOF_MESSAGE_IDS, name)) {
+    return null;
+  }
+  return { messageId: INSTANCEOF_MESSAGE_IDS[name], node: binary };
 };
 
 export const preferEffectPredicateRule = createRule<Options, MessageIds>({
@@ -106,13 +150,23 @@ export const preferEffectPredicateRule = createRule<Options, MessageIds>({
   meta: {
     docs: {
       description:
-        "Prefer `Effect.Predicate.isBigInt` / `Effect.Predicate.isSymbol` over native `typeof` checks. Lodash has no equivalent for these two predicates."
+        "Prefer Effect Predicate checks over native `typeof` and `instanceof` checks. Lodash has no equivalent for these predicates."
     },
     messages: {
       preferEffectPredicateIsBigInt:
         'Use `Predicate.isBigInt(value)` instead of `typeof value === "bigint"`. Lodash has no equivalent — Effect\'s predicate is the canonical check.',
       preferEffectPredicateIsSymbol:
-        'Use `Predicate.isSymbol(value)` instead of `typeof value === "symbol"`. Lodash has no equivalent — Effect\'s predicate is the canonical check.'
+        'Use `Predicate.isSymbol(value)` instead of `typeof value === "symbol"`. Lodash has no equivalent — Effect\'s predicate is the canonical check.',
+      preferEffectPredicateIsDate:
+        'Use `Predicate.isDate(value)` instead of `value instanceof Date`. Effect\'s predicate is the canonical check.',
+      preferEffectPredicateIsError:
+        'Use `Predicate.isError(value)` instead of `value instanceof Error`. Effect\'s predicate is the canonical check.',
+      preferEffectPredicateIsFunction:
+        'Use `Predicate.isFunction(value)` instead of `value instanceof Function`. Effect\'s predicate is the canonical check.',
+      preferEffectPredicateIsMap:
+        'Use `Predicate.isMap(value)` instead of `value instanceof Map`. Effect\'s predicate is the canonical check.',
+      preferEffectPredicateIsSet:
+        'Use `Predicate.isSet(value)` instead of `value instanceof Set`. Effect\'s predicate is the canonical check.'
     },
     schema: [],
     type: "problem"
