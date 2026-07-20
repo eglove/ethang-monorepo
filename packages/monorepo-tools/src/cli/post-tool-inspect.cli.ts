@@ -5,31 +5,63 @@ transform_tool_result hook: read Hermes JSON from stdin, apply ESLint --fix,
 call WebStorm MCP get_file_problems, emit a JSON envelope on stdout.
 
 stdin (transform_tool_result payload from Hermes):
-  {
-    "hook_event_name": "transform_tool_result",
-    "tool_name": "patch" | "write_file",
-    "tool_input": {"path": "rel/path.ts", ...},
-    "cwd": "/abs/path/to/repo",
-    "extra": {"result": "<original tool return string>", ...}
-  }
+  Built-in tools (patch, write_file):
+    tool_name: "patch" | "write_file"
+    tool_input: {"path": "rel/path.ts", ...}
+    cwd: "/abs/path/to/repo"
+
+  WebStorm MCP tools (create_new_file, rename_refactoring, reformat_file):
+    tool_name: "mcp__webstorm__*"
+    tool_input: {"pathInProject": "rel/path.ts", "projectPath": "/abs/path", ...}
+    cwd: "/abs/path/to/repo"
+
+  extra: {"result": "<original tool return string>", ...}
 
 stdout:
   {"result": "<original>\n\n<diagnostics markdown>"}   when issues are found
   {}                                                   when clean (pass through)
 */
 
-import { Effect } from "effect";
+import { Effect, Either, Schema } from "effect";
+import constant from "lodash/constant.js";
+import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
 import process from "node:process";
 
 import { inspectAfterTool } from "../application/inspect-after-tool.ts";
 
-export type HermesTransformPayload = {
-  cwd?: string;
-  extra?: { result?: string };
-  tool_input?: { path?: string };
+const ToolInputSchema = Schema.Struct({
+  path: Schema.optional(Schema.String),
+  pathInProject: Schema.optional(Schema.String)
+});
+const ExtraSchema = Schema.Struct({ result: Schema.optional(Schema.String) });
+
+const PayloadStructSchema = Schema.Struct({
+  cwd: Schema.optional(Schema.String),
+  extra: Schema.optional(ExtraSchema),
+  tool_input: Schema.optional(ToolInputSchema)
+});
+
+const PayloadJsonSchema = Schema.parseJson(PayloadStructSchema);
+const decodePayloadRaw = Schema.decodeUnknownEither(PayloadJsonSchema);
+
+export type HermesTransformPayload = Schema.Schema.Type<
+  typeof PayloadStructSchema
+>;
+
+const EMPTY_JSON = "{}\n";
+const SEPARATOR = "\n\n";
+
+const tryDecodePayload = (raw: string) => {
+  const decoded = decodePayloadRaw(raw);
+  if (Either.isRight(decoded)) {
+    return decoded.right;
+  }
+  return null;
 };
 
-export const readStdinText = async (stdin: AsyncIterable<unknown>) => {
+const collectChunks = async (stdin: AsyncIterable<unknown>) => {
   const chunks: string[] = [];
   for await (const chunk of stdin) {
     chunks.push(String(chunk));
@@ -37,60 +69,66 @@ export const readStdinText = async (stdin: AsyncIterable<unknown>) => {
   return chunks.join("");
 };
 
-const SEPARATOR = "\n\n";
+export const readStdinText = collectChunks;
 
 export const buildTransformedResult = (
   originalResult: string,
   diagnostics: string
-): string => {
-  if (!diagnostics) {
+) => {
+  if (isEmpty(diagnostics)) {
     return originalResult;
   }
   return `${originalResult}${SEPARATOR}${diagnostics}`;
 };
 
-const parsePayload = (raw: string): HermesTransformPayload | null => {
-  try {
-    return JSON.parse(raw) as HermesTransformPayload;
-  } catch {
-    return null;
-  }
+const writeEmpty = () => {
+  process.stdout.write(EMPTY_JSON);
 };
 
-const extractPathAndCwd = (payload: HermesTransformPayload) => {
-  const filePath = payload.tool_input?.path;
-  const cwd = payload.cwd;
-  return { cwd, filePath };
+const writeResult = (combined: string) => {
+  process.stdout.write(`${JSON.stringify({ result: combined })}\n`);
+};
+
+export const extractFields = (parsed: HermesTransformPayload) => {
+  const toolPath =
+    parsed.tool_input?.path ?? parsed.tool_input?.pathInProject ?? null;
+  return {
+    cwd: parsed.cwd ?? null,
+    filePath: toolPath,
+    originalResult: parsed.extra?.result ?? ""
+  };
+};
+
+const isBlankString = (value: null | string) => {
+  return !isString(value) || isEmpty(value);
 };
 
 export const main = async (stdin: AsyncIterable<unknown>) => {
   const stdinPayload = await readStdinText(stdin);
-  const parsed = parsePayload(stdinPayload);
+  const parsed = tryDecodePayload(stdinPayload);
 
-  if (!parsed) {
-    process.stdout.write("{}\n");
+  if (isNil(parsed)) {
+    writeEmpty();
     return;
   }
 
-  const { cwd, filePath } = extractPathAndCwd(parsed);
-  const originalResult = parsed.extra?.result ?? "";
+  const { cwd, filePath, originalResult } = extractFields(parsed);
 
-  if (!filePath || !cwd) {
-    process.stdout.write("{}\n");
+  if (isBlankString(filePath) || isBlankString(cwd)) {
+    writeEmpty();
     return;
   }
 
   const diagnostics = await Effect.runPromise(
-    inspectAfterTool({ filePath, cwd })
-  ).catch((): string => "");
+    inspectAfterTool({ cwd, filePath })
+  ).catch(constant(""));
 
-  if (!diagnostics) {
-    process.stdout.write("{}\n");
+  if (isEmpty(diagnostics)) {
+    writeEmpty();
     return;
   }
 
-  const combined = buildTransformedResult(originalResult, diagnostics);
-  process.stdout.write(`${JSON.stringify({ result: combined })}\n`);
+  writeResult(buildTransformedResult(originalResult, diagnostics));
 };
 
 /* v8 ignore next 3 -- import.meta.main is true only when Bun launches this CLI. */

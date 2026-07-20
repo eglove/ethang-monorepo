@@ -50,13 +50,14 @@ const EMPTY_DIAGNOSTICS = "";
 export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
   options: InspectAfterToolOptions
 ) {
+  /* v8 ignore next 1 -- default dependencies invoke real IO (ESLint, WebStorm MCP); tests always inject mocks */
   const dependencies = options.dependencies ?? defaultDependencies;
 
   const repoRoot = options.cwd;
   const normalizedPath = options.filePath.startsWith(repoRoot)
     ? options.filePath
     : `${repoRoot}/${options.filePath}`;
-  const relFilePath = options.filePath.startsWith(repoRoot)
+  const relativeFilePath = options.filePath.startsWith(repoRoot)
     ? options.filePath.slice(repoRoot.length + 1)
     : options.filePath;
 
@@ -69,7 +70,7 @@ export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
     );
 
   const problems = yield* dependencies
-    .loadFileProblems({ filePath: relFilePath, projectPath: repoRoot })
+    .loadFileProblems({ filePath: relativeFilePath, projectPath: repoRoot })
     .pipe(
       Effect.catchAllCause(() => {
         return Effect.succeed(null);
@@ -80,7 +81,7 @@ export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
     return EMPTY_DIAGNOSTICS;
   }
   return (
-    formatInspectionsAsMarkdown(relFilePath, problems.errors) ??
+    formatInspectionsAsMarkdown(relativeFilePath, problems.errors) ??
     EMPTY_DIAGNOSTICS
   );
 });
