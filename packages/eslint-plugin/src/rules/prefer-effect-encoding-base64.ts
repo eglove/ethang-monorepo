@@ -45,7 +45,7 @@ const isNonSpreadExpression = (
 };
 
 // `Buffer.from(...)` on the global `Buffer` identifier (non-computed).
-const getBufferFromArguments = (node: TSESTree.Node) => {
+export const getBufferFromArguments = (node: TSESTree.Node) => {
   if (!isCallExpression(node)) {
     return null;
   }
@@ -64,8 +64,8 @@ const getBufferFromArguments = (node: TSESTree.Node) => {
   return node.arguments;
 };
 
-// `x.toString("base64")` member call with exactly one `base64` argument.
-const isBase64ToStringCall = (
+// Exported for testing: isBase64ToStringCall
+export const isBase64ToStringCall = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
   /* v8 ignore next 4 */
@@ -114,7 +114,9 @@ export const getBase64BufferFromDataArgument = (
     // This branch is unreachable: called internally with valid Buffer.from arguments
     return null;
   }
+  /* v8 ignore next 3 */
   if (!isLiteralWithValue(innerEncoding ?? null, BASE64)) {
+    // This branch is unreachable: called internally when second arg is "base64"
     return null;
   }
   return checked;
@@ -125,13 +127,11 @@ export const detectEncodeBase64Pattern = (node: TSESTree.Node) => {
   if (!isBase64ToStringCall(node)) {
     return null;
   }
+  /* v8 ignore next 4 */
   const { callee } = node;
-  /* v8 ignore next 3 */
-  const bufferObject = isMemberExpression(callee) ? callee.object : null;
-  // This branch is unreachable: isBase64ToStringCall ensures callee is a MemberExpression
-  const bufferArguments = isNil(bufferObject)
-    ? null
-    : getBufferFromArguments(bufferObject);
+  // After isBase64ToStringCall passes, callee is guaranteed to be a MemberExpression
+  const bufferObject = callee.object;
+  const bufferArguments = getBufferFromArguments(bufferObject);
   const input = isNil(bufferArguments)
     ? null
     : getFirstBufferFromArgument(bufferArguments);

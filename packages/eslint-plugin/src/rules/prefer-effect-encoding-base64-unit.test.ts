@@ -158,5 +158,20 @@ describe("prefer-effect-encoding-base64", () => {
       // This hits line 110: isNonSpreadExpression returns false
       expect(getBase64BufferFromDataArgument(args)).toBeNull();
     });
+
+    it("returns null when innerEncoding is not 'base64' (line 115)", () => {
+      // Create a mock argument list with a non-base64 encoding
+      const input = {
+        type: AST_NODE_TYPES.Identifier,
+        name: "s"
+      } as unknown as TSESTree.Identifier;
+      const innerEncoding = {
+        type: AST_NODE_TYPES.Literal,
+        value: "utf8"
+      } as unknown as TSESTree.Literal;
+      const args = [input, innerEncoding] as unknown as TSESTree.CallExpressionArgument[];
+      // This hits line 115: innerEncoding is not base64
+      expect(getBase64BufferFromDataArgument(args)).toBeNull();
+    });
   });
 });
