@@ -11,6 +11,7 @@ import { noExplicitReturnTypeRule } from "./rules/no-explicit-return-type.ts";
 import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
+import { noDoubleUnaryRule } from "./rules/no-double-unary.ts";
 import { noVoidReturnRule } from "./rules/no-void-return.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
@@ -44,6 +45,7 @@ export const rules = {
   "no-lodash-misuse": noLodashMisuseRule,
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
+  "no-double-unary": noDoubleUnaryRule,
   "no-void-return": noVoidReturnRule,
   "path-style": pathStyleRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
@@ -87,6 +89,7 @@ export { noExplicitReturnTypeRule } from "./rules/no-explicit-return-type.ts";
 export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
+export { noDoubleUnaryRule } from "./rules/no-double-unary.ts";
 export { noVoidReturnRule } from "./rules/no-void-return.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
