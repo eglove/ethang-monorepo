@@ -36,7 +36,8 @@ export type InspectAfterToolDependencies = {
 
 export type InspectAfterToolOptions = {
   readonly dependencies?: InspectAfterToolDependencies;
-  readonly stdinPayload: string;
+  readonly filePath: string;
+  readonly cwd: string;
 };
 
 export type InspectAfterToolResult = {
@@ -67,27 +68,18 @@ export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
   options: InspectAfterToolOptions
 ) {
   const dependencies = options.dependencies ?? defaultDependencies;
-  const file = yield* Effect.try({
-    catch: () => {
-      return new Error("Unable to parse PostToolUse payload");
-    },
-    try: () => {
-      return parsePostToolUseFile(
-        options.stdinPayload,
-        dependencies.fallbackCwd
-      );
-    }
-  }).pipe(
-    Effect.catchAll(() => {
-      return Effect.succeed(null);
-    })
-  );
-  if (isNil(file)) {
-    return emptyResult();
-  }
+
+  // Build file info directly from filePath and cwd
+  const repoRoot = options.cwd;
+  const normalizedPath = options.filePath.startsWith(repoRoot)
+    ? options.filePath
+    : `${repoRoot}/${options.filePath}`;
+  const relFilePath = options.filePath.startsWith(repoRoot)
+    ? options.filePath.slice(repoRoot.length + 1)
+    : options.filePath;
 
   yield* dependencies
-    .applyEslintFix({ cwd: file.repoRoot, files: [file.absFilePath] })
+    .applyEslintFix({ cwd: repoRoot, files: [normalizedPath] })
     .pipe(
       Effect.catchAllCause(() => {
         return Effect.void;
@@ -95,8 +87,8 @@ export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
     );
   const problems = yield* dependencies
     .loadFileProblems({
-      filePath: file.relFilePath,
-      projectPath: file.repoRoot
+      filePath: relFilePath,
+      projectPath: repoRoot
     })
     .pipe(
       Effect.catchAllCause(() => {
@@ -105,7 +97,7 @@ export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
     );
   const additionalContext = isNil(problems)
     ? ""
-    : (formatInspectionsAsMarkdown(file.relFilePath, problems.errors) ?? "");
+    : (formatInspectionsAsMarkdown(relFilePath, problems.errors) ?? "");
 
   return {
     hookSpecificOutput: {

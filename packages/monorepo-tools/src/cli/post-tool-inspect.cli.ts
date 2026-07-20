@@ -26,27 +26,27 @@ export const readStdinText = async (stdin: AsyncIterable<unknown>) => {
 export const main = async (stdin: AsyncIterable<unknown>) => {
   const stdinPayload = await readStdinText(stdin);
 
-  // Try to parse as Hermes hook payload first
-  let filePath: string | null = null;
+  // Parse Hermes hook payload
+  let payload: any;
   try {
-    const hermesPayload = JSON.parse(stdinPayload);
-    // Hermes post_tool_call payload has tool_input.path
-    filePath = hermesPayload?.tool_input?.path ?? null;
+    payload = JSON.parse(stdinPayload);
   } catch {
-    // Not JSON or not Hermes format, will fall back to Copilot parsing
-  }
-
-  // If not Hermes format, try Copilot format (original behavior)
-  if (!filePath) {
-    const result = await Effect.runPromise(inspectAfterTool({ stdinPayload }));
-    process.stdout.write(`${JSON.stringify(result)}\n`);
+    process.stdout.write('{}\n');
     return;
   }
 
-  // Hermes format: just run ESLint fix as side effect
-  // post_tool_call hooks in Hermes have ignored return values
+  // Extract file path and cwd from Hermes post_tool_call payload
+  const filePath = payload?.tool_input?.path;
+  const cwd = payload?.cwd;
+
+  if (!filePath || !cwd) {
+    process.stdout.write('{}\n');
+    return;
+  }
+
+  // Run ESLint fix as side effect (post_tool_call hooks ignore return value)
   await Effect.runPromise(
-    inspectAfterTool({ stdinPayload: JSON.stringify({ file: filePath }) })
+    inspectAfterTool({ filePath, cwd })
   ).catch(() => {});
 
   // Return empty JSON (Hermes post_tool_call ignores return value)
