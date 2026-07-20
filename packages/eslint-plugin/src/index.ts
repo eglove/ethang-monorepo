@@ -17,6 +17,7 @@ import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 import { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
+import { preferEffectPredicateIsIterableRule } from "./rules/prefer-effect-predicate-is-iterable.ts";
 import { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
 import { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts";
 import { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
@@ -52,6 +53,7 @@ export const rules = {
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-log": preferEffectLogRule,
   "prefer-effect-predicate": preferEffectPredicateRule,
+  "prefer-effect-predicate-is-iterable": preferEffectPredicateIsIterableRule,
   "prefer-lodash": preferLodashRule,
   "prefer-lodash-clamp": preferLodashClampRule,
   "prefer-lodash-difference": preferLodashDifferenceRule,
@@ -97,6 +99,7 @@ export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 export { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
+export { preferEffectPredicateIsIterableRule } from "./rules/prefer-effect-predicate-is-iterable.ts";
 export { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
 export { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts";
 export { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
