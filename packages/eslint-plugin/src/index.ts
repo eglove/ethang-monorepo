@@ -11,6 +11,7 @@ import { noExplicitReturnTypeRule } from "./rules/no-explicit-return-type.ts";
 import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
+import { noVoidReturnRule } from "./rules/no-void-return.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
@@ -43,6 +44,7 @@ export const rules = {
   "no-lodash-misuse": noLodashMisuseRule,
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
+  "no-void-return": noVoidReturnRule,
   "path-style": pathStyleRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-log": preferEffectLogRule,
@@ -85,6 +87,7 @@ export { noExplicitReturnTypeRule } from "./rules/no-explicit-return-type.ts";
 export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
+export { noVoidReturnRule } from "./rules/no-void-return.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
