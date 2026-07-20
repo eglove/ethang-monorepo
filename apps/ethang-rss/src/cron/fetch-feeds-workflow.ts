@@ -5,13 +5,11 @@ import {
 } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { DateTime, Effect } from "effect";
+import { DateTime, Effect, Schema } from "effect";
 import { XMLParser } from "fast-xml-parser";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
-import isArray from "lodash/isArray.js";
 import isNil from "lodash/isNil.js";
-import isObject from "lodash/isObject.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 
@@ -26,29 +24,97 @@ const parser = new XMLParser({
 
 const YOUTUBE_SHORTS_REGEX = /https?:\/\/(?:www\.)?youtube\.com\/shorts\//u;
 
-type FeedItem = {
-  content?: { "#text"?: string } | string;
-  description?: string;
-  guid?: { "#text"?: string } | string;
-  id?: string;
-  link?:
-    { "@_href"?: string; "@_rel"?: string }[] | { "@_href"?: string } | string;
-  pubDate?: string;
-  published?: string;
-  summary?: string;
-  title?: { "#text"?: string } | string;
-  updated?: string;
+const TextObjectSchema = Schema.Struct({
+  "#text": Schema.optional(Schema.String)
+});
+const TextValueSchema = Schema.Union(Schema.String, TextObjectSchema);
+const LinkObjectSchema = Schema.Struct({
+  "@_href": Schema.optional(Schema.String),
+  "@_rel": Schema.optional(Schema.String)
+});
+const LinkEntrySchema = Schema.Union(Schema.String, LinkObjectSchema);
+const LinkEntriesSchema = Schema.Array(LinkEntrySchema);
+const LinkValueSchema = Schema.Union(
+  Schema.String,
+  LinkObjectSchema,
+  LinkEntriesSchema
+);
+const FeedItemSchema = Schema.Struct({
+  content: Schema.optional(TextValueSchema),
+  description: Schema.optional(Schema.String),
+  guid: Schema.optional(TextValueSchema),
+  id: Schema.optional(Schema.String),
+  link: Schema.optional(LinkValueSchema),
+  pubDate: Schema.optional(Schema.String),
+  published: Schema.optional(Schema.String),
+  summary: Schema.optional(Schema.String),
+  title: Schema.optional(TextValueSchema),
+  updated: Schema.optional(Schema.String)
+});
+const FeedItemArraySchema = Schema.Array(FeedItemSchema);
+const FeedItemsSchema = Schema.Union(FeedItemSchema, FeedItemArraySchema).pipe(
+  Schema.transform(Schema.Array(FeedItemSchema), {
+    decode: (items) => {
+      return Schema.is(FeedItemArraySchema)(items) ? items : [items];
+    },
+    // v8 ignore next -- encode is not used; feeds are decoded from XML only
+    encode: (items) => {
+      return items;
+    },
+    strict: true
+  })
+);
+const OptionalFeedItemsSchema = Schema.optional(FeedItemsSchema);
+const FeedSchema = Schema.Struct({ entry: OptionalFeedItemsSchema });
+const ChannelSchema = Schema.Struct({ item: OptionalFeedItemsSchema });
+const OptionalChannelSchema = Schema.optional(ChannelSchema);
+const RssSchema = Schema.Struct({ channel: OptionalChannelSchema });
+const FeedResultSchema = Schema.Struct({
+  feed: Schema.optional(FeedSchema),
+  rss: Schema.optional(RssSchema)
+});
+
+type FeedItem = Schema.Schema.Type<typeof FeedItemSchema>;
+
+const isLinkEntryArray = Schema.is(LinkEntriesSchema);
+const isLinkObject = Schema.is(LinkObjectSchema);
+const isTextObject = Schema.is(TextObjectSchema);
+
+const linkFromEntries = (
+  entries: Schema.Schema.Type<typeof LinkEntriesSchema>
+) => {
+  const alternate =
+    find(entries, (entry) => {
+      return isLinkObject(entry) && "alternate" === entry["@_rel"];
+    }) ?? entries[0];
+
+  if (isNil(alternate)) {
+    return "";
+  }
+
+  if (isString(alternate)) {
+    return alternate;
+  }
+
+  return alternate["@_href"] ?? "";
 };
 
-type FeedResult = {
-  feed?: {
-    entry?: FeedItem | FeedItem[];
-  };
-  rss?: {
-    channel?: {
-      item?: FeedItem | FeedItem[];
-    };
-  };
+const parseFeedItems = (xml: string) => {
+  return Effect.runSync(
+    Effect.try({
+      catch: (error: unknown) => {
+        // v8 ignore next -- XMLParser throws Error instances; normalization is defensive
+        return Error.isError(error) ? error : new Error(String(error));
+      },
+      try: () => {
+        return Schema.decodeUnknownSync(FeedResultSchema)(parser.parse(xml));
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(null);
+      })
+    )
+  );
 };
 
 export const normalizeLink = (item: FeedItem) => {
@@ -56,30 +122,11 @@ export const normalizeLink = (item: FeedItem) => {
     return item.link;
   }
 
-  if (isObject(item.link) && !isNil(item.link)) {
-    if (isArray(item.link)) {
-      const alternate =
-        find(item.link, (l) => {
-          return "alternate" === l["@_rel"];
-        }) ?? item.link[0];
-
-      if (isNil(alternate)) {
-        return "";
-      }
-
-      const href = alternate["@_href"];
-      const fallback = isString(alternate) ? alternate : "";
-      return href ?? fallback;
-    }
-
-    return (
-      (item.link as Record<string, string>)["@_href"] ??
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      (item.link as unknown as string)
-    );
+  if (isLinkEntryArray(item.link)) {
+    return linkFromEntries(item.link);
   }
 
-  return "";
+  return isLinkObject(item.link) ? (item.link["@_href"] ?? "") : "";
 };
 
 export const normalizeGuid = (item: FeedItem, link: string) => {
@@ -87,8 +134,8 @@ export const normalizeGuid = (item: FeedItem, link: string) => {
     return item.guid;
   }
 
-  if (isObject(item.guid) && !isNil(item.guid)) {
-    return (item.guid as Record<string, string>)["#text"] ?? link;
+  if (isTextObject(item.guid)) {
+    return item.guid["#text"] ?? link;
   }
 
   return item.id ?? link;
@@ -103,8 +150,8 @@ export const normalizeContent = (item: FeedItem) => {
     return item.content;
   }
 
-  if (isObject(item.content) && !isNil(item.content)) {
-    return (item.content as Record<string, string>)["#text"] ?? "";
+  if (isTextObject(item.content)) {
+    return item.content["#text"] ?? "";
   }
 
   return item.summary ?? "";
@@ -115,8 +162,8 @@ export const normalizeTitle = (item: FeedItem) => {
     return item.title;
   }
 
-  if (isObject(item.title) && !isNil(item.title)) {
-    return (item.title as Record<string, string>)["#text"] ?? "No Title";
+  if (isTextObject(item.title)) {
+    return item.title["#text"] ?? "No Title";
   }
 
   return "No Title";
@@ -145,12 +192,12 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               const response = await fetch(feed.xmlAddress);
               const xml = await response.text();
               const parsedMeta = parseFeedMetadata(xml);
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion,@ethang/validate-unknown -- `parser.parse` returns `any` from `fast-xml-parser`; the downstream shape is already declared via the `FeedResult` type alias and consumed through manual narrowing in the normalizer helpers
-              const parseResult = parser.parse(xml) as unknown as FeedResult;
+              const parseResult = parseFeedItems(xml);
 
-              const rawItems =
-                parseResult.rss?.channel?.item ?? parseResult.feed?.entry ?? [];
-              const items = isArray(rawItems) ? rawItems : [rawItems];
+              const items =
+                parseResult?.rss?.channel?.item ??
+                parseResult?.feed?.entry ??
+                [];
 
               const normalizedItems = map(items, (item) => {
                 const link = normalizeLink(item);

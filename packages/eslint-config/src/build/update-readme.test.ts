@@ -11,7 +11,6 @@ describe("update-readme", () => {
 
     expect(writeFileSync).toHaveBeenCalledTimes(1);
 
-    // eslint-disable-next-line @typescript-eslint/prefer-destructuring
     const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
       .mock.calls[0];
     const path = call?.[0];

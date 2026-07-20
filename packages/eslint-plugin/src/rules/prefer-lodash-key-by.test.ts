@@ -26,6 +26,10 @@ ruleTester.run("prefer-lodash-key-by", preferLodashKeyByRule as never, {
     }
   ],
   valid: [
+    // Block with only 1 statement (no return) - covers line 246-249
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = item; }, {});"
+    },
     {
       code: "const x = arr.reduce((acc, item) => { acc.push(item); return acc; }, []);"
     },

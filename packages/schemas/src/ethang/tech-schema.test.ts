@@ -22,6 +22,6 @@ describe("tech-schema.ts validation", () => {
 
     expect(() => {
       return Schema.decodeUnknownSync(TechSchema)(payload);
-    }).toThrow();
+    }).toThrow(/missing required fields|name/iu);
   });
 });

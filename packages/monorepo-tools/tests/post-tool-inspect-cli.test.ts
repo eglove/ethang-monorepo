@@ -27,6 +27,7 @@ const createMockStdin = (content: string) => {
 
 const captureStdout = () => {
   const writes: string[] = [];
+  // eslint-disable-next-line vitest/unbound-method
   const originalWrite = process.stdout.write;
 
   process.stdout.write = (chunk: string) => {

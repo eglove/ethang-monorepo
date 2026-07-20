@@ -103,7 +103,6 @@ export const outputConfigs: OutputConfig[] = [
       "@typescript-eslint/require-await": "off",
       "@typescript-eslint/strict-void-return": "off",
       "@typescript-eslint/unbound-method": "off",
-      "no-restricted-syntax": "off",
       "no-undefined": "off",
       "sonar/function-name": "off",
       "sonar/variable-name": "off",

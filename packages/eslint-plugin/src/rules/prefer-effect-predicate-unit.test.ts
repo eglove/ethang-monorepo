@@ -1,3 +1,4 @@
+import { AST_NODE_TYPES } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -9,8 +10,8 @@ import { findFirstNode, parseProgram } from "./.fixture.ts";
 import {
   detectInstanceofPredicate,
   detectPredicateRecommendation,
-  getTypeofLiteral,
   getStringLiteral,
+  getTypeofLiteral,
   isTypeofExpression,
   resolveTypeofPredicate
 } from "./prefer-effect-predicate.ts";
@@ -50,7 +51,9 @@ describe("prefer-effect-predicate", () => {
       [`"key"`, "key"]
     ])("returns string value for string literal '%s'", (code, expected) => {
       const program = parseProgram(`${code};`);
-      const literal = findFirstNode(program, (n) => n.type === "Literal");
+      const literal = findFirstNode(program, (n) => {
+        return AST_NODE_TYPES.Literal === n.type;
+      });
       expect(literal).not.toBeNull();
       expect(literal && getStringLiteral(literal)).toBe(expected);
     });
@@ -89,16 +92,14 @@ describe("prefer-effect-predicate", () => {
       expect(binary && getTypeofLiteral(binary)).toBe(expected);
     });
 
-    it.each([
-      'typeof x == "bigint"',
-      'x === "bigint"',
-      "typeof x",
-      "x === y"
-    ])("returns null for non-matching pattern '%s'", (code) => {
-      const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, isBinaryExpression);
-      expect(binary && getTypeofLiteral(binary)).toBeNull();
-    });
+    it.each(['typeof x == "bigint"', 'x === "bigint"', "typeof x", "x === y"])(
+      "returns null for non-matching pattern '%s'",
+      (code) => {
+        const program = parseProgram(`${code};`);
+        const binary = findFirstNode(program, isBinaryExpression);
+        expect(binary && getTypeofLiteral(binary)).toBeNull();
+      }
+    );
 
     it("returns null when typeof expression value is not a string literal", () => {
       const program = parseProgram("typeof x === foo;");
@@ -110,17 +111,17 @@ describe("prefer-effect-predicate", () => {
   });
 
   describe("resolveTypeofPredicate", () => {
-    it.each([
-      `typeof x === "${BIGINT}"`,
-      `typeof x === "${SYMBOL}"`
-    ])("resolves predicate for '%s'", (code) => {
-      const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, isBinaryExpression);
-      expect(binary).not.toBeNull();
-      const result = binary && resolveTypeofPredicate(binary);
-      expect(result).not.toBeNull();
-      expect(result?.messageId).toBeDefined();
-    });
+    it.each([`typeof x === "${BIGINT}"`, `typeof x === "${SYMBOL}"`])(
+      "resolves predicate for '%s'",
+      (code) => {
+        const program = parseProgram(`${code};`);
+        const binary = findFirstNode(program, isBinaryExpression);
+        expect(binary).not.toBeNull();
+        const result = binary && resolveTypeofPredicate(binary);
+        expect(result).not.toBeNull();
+        expect(result?.messageId).toBeDefined();
+      }
+    );
 
     it.each([
       'typeof x === "string"',
@@ -146,15 +147,15 @@ describe("prefer-effect-predicate", () => {
   });
 
   describe("detectPredicateRecommendation", () => {
-    it.each([
-      `typeof x === "${BIGINT}"`,
-      `typeof x === "${SYMBOL}"`
-    ])("detects typeof predicate for '%s'", (code) => {
-      const program = parseProgram(`${code};`);
-      const binary = findFirstNode(program, isBinaryExpression);
-      expect(binary).not.toBeNull();
-      expect(binary && detectPredicateRecommendation(binary)).not.toBeNull();
-    });
+    it.each([`typeof x === "${BIGINT}"`, `typeof x === "${SYMBOL}"`])(
+      "detects typeof predicate for '%s'",
+      (code) => {
+        const program = parseProgram(`${code};`);
+        const binary = findFirstNode(program, isBinaryExpression);
+        expect(binary).not.toBeNull();
+        expect(binary && detectPredicateRecommendation(binary)).not.toBeNull();
+      }
+    );
 
     it.each([
       'typeof x === "string"',

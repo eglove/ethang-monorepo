@@ -1,4 +1,5 @@
 /* eslint-disable sonar/no-duplicate-string */
+import repeat from "lodash/repeat.js";
 import { describe, expect, it } from "vitest";
 
 import { parseFeedMetadata } from "./parse-feed-metadata.ts";
@@ -256,5 +257,10 @@ describe("parseFeedMetadata", () => {
     const result = parseFeedMetadata(xml);
     expect(result.title).toBe(expectedTitle);
     expect(result.website).toBe(expectedWebsite);
+  });
+
+  it("returns empty metadata when XML parsing fails", () => {
+    const xml = `<root>${repeat("<div>", 150)}${repeat("</div>", 150)}</root>`;
+    expect(parseFeedMetadata(xml)).toEqual({ title: "", website: "" });
   });
 });

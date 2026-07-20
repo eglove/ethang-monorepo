@@ -38,12 +38,6 @@ const isLiteralWithValue = (node: null | TSESTree.Node, value: string) => {
   );
 };
 
-const isNonSpreadExpression = (
-  node: null | TSESTree.Node
-): node is TSESTree.Expression => {
-  return !isNil(node) && AST_NODE_TYPES.SpreadElement !== node.type;
-};
-
 // `Buffer.from(...)` on the global `Buffer` identifier (non-computed).
 export const getBufferFromArguments = (node: TSESTree.Node) => {
   if (!isCallExpression(node)) {
@@ -93,11 +87,10 @@ export const getFirstBufferFromArgument = (
     return null;
   }
   const [argument] = argumentList;
-  /* v8 ignore next 2 */
-  const checked = argument ?? null;
-  // This branch is unreachable: we already checked argumentList.length === 1,
-  // and when there's 1 argument, argument is defined
-  return isNonSpreadExpression(checked) ? checked : null;
+  if (!argument || AST_NODE_TYPES.SpreadElement === argument.type) {
+    return null;
+  }
+  return argument;
 };
 
 // Exported for testing: getBase64BufferFromDataArgument
@@ -108,18 +101,13 @@ export const getBase64BufferFromDataArgument = (
     return null;
   }
   const [input, innerEncoding] = argumentList;
-  const checked = input ?? null;
-  /* v8 ignore next 2 */
-  if (!isNonSpreadExpression(checked)) {
-    // This branch is unreachable: called internally with valid Buffer.from arguments
+  if (!input || AST_NODE_TYPES.SpreadElement === input.type) {
     return null;
   }
-  /* v8 ignore next 3 */
-  if (!isLiteralWithValue(innerEncoding ?? null, BASE64)) {
-    // This branch is unreachable: called internally when second arg is "base64"
+  if (!innerEncoding || !isLiteralWithValue(innerEncoding, BASE64)) {
     return null;
   }
-  return checked;
+  return input;
 };
 
 // `Buffer.from(x).toString("base64")` -> { kind: "encode", arg: x }
@@ -127,9 +115,10 @@ export const detectEncodeBase64Pattern = (node: TSESTree.Node) => {
   if (!isBase64ToStringCall(node)) {
     return null;
   }
-  /* v8 ignore next 4 */
   const { callee } = node;
-  // After isBase64ToStringCall passes, callee is guaranteed to be a MemberExpression
+  if (!isMemberExpression(callee)) {
+    return null;
+  }
   const bufferObject = callee.object;
   const bufferArguments = getBufferFromArguments(bufferObject);
   const input = isNil(bufferArguments)

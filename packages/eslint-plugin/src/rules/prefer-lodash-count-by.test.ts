@@ -26,16 +26,29 @@ ruleTester.run("prefer-lodash-count-by", preferLodashCountByRule as never, {
     }
   ],
   valid: [
+    // Non-countBy reduce (simple assignment)
     {
       code: "const x = arr.reduce((acc, item) => { acc[item.key] = item; return acc; }, {});"
     },
+    // Non-countBy reduce (push pattern - groupBy)
     {
       code: "const x = arr.reduce((acc, item) => { (acc[item.category] ||= []).push(item); return acc; }, {});"
     },
+    // push with array initial value
     {
       code: "const x = arr.reduce((acc, item) => { acc.push(item); return acc; }, []);"
     },
+    // Block with only 1 statement (returns null early at line 268-271)
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = item; }, {});"
+    },
+    // Block with 2 statements but return is wrong variable (uncovers returnsAccumulator false branch)
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = (acc[item.key] || 0) + 1; return wrongVar; }, {});"
+    },
+    // Non-reduce
     { code: "const x = arr.map(item => item * 2);" },
+    // Already using countBy
     { code: "const x = countBy(arr, 'key');" }
   ]
 });

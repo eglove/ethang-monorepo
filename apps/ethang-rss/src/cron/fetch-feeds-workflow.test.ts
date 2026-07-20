@@ -1,4 +1,5 @@
 import noop from "lodash/noop.js";
+import repeat from "lodash/repeat.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MockWorkflowEntrypoint } from "../test-utilities/mock-workflow-entrypoint.ts";
@@ -106,10 +107,10 @@ describe("normalizeLink", () => {
     );
   });
 
-  it("handles object link with missing @_href", () => {
+  it("returns an empty string for a link object with no href", () => {
     const item = { link: { [TYPE_ATTR]: TEXT_HTML } };
     // @ts-expect-error for test
-    expect(normalizeLink(item)).toEqual({ [TYPE_ATTR]: TEXT_HTML });
+    expect(normalizeLink(item)).toBe("");
   });
 
   it("handles empty link array", () => {
@@ -422,8 +423,7 @@ describe("FetchFeedsWorkflow", () => {
       ok: true,
       text: async () => {
         return `
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <notfeed></notfeed>
+        <root>${repeat("<div>", 150)}${repeat("</div>", 150)}</root>
       `;
       }
     } as Response);

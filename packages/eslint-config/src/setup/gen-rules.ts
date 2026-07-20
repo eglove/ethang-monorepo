@@ -2,6 +2,7 @@ import type { Linter, Rule } from "eslint";
 
 import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
+import fromPairs from "lodash/fromPairs.js";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
@@ -84,7 +85,7 @@ export const genRules = (
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  return Object.fromEntries(
+  return fromPairs(
     Object.entries(rules).toSorted(([a], [b]) => {
       return a.localeCompare(b);
     })

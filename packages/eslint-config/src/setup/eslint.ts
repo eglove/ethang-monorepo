@@ -72,18 +72,7 @@ const customRules = [
   },
   {
     name: "no-restricted-syntax",
-    rule: [
-      "error",
-      {
-        message:
-          "Never use 'undefined' explicitly. Use 'null' for intentional absence of a value.",
-        selector: "Identifier[name='undefined']"
-      },
-      {
-        message: "Do not use the 'undefined' type. Use 'null' instead.",
-        selector: "TSUndefinedKeyword"
-      }
-    ]
+    rule: "off"
   },
   {
     name: "no-unsafe-optional-chaining",

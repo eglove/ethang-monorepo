@@ -1,5 +1,5 @@
 import { auth } from "@ethang/intl/en/auth.ts";
-import { Effect } from "effect";
+import { Effect, Predicate } from "effect";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isNumber from "lodash/isNumber.js";
@@ -118,9 +118,8 @@ const cookieStoreMock = () => {
             }
             if (true === value) {
               segments.push(`; ${key}`);
-              // eslint-disable-next-line @ethang/prefer-effect-datetime
-            } else if (value instanceof Date) {
-              // eslint-disable-next-line @ethang/prefer-effect-datetime
+            } else if (Predicate.isDate(value)) {
+              // eslint-disable-next-line @ethang/prefer-effect-datetime -- toUTCString() is the HTTP cookie date format
               segments.push(`; ${key}=${value.toUTCString()}`);
             } else if (isString(value) || isNumber(value)) {
               segments.push(`; ${key}=${String(value)}`);

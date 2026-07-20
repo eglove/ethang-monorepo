@@ -21,16 +21,18 @@ ruleTester.run("prefer-lodash-group-by", preferLodashGroupByRule as never, {
       errors: [{ messageId: "preferLodashGroupBy" }]
     },
     {
-      code: "const x = arr.reduce((acc, item) => { (acc[item.key] ||= []).push(item); return acc; }, {});",
+      code: "const x = arr.reduce((acc, item) => { (acc[item.group] ||= []).push(item); return acc; }, {});",
       errors: [{ messageId: "preferLodashGroupBy" }]
     }
   ],
   valid: [
+    // Non-pattern reduce
     {
       code: "const x = arr.reduce((acc, item) => { acc[item.key] = item; return acc; }, {});"
     },
+    // Block with only 1 statement (no return) - covers line 246-249
     {
-      code: "const x = arr.reduce((acc, item) => { acc[item.key] = (acc[item.key] || 0) + 1; return acc; }, {});"
+      code: "const x = arr.reduce((acc, item) => { (acc[item.category] ||= []).push(item); }, {});"
     },
     {
       code: "const x = arr.reduce((acc, item) => { acc.push(item); return acc; }, []);"

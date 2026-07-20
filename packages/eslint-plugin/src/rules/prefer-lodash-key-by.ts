@@ -29,17 +29,15 @@ const isReduceCallback = (node: TSESTree.Node): node is ReduceCallback => {
   );
 };
 
-const isReduceCall = (call: TSESTree.CallExpression) => {
-  if (!isMemberExpression(call.callee)) {
-    return false;
-  }
-  /* v8 ignore next 3 */
-  if (!isIdentifier(call.callee.property)) {
-    // Unreachable: isMemberExpression ensures property is Identifier when computed=false
-    return false;
-  }
-  return "reduce" === call.callee.property.name;
-};
+function isReduceCall(
+  callee: TSESTree.Node
+): callee is { property: TSESTree.Identifier } & TSESTree.MemberExpression {
+  return (
+    isMemberExpression(callee) &&
+    !callee.computed &&
+    "reduce" === callee.property.name
+  );
+}
 
 const isEmptyObject = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.ObjectExpression !== node.type) {
@@ -48,23 +46,26 @@ const isEmptyObject = (node: TSESTree.Node) => {
   return 0 === node.properties.length;
 };
 
-const hasTwoIdentifierParameters = (callback: ReduceCallback) => {
+function hasTwoIdentifierParameters(callback: ReduceCallback): callback is {
+  params: [TSESTree.Identifier, TSESTree.Identifier];
+} & ReduceCallback {
   if (2 > callback.params.length) {
     return false;
   }
   const [first, second] = callback.params;
+  /* v8 ignore next -- verification: callback.params.length >= 2 guarantees first, second exist */
   if (!first || !second) {
     return false;
   }
   return isIdentifier(first) && isIdentifier(second);
-};
+}
 
 const returnsAccumulator = (
   block: TSESTree.BlockStatement,
   accumulatorName: string
 ) => {
   const last = block.body.at(-1);
-  if (last?.type !== AST_NODE_TYPES.ReturnStatement) {
+  if (AST_NODE_TYPES.ReturnStatement !== last?.type) {
     return false;
   }
   if (!last.argument || !isIdentifier(last.argument)) {
@@ -73,7 +74,10 @@ const returnsAccumulator = (
   return accumulatorName === last.argument.name;
 };
 
-const isMemberAccumulator = (node: TSESTree.Node, accumulatorName: string) => {
+function isMemberAccumulator(
+  node: TSESTree.Node,
+  accumulatorName: string
+): node is TSESTree.MemberExpression {
   if (!isMemberExpression(node)) {
     return false;
   }
@@ -84,7 +88,7 @@ const isMemberAccumulator = (node: TSESTree.Node, accumulatorName: string) => {
     return false;
   }
   return accumulatorName === node.object.name;
-};
+}
 
 const isItemProperty = (node: TSESTree.Node, itemName: string) => {
   if (!isMemberExpression(node)) {
@@ -116,11 +120,11 @@ const extractKeyFromMember = (
   return property.name;
 };
 
-const getKeyByAssignment = (
+function getKeyByAssignment(
   expressionStatement: TSESTree.ExpressionStatement,
   accumulatorName: string,
   itemName: string
-) => {
+) {
   const { expression } = expressionStatement;
   if (AST_NODE_TYPES.AssignmentExpression !== expression.type) {
     return null;
@@ -133,16 +137,9 @@ const getKeyByAssignment = (
   if (!isMemberAccumulator(assign.left, accumulatorName)) {
     return null;
   }
-  /* v8 ignore next 3 */
-  if (!isMemberExpression(assign.left)) {
-    // Unreachable: isMemberAccumulator already confirmed this is a MemberExpression
-    return null;
-  }
   const member = assign.left;
 
-  /* v8 ignore next 2 */
   if (!isIdentifier(assign.right)) {
-    // Unreachable: called internally with valid keyBy assignments
     return null;
   }
   if (itemName !== assign.right.name) {
@@ -150,30 +147,9 @@ const getKeyByAssignment = (
   }
 
   return extractKeyFromMember(member, itemName);
-};
+}
 
-const validateReduceCallStructure = (call: TSESTree.CallExpression) => {
-  if (!isReduceCall(call)) {
-    return null;
-  }
-  /* v8 ignore next 4 */
-  if (2 > call.arguments.length) {
-    // Unreachable: isReduceCall already confirmed proper reduce call
-    return null;
-  }
-  const [, defaultArgument] = call.arguments;
-  if (!defaultArgument || !isEmptyObject(defaultArgument)) {
-    return null;
-  }
-  /* v8 ignore next 3 */
-  if (!isMemberExpression(call.callee)) {
-    // Unreachable: isReduceCall already confirmed this is a MemberExpression
-    return null;
-  }
-  return { arr: call.callee.object };
-};
-
-const validateCallbackStructure = (callback: TSESTree.Node) => {
+function validateCallbackStructure(callback: TSESTree.Node) {
   if (!isReduceCallback(callback)) {
     return null;
   }
@@ -181,44 +157,41 @@ const validateCallbackStructure = (callback: TSESTree.Node) => {
     return null;
   }
   const [first, second] = callback.params;
-  /* v8 ignore next 4 */
-  if (!first || !second || !isIdentifier(first) || !isIdentifier(second)) {
-    // Unreachable: hasTwoIdentifierParameters already confirmed both are Identifiers
-    return null;
-  }
   const { name: accumulatorName } = first;
   const { name: itemName } = second;
   if (AST_NODE_TYPES.BlockStatement !== callback.body.type) {
     return null;
   }
   return { accumulatorName, block: callback.body, itemName };
-};
+}
+
+function validateReduceCallStructure(call: TSESTree.CallExpression) {
+  if (!isReduceCall(call.callee)) {
+    return null;
+  }
+  const [, defaultArgument] = call.arguments;
+  if (!defaultArgument || !isEmptyObject(defaultArgument)) {
+    return null;
+  }
+  return { arr: call.callee.object };
+}
 
 const validateBlockStructure = (
   block: TSESTree.BlockStatement,
   accumulatorName: string
 ) => {
-  /* v8 ignore next 3 */
-  if (2 > block.body.length) {
-    // Unreachable: validateCallbackStructure ensures block exists
-    return null;
-  }
   if (!returnsAccumulator(block, accumulatorName)) {
     return null;
   }
   const [firstStatement] = block.body;
-  /* v8 ignore next 3 */
-  if (firstStatement?.type !== AST_NODE_TYPES.ExpressionStatement) {
-    // Unreachable: validateCallbackStructure ensures valid structure
+  if (AST_NODE_TYPES.ExpressionStatement !== firstStatement?.type) {
     return null;
   }
   return firstStatement;
 };
 
 export const detectKeyByPattern = (node: TSESTree.Node) => {
-  /* v8 ignore next 4 */
   if (!isCallExpression(node)) {
-    // Unreachable: called from rule on CallExpression nodes
     return null;
   }
 
@@ -227,17 +200,14 @@ export const detectKeyByPattern = (node: TSESTree.Node) => {
     return null;
   }
 
-  /* v8 ignore next 4 */
   const [firstArgument] = node.arguments;
-  // Unreachable: validateReduceCallStructure ensures arguments.length >= 2
+  /* v8 ignore next -- verification: arrayInfo exists, firstArgument is provided */
   if (!firstArgument) {
     return null;
   }
 
   const callbackInfo = validateCallbackStructure(firstArgument);
-  /* v8 ignore next 4 */
   if (isNil(callbackInfo)) {
-    // Unreachable: called when callback is valid
     return null;
   }
 
@@ -245,9 +215,7 @@ export const detectKeyByPattern = (node: TSESTree.Node) => {
     callbackInfo.block,
     callbackInfo.accumulatorName
   );
-  /* v8 ignore next 4 */
   if (isNil(firstStatement)) {
-    // Unreachable: validateBlockStructure succeeded
     return null;
   }
 
@@ -256,9 +224,7 @@ export const detectKeyByPattern = (node: TSESTree.Node) => {
     callbackInfo.accumulatorName,
     callbackInfo.itemName
   );
-  /* v8 ignore next 4 */
   if (isNil(key)) {
-    // Unreachable: called when key extraction succeeds
     return null;
   }
 

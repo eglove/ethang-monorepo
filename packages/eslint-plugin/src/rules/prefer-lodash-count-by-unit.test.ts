@@ -1,44 +1,30 @@
+import { AST_NODE_TYPES } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
-import { isMemberExpression } from "./../utils/type-guards.ts";
-import { findCall, findFirstNode, parseProgram } from "./.fixture.ts";
+import { findFirstNode, parseProgram } from "./.fixture.ts";
 import { detectCountByPattern } from "./prefer-lodash-count-by.ts";
 
-describe("prefer-lodash-count-by", () => {
-  describe("detectCountByPattern", () => {
-    it.each([
-      ["acc[item.key] = (acc[item.key] || 0) + 1", true],
-      ["acc[item.category] = (acc[item.category] || 0) + 1", true]
-    ])("detects countBy pattern for '%s", (code) => {
-      const { call } = findCall(
-        `const x = arr.reduce((acc, item) => { ${code}; return acc; }, {})`
-      );
-      expect(detectCountByPattern(call)).not.toBeNull();
+describe("prefer-lodash-count-by branch coverage", () => {
+  it.each([
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = (acc[item.key] || 0) + 1; }, {});",
+      label: "block has fewer than 2 statements (covers 2 > block.body.length)"
+    },
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = (acc[item.key] || 0) + 1; return wrongVar; }, {});",
+      label:
+        "callback returns wrong variable (covers returnsAccumulator false branch)"
+    },
+    {
+      code: "const x = arr.reduce((acc, item) => { const temp = 1; acc[item.key] = temp; return acc; }, {});",
+      label: "block body first statement is not ExpressionStatement"
+    }
+  ])("returns null when $label", ({ code }) => {
+    const program = parseProgram(code);
+    const call = findFirstNode(program, (n) => {
+      return n.type === AST_NODE_TYPES.CallExpression;
     });
-
-    it.each([
-      ["acc[item.key] = item"],
-      ["(acc[item.category] ||= []).push(item)"],
-      ["acc.push(item)"]
-    ])("does not detect non-countBy reduce pattern for '%s", (code) => {
-      const { call } = findCall(
-        `const x = arr.reduce((acc, item) => { ${code}; return acc; }, {})`
-      );
-      expect(detectCountByPattern(call)).toBeNull();
-    });
-
-    it("does not detect non-reduce call expression", () => {
-      const { call } = findCall("const x = arr.map(item => item * 2)");
-      expect(detectCountByPattern(call)).toBeNull();
-    });
-
-    it("does not detect non-call expression", () => {
-      const program = parseProgram("const x = arr.length;");
-      const member = findFirstNode(program, isMemberExpression);
-      expect(member).not.toBeNull();
-      if (member) {
-        expect(detectCountByPattern(member)).toBeNull();
-      }
-    });
+    expect(call).not.toBeNull();
+    expect(call && detectCountByPattern(call)).toBeNull();
   });
 });

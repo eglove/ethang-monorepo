@@ -7,6 +7,8 @@ import {
 } from "../src/application/inspect-after-tool.ts";
 
 const REPO_ROOT = "C:/repo";
+const SAMPLE_REL_PATH = "src/example.ts";
+const SAMPLE_ABS_PATH = `${REPO_ROOT}/${SAMPLE_REL_PATH}`;
 
 const makeDependencies = (
   overrides: Partial<InspectAfterToolDependencies> = {}
@@ -14,45 +16,49 @@ const makeDependencies = (
   return {
     applyEslintFix:
       overrides.applyEslintFix ??
-      vi.fn(() => Effect.void),
+      vi.fn(() => {
+        return Effect.void;
+      }),
     fallbackCwd: overrides.fallbackCwd ?? REPO_ROOT,
     loadFileProblems:
       overrides.loadFileProblems ??
-      vi.fn(() =>
-        Effect.succeed({
+      vi.fn(() => {
+        return Effect.succeed({
           errors: [],
           messagePath: "/messages/test"
-        })
-      )
+        });
+      })
   };
 };
 
 describe(inspectAfterTool, () => {
   it("returns an empty string when file is clean (no lint issues, no inspections)", async () => {
     const dependencies = makeDependencies();
+
     await expect(
       Effect.runPromise(
         inspectAfterTool({
           cwd: REPO_ROOT,
           dependencies,
-          filePath: "src/example.ts"
+          filePath: SAMPLE_REL_PATH
         })
       )
     ).resolves.toBe("");
+
     expect(dependencies.applyEslintFix).toHaveBeenCalledWith({
       cwd: REPO_ROOT,
-      files: ["C:/repo/src/example.ts"]
+      files: [SAMPLE_ABS_PATH]
     });
     expect(dependencies.loadFileProblems).toHaveBeenCalledWith({
-      filePath: "src/example.ts",
+      filePath: SAMPLE_REL_PATH,
       projectPath: REPO_ROOT
     });
   });
 
   it("returns WebStorm inspection markdown when MCP reports errors", async () => {
     const dependencies = makeDependencies({
-      loadFileProblems: vi.fn(() =>
-        Effect.succeed({
+      loadFileProblems: vi.fn(() => {
+        return Effect.succeed({
           errors: [
             {
               column: 4,
@@ -63,8 +69,8 @@ describe(inspectAfterTool, () => {
             }
           ],
           messagePath: "/messages/test"
-        })
-      )
+        });
+      })
     });
 
     await expect(
@@ -72,7 +78,7 @@ describe(inspectAfterTool, () => {
         inspectAfterTool({
           cwd: REPO_ROOT,
           dependencies,
-          filePath: "src/example.ts"
+          filePath: SAMPLE_REL_PATH
         })
       )
     ).resolves.toContain(
@@ -86,15 +92,16 @@ describe(inspectAfterTool, () => {
       inspectAfterTool({
         cwd: REPO_ROOT,
         dependencies,
-        filePath: "C:/repo/src/example.ts"
+        filePath: SAMPLE_ABS_PATH
       })
     );
+
     expect(dependencies.applyEslintFix).toHaveBeenCalledWith({
       cwd: REPO_ROOT,
-      files: ["C:/repo/src/example.ts"]
+      files: [SAMPLE_ABS_PATH]
     });
     expect(dependencies.loadFileProblems).toHaveBeenCalledWith({
-      filePath: "src/example.ts",
+      filePath: SAMPLE_REL_PATH,
       projectPath: REPO_ROOT
     });
   });
@@ -102,26 +109,29 @@ describe(inspectAfterTool, () => {
   it.each(["lint", "inspection"] as const)(
     "returns an empty string when the %s operation fails",
     async (failure) => {
-      const deps = {
-        inspection: () =>
-          makeDependencies({
-            loadFileProblems: vi.fn(() =>
-              Effect.die(new Error("MCP unavailable"))
-            )
-          }),
-        lint: () =>
-          makeDependencies({
-            applyEslintFix: vi.fn(() =>
-              Effect.fail(new Error("lint unavailable"))
-            )
-          })
+      const dependenciesForFailure = {
+        inspection: () => {
+          return makeDependencies({
+            loadFileProblems: vi.fn(() => {
+              return Effect.die(new Error("MCP unavailable"));
+            })
+          });
+        },
+        lint: () => {
+          return makeDependencies({
+            applyEslintFix: vi.fn(() => {
+              return Effect.fail(new Error("lint unavailable"));
+            })
+          });
+        }
       };
+
       await expect(
         Effect.runPromise(
           inspectAfterTool({
             cwd: REPO_ROOT,
-            dependencies: deps[failure](),
-            filePath: "src/example.ts"
+            dependencies: dependenciesForFailure[failure](),
+            filePath: SAMPLE_REL_PATH
           })
         )
       ).resolves.toBe("");
