@@ -28,9 +28,6 @@
 |---|---|---|---|---|---|
 | 5 | `prefer-lodash-find` / `prefer-lodash-findLast` | ⚠️ `find` / `findLast` are in `NATIVE_EQUIVALENT_METHODS` (`packages/eslint-plugin/src/utils/ast.ts`), so the umbrella rule treats native as fine. Enforcing lodash here requires dropping them from that set first — out of scope. |  |  |  |
 | 6 | `prefer-lodash-sortBy` / `prefer-lodash-orderBy` | `arr.sort((a,b) => ...)` → `sortBy(arr, fn)` / `orderBy(arr, [fn], ["asc"])`. Include ES2023 non-mutating coverage: `toSorted`, `toReversed`, `toSpliced`. | S | ⚠ | M |
-| 9 | `prefer-lodash-intersection` | `arrA.filter(x => arrB.includes(x))` → `intersection(arrA, arrB)` | S | ✅ | S |
-| 10 | `prefer-lodash-difference` | `arrA.filter(x => !arrB.includes(x))` → `difference(arrA, arrB)` | S | ✅ | S |
-| 11 | `prefer-lodash-union` | `[...new Set([...a, ...b])]` → `union(a, b)` | S | ✅ | S |
 | 12 | `prefer-lodash-pick` | `const { a, b } = obj` → `pick(obj, ["a","b"])` | S | ✅ | S |
 | 13 | `prefer-lodash-omit` | `const { a, ...rest } = obj` → `omit(obj, ["a"])` | S | ✅ | S |
 | 14 | `prefer-lodash-groupBy` | `reduce` accumulator building a keyed map → `groupBy(arr, fn)` | S | ⚠ | M |

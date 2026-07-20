@@ -16,8 +16,11 @@ import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 import { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
 import { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
+import { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts";
 import { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
+import { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 import { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
+import { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
 import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
 import { propertyShorthandRule } from "./rules/property-shorthand.ts";
@@ -44,8 +47,11 @@ export const rules = {
   "prefer-effect-predicate": preferEffectPredicateRule,
   "prefer-lodash": preferLodashRule,
   "prefer-lodash-clamp": preferLodashClampRule,
+  "prefer-lodash-difference": preferLodashDifferenceRule,
   "prefer-lodash-find-key": preferLodashFindKeyRule,
+  "prefer-lodash-intersection": preferLodashIntersectionRule,
   "prefer-lodash-slice": preferLodashSliceRule,
+  "prefer-lodash-union": preferLodashUnionRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
   unwrap: unwrapRule,
@@ -80,8 +86,11 @@ export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 export { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
 export { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
+export { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts";
 export { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
+export { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 export { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
+export { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
 export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
 export { propertyShorthandRule } from "./rules/property-shorthand.ts";
