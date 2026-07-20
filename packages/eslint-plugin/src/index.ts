@@ -20,6 +20,8 @@ import { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts"
 import { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 import { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 import { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
+import { preferLodashUniqRule } from "./rules/prefer-lodash-uniq.ts";
+import { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 import { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
 import { preferLodashRule } from "./rules/prefer-lodash.ts";
 import { preferredAliasRule } from "./rules/preferred-alias.ts";
@@ -51,6 +53,8 @@ export const rules = {
   "prefer-lodash-find-key": preferLodashFindKeyRule,
   "prefer-lodash-intersection": preferLodashIntersectionRule,
   "prefer-lodash-slice": preferLodashSliceRule,
+  "prefer-lodash-uniq": preferLodashUniqRule,
+  "prefer-lodash-from-pairs": preferLodashFromPairsRule,
   "prefer-lodash-union": preferLodashUnionRule,
   "preferred-alias": preferredAliasRule,
   "property-shorthand": propertyShorthandRule,
@@ -90,6 +94,8 @@ export { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts"
 export { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 export { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 export { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
+export { preferLodashUniqRule } from "./rules/prefer-lodash-uniq.ts";
+export { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 export { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
 export { preferLodashRule } from "./rules/prefer-lodash.ts";
 export { preferredAliasRule } from "./rules/preferred-alias.ts";
