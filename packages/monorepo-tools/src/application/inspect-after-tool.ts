@@ -1,11 +1,11 @@
 /**
-Orchestrate post-tool inspection: parse PostToolUse payload from stdin,
-apply ESLint fix to the file, call the WebStorm MCP to fetch diagnostics,
-and return the hook envelope JSON.
+Post-tool inspection orchestrator: given a file path and repo cwd,
+apply ESLint --fix as a side effect, call WebStorm MCP for diagnostics,
+and return a markdown string describing the findings.
 
-The hook handler in `.github/hooks/post-tool-inspect.json` invokes
-this via `src/cli/post-tool-inspect.cli.ts`. The result is a JSON object with
-`hookSpecificOutput.additionalContext` for Copilot's next turn.
+The Hermes shell hook in `.hermes/agent-hooks/post-tool-inspect.sh`
+forwards this string to Hermes via the `transform_tool_result` event
+by emitting `{"result": "<original tool output>\n\n<markdown>"}`.
 */
 
 import { Effect } from "effect";
@@ -34,17 +34,9 @@ export type InspectAfterToolDependencies = {
 };
 
 export type InspectAfterToolOptions = {
+  readonly cwd: string;
   readonly dependencies?: InspectAfterToolDependencies;
   readonly filePath: string;
-  readonly cwd: string;
-};
-
-export type InspectAfterToolResult = {
-  readonly hookSpecificOutput: {
-    readonly additionalContext: string;
-    readonly hookEventName: string;
-    readonly resultsFile: null | string;
-  };
 };
 
 const defaultDependencies: InspectAfterToolDependencies = {
@@ -53,12 +45,13 @@ const defaultDependencies: InspectAfterToolDependencies = {
   loadFileProblems
 };
 
+const EMPTY_DIAGNOSTICS = "";
+
 export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
   options: InspectAfterToolOptions
 ) {
   const dependencies = options.dependencies ?? defaultDependencies;
 
-  // Build file info directly from filePath and cwd
   const repoRoot = options.cwd;
   const normalizedPath = options.filePath.startsWith(repoRoot)
     ? options.filePath
@@ -74,25 +67,20 @@ export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (
         return Effect.void;
       })
     );
+
   const problems = yield* dependencies
-    .loadFileProblems({
-      filePath: relFilePath,
-      projectPath: repoRoot
-    })
+    .loadFileProblems({ filePath: relFilePath, projectPath: repoRoot })
     .pipe(
       Effect.catchAllCause(() => {
         return Effect.succeed(null);
       })
     );
-  const additionalContext = isNil(problems)
-    ? ""
-    : (formatInspectionsAsMarkdown(relFilePath, problems.errors) ?? "");
 
-  return {
-    hookSpecificOutput: {
-      additionalContext,
-      hookEventName: "PostToolUse",
-      resultsFile: null
-    }
-  };
+  if (isNil(problems)) {
+    return EMPTY_DIAGNOSTICS;
+  }
+  return (
+    formatInspectionsAsMarkdown(relFilePath, problems.errors) ??
+    EMPTY_DIAGNOSTICS
+  );
 });

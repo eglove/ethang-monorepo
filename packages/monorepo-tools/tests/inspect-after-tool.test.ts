@@ -7,13 +7,6 @@ import {
 } from "../src/application/inspect-after-tool.ts";
 
 const REPO_ROOT = "C:/repo";
-const EMPTY_ENVELOPE = {
-  hookSpecificOutput: {
-    additionalContext: "",
-    hookEventName: "PostToolUse",
-    resultsFile: null
-  }
-};
 
 const makeDependencies = (
   overrides: Partial<InspectAfterToolDependencies> = {}
@@ -21,32 +14,45 @@ const makeDependencies = (
   return {
     applyEslintFix:
       overrides.applyEslintFix ??
-      vi.fn(() => {
-        return Effect.void;
-      }),
+      vi.fn(() => Effect.void),
     fallbackCwd: overrides.fallbackCwd ?? REPO_ROOT,
     loadFileProblems:
       overrides.loadFileProblems ??
-      vi.fn(() => {
-        return Effect.succeed({
+      vi.fn(() =>
+        Effect.succeed({
           errors: [],
           messagePath: "/messages/test"
-        });
-      })
+        })
+      )
   };
 };
 
 describe(inspectAfterTool, () => {
-  it("returns an empty envelope when no filePath or cwd provided", () => {
-    // The function now expects filePath and cwd directly
-    // This test case is no longer valid - the function will just use the params
-    // We'll skip this test since the new API doesn't have "invalid payload" cases
+  it("returns an empty string when file is clean (no lint issues, no inspections)", async () => {
+    const dependencies = makeDependencies();
+    await expect(
+      Effect.runPromise(
+        inspectAfterTool({
+          cwd: REPO_ROOT,
+          dependencies,
+          filePath: "src/example.ts"
+        })
+      )
+    ).resolves.toBe("");
+    expect(dependencies.applyEslintFix).toHaveBeenCalledWith({
+      cwd: REPO_ROOT,
+      files: ["C:/repo/src/example.ts"]
+    });
+    expect(dependencies.loadFileProblems).toHaveBeenCalledWith({
+      filePath: "src/example.ts",
+      projectPath: REPO_ROOT
+    });
   });
 
-  it("fixes the edited file, fetches inspections, and formats them for the hook", async () => {
+  it("returns WebStorm inspection markdown when MCP reports errors", async () => {
     const dependencies = makeDependencies({
-      loadFileProblems: vi.fn(() => {
-        return Effect.succeed({
+      loadFileProblems: vi.fn(() =>
+        Effect.succeed({
           errors: [
             {
               column: 4,
@@ -57,26 +63,32 @@ describe(inspectAfterTool, () => {
             }
           ],
           messagePath: "/messages/test"
-        });
-      })
+        })
+      )
     });
 
     await expect(
       Effect.runPromise(
         inspectAfterTool({
+          cwd: REPO_ROOT,
           dependencies,
-          filePath: "src/example.ts",
-          cwd: REPO_ROOT
+          filePath: "src/example.ts"
         })
       )
-    ).resolves.toStrictEqual({
-      hookSpecificOutput: {
-        additionalContext:
-          "WebStorm MCP inspections for `src/example.ts`:\n- [WARNING] `ExampleInspection` at L8:C4 — Suspicious usage",
-        hookEventName: "PostToolUse",
-        resultsFile: null
-      }
-    });
+    ).resolves.toContain(
+      "- [WARNING] `ExampleInspection` at L8:C4 — Suspicious usage"
+    );
+  });
+
+  it("normalizes absolute paths that already start with repoRoot", async () => {
+    const dependencies = makeDependencies();
+    await Effect.runPromise(
+      inspectAfterTool({
+        cwd: REPO_ROOT,
+        dependencies,
+        filePath: "C:/repo/src/example.ts"
+      })
+    );
     expect(dependencies.applyEslintFix).toHaveBeenCalledWith({
       cwd: REPO_ROOT,
       files: ["C:/repo/src/example.ts"]
@@ -88,35 +100,31 @@ describe(inspectAfterTool, () => {
   });
 
   it.each(["lint", "inspection"] as const)(
-    "returns an empty envelope when the %s operation fails",
+    "returns an empty string when the %s operation fails",
     async (failure) => {
-      const dependenciesByFailure = {
-        inspection: () => {
-          return makeDependencies({
-            loadFileProblems: vi.fn(() => {
-              return Effect.die(new Error("MCP unavailable"));
-            })
-          });
-        },
-        lint: () => {
-          return makeDependencies({
-            applyEslintFix: vi.fn(() => {
-              return Effect.fail(new Error("lint unavailable"));
-            })
-          });
-        }
+      const deps = {
+        inspection: () =>
+          makeDependencies({
+            loadFileProblems: vi.fn(() =>
+              Effect.die(new Error("MCP unavailable"))
+            )
+          }),
+        lint: () =>
+          makeDependencies({
+            applyEslintFix: vi.fn(() =>
+              Effect.fail(new Error("lint unavailable"))
+            )
+          })
       };
-      const dependencies = dependenciesByFailure[failure]();
-
       await expect(
         Effect.runPromise(
           inspectAfterTool({
-            dependencies,
-            filePath: "src/example.ts",
-            cwd: REPO_ROOT
+            cwd: REPO_ROOT,
+            dependencies: deps[failure](),
+            filePath: "src/example.ts"
           })
         )
-      ).resolves.toStrictEqual(EMPTY_ENVELOPE);
+      ).resolves.toBe("");
     }
   );
 });

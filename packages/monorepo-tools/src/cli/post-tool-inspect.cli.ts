@@ -1,19 +1,33 @@
 #!/usr/bin/env bun
 
 /**
-PostToolUse hook script: read JSON from stdin, apply ESLint --fix,
-call WebStorm MCP get_file_problems, return diagnostics envelope.
+transform_tool_result hook: read Hermes JSON from stdin, apply ESLint --fix,
+call WebStorm MCP get_file_problems, emit a JSON envelope on stdout.
 
-Usage:
-  <stdin contains PostToolUse payload> | bun src/cli/post-tool-inspect.cli.ts
+stdin (transform_tool_result payload from Hermes):
+  {
+    "hook_event_name": "transform_tool_result",
+    "tool_name": "patch" | "write_file",
+    "tool_input": {"path": "rel/path.ts", ...},
+    "cwd": "/abs/path/to/repo",
+    "extra": {"result": "<original tool return string>", ...}
+  }
 
-stdout = { "additionalContext": "..." }
+stdout:
+  {"result": "<original>\n\n<diagnostics markdown>"}   when issues are found
+  {}                                                   when clean (pass through)
 */
 
 import { Effect } from "effect";
 import process from "node:process";
 
 import { inspectAfterTool } from "../application/inspect-after-tool.ts";
+
+export type HermesTransformPayload = {
+  cwd?: string;
+  extra?: { result?: string };
+  tool_input?: { path?: string };
+};
 
 export const readStdinText = async (stdin: AsyncIterable<unknown>) => {
   const chunks: string[] = [];
@@ -23,34 +37,60 @@ export const readStdinText = async (stdin: AsyncIterable<unknown>) => {
   return chunks.join("");
 };
 
+const SEPARATOR = "\n\n";
+
+export const buildTransformedResult = (
+  originalResult: string,
+  diagnostics: string
+): string => {
+  if (!diagnostics) {
+    return originalResult;
+  }
+  return `${originalResult}${SEPARATOR}${diagnostics}`;
+};
+
+const parsePayload = (raw: string): HermesTransformPayload | null => {
+  try {
+    return JSON.parse(raw) as HermesTransformPayload;
+  } catch {
+    return null;
+  }
+};
+
+const extractPathAndCwd = (payload: HermesTransformPayload) => {
+  const filePath = payload.tool_input?.path;
+  const cwd = payload.cwd;
+  return { cwd, filePath };
+};
+
 export const main = async (stdin: AsyncIterable<unknown>) => {
   const stdinPayload = await readStdinText(stdin);
+  const parsed = parsePayload(stdinPayload);
 
-  // Parse Hermes hook payload
-  let payload: any;
-  try {
-    payload = JSON.parse(stdinPayload);
-  } catch {
-    process.stdout.write('{}\n');
+  if (!parsed) {
+    process.stdout.write("{}\n");
     return;
   }
 
-  // Extract file path and cwd from Hermes post_tool_call payload
-  const filePath = payload?.tool_input?.path;
-  const cwd = payload?.cwd;
+  const { cwd, filePath } = extractPathAndCwd(parsed);
+  const originalResult = parsed.extra?.result ?? "";
 
   if (!filePath || !cwd) {
-    process.stdout.write('{}\n');
+    process.stdout.write("{}\n");
     return;
   }
 
-  // Run ESLint fix as side effect (post_tool_call hooks ignore return value)
-  await Effect.runPromise(
+  const diagnostics = await Effect.runPromise(
     inspectAfterTool({ filePath, cwd })
-  ).catch(() => {});
+  ).catch((): string => "");
 
-  // Return empty JSON (Hermes post_tool_call ignores return value)
-  process.stdout.write('{}\n');
+  if (!diagnostics) {
+    process.stdout.write("{}\n");
+    return;
+  }
+
+  const combined = buildTransformedResult(originalResult, diagnostics);
+  process.stdout.write(`${JSON.stringify({ result: combined })}\n`);
 };
 
 /* v8 ignore next 3 -- import.meta.main is true only when Bun launches this CLI. */
