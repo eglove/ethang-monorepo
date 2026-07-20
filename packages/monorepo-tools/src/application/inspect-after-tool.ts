@@ -13,7 +13,6 @@ import isNil from "lodash/isNil.js";
 import process from "node:process";
 
 import { formatInspectionsAsMarkdown } from "../domain/mcp-protocol.ts";
-import { parsePostToolUseFile } from "../domain/stdin-payload.ts";
 import {
   loadAutofixResults,
   type LoadAutofixResultsOptions
@@ -52,16 +51,6 @@ const defaultDependencies: InspectAfterToolDependencies = {
   applyEslintFix: loadAutofixResults,
   fallbackCwd: process.cwd(),
   loadFileProblems
-};
-
-const emptyResult = () => {
-  return {
-    hookSpecificOutput: {
-      additionalContext: "",
-      hookEventName: "PostToolUse",
-      resultsFile: null
-    }
-  };
 };
 
 export const inspectAfterTool = Effect.fn("inspectAfterTool")(function* (

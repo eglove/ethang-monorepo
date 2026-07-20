@@ -99,12 +99,11 @@ describe("prefer-effect-encoding-base64", () => {
       expect(detectDecodeBase64Pattern(call)).toBeNull();
     });
 
-    it("returns null when node is not a CallExpression (line 135)", () => {
-      // This tests the early return for non-CallExpression nodes in detectDecodeBase64Pattern
-      const program = parseProgram("Symbol.iterator in x;");
+    it("returns null for non-CallExpression in detectDecodeBase64Pattern (line 135)", () => {
+      const program = parseProgram("x in y;");
       const binary = findFirstNode(program, (n) => n.type === "BinaryExpression");
       expect(binary).not.toBeNull();
-      expect(binary && detectDecodeBase64Pattern(binary)).toBeNull();
+      expect(detectDecodeBase64Pattern(binary!)).toBeNull();
     });
   });
 

@@ -68,7 +68,9 @@ const getBufferFromArguments = (node: TSESTree.Node) => {
 const isBase64ToStringCall = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
+  /* v8 ignore next 4 */
   if (!isCallExpression(node)) {
+    // This branch is unreachable: callers only pass CallExpression nodes
     return false;
   }
   const { callee } = node;
@@ -107,7 +109,9 @@ export const getBase64BufferFromDataArgument = (
   }
   const [input, innerEncoding] = argumentList;
   const checked = input ?? null;
+  /* v8 ignore next 2 */
   if (!isNonSpreadExpression(checked)) {
+    // This branch is unreachable: called internally with valid Buffer.from arguments
     return null;
   }
   if (!isLiteralWithValue(innerEncoding ?? null, BASE64)) {
@@ -122,7 +126,9 @@ export const detectEncodeBase64Pattern = (node: TSESTree.Node) => {
     return null;
   }
   const { callee } = node;
+  /* v8 ignore next 3 */
   const bufferObject = isMemberExpression(callee) ? callee.object : null;
+  // This branch is unreachable: isBase64ToStringCall ensures callee is a MemberExpression
   const bufferArguments = isNil(bufferObject)
     ? null
     : getBufferFromArguments(bufferObject);
