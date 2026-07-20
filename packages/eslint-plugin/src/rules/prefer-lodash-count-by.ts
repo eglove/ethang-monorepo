@@ -18,205 +18,283 @@ type MessageIds = "preferLodashCountBy";
 
 type Options = [];
 
-// Detect `arr.reduce((acc, item) => { acc[item.key] = (acc[item.key] || 0) + 1; return acc; }, {})`
-// → `countBy(arr, 'key')`
-export const detectCountByPattern = (
-  node: TSESTree.Node
-): { arr: TSESTree.Node; key: string } | null => {
-  if (!isCallExpression(node)) {
-    return null;
-  }
-  const call = node as TSESTree.CallExpression;
+type ReduceCallback =
+  TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
 
-  // Must be a .reduce() call
+const isReduceCallback = (node: TSESTree.Node): node is ReduceCallback => {
+  return (
+    AST_NODE_TYPES.ArrowFunctionExpression === node.type ||
+    AST_NODE_TYPES.FunctionExpression === node.type
+  );
+};
+
+const isReduceCall = (call: TSESTree.CallExpression) => {
   if (!isMemberExpression(call.callee)) {
-    return null;
+    return false;
   }
   if (!isIdentifier(call.callee.property)) {
-    return null;
+    return false;
   }
-  if ("reduce" !== call.callee.property.name) {
-    return null;
-  }
+  return "reduce" === call.callee.property.name;
+};
 
-  // Must have 2 arguments: callback and initial value (empty object)
-  if (call.arguments.length < 2) {
-    return null;
+const isEmptyObject = (node: TSESTree.Node) => {
+  if (AST_NODE_TYPES.ObjectExpression !== node.type) {
+    return false;
   }
+  return 0 === node.properties.length;
+};
 
-  // Initial value must be empty object {}
-  const initialValue = call.arguments[1];
-  if (AST_NODE_TYPES.ObjectExpression !== initialValue.type) {
-    return null;
+const hasTwoIdentifierParameters = (callback: ReduceCallback) => {
+  if (2 > callback.params.length) {
+    return false;
   }
-  const obj = initialValue as TSESTree.ObjectExpression;
-  if (obj.properties.length !== 0) {
-    return null;
+  const [first, second] = callback.params;
+  if (!first || !second) {
+    return false;
   }
+  return isIdentifier(first) && isIdentifier(second);
+};
 
-  // Callback must be an arrow function or function expression with 2 params
-  const callback = call.arguments[0];
-  if (
-    AST_NODE_TYPES.ArrowFunctionExpression !== callback.type &&
-    AST_NODE_TYPES.FunctionExpression !== callback.type
-  ) {
-    return null;
+const returnsAccumulator = (
+  block: TSESTree.BlockStatement,
+  accumulatorName: string
+) => {
+  const last = block.body.at(-1);
+  if (AST_NODE_TYPES.ReturnStatement !== last?.type) {
+    return false;
   }
+  if (!last.argument || !isIdentifier(last.argument)) {
+    return false;
+  }
+  return accumulatorName === last.argument.name;
+};
 
-  const fn = callback as TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
-  if (fn.params.length < 2) {
-    return null;
+const isMemberAccumulator = (node: TSESTree.Node, accumulatorName: string) => {
+  if (!isMemberExpression(node)) {
+    return false;
   }
+  if (!node.computed) {
+    return false;
+  }
+  if (!isIdentifier(node.object)) {
+    return false;
+  }
+  return accumulatorName === node.object.name;
+};
 
-  const accParam = fn.params[0];
-  const itemParam = fn.params[1];
-  if (!isIdentifier(accParam) || !isIdentifier(itemParam)) {
-    return null;
+const isItemProperty = (node: TSESTree.Node, itemName: string) => {
+  if (!isMemberExpression(node)) {
+    return false;
   }
+  if (!isIdentifier(node.object)) {
+    return false;
+  }
+  if (itemName !== node.object.name) {
+    return false;
+  }
+  return isIdentifier(node.property);
+};
 
-  // Body must be a block with at least 2 statements: assignment and return
-  if (AST_NODE_TYPES.BlockStatement !== fn.body.type) {
-    return null;
+const isPlusOne = (node: TSESTree.Node) => {
+  if (AST_NODE_TYPES.BinaryExpression !== node.type) {
+    return false;
   }
-  const block = fn.body as TSESTree.BlockStatement;
-  if (block.body.length < 2) {
-    return null;
+  if ("+" !== node.operator) {
+    return false;
   }
+  if (AST_NODE_TYPES.Literal !== node.right.type) {
+    return false;
+  }
+  return 1 === node.right.value;
+};
 
-  // Check for return acc; at the end
-  const lastStmt = block.body[block.body.length - 1];
-  if (AST_NODE_TYPES.ReturnStatement !== lastStmt.type) {
-    return null;
+const isOrZero = (node: TSESTree.Node) => {
+  if (AST_NODE_TYPES.LogicalExpression !== node.type) {
+    return false;
   }
-  const ret = lastStmt as TSESTree.ReturnStatement;
-  if (!ret.argument || !isIdentifier(ret.argument)) {
-    return null;
+  if ("||" !== node.operator) {
+    return false;
   }
-  if (ret.argument.name !== accParam.name) {
-    return null;
+  if (AST_NODE_TYPES.Literal !== node.right.type) {
+    return false;
   }
+  return 0 === node.right.value;
+};
 
-  // Check for acc[item.key] = (acc[item.key] || 0) + 1; pattern
-  const firstStmt = block.body[0];
-  if (AST_NODE_TYPES.ExpressionStatement !== firstStmt.type) {
+const extractKeyFromMember = (
+  member: TSESTree.MemberExpression,
+  itemName: string
+) => {
+  if (!isItemProperty(member.property, itemName)) {
     return null;
   }
-  const exprStmt = firstStmt as TSESTree.ExpressionStatement;
-  if (AST_NODE_TYPES.AssignmentExpression !== exprStmt.expression.type) {
+  if (AST_NODE_TYPES.MemberExpression !== member.property.type) {
     return null;
   }
-  const assign = exprStmt.expression as TSESTree.AssignmentExpression;
-  if ("=" !== assign.operator) {
+  const { property } = member.property;
+  if (!isIdentifier(property)) {
     return null;
   }
+  return property.name;
+};
 
-  // Left side must be acc[item.key] — member expression with computed property
-  if (!isMemberExpression(assign.left)) {
+const extractCountByKey = (
+  expressionStatement: TSESTree.ExpressionStatement,
+  accumulatorName: string,
+  itemName: string
+) => {
+  const { expression } = expressionStatement;
+  if (AST_NODE_TYPES.AssignmentExpression !== expression.type) {
     return null;
   }
-  const member = assign.left as TSESTree.MemberExpression;
-  if (!member.computed) {
+  if ("=" !== expression.operator) {
     return null;
   }
-  if (!isIdentifier(member.object)) {
+  if (!isMemberAccumulator(expression.left, accumulatorName)) {
     return null;
   }
-  if (member.object.name !== accParam.name) {
+  if (!isMemberExpression(expression.left)) {
     return null;
   }
+  const member = expression.left;
+  const key = extractKeyFromMember(member, itemName);
+  if (!key) {
+    return null;
+  }
+  return validateCountByRightSide(
+    expression.right,
+    key,
+    accumulatorName,
+    itemName
+  );
+};
 
-  // Property must be item.key — member expression on item param
-  if (!isMemberExpression(member.property)) {
+const validateCountByRightSide = (
+  rightNode: TSESTree.Node,
+  key: string,
+  accumulatorName: string,
+  itemName: string
+) => {
+  if (!isPlusOne(rightNode)) {
     return null;
   }
-  const prop = member.property as TSESTree.MemberExpression;
-  if (!isIdentifier(prop.object)) {
+  if (AST_NODE_TYPES.BinaryExpression !== rightNode.type) {
     return null;
   }
-  if (prop.object.name !== itemParam.name) {
+  const binExpression = rightNode;
+  if (!isOrZero(binExpression.left)) {
     return null;
   }
-  if (!isIdentifier(prop.property)) {
+  if (AST_NODE_TYPES.LogicalExpression !== binExpression.left.type) {
     return null;
   }
-
-  // Right side must be (acc[item.key] || 0) + 1
-  if (AST_NODE_TYPES.BinaryExpression !== assign.right.type) {
+  const logical = binExpression.left;
+  if (!isMemberAccumulator(logical.left, accumulatorName)) {
     return null;
   }
-  const binExpr = assign.right as TSESTree.BinaryExpression;
-  if ("+" !== binExpr.operator) {
-    return null;
-  }
-  // Right operand must be literal 1
-  if (AST_NODE_TYPES.Literal !== binExpr.right.type) {
-    return null;
-  }
-  if (1 !== binExpr.right.value) {
-    return null;
-  }
-  // Left operand must be (acc[item.key] || 0)
-  if (AST_NODE_TYPES.LogicalExpression !== binExpr.left.type) {
-    return null;
-  }
-  const logical = binExpr.left as TSESTree.LogicalExpression;
-  if ("||" !== logical.operator) {
-    return null;
-  }
-  // Right of logical must be literal 0
-  if (AST_NODE_TYPES.Literal !== logical.right.type) {
-    return null;
-  }
-  if (0 !== logical.right.value) {
-    return null;
-  }
-  // Left of logical must be acc[item.key]
   if (!isMemberExpression(logical.left)) {
     return null;
   }
-  const logLeft = logical.left as TSESTree.MemberExpression;
-  if (!logLeft.computed) {
+  const logLeft = logical.left;
+  const logKey = extractKeyFromMember(logLeft, itemName);
+  if (!logKey || logKey !== key) {
     return null;
   }
-  if (!isIdentifier(logLeft.object)) {
-    return null;
-  }
-  if (logLeft.object.name !== accParam.name) {
-    return null;
-  }
-  if (!isMemberExpression(logLeft.property)) {
-    return null;
-  }
-  const logProp = logLeft.property as TSESTree.MemberExpression;
-  if (!isIdentifier(logProp.object)) {
-    return null;
-  }
-  if (logProp.object.name !== itemParam.name) {
-    return null;
-  }
-  if (!isIdentifier(logProp.property)) {
-    return null;
-  }
-  // Key must match
-  if (logProp.property.name !== prop.property.name) {
-    return null;
-  }
+  return key;
+};
 
-  // Get the array being reduced
-  let arr: TSESTree.Node;
-  if (isMemberExpression(call.callee)) {
-    arr = call.callee.object;
-  } else {
+const validateReduceCallStructure = (call: TSESTree.CallExpression) => {
+  if (!isReduceCall(call)) {
     return null;
   }
+  if (2 > call.arguments.length) {
+    return null;
+  }
+  const [, defaultArgument] = call.arguments;
+  if (!defaultArgument || !isEmptyObject(defaultArgument)) {
+    return null;
+  }
+  if (!isMemberExpression(call.callee)) {
+    return null;
+  }
+  return { arr: call.callee.object };
+};
 
-  return { arr, key: prop.property.name };
+const validateCallbackStructure = (callback: TSESTree.Node) => {
+  if (!isReduceCallback(callback)) {
+    return null;
+  }
+  if (!hasTwoIdentifierParameters(callback)) {
+    return null;
+  }
+  const [first, second] = callback.params;
+  if (!first || !second || !isIdentifier(first) || !isIdentifier(second)) {
+    return null;
+  }
+  const { name: accumulatorName } = first;
+  const { name: itemName } = second;
+  if (AST_NODE_TYPES.BlockStatement !== callback.body.type) {
+    return null;
+  }
+  return { accumulatorName, block: callback.body, itemName };
+};
+
+const validateBlockStructure = (
+  block: TSESTree.BlockStatement,
+  accumulatorName: string
+) => {
+  if (2 > block.body.length) {
+    return null;
+  }
+  if (!returnsAccumulator(block, accumulatorName)) {
+    return null;
+  }
+  const [firstStatement] = block.body;
+  if (AST_NODE_TYPES.ExpressionStatement !== firstStatement?.type) {
+    return null;
+  }
+  return firstStatement;
+};
+
+export const detectCountByPattern = (node: TSESTree.Node) => {
+  if (!isCallExpression(node)) {
+    return null;
+  }
+  const arrayInfo = validateReduceCallStructure(node);
+  if (null === arrayInfo) {
+    return null;
+  }
+  const [firstArgument] = node.arguments;
+  if (!firstArgument) {
+    return null;
+  }
+  const callbackInfo = validateCallbackStructure(firstArgument);
+  if (null === callbackInfo) {
+    return null;
+  }
+  const firstStatement = validateBlockStructure(
+    callbackInfo.block,
+    callbackInfo.accumulatorName
+  );
+  if (!firstStatement) {
+    return null;
+  }
+  const key = extractCountByKey(
+    firstStatement,
+    callbackInfo.accumulatorName,
+    callbackInfo.itemName
+  );
+  if (!key) {
+    return null;
+  }
+  return { arr: arrayInfo.arr, key };
 };
 
 export const preferLodashCountByRule = createRule<Options, MessageIds>({
-  create(context) {
-    const listener: TSESTree.RuleListener = {
-      CallExpression: (node) => {
+  create: (context) => {
+    return {
+      CallExpression: (node: TSESTree.CallExpression) => {
         const result = detectCountByPattern(node);
         if (!result) {
           return;
@@ -227,7 +305,6 @@ export const preferLodashCountByRule = createRule<Options, MessageIds>({
         });
       }
     };
-    return listener;
   },
   defaultOptions: [],
   meta: {
