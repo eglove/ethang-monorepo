@@ -114,18 +114,18 @@ ruleTester.run("prefer-lodash-slice", preferLodashSliceRule as never, {
     withAnchor({ code: "arr.splice(0, 2);" }),
 
     // -------- string receivers use a string-aware helper (e.g. split) --------
-    withFile({ code: 'const name = location.split("(")[0];' }),
+    withAnchor({ code: 'const name = location.split("(")[0];' }),
 
     // -------- string receivers are left alone: lodash slice coerces to string[] --------
-    withFile({ code: 'const s = "hello"; s.slice(0, 2);' }),
-    withFile({ code: 'const s = "hello"; s.slice(-2);' }),
-    withFile({
+    withAnchor({ code: 'const s = "hello"; s.slice(0, 2);' }),
+    withAnchor({ code: 'const s = "hello"; s.slice(-2);' }),
+    withAnchor({
       code: 'const greeting: string = "hello"; greeting.slice(0, 2);'
     }),
-    withFile({
+    withAnchor({
       code: 'const parts: string[] = ["a", "b"]; parts.join("").slice(0, 2);'
     }),
-    withFile({
+    withAnchor({
       code: "function f(label: string) { return label.slice(0, 3); }"
     }),
 
