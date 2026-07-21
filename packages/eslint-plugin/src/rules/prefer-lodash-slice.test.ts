@@ -21,10 +21,15 @@ const fixture = (name: string) => {
 // Every case is type-checked against this in-project virtual file so the
 // rule's type-aware receiver guard can resolve `String` vs `Array` receivers.
 // Type information is taken from each case's inline `code`, not from the file
-// contents.
+// contents. A clean anchor (without any `.slice()` calls) is used for valid
+// cases so the rule does not autofix code from the fixture file itself.
 const typedFixture = path.join(fixturesRoot, "valid-eslint-disable.fixture.ts");
+const typedAnchor = path.join(fixturesRoot, "typed-anchor.fixture.ts");
 const withFile = <T extends { code: string }>(caseItem: T) => {
   return { ...caseItem, filename: typedFixture };
+};
+const withAnchor = <T extends { code: string }>(caseItem: T) => {
+  return { ...caseItem, filename: typedAnchor };
 };
 
 const MESSAGE_ID = "preferLodashSlice" as const;
@@ -90,23 +95,23 @@ ruleTester.run("prefer-lodash-slice", preferLodashSliceRule as never, {
 
   valid: [
     // -------- already lodash --------
-    withFile({ code: "slice(arr, 0, 3);" }),
-    withFile({ code: "slice(arr, -2);" }),
+    withAnchor({ code: "slice(arr, 0, 3);" }),
+    withAnchor({ code: "slice(arr, -2);" }),
 
     // -------- drop shapes (out of scope, handled by a future rule) --------
-    withFile({ code: "arr.slice(1);" }),
-    withFile({ code: "arr.slice(1, 3);" }),
-    withFile({ code: "arr.slice(-1, 2);" }),
-    withFile({ code: "arr.slice(n);" }),
+    withAnchor({ code: "arr.slice(1);" }),
+    withAnchor({ code: "arr.slice(1, 3);" }),
+    withAnchor({ code: "arr.slice(-1, 2);" }),
+    withAnchor({ code: "arr.slice(n);" }),
 
     // -------- no args --------
-    withFile({ code: "arr.slice();" }),
+    withAnchor({ code: "arr.slice();" }),
 
     // -------- computed member --------
-    withFile({ code: 'arr["slice"](0, 2);' }),
+    withAnchor({ code: 'arr["slice"](0, 2);' }),
 
     // -------- non-slice member --------
-    withFile({ code: "arr.splice(0, 2);" }),
+    withAnchor({ code: "arr.splice(0, 2);" }),
 
     // -------- string receivers use a string-aware helper (e.g. split) --------
     withFile({ code: 'const name = location.split("(")[0];' }),

@@ -123,7 +123,7 @@ $workspacesFilter = if ($Workspace) { @($Workspace) | ForEach-Object { $_.Split(
 # --- paths -------------------------------------------------------------------
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$repoRoot = Resolve-Path (Join-Path -Path $scriptDir -ChildPath ".." ".." ".." "..")
+$repoRoot = Resolve-Path (Join-Path -Path $scriptDir -ChildPath ".." -AdditionalChildPath "..", "..", "..")
 $workerPath = Join-Path -Path $scriptDir -ChildPath "run-workspace.worker.ts"
 $renderPath = Join-Path -Path $scriptDir -ChildPath "render-check-report.cli.ts"
 $bunExecutable = "bun"
