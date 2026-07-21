@@ -57,11 +57,12 @@ const RouteComponent = () => {
                   <div
                     className={twMerge(
                       "uppercase",
-                      "Dev Reads" === blog.blogCategory.title && "text-sky-300",
-                      "Blog" === blog.blogCategory.title && "text-sky-300"
+                      "Dev Reads" === blog.blogCategory?.title &&
+                        "text-sky-300",
+                      "Blog" === blog.blogCategory?.title && "text-sky-300"
                     )}
                   >
-                    {blog.blogCategory.title}
+                    {blog.blogCategory?.title}
                   </div>
                   <Heading as="h2" size="6">
                     <InternalLink
