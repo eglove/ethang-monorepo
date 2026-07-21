@@ -161,4 +161,34 @@ describe("feedArticlesQuery", () => {
     expect(result.pageInfo.hasNextPage).toBe(true);
     expect(result.edges[0]?.node.id).toBe("2");
   });
+
+  it("should combine feedId filter with isRead and after cursor (covers combineFilters branch at line 63)", async () => {
+    const mockArticles = [{ feedId: "feed-1", id: "2", title: "Article 2" }];
+
+    const mockDatabase = {
+      select: vi
+        .fn()
+        .mockReturnValueOnce({
+          from: vi.fn().mockReturnThis(),
+          where: vi.fn().mockReturnValue({})
+        })
+        .mockReturnValueOnce({
+          from: vi.fn().mockReturnThis(),
+          leftJoin: vi.fn().mockReturnThis(),
+          limit: vi.fn().mockResolvedValue(mockArticles),
+          orderBy: vi.fn().mockReturnThis(),
+          where: vi.fn().mockReturnThis()
+        })
+    };
+
+    const result = await feedArticlesQuery(
+      // @ts-expect-error test double
+      mockDatabase,
+      { after: "3", feedId: "feed-1", first: 1, isRead: true },
+      mockContext
+    );
+
+    expect(result.edges).toHaveLength(1);
+    expect(mockDatabase.select).toHaveBeenCalledTimes(2);
+  });
 });

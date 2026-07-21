@@ -220,35 +220,32 @@ describe("allArticlesQuery - pagination and cursors", () => {
   });
 
   it("should handle cursor with null publishedAt", async () => {
-    const mockArticles = [
-      {
-        feedId: FEED_ID_1,
-        id: "1",
-        publishedAt: null,
-        title: ARTICLE_TITLE_1
-      }
-    ];
-    const mockDatabase = {
-      select: vi.fn().mockReturnValue({
-        from: vi.fn().mockReturnThis(),
-        innerJoin: vi.fn().mockReturnThis(),
-        leftJoin: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue(mockArticles),
-        orderBy: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis()
+    let whereCaptured: unknown = null;
+    const articleQuery = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      leftJoin: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue([]),
+      orderBy: vi.fn().mockReturnThis(),
+      where: vi.fn().mockImplementation((condition) => {
+        whereCaptured = condition;
+        return articleQuery;
       })
     };
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(articleQuery)
+    };
 
-    const result = await allArticlesQuery(
+    await allArticlesQuery(
       // @ts-expect-error test double
       mockDatabase,
-      {
-        after: encodeCursor([null, "3"]),
-        first: 1
-      },
+      { after: encodeCursor([null, "cursor-id"]) },
       mockContext
     );
-    expect(result.edges).toHaveLength(1);
+
+    // The where clause should contain a pagination filter (not null/undefined)
+    expect(articleQuery.where).toHaveBeenCalled();
+    expect(whereCaptured).not.toBeNull();
   });
 });
 

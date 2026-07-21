@@ -19,7 +19,6 @@ export const allArticlesQuery = async (
     isRead?: boolean;
   },
   user: User
-  // eslint-disable-next-line sonar/cyclomatic-complexity
 ) => {
   const { after, first = 20, isRead } = parameters;
   const limit = first + 1;
@@ -38,21 +37,21 @@ export const allArticlesQuery = async (
     }
   }
 
-  let paginationFilter: null | SQL = null;
+  let paginationFilter: null | SQL | undefined = null;
   if (!isNil(lastId)) {
     paginationFilter = isNil(lastPublishedAt)
-      ? (and(
+      ? and(
           isNull(databaseSchema.articlesTable.publishedAt),
           lt(databaseSchema.articlesTable.id, lastId)
-        ) ?? null)
-      : (or(
+        )
+      : or(
           lt(databaseSchema.articlesTable.publishedAt, lastPublishedAt),
           and(
             eq(databaseSchema.articlesTable.publishedAt, lastPublishedAt),
             lt(databaseSchema.articlesTable.id, lastId)
           ),
           isNull(databaseSchema.articlesTable.publishedAt)
-        ) ?? null);
+        );
   }
 
   const articleFilter = combineFilters(readStateFilter, paginationFilter);

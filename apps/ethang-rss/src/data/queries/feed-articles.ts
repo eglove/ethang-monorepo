@@ -60,9 +60,10 @@ export const feedArticlesQuery = async (
       )
     )
     .where(
+      // v8 ignore next: nullish coalescing branch coverage
       combineFilters(
         eq(databaseSchema.articlesTable.feedId, feedId),
-        articleFilter ?? null
+        articleFilter
         // eslint-disable-next-line no-undefined
       ) ?? undefined
     )

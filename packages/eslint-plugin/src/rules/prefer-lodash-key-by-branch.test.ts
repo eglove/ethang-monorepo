@@ -33,6 +33,32 @@ describe("prefer-lodash-key-by branch coverage", () => {
       label: "right side of assignment is not the item identifier"
     },
     {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = other; return acc; }, {});",
+      expectMatch: false,
+      label: "right side identifier is not the item parameter (covers line 146)"
+    },
+    {
+      code: "const x = arr.reduce((acc, item) => { other[item.key] = item; return acc; }, {});",
+      expectMatch: false,
+      label: "left side is not a member accumulator (covers line 138)"
+    },
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] += item; return acc; }, {});",
+      expectMatch: false,
+      label: "assignment operator is not '=' (covers line 133)"
+    },
+    {
+      code: "const x = arr.reduce((acc, { key }) => { acc[item.key] = item; return acc; }, {});",
+      expectMatch: false,
+      label:
+        "callback params include destructured param (covers hasTwoIdentifierParameters fail)"
+    },
+    {
+      code: "const x = arr.reduce((acc, item) => { acc[item.key] = item; return acc; }, [1]);",
+      expectMatch: false,
+      label: "default value is not an empty object (covers isEmptyObject fail)"
+    },
+    {
       code: "const x = arr.reduce(function(acc, item) { acc[item.key] = item; return acc; }, {});",
       expectMatch: true,
       label:

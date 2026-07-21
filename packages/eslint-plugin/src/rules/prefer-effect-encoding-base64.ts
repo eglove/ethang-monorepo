@@ -116,6 +116,7 @@ export const detectEncodeBase64Pattern = (node: TSESTree.Node) => {
     return null;
   }
   const { callee } = node;
+  /* v8 ignore next 3 -- unreachable: isBase64ToStringCall already verified callee is MemberExpression */
   if (!isMemberExpression(callee)) {
     return null;
   }

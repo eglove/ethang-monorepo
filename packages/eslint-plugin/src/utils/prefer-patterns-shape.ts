@@ -31,7 +31,6 @@ export const getReturnedValue = (
     | null
     | TSESTree.ArrowFunctionExpression
     | TSESTree.FunctionExpression
-    // eslint-disable-next-line no-restricted-syntax
     | undefined
 ) => {
   if (isNil(iteratee)) {
@@ -59,11 +58,7 @@ export const getReturnedValue = (
 // Detects `[...new Set(arr)]` — called on a `NewExpression` (new Set(arr))
 // from a dedicated NewExpression visitor in prefer-lodash.ts.
 export const isValidUniqArgument = (
-  argument:
-    | null
-    | TSESTree.CallExpressionArgument
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined
+  argument: null | TSESTree.CallExpressionArgument | undefined
 ) => {
   if (isNil(argument)) {
     return false;
@@ -125,11 +120,7 @@ export const isMapMethod = (node: TSESTree.CallExpression) => {
 };
 
 export const getTwoParameterArrow = (
-  node:
-    | null
-    | TSESTree.Node
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined
+  node: null | TSESTree.Node | undefined
 ) => {
   if (
     isNil(node) ||
@@ -142,11 +133,7 @@ export const getTwoParameterArrow = (
 };
 
 export const getOneParameterArrow = (
-  node:
-    | null
-    | TSESTree.Node
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined
+  node: null | TSESTree.Node | undefined
 ) => {
   if (
     isNil(node) ||
@@ -178,11 +165,7 @@ export const isMatchingIndexedAccess = (
 };
 
 export const getIndexedByParameter = (
-  node:
-    | null
-    | TSESTree.Node
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined,
+  node: null | TSESTree.Node | undefined,
   parameterName: string
 ) => {
   if (
@@ -300,13 +283,7 @@ export const getFilterCallReceiver = (node: TSESTree.CallExpression) => {
   return node.callee.object;
 };
 
-export const getCallToPredicate = (
-  node:
-    | null
-    | TSESTree.Node
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined
-) => {
+export const getCallToPredicate = (node: null | TSESTree.Node | undefined) => {
   if (
     isNil(node) ||
     AST_NODE_TYPES.CallExpression !== node.type ||
@@ -336,11 +313,7 @@ export const isSingleParameterArrowBody = (
 };
 
 export const getSingleParameterArrow = (
-  node:
-    | null
-    | TSESTree.Node
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined
+  node: null | TSESTree.Node | undefined
 ) => {
   if (isNil(node)) {
     return null;
@@ -443,11 +416,7 @@ export const getNegatedPredicateArgument = (
 };
 
 export const isNegatedPredicateCall = (
-  body:
-    | null
-    | TSESTree.Node
-    // eslint-disable-next-line no-restricted-syntax
-    | undefined,
+  body: null | TSESTree.Node | undefined,
   predName: string,
   parameterName: string
 ) => {
