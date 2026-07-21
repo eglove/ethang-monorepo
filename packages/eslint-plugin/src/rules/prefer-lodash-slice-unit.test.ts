@@ -43,6 +43,7 @@ describe("isSliceCall", () => {
     ['arr["slice"](0, 2)', false],
     [ARR_SPLICE_0_2, false],
     ["obj.foo(0, 2)", false],
+    ["get().slice(0, 2)", false],
     ["slice(0, 2)", false],
     ["arr[0]", false]
   ])("%s → %s", (code, expected) => {
