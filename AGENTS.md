@@ -46,10 +46,6 @@ workspaces, frameworks, or scripts are current.
 
 ---
 
-
-
-
-
 ## CRITICAL: Tool Usage
 
 AI agents must follow this tool priority order:
@@ -62,41 +58,3 @@ AI agents must follow this tool priority order:
 ## Package Dependency Conventions
 
 When installing and using packages in this repository, **do not assume the `workspace:*` convention**. Many packages are published and installed via the registry. Always look at how other apps/packages use them before adding a new dependency.
-
-## CRITICAL: Monorepo Quality Checks
-
-When validating code in this monorepo, **AI agents should prefer `pnpm --filter @ethang/monorepo-tools check --` over running `pnpm -r lint` / `pnpm test` / `pnpm -r tsc` individually.** The checker's PowerShell orchestrator at `packages/monorepo-tools/src/cli/repo-ai-check.cli.ps1` discovers workspaces, applies `--file` / `--workspace` scoping, then launches a single long-lived Bun worker (`packages/monorepo-tools/src/cli/run-workspace.worker.ts`) that runs eslint, tsc, and vitest across every workspace with bounded internal concurrency (throttled to the logical CPU count by default). The worker reuses `runWorkspace` from `run-workspace.cli.ts`, so there is one `bun` process for the whole check, and emits a single combined JSON document on stdout, so you can see *all* failures (lint + tsc + test) at once instead of fixing one class of error, rerunning, and discovering the next. The orchestrator pipes the aggregated JSON to `packages/monorepo-tools/src/cli/render-check-report.cli.ts` for Markdown (the same JSON shape is also emitted directly with `--format Json`). Human-readable progress is on stderr; stdout is reserved for the report. See `packages/monorepo-tools/README.md` for usage.
-
-To narrow scope while iterating, repeat `--workspace <name>` and/or `--file <relative-or-absolute-path>`. eslint is fully targeted to the given files; tsc still type-checks the whole workspace but only surfaces diagnostics for the targeted files; vitest runs the co-located `*.test.ts`/`*.test.tsx` siblings of each file (or the full workspace vitest if none exist). Both flags are combinable and intersect: `--file foo.ts --workspace auth --workspace store` only runs files inside the listed workspaces.
-
-### Lint autofix telemetry
-
-The default invocation runs `eslint --fix` so auto-fixable issues get rewritten silently. Because `lint.issues[]` only shows *unfixed* problems, the script also exposes a `lint.autofix` block on each workspace result describing what was rewritten:
-
-- `fixedErrorCount` / `fixedWarningCount`: scalar totals for the workspace.
-- `byFile[]`: `{ file, fixedErrorCount, fixedWarningCount, fixedByRule: { ruleId: count } }`.
-- `byRule[]`: `{ ruleId, fixedErrorCount, fixedWarningCount, fileCount }` aggregated across the workspace.
-- `unfixableButFixable[]`: pre-fix messages where the rule was `fixable:true` but the message still appears in the post-fix pass (often a rule conflict).
-
-`lint.autofix` is `null` when `--skip-fix` is used (so the LLM can tell the difference between "no fixes applied" and "telemetry unavailable"). The checker aggregates the telemetry produced by the package ESLint CLI and diffs pre/post messages by `(ruleId, line, column, message)`.
-
-The root-level `summary.lint.autofix` aggregates across all workspaces: `ran`, `ranInWorkspaces`, summed `fixedErrorCount` / `fixedWarningCount`, and a top-10 `byRule` list. **Read `lint.autofix` instead of re-running `eslint --fix` to discover what the script silently rewrote** — re-running risks producing a different fix set if the rules have moved on since the last invocation.
-
-The autofix telemetry is produced by `packages/monorepo-tools/src/cli/eslint-autofix.cli.ts`, a Bun TypeScript entry point backed by the ESLint Node API (`ESLint.lintFiles({fix:true})` followed by `ESLint.outputFixes()` and a second `lintFiles` pass). If the entry point is missing, the parent checker fails fast with a clear stderr message.
-
-### Output format
-
-The default is **`-Format Markdown`**: the same JSON document is piped through `packages/monorepo-tools/src/cli/render-check-report.cli.ts` (a Bun TypeScript entry point that imports `@ethang/markdown-generator` via its file URL) and rendered as a tight, LLM-readable report on stdout. Pass `-Format Json` to get the raw JSON instead — useful for piping to `jq` or programmatic consumers.
-
-The markdown shape (kept deliberately minimal so the LLM has only the information needed to make fixes):
-
-- One-line exit-code banner with duration + workspace count.
-- Summary table (check / ran / passed / failed / errors / warnings).
-- Optional "Autofix applied" block listing the top rules per workspace, only when `--fix` was used.
-- One "Failed: <name> (<path>)" section per failing workspace with up to three sub-headers (lint / tsc / test).
-  - lint: numbered list of unfixed issues as `file:line:col  ruleId [severity]  message`. An alert notes when autofix already ran.
-  - tsc: numbered list of diagnostics as `file:line:col  TScode  message`.
-  - test: failing test names + first error line; falls back to a parse-error / exit-code note when no test-level detail is available.
-- "Passed (N)" bullet list of the workspaces that ran clean.
-
-Excluded from the markdown (still in `--format Json`): per-issue `fix: { range, text }` payloads, vitest's per-test `testResults[]`, every `durationMs`, `cwd`/`configPath` from the shim, `parseError` stacks. For a typical 4-workspace failure, the JSON is ~40 KB / ~10K tokens and the markdown is ~3 KB / ~700 tokens. Use `--format Json` whenever you need to drill in (e.g. `jq '.workspaces[].lint.autofix.byFile'`); use the markdown default whenever you just need to see "what to fix next".
