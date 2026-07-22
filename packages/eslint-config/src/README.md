@@ -49,9 +49,9 @@
 * 6 rules for **Tailwind**
 	* `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`
 	* 6 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
-* 72 rules for **Vitest**
+* 70 rules for **Vitest**
 	* `import vitestConfig from "@ethang/eslint-config/config.vitest.js";`
-	* 72 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)
+	* 70 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)
 * 55 rules for **Playwright**
 	* `import playwright from "eslint-plugin-playwright";`
 	* 55 rules from [eslint-plugin-playwright](https://github.com/mskelton/eslint-plugin-playwright)
