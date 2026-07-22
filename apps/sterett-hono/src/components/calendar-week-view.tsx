@@ -74,6 +74,7 @@ export const WeekView = async ({
                   {map(cellEvents, async (event) => {
                     return (
                       <button
+                        type="button"
                         key={event._id}
                         onclick={`document.getElementById('cal-${event._id}').showModal()`}
                         class="w-full cursor-pointer truncate rounded bg-sky-600/60 px-2 py-1 text-left text-xs text-white transition-colors hover:bg-sky-500/80"
@@ -132,6 +133,7 @@ export const WeekView = async ({
                   {map(slice(cellEvents, 0, 3), async (event) => {
                     return (
                       <button
+                        type="button"
                         key={event._id}
                         onclick={`document.getElementById('cal-${event._id}').showModal()`}
                         class="w-full cursor-pointer truncate rounded bg-sky-600/60 px-1 py-0.5 text-left text-xs text-white transition-colors hover:bg-sky-500/80"

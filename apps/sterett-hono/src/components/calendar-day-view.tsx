@@ -32,6 +32,7 @@ export const DayView = async ({
                 </span>
               </div>
               <button
+                type="button"
                 onclick={`document.getElementById('cal-${event._id}').showModal()`}
                 class="shrink-0 rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               >

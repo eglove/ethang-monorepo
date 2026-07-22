@@ -6,6 +6,13 @@ import {
 import isNil from "lodash/isNil.js";
 
 import {
+  extractKeyFromMember,
+  isMemberAccumulator,
+  validateBlockStructure,
+  validateCallbackStructure,
+  validateReduceCallStructure
+} from "./../utils/reduce-patterns.ts";
+import {
   isCallExpression,
   isIdentifier,
   isMemberExpression
@@ -19,159 +26,12 @@ type MessageIds = "preferLodashGroupBy";
 
 type Options = [];
 
-type ReduceCallback =
-  TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
-
-const isReduceCallback = (node: TSESTree.Node): node is ReduceCallback => {
-  /* v8 ignore next */
-  if (AST_NODE_TYPES.ArrowFunctionExpression === node.type) {
-    return true;
-  }
-  /* v8 ignore next */
-  if (AST_NODE_TYPES.FunctionExpression === node.type) {
-    return true;
-  }
-  return false;
-};
-
-function isReduceCall(
-  callee: TSESTree.Node
-): callee is { property: TSESTree.Identifier } & TSESTree.MemberExpression {
-  /* v8 ignore next */
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (callee.computed) {
-    return false;
-  }
-  /* v8 ignore next */
-  if ("reduce" !== callee.property.name) {
-    return false;
-  }
-  return true;
-}
-
-const isEmptyObject = (node: TSESTree.Node) => {
-  /* v8 ignore next */
-  if (AST_NODE_TYPES.ObjectExpression !== node.type) {
-    return false;
-  }
-  return 0 === node.properties.length;
-};
-
-function hasTwoIdentifierParameters(callback: ReduceCallback): callback is {
-  params: [TSESTree.Identifier, TSESTree.Identifier];
-} & ReduceCallback {
-  /* v8 ignore next */
-  if (2 > callback.params.length) {
-    return false;
-  }
-  const [first, second] = callback.params;
-  /* v8 ignore next */
-  if (!first || !second) {
-    return false;
-  }
-  return isIdentifier(first) && isIdentifier(second);
-}
-
-const returnsAccumulator = (
-  block: TSESTree.BlockStatement,
-  accumulatorName: string
-) => {
-  const last = block.body.at(-1);
-  /* v8 ignore next */
-  if (AST_NODE_TYPES.ReturnStatement !== last?.type) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (!last.argument || !isIdentifier(last.argument)) {
-    return false;
-  }
-  return accumulatorName === last.argument.name;
-};
-
-function isMemberAccumulator(
-  node: TSESTree.Node,
-  accumulatorName: string
-): node is TSESTree.MemberExpression {
-  /* v8 ignore next */
-  if (!isMemberExpression(node)) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (!node.computed) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (!isIdentifier(node.object)) {
-    return false;
-  }
-  return accumulatorName === node.object.name;
-}
-
-const isItemProperty = (node: TSESTree.Node, itemName: string) => {
-  /* v8 ignore next */
-  if (!isMemberExpression(node)) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (!isIdentifier(node.object)) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (itemName !== node.object.name) {
-    return false;
-  }
-  /* v8 ignore next */
-  if (!isIdentifier(node.property)) {
-    return false;
-  }
-  return true;
-};
-
-const extractKeyFromMember = (
-  member: TSESTree.MemberExpression,
-  itemName: string
-) => {
-  /* v8 ignore next */
-  if (!isItemProperty(member.property, itemName)) {
-    return null;
-  }
-  /* v8 ignore next */
-  if (AST_NODE_TYPES.MemberExpression !== member.property.type) {
-    return null;
-  }
-  const { property } = member.property;
-  /* v8 ignore next */
-  if (!isIdentifier(property)) {
-    return null;
-  }
-  return property.name;
-};
-
 const isEmptyArray = (node: TSESTree.Node) => {
   /* v8 ignore next */
   if (AST_NODE_TYPES.ArrayExpression !== node.type) {
     return false;
   }
   return 0 === node.elements.length;
-};
-
-const validateBlockStructure = (
-  block: TSESTree.BlockStatement,
-  accumulatorName: string
-) => {
-  /* v8 ignore next */
-  if (!returnsAccumulator(block, accumulatorName)) {
-    return null;
-  }
-  const [firstStatement] = block.body;
-  /* v8 ignore next */
-  if (AST_NODE_TYPES.ExpressionStatement !== firstStatement?.type) {
-    return null;
-  }
-  return firstStatement;
 };
 
 function extractGroupByKey(
@@ -240,33 +100,6 @@ function getPushCallee(call: TSESTree.CallExpression) {
     return null;
   }
   return callee;
-}
-
-function validateCallbackStructure(callback: TSESTree.Node) {
-  if (!isReduceCallback(callback)) {
-    return null;
-  }
-  if (!hasTwoIdentifierParameters(callback)) {
-    return null;
-  }
-  const [first, second] = callback.params;
-  const { name: accumulatorName } = first;
-  const { name: itemName } = second;
-  if (AST_NODE_TYPES.BlockStatement !== callback.body.type) {
-    return null;
-  }
-  return { accumulatorName, block: callback.body, itemName };
-}
-
-function validateReduceCallStructure(call: TSESTree.CallExpression) {
-  if (!isReduceCall(call.callee)) {
-    return null;
-  }
-  const [, defaultArgument] = call.arguments;
-  if (!defaultArgument || !isEmptyObject(defaultArgument)) {
-    return null;
-  }
-  return { arr: call.callee.object };
 }
 
 export const detectGroupByPattern = (node: TSESTree.Node) => {

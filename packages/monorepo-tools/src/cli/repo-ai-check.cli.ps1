@@ -135,6 +135,36 @@ function Test-HasFile {
 
 # --- discovery --------------------------------------------------------------
 
+function New-WorkspaceInfo {
+    param(
+        [string] $Name,
+        [string] $Path,
+        [string] $RelativePath,
+        [string] $Type,
+        [bool] $HasLint,
+        [bool] $HasTest,
+        [bool] $HasTsconfig
+    )
+    return [pscustomobject]@{
+        name         = $Name
+        path         = $Path
+        relativePath = $RelativePath
+        type         = $Type
+        hasLint      = $HasLint
+        hasTest      = $HasTest
+        hasTsconfig  = $HasTsconfig
+    }
+}
+
+function Parse-PackageScripts {
+    param([object] $Pkg)
+    $scripts = if ($Pkg.scripts) { $Pkg.scripts } else { @{} }
+    return @{
+        hasLint = [bool]($scripts.PSObject.Properties.Name -contains "lint")
+        hasTest = [bool]($scripts.PSObject.Properties.Name -contains "test")
+    }
+}
+
 function Find-Workspace {
     param([string] $Root)
     $prefixes = @("apps", "packages")
@@ -146,16 +176,8 @@ function Find-Workspace {
             $wsPath = $entry.FullName
             if (-not (Test-HasFile $wsPath "package.json")) { continue }
             $pkg = Get-Content (Join-Path -Path $wsPath -ChildPath "package.json") -Raw | ConvertFrom-Json
-            $scripts = if ($pkg.scripts) { $pkg.scripts } else { @{} }
-            $found += [pscustomobject]@{
-                name          = $entry.Name
-                path          = $wsPath
-                relativePath  = "$prefix/$($entry.Name)"
-                type          = if ($prefix -eq "apps") { "app" } else { "package" }
-                hasLint       = [bool]($scripts.PSObject.Properties.Name -contains "lint")
-                hasTest       = [bool]($scripts.PSObject.Properties.Name -contains "test")
-                hasTsconfig   = Test-HasFile $wsPath "tsconfig.json"
-            }
+            $scripts = Parse-PackageScripts -Pkg $pkg
+            $found += New-WorkspaceInfo -Name $entry.Name -Path $wsPath -RelativePath "$prefix/$($entry.Name)" -Type (if ($prefix -eq "apps") { "app" } else { "package" }) -HasLint $scripts.hasLint -HasTest $scripts.hasTest -HasTsconfig (Test-HasFile $wsPath "tsconfig.json")
         }
     }
     return $found
@@ -211,6 +233,55 @@ function Test-Within {
 
 # --- aggregation (mirrors domain/check-report.ts) ---------------------------
 
+function Filter-Kind {
+    param(
+        [array] $Reports,
+        [string] $Kind,
+        [bool] $CheckRan
+    )
+    if ($CheckRan) {
+        return @($Reports | Where-Object { $_.$Kind -and $_.$Kind.ran })
+    }
+    return @($Reports | Where-Object { $_.$Kind })
+}
+
+function Aggregate-AutofixStats {
+    param([array] $WorkspaceReports)
+    $afErrorTotal = 0
+    $afWarningTotal = 0
+    $afWorkspaceCount = 0
+    $ruleBuckets = @{}
+    foreach ($wr in $WorkspaceReports) {
+        if (-not ($wr.lint -and $wr.lint.autofix)) { continue }
+        $afWorkspaceCount += 1
+        $afErrorTotal += [int] $wr.lint.autofix.fixedErrorCount
+        $afWarningTotal += [int] $wr.lint.autofix.fixedWarningCount
+        foreach ($rule in $wr.lint.autofix.byRule) {
+            if (-not $ruleBuckets.ContainsKey($rule.ruleId)) {
+                $ruleBuckets[$rule.ruleId] = [pscustomobject]@{
+                    ruleId          = $rule.ruleId
+                    fixedErrorCount = 0
+                    fixedWarningCount = 0
+                    workspaceCount  = 0
+                }
+            }
+            $ruleBuckets[$rule.ruleId].fixedErrorCount += [int] $rule.fixedErrorCount
+            $ruleBuckets[$rule.ruleId].fixedWarningCount += [int] $rule.fixedWarningCount
+            $ruleBuckets[$rule.ruleId].workspaceCount += 1
+        }
+    }
+    $byRule = $ruleBuckets.Values | Sort-Object -Property @(
+        @{ Expression = { $_.fixedErrorCount + $_.fixedWarningCount }; Descending = $true }
+        @{ Expression = { $_.ruleId }; Descending = $false }
+    ) | Select-Object -First 10
+    return @{
+        afErrorTotal   = $afErrorTotal
+        afWarningTotal = $afWarningTotal
+        afWorkspaceCount = $afWorkspaceCount
+        byRule         = $byRule
+    }
+}
+
 function Build-CheckReport {
     param(
         [string] $StartedAt,
@@ -218,18 +289,18 @@ function Build-CheckReport {
         [array] $WorkspaceReports,
         [bool] $IsAutofixRan
     )
-    # per-kind helpers
-    $lintRan = @($WorkspaceReports | Where-Object { $_.lint -and $_.lint.ran })
-    $lintPassed = @($WorkspaceReports | Where-Object { $_.lint -and $_.lint.passed })
+    # per-kind filters
+    $lintRan = Filter-Kind -Reports $WorkspaceReports -Kind "lint" -CheckRan $true
+    $lintPassed = Filter-Kind -Reports $WorkspaceReports -Kind "lint" -CheckRan $false
     $lintFailed = @($WorkspaceReports | Where-Object { $_.lint -and $_.lint.ran -and -not $_.lint.passed })
-    $tscRan = @($WorkspaceReports | Where-Object { $_.tsc -and $_.tsc.ran })
-    $tscPassed = @($WorkspaceReports | Where-Object { $_.tsc -and $_.tsc.passed })
+    $tscRan = Filter-Kind -Reports $WorkspaceReports -Kind "tsc" -CheckRan $true
+    $tscPassed = Filter-Kind -Reports $WorkspaceReports -Kind "tsc" -CheckRan $false
     $tscFailed = @($WorkspaceReports | Where-Object { $_.tsc -and $_.tsc.ran -and -not $_.tsc.passed })
-    $testRan = @($WorkspaceReports | Where-Object { $_.test -and $_.test.ran })
-    $testPassed = @($WorkspaceReports | Where-Object { $_.test -and $_.test.passed })
+    $testRan = Filter-Kind -Reports $WorkspaceReports -Kind "test" -CheckRan $true
+    $testPassed = Filter-Kind -Reports $WorkspaceReports -Kind "test" -CheckRan $false
     $testFailed = @($WorkspaceReports | Where-Object { $_.test -and $_.test.ran -and -not $_.test.passed })
-    $coverageRan = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran })
-    $coveragePassed = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran -and $_.coverage.passed })
+    $coverageRan = Filter-Kind -Reports $WorkspaceReports -Kind "coverage" -CheckRan $true
+    $coveragePassed = Filter-Kind -Reports $WorkspaceReports -Kind "coverage" -CheckRan $false
     $coverageFailed = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran -and -not $_.coverage.passed })
 
     $lintErrorCount = ($lintRan | Measure-Object -Property errorCount -Sum).Sum
@@ -239,40 +310,15 @@ function Build-CheckReport {
     $testFailedTestCount = ($testRan | ForEach-Object { $_.test.failedTests.Count } | Measure-Object -Sum).Sum
 
     # autofix aggregation
-    $afErrorTotal = 0; $afWarningTotal = 0; $afWorkspaceCount = 0
-    $ruleBuckets = @{}
-    foreach ($wr in $WorkspaceReports) {
-        if ($wr.lint -and $wr.lint.autofix) {
-            $afWorkspaceCount += 1
-            $afErrorTotal += [int] $wr.lint.autofix.fixedErrorCount
-            $afWarningTotal += [int] $wr.lint.autofix.fixedWarningCount
-            foreach ($rule in $wr.lint.autofix.byRule) {
-                if (-not $ruleBuckets.ContainsKey($rule.ruleId)) {
-                    $ruleBuckets[$rule.ruleId] = [pscustomobject]@{
-                        ruleId          = $rule.ruleId
-                        fixedErrorCount = 0
-                        fixedWarningCount = 0
-                        workspaceCount  = 0
-                    }
-                }
-                $ruleBuckets[$rule.ruleId].fixedErrorCount += [int] $rule.fixedErrorCount
-                $ruleBuckets[$rule.ruleId].fixedWarningCount += [int] $rule.fixedWarningCount
-                $ruleBuckets[$rule.ruleId].workspaceCount += 1
-            }
-        }
-    }
-    $byRule = $ruleBuckets.Values | Sort-Object -Property @(
-        @{ Expression = { $_.fixedErrorCount + $_.fixedWarningCount }; Descending = $true }
-        @{ Expression = { $_.ruleId }; Descending = $false }
-    ) | Select-Object -First 10
+    $af = Aggregate-AutofixStats -WorkspaceReports $WorkspaceReports
 
     $lintSummary = [pscustomobject]@{
         autofix = [pscustomobject]@{
-            byRule            = $byRule
-            fixedErrorCount   = $afErrorTotal
-            fixedWarningCount = $afWarningTotal
+            byRule            = $af.byRule
+            fixedErrorCount   = $af.afErrorTotal
+            fixedWarningCount = $af.afWarningTotal
             ran               = $IsAutofixRan
-            ranInWorkspaces   = $afWorkspaceCount
+            ranInWorkspaces   = $af.afWorkspaceCount
         }
         errorCount   = $lintErrorCount
         failed       = $lintFailed.Count
