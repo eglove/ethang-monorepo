@@ -136,6 +136,7 @@ function Test-HasFile {
 # --- discovery --------------------------------------------------------------
 
 function New-WorkspaceInfo {
+    [CmdletBinding(SupportsShouldProcess=$true)]
     param(
         [string] $Name,
         [string] $Path,
@@ -156,7 +157,7 @@ function New-WorkspaceInfo {
     }
 }
 
-function Parse-PackageScripts {
+function Convert-PackageScript {
     param([object] $Pkg)
     $scripts = if ($Pkg.scripts) { $Pkg.scripts } else { @{} }
     return @{
@@ -176,7 +177,7 @@ function Find-Workspace {
             $wsPath = $entry.FullName
             if (-not (Test-HasFile $wsPath "package.json")) { continue }
             $pkg = Get-Content (Join-Path -Path $wsPath -ChildPath "package.json") -Raw | ConvertFrom-Json
-            $scripts = Parse-PackageScripts -Pkg $pkg
+            $scripts = Convert-PackageScript -Pkg $pkg
             $found += New-WorkspaceInfo -Name $entry.Name -Path $wsPath -RelativePath "$prefix/$($entry.Name)" -Type (if ($prefix -eq "apps") { "app" } else { "package" }) -HasLint $scripts.hasLint -HasTest $scripts.hasTest -HasTsconfig (Test-HasFile $wsPath "tsconfig.json")
         }
     }
@@ -233,7 +234,7 @@ function Test-Within {
 
 # --- aggregation (mirrors domain/check-report.ts) ---------------------------
 
-function Filter-Kind {
+function Select-Kind {
     param(
         [array] $Reports,
         [string] $Kind,
@@ -245,7 +246,7 @@ function Filter-Kind {
     return @($Reports | Where-Object { $_.$Kind })
 }
 
-function Aggregate-AutofixStats {
+function Merge-AutofixStat {
     param([array] $WorkspaceReports)
     $afErrorTotal = 0
     $afWarningTotal = 0
@@ -290,17 +291,17 @@ function Build-CheckReport {
         [bool] $IsAutofixRan
     )
     # per-kind filters
-    $lintRan = Filter-Kind -Reports $WorkspaceReports -Kind "lint" -CheckRan $true
-    $lintPassed = Filter-Kind -Reports $WorkspaceReports -Kind "lint" -CheckRan $false
+    $lintRan = Select-Kind -Reports $WorkspaceReports -Kind "lint" -CheckRan $true
+    $lintPassed = Select-Kind -Reports $WorkspaceReports -Kind "lint" -CheckRan $false
     $lintFailed = @($WorkspaceReports | Where-Object { $_.lint -and $_.lint.ran -and -not $_.lint.passed })
-    $tscRan = Filter-Kind -Reports $WorkspaceReports -Kind "tsc" -CheckRan $true
-    $tscPassed = Filter-Kind -Reports $WorkspaceReports -Kind "tsc" -CheckRan $false
+    $tscRan = Select-Kind -Reports $WorkspaceReports -Kind "tsc" -CheckRan $true
+    $tscPassed = Select-Kind -Reports $WorkspaceReports -Kind "tsc" -CheckRan $false
     $tscFailed = @($WorkspaceReports | Where-Object { $_.tsc -and $_.tsc.ran -and -not $_.tsc.passed })
-    $testRan = Filter-Kind -Reports $WorkspaceReports -Kind "test" -CheckRan $true
-    $testPassed = Filter-Kind -Reports $WorkspaceReports -Kind "test" -CheckRan $false
+    $testRan = Select-Kind -Reports $WorkspaceReports -Kind "test" -CheckRan $true
+    $testPassed = Select-Kind -Reports $WorkspaceReports -Kind "test" -CheckRan $false
     $testFailed = @($WorkspaceReports | Where-Object { $_.test -and $_.test.ran -and -not $_.test.passed })
-    $coverageRan = Filter-Kind -Reports $WorkspaceReports -Kind "coverage" -CheckRan $true
-    $coveragePassed = Filter-Kind -Reports $WorkspaceReports -Kind "coverage" -CheckRan $false
+    $coverageRan = Select-Kind -Reports $WorkspaceReports -Kind "coverage" -CheckRan $true
+    $coveragePassed = Select-Kind -Reports $WorkspaceReports -Kind "coverage" -CheckRan $false
     $coverageFailed = @($WorkspaceReports | Where-Object { $_.coverage -and $_.coverage.ran -and -not $_.coverage.passed })
 
     $lintErrorCount = ($lintRan | Measure-Object -Property errorCount -Sum).Sum
@@ -310,7 +311,7 @@ function Build-CheckReport {
     $testFailedTestCount = ($testRan | ForEach-Object { $_.test.failedTests.Count } | Measure-Object -Sum).Sum
 
     # autofix aggregation
-    $af = Aggregate-AutofixStats -WorkspaceReports $WorkspaceReports
+    $af = Merge-AutofixStat -WorkspaceReports $WorkspaceReports
 
     $lintSummary = [pscustomobject]@{
         autofix = [pscustomobject]@{
