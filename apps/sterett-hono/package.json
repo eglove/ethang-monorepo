@@ -7,15 +7,15 @@
     "@ethang/hono-middleware": "workspace:*",
     "@ethang/service-worker": "workspace:*",
     "@portabletext/to-html": "^5.0.2",
-    "@sanity/client": "^7.23.0",
+    "@sanity/client": "^7.23.2",
     "@sanity/image-url": "^2.1.1",
-    "@tailwindcss/cli": "^4.3.2",
+    "@tailwindcss/cli": "^4.3.3",
     "calendar-link": "^2.11.4",
-    "effect": "^3.21.4",
-    "hono": "^4.12.28",
+    "effect": "^3.22.0",
+    "hono": "^4.12.31",
     "lodash": "^4.18.1",
     "tailwind-merge": "^3.6.0",
-    "tailwindcss": "^4.3.2"
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@ethang/eslint-config": "workspace:*",
@@ -27,11 +27,11 @@
     "@types/node": "^26.1.1",
     "@vitest/coverage-v8": "^4.1.10",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.6.0",
-    "tsx": "^4.23.0",
+    "eslint": "^10.7.0",
+    "tsx": "^4.23.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
-    "wrangler": "^4.108.0"
+    "wrangler": "^4.112.0"
   },
   "engines": {
     "node": ">=24"

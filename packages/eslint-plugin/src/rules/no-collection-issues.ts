@@ -105,8 +105,8 @@ const hasReturnValue = (
 
     // Don't descend into nested functions.
     if (
-      (isFunctionExpression(node) || isArrowFunctionExpression(node)) &&
-      node !== _function
+      node !== _function &&
+      (isFunctionExpression(node) || isArrowFunctionExpression(node))
     ) {
       return false;
     }

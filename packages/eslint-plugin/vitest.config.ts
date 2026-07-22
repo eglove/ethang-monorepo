@@ -10,7 +10,7 @@ export default defineConfig({
       ],
       include: ["src/**/*.ts"],
       provider: "v8",
-      reporter: ["text", "json", "html", "lcov"],
+      reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 100,

@@ -1,3 +1,4 @@
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
 import type { CalendarEventRecord } from "../sanity/get-calendar-events.ts";
@@ -11,7 +12,7 @@ export const DayView = async ({
 }) => {
   return (
     <div class="flex flex-col gap-3">
-      {0 === events.length && (
+      {isEmpty(events) && (
         <p class="text-sm text-white/60">No events scheduled.</p>
       )}
       {map(events, async (event) => {
@@ -31,6 +32,7 @@ export const DayView = async ({
                 </span>
               </div>
               <button
+                type="button"
                 onclick={`document.getElementById('cal-${event._id}').showModal()`}
                 class="shrink-0 rounded-md border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80 transition-colors hover:bg-white/10 hover:text-white"
               >

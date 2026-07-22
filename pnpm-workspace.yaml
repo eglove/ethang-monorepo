@@ -9,6 +9,7 @@ allowBuilds:
   "@parcel/watcher": true
   bun: true
   esbuild: true
+  msgpackr-extract: true
   msw: true
   protobufjs: true
   sharp: true

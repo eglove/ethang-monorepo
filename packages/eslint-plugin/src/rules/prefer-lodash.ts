@@ -9,33 +9,43 @@ import join from "lodash/join.js";
 import map from "lodash/map.js";
 
 import {
+  ensureLodashImport,
   markInnerCallExpressions,
   NATIVE_EQUIVALENT_METHODS,
   resolveCall
 } from "../utils/ast.ts";
 import { isLodashFunction } from "../utils/lodash-api.ts";
 import {
+  getIsEmptyReceiver,
   isLodashIdentifierCall,
   resolvePreferImmutable,
   resolvePreferIncludes,
   resolvePreferOverQuantifier,
   resolvePreferTypecheck,
+  shouldPreferChunk,
   shouldPreferCompact,
   shouldPreferConstant,
+  shouldPreferCountBy,
   shouldPreferFilterPattern,
   shouldPreferFindMember,
   shouldPreferFindShift,
   shouldPreferFlatMap,
   shouldPreferGet,
   shouldPreferInvokeMap,
+  shouldPreferIsEmpty,
   shouldPreferIsNil,
+  shouldPreferKeyBy,
   shouldPreferMapPattern,
   shouldPreferMatches,
   shouldPreferNoop,
+  shouldPreferPartition,
   shouldPreferReject,
   shouldPreferSome,
   shouldPreferStartsWith,
-  shouldPreferTimes
+  shouldPreferTimes,
+  shouldPreferUniq,
+  shouldPreferUnzip,
+  shouldPreferZip
 } from "../utils/prefer-patterns.ts";
 import { isCallExpression, isMemberExpression } from "../utils/type-guards.ts";
 
@@ -51,8 +61,10 @@ export type PreferLodashOptions = [
 ];
 
 type MessageIds =
+  | "preferChunk"
   | "preferCompact"
   | "preferConstant"
+  | "preferCountBy"
   | "preferFilter"
   | "preferFind"
   | "preferFlatMap"
@@ -61,18 +73,24 @@ type MessageIds =
   | "preferIncludes"
   | "preferIncludesNegated"
   | "preferInvokeMap"
+  | "preferIsEmpty"
   | "preferIsNil"
+  | "preferKeyBy"
   | "preferLodash"
   | "preferLodashMethod"
   | "preferMap"
   | "preferMatches"
   | "preferNoop"
   | "preferOverQuantifier"
+  | "preferPartition"
   | "preferReject"
   | "preferSome"
   | "preferStartsWith"
   | "preferTimes"
-  | "preferTypecheck";
+  | "preferTypecheck"
+  | "preferUniq"
+  | "preferUnzip"
+  | "preferZip";
 
 const defaultOptions = {
   chainStyle: "as-needed" as const,
@@ -134,7 +152,10 @@ const reportArray = (
           ? `(${sourceText}, ${join(argumentsText, ", ")})`
           : `(${sourceText})`;
 
-      return fixer.replaceText(node, `${methodName}${callText}`);
+      const replace = fixer.replaceText(node, `${methodName}${callText}`);
+      const program = context.sourceCode.ast;
+      const importFix = ensureLodashImport(program, methodName, fixer);
+      return importFix ? [replace, importFix] : replace;
     },
     messageId: "preferLodash",
     node
@@ -261,7 +282,12 @@ const checkCallExpression = (
         markInnerCallAndMember(n, checkContext);
       },
       messageId: "preferTimes"
-    }
+    },
+    { detect: shouldPreferUnzip, messageId: "preferUnzip" },
+    { detect: shouldPreferZip, messageId: "preferZip" },
+    { detect: shouldPreferCountBy, messageId: "preferCountBy" },
+    { detect: shouldPreferKeyBy, messageId: "preferKeyBy" },
+    { detect: shouldPreferChunk, messageId: "preferChunk" }
   ];
 
   for (const check of checks) {
@@ -270,6 +296,13 @@ const checkCallExpression = (
       context.report({ messageId: check.messageId, node });
       return;
     }
+  }
+
+  // prefer-partition: requires program-walking, so dispatched outside the table
+  const program = context.sourceCode.ast;
+  if (shouldPreferPartition(node, program)) {
+    context.report({ messageId: "preferPartition", node });
+    return;
   }
 
   // prefer-over-quantifier (returns a string, not boolean)
@@ -357,6 +390,29 @@ const checkBinaryExpression = (
   if (shouldPreferSome(node)) {
     context.report({ messageId: "preferSome", node });
   }
+
+  // prefer-is-empty
+  if (shouldPreferIsEmpty(node)) {
+    const receiver = getIsEmptyReceiver(node);
+    // getIsEmptyReceiver only returns null when shouldPreferIsEmpty returns
+    // false (mutually exclusive by construction).
+    /* v8 ignore next */
+    if (isNil(receiver)) {
+      context.report({ messageId: "preferIsEmpty", node });
+    } else {
+      const receiverText = context.sourceCode.getText(receiver);
+      context.report({
+        fix: (fixer) => {
+          const replace = fixer.replaceText(node, `isEmpty(${receiverText})`);
+          const program = context.sourceCode.ast;
+          const importFix = ensureLodashImport(program, "isEmpty", fixer);
+          return importFix ? [replace, importFix] : replace;
+        },
+        messageId: "preferIsEmpty",
+        node
+      });
+    }
+  }
 };
 
 const checkFunction = (
@@ -408,6 +464,17 @@ const checkLodashChain = (
     NON_ARRAY_NATIVE_METHODS.has(firstName) ||
     NON_ARRAY_NATIVE_METHODS.has(secondName)
   ) {
+    return;
+  }
+
+  // If the chain's root receiver is a builtin namespace (Math, Buffer,
+  // JSON, etc.) the chain is being applied to a non-array receiver, so the
+  // "prefer lodash chain" suggestion does not apply. Walk past any
+  // intermediate MemberExpression / CallExpression layers to the root
+  // identifier and check `BUILTIN_NAMESPACES` via the resolver.
+  const program = context.sourceCode.ast;
+  const resolved = resolveCall(node.object, program);
+  if ("unknown-member" === resolved.kind) {
     return;
   }
 
@@ -478,6 +545,11 @@ export const preferLodashRule = createRule<PreferLodashOptions, MessageIds>({
         }
 
         checkLodashChain(node, context);
+      },
+      NewExpression: (node: TSESTree.NewExpression) => {
+        if (shouldPreferUniq(node)) {
+          context.report({ messageId: "preferUniq", node });
+        }
       }
     };
 
@@ -491,10 +563,14 @@ export const preferLodashRule = createRule<PreferLodashOptions, MessageIds>({
     },
     fixable: "code",
     messages: {
+      preferChunk:
+        "Prefer `_.chunk` over the canonical `while`/`for` chunk-slice loop.",
       preferCompact:
         "Prefer `_.compact` over `filter(Boolean)` or `filter(x => Boolean(x))`.",
       preferConstant:
         "Prefer `_.constant` for functions that always return a literal value.",
+      preferCountBy:
+        "Prefer `_.countBy` over `reduce` building an object literal with `(acc[k] ?? 0) + 1`.",
       preferFilter:
         "Prefer `_.filter` over `forEach` with an `if` + `push` pattern.",
       preferFind:
@@ -507,7 +583,10 @@ export const preferLodashRule = createRule<PreferLodashOptions, MessageIds>({
       preferIncludes: "Prefer `_.includes` over `indexOf(...) !== -1`.",
       preferIncludesNegated: "Prefer `!_.includes` over `indexOf(...) === -1`.",
       preferInvokeMap: "Prefer `_.invokeMap` over `map(x => x.method())`.",
+      preferIsEmpty: "Prefer `_.isEmpty` over `x.length === 0` length checks.",
       preferIsNil: "Prefer `_.isNil` over `x === null || x === undefined`.",
+      preferKeyBy:
+        "Prefer `_.keyBy` over `reduce` building an object literal keyed by an iteratee.",
       preferLodash:
         "Prefer `{{target}}` from the `lodash` package over native `{{method}}`.",
       preferLodashMethod:
@@ -518,11 +597,18 @@ export const preferLodashRule = createRule<PreferLodashOptions, MessageIds>({
       preferNoop: "Prefer `_.noop` for functions with an empty body.",
       preferOverQuantifier:
         "Prefer `_.{{lodash}}` over combining predicates with `&&` / `||`.",
+      preferPartition:
+        "Prefer `_.partition` over two `filter` calls (one negated) on the same receiver.",
       preferReject: "Prefer `_.reject` over `filter` with a negated predicate.",
       preferSome: "Prefer `_.some` over `findIndex(...) !== -1`.",
       preferStartsWith: "Prefer `_.startsWith` over `indexOf(...) === 0`.",
       preferTimes: "Prefer `_.times` over `Array(n).fill(0).map(fn)`.",
-      preferTypecheck: "Prefer `_.{{lodash}}` over `{{native}}` check."
+      preferTypecheck: "Prefer `_.{{lodash}}` over `{{native}}` check.",
+      preferUniq: "Prefer `_.uniq` over `[...new Set(arr)]`.",
+      preferUnzip:
+        "Prefer `_.unzip` over the nested `arr[0].map((_, i) => arr.map(r => r[i]))` pattern.",
+      preferZip:
+        "Prefer `_.zip` over the nested `arrs[0].map((_, i) => arrs.map(a => a[i]))` pattern."
     },
     schema: [
       {

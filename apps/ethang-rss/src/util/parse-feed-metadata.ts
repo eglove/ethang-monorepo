@@ -1,4 +1,4 @@
-import { Option, Schema } from "effect";
+import { Effect, Option, Schema } from "effect";
 import { XMLParser } from "fast-xml-parser";
 import find from "lodash/find.js";
 import isArray from "lodash/isArray.js";
@@ -128,8 +128,22 @@ const parser = new XMLParser({
 });
 
 export const parseFeedMetadata = (xmlText: string) => {
-  const decoded = Schema.decodeUnknownOption(FeedMetadataSchema)(
-    parser.parse(xmlText)
+  const decoded = Effect.runSync(
+    Effect.try({
+      catch: (error: unknown) => {
+        // v8 ignore next -- XMLParser throws Error instances; normalization is defensive
+        return Error.isError(error) ? error : new Error(String(error));
+      },
+      try: () => {
+        return Schema.decodeUnknownOption(FeedMetadataSchema)(
+          parser.parse(xmlText)
+        );
+      }
+    }).pipe(
+      Effect.catchAll(() => {
+        return Effect.succeed(Option.none<DecodedFeedMetadata>());
+      })
+    )
   );
   // v8 ignore next -- defensive guard: schemas always allow empty {} when no fields match
   const metadata: DecodedFeedMetadata = Option.isSome(decoded)

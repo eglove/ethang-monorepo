@@ -22,53 +22,35 @@ const makeEvent = (overrides: Partial<CalendarEventReturn> = {}) => {
 };
 
 describe("calendarEvent", () => {
-  it('shows "Happening Now!" for an active event', async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
+  it.each([
+    {
+      assertion: "Happening Now!",
+      endsAt: "2024-06-15T13:00:00.000Z",
+      startsAt: "2024-06-15T11:00:00.000Z"
+    },
+    {
+      assertion: "in 3 days",
+      endsAt: "2024-06-18T14:00:00.000Z",
+      startsAt: "2024-06-18T11:00:00.000Z"
+    },
+    {
+      assertion: "3 days ago",
+      endsAt: "2024-06-12T14:00:00.000Z",
+      startsAt: "2024-06-12T11:00:00.000Z"
+    }
+  ])(
+    "shows the correct label for a $assertion event",
+    async ({ assertion, endsAt, startsAt }) => {
+      vi.useFakeTimers();
+      vi.setSystemTime(NOW_MS);
 
-    const html = await renderCalendarEvent(
-      makeEvent({
-        endsAt: "2024-06-15T13:00:00.000Z",
-        startsAt: "2024-06-15T11:00:00.000Z"
-      })
-    );
+      const html = await renderCalendarEvent(makeEvent({ endsAt, startsAt }));
 
-    vi.useRealTimers();
+      vi.useRealTimers();
 
-    expect(html).toContain("Happening Now!");
-  });
-
-  it("shows relative date for a future event", async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    const html = await renderCalendarEvent(
-      makeEvent({
-        endsAt: "2024-06-18T14:00:00.000Z",
-        startsAt: "2024-06-18T11:00:00.000Z"
-      })
-    );
-
-    vi.useRealTimers();
-
-    expect(html).toContain("in 3 days");
-  });
-
-  it("shows relative date for a past event", async () => {
-    vi.useFakeTimers();
-    vi.setSystemTime(NOW_MS);
-
-    const html = await renderCalendarEvent(
-      makeEvent({
-        endsAt: "2024-06-12T14:00:00.000Z",
-        startsAt: "2024-06-12T11:00:00.000Z"
-      })
-    );
-
-    vi.useRealTimers();
-
-    expect(html).toContain("3 days ago");
-  });
+      expect(html).toContain(assertion);
+    }
+  );
 
   it("renders the event title", async () => {
     vi.useFakeTimers();

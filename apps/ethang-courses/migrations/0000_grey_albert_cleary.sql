@@ -1,4 +1,3 @@
--- cspell:ignore cleary
 CREATE TABLE `courseTracking` (
   `courseId` text NOT NULL,
   `id` text PRIMARY KEY NOT NULL,

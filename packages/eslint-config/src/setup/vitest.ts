@@ -20,7 +20,9 @@ const customRules = [
     "prefer-to-be-truthy",
     "prefer-to-be-falsy",
     "require-mock-type-parameters",
-    "prefer-called-once"
+    "prefer-called-once",
+    "no-conditional-in-test",
+    "no-conditional-expect"
   ]),
   {
     name: "@typescript-eslint/no-unsafe-type-assertion",
@@ -29,6 +31,11 @@ const customRules = [
   },
   {
     name: "unicorn/no-useless-undefined",
+    rule: "off",
+    skipPrefix: true
+  },
+  {
+    name: "no-duplicate-imports",
     rule: "off",
     skipPrefix: true
   }

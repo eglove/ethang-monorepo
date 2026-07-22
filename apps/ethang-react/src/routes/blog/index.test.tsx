@@ -25,6 +25,12 @@ const mockBlogStore = {
       blogCategory: { title: "Other" },
       slug: { current: "other" },
       title: "Other Title"
+    },
+    {
+      _id: "4",
+      _updatedAt: "2024-04-01T12:00:00Z",
+      slug: { current: "no-category" },
+      title: "No Category Title"
     }
   ]
 };
@@ -125,6 +131,14 @@ describe("Blog Index Route", () => {
     ).toBeDefined();
     expect(screen.getByText("Test Blog Title")).toBeDefined();
     expect(screen.getByTestId("pagination")).toBeDefined();
+  });
+
+  it("renders blog post without blogCategory without crashing", () => {
+    mockBlogStore.isPending = false;
+    // @ts-expect-error for test
+    const Component = Route.component;
+    render(<Component />);
+    expect(screen.getByText("No Category Title")).toBeDefined();
   });
 
   it("shows spinner when data is loading", () => {

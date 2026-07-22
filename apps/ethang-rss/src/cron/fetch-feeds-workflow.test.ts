@@ -1,4 +1,5 @@
 import noop from "lodash/noop.js";
+import repeat from "lodash/repeat.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MockWorkflowEntrypoint } from "../test-utilities/mock-workflow-entrypoint.ts";
@@ -40,11 +41,13 @@ import {
 const mockSelect = vi.fn();
 const mockInsert = vi.fn();
 const mockUpdate = vi.fn();
+const mockDelete = vi.fn();
 
 vi.mock("drizzle-orm/d1", () => {
   return {
     drizzle: () => {
       return {
+        delete: mockDelete,
         insert: mockInsert,
         select: mockSelect,
         update: mockUpdate
@@ -58,6 +61,21 @@ vi.mock("cloudflare:workers", () => {
     WorkflowEntrypoint: MockWorkflowEntrypoint
   };
 });
+
+// Returns a Promise augmented with .where() so both the workflow's await
+// select().from() and cleanupOldArticles' select().from().where() work.
+const makeThenableFrom = (feeds: unknown[]) => {
+  const mockWhere = vi.fn().mockResolvedValue([]);
+
+  /* eslint-disable unicorn/no-thenable -- augmented Promise needed for drizzle mock chain */
+  return {
+    then: (resolve: (v: unknown) => void) => {
+      resolve(feeds);
+    },
+    where: mockWhere
+  };
+  /* eslint-enable unicorn/no-thenable */
+};
 
 describe("normalizeLink", () => {
   it("returns string link directly", () => {
@@ -106,10 +124,10 @@ describe("normalizeLink", () => {
     );
   });
 
-  it("handles object link with missing @_href", () => {
+  it("returns an empty string for a link object with no href", () => {
     const item = { link: { [TYPE_ATTR]: TEXT_HTML } };
     // @ts-expect-error for test
-    expect(normalizeLink(item)).toEqual({ [TYPE_ATTR]: TEXT_HTML });
+    expect(normalizeLink(item)).toBe("");
   });
 
   it("handles empty link array", () => {
@@ -202,13 +220,14 @@ describe("FetchFeedsWorkflow", () => {
     mockSelect.mockReset();
     mockInsert.mockReset();
     mockUpdate.mockReset();
+    mockDelete.mockReset();
   });
 
   it("runs the workflow successfully, fetches feed and inserts into DB", async () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     mockInsert.mockReturnValue({
@@ -221,6 +240,10 @@ describe("FetchFeedsWorkflow", () => {
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue({})
       })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
     });
 
     const mockEnvironment = {
@@ -288,7 +311,7 @@ describe("FetchFeedsWorkflow", () => {
     ];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     mockInsert.mockReturnValue({
@@ -301,6 +324,10 @@ describe("FetchFeedsWorkflow", () => {
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue({})
       })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
     });
 
     const mockEnvironment = {
@@ -352,13 +379,17 @@ describe("FetchFeedsWorkflow", () => {
     ];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     mockUpdate.mockReturnValue({
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue({})
       })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
     });
 
     const mockEnvironment = {
@@ -405,13 +436,17 @@ describe("FetchFeedsWorkflow", () => {
     ];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     mockUpdate.mockReturnValue({
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue({})
       })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
     });
 
     const mockEnvironment = {
@@ -422,8 +457,7 @@ describe("FetchFeedsWorkflow", () => {
       ok: true,
       text: async () => {
         return `
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <notfeed></notfeed>
+        <root>${repeat("<div>", 150)}${repeat("</div>", 150)}</root>
       `;
       }
     } as Response);
@@ -456,13 +490,14 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
     mockSelect.mockReset();
     mockInsert.mockReset();
     mockUpdate.mockReset();
+    mockDelete.mockReset();
   });
 
   it("handles fetch error and throws inside step.do", async () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     const mockEnvironment = {
@@ -496,7 +531,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     const mockEnvironment = {
@@ -530,7 +565,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     const mockValues = vi.fn().mockReturnValue({
@@ -545,6 +580,10 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue({})
       })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
     });
 
     const mockEnvironment = {
@@ -604,7 +643,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
 
     mockSelect.mockReturnValue({
-      from: vi.fn().mockResolvedValue(mockFeeds)
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
     });
 
     const mockValues = vi.fn().mockReturnValue({
@@ -619,6 +658,10 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue({})
       })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
     });
 
     const mockEnvironment = {

@@ -405,23 +405,15 @@ describe(formatTimeOnly, () => {
 // ─── formatDayHeading ────────────────────────────────────────────────────────
 
 describe(formatDayHeading, () => {
-  it("includes the full weekday name", () => {
+  it.each([
+    { assertion: "Saturday", label: "the full weekday name" },
+    { assertion: "June", label: "the month name" },
+    { assertion: "2024", label: "the year" }
+  ])("includes $label", ({ assertion }) => {
     // 2024-06-15 is a Saturday
     const result = formatDayHeading(DATE_KEY_JUNE_15);
 
-    expect(result).toContain("Saturday");
-  });
-
-  it("includes the month name", () => {
-    const result = formatDayHeading(DATE_KEY_JUNE_15);
-
-    expect(result).toContain("June");
-  });
-
-  it("includes the year", () => {
-    const result = formatDayHeading(DATE_KEY_JUNE_15);
-
-    expect(result).toContain("2024");
+    expect(result).toContain(assertion);
   });
 });
 

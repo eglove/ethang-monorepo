@@ -2,6 +2,7 @@ import type process from "node:process";
 
 import { Effect } from "effect";
 import constant from "lodash/constant.js";
+import isEmpty from "lodash/isEmpty.js";
 import noop from "lodash/noop.js";
 import {
   type Dirent,
@@ -83,10 +84,10 @@ vi.mock("node:path", async (importOriginal) => {
       // "../..")` and then `path.resolve(workspaceRoot, filePath)`.
       let result = "";
       for (const segment of segments) {
-        if (0 === segment.length) {
+        if (isEmpty(segment)) {
           continue; // eslint-disable-line no-continue
         }
-        if (0 === result.length) {
+        if (isEmpty(result)) {
           result = segment;
         } else if (result.endsWith("/") || segment.startsWith("/")) {
           result += segment;

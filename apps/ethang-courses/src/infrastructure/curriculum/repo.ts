@@ -2,6 +2,7 @@ import { inArray } from "drizzle-orm";
 import { DateTime, Effect } from "effect";
 import chunk from "lodash/chunk.js";
 import filter from "lodash/filter.js";
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
 import type { Database } from "../../data/types.ts";
@@ -56,7 +57,7 @@ export const createCurriculumRepo = (database: Database) => {
           })
           .returning();
 
-        if (0 === curriculum.learningPathIds.length) {
+        if (isEmpty(curriculum.learningPathIds)) {
           const [result] = yield* Effect.tryPromise({
             catch: (cause) => {
               return new SaveError(String(cause));
@@ -119,7 +120,7 @@ export const createCurriculumRepo = (database: Database) => {
     },
     validateLearningPathIds: (ids: readonly string[]) => {
       return Effect.gen(function* () {
-        if (0 === ids.length) {
+        if (isEmpty(ids)) {
           return;
         }
 

@@ -1,5 +1,6 @@
 import { auth } from "@ethang/intl/en/auth.ts";
-import { Effect } from "effect";
+import { Effect, Predicate } from "effect";
+import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isNumber from "lodash/isNumber.js";
 import isString from "lodash/isString.js";
@@ -117,9 +118,8 @@ const cookieStoreMock = () => {
             }
             if (true === value) {
               segments.push(`; ${key}`);
-              // eslint-disable-next-line @ethang/prefer-effect-datetime
-            } else if (value instanceof Date) {
-              // eslint-disable-next-line @ethang/prefer-effect-datetime
+            } else if (Predicate.isDate(value)) {
+              // eslint-disable-next-line @ethang/prefer-effect-datetime -- toUTCString() is the HTTP cookie date format
               segments.push(`; ${key}=${value.toUTCString()}`);
             } else if (isString(value) || isNumber(value)) {
               segments.push(`; ${key}=${String(value)}`);
@@ -153,7 +153,7 @@ afterEach(() => {
 
 const lastSetCookie = () => {
   const list = asGlobal().__capturedCookies;
-  if (list === undefined || 0 === list.length) {
+  if (list === undefined || isEmpty(list)) {
     return null;
   }
   return list.at(-1) ?? null;
@@ -619,48 +619,21 @@ describe("auth API", () => {
     expect(response.status).toBe(204);
   });
 
-  it("should return 400 when /sign-up body is invalid", async () => {
-    const response = await sendRequest(
-      "/sign-up",
-      {
-        body: INVALID_BODY,
-        headers: JSON_CONTENT_TYPE_HEADERS,
-        method: "POST"
-      },
-      { "token-auth": TEST_SECRET }
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-  });
-
-  it("should return 400 when /sign-in body is invalid", async () => {
-    const response = await sendRequest(
-      "/sign-in",
-      {
-        body: INVALID_BODY,
-        headers: JSON_CONTENT_TYPE_HEADERS,
-        method: "POST"
-      },
-      { "token-auth": TEST_SECRET }
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-  });
-
-  it("should return 400 when POST /verify body is invalid", async () => {
-    const response = await sendRequest(
-      "/verify",
-      {
-        body: INVALID_BODY,
-        headers: JSON_CONTENT_TYPE_HEADERS,
-        method: "POST"
-      },
-      { "token-auth": TEST_SECRET }
-    );
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-  });
+  it.each(["/sign-up", "/sign-in", "/verify"])(
+    "should return 400 when %s body is invalid",
+    async (path) => {
+      const response = await sendRequest(
+        path,
+        {
+          body: INVALID_BODY,
+          headers: JSON_CONTENT_TYPE_HEADERS,
+          method: "POST"
+        },
+        { "token-auth": TEST_SECRET }
+      );
+      expect(response.status).toBe(400);
+      const body = await response.json();
+      expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
+    }
+  );
 });

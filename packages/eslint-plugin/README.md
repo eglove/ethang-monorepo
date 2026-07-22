@@ -35,6 +35,8 @@ export default {
     "@ethang/no-try-catch": "error",
     "@ethang/path-style": "error",
     "@ethang/prefer-lodash": "error",
+    "@ethang/prefer-lodash-clamp": "error",
+    "@ethang/prefer-lodash-take": "error",
     "@ethang/preferred-alias": "error",
     "@ethang/property-shorthand": "error",
         "@ethang/unwrap": "error",
@@ -47,38 +49,40 @@ export default {
 
 ### Prefer rules
 
-| Rule | Description | Auto-fix |
-| --- | --- | --- |
-| `prefer-effect-datetime` | Prefer `Effect.DateTime` over the native `Date` / `Temporal` globals. | No |
-| `prefer-effect-log` | Prefer `Effect.log*` over `console.*`. Map `console.log`/`console.info`→`Effect.log`, `console.warn`→`Effect.logWarning`, `console.error`→`Effect.logError`, `console.debug`→`Effect.logDebug`. | No |
-| `prefer-lodash` | Prefer lodash (full API surface) over Array.prototype / Object.* / native methods when an equivalent exists. | Yes |
+| Rule                     | Description                                                                                                                                                                                     | Auto-fix |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `prefer-effect-datetime` | Prefer `Effect.DateTime` over the native `Date` / `Temporal` globals.                                                                                                                           | No       |
+| `prefer-effect-log`      | Prefer `Effect.log*` over `console.*`. Map `console.log`/`console.info`→`Effect.log`, `console.warn`→`Effect.logWarning`, `console.error`→`Effect.logError`, `console.debug`→`Effect.logDebug`. | No       |
+| `prefer-lodash`          | Prefer lodash (full API surface) over Array.prototype / Object.* / native methods when an equivalent exists.                                                                                    | Yes      |
+| `prefer-lodash-clamp`    | Prefer `clamp(value, lower, upper)` over the native `Math.min(upper, Math.max(lower, value))` clamp idiom in any of its four rearrangements.                                                    | Yes      |
+| `prefer-lodash-take`     | Prefer `take(arr, n)` / `takeRight(arr, n)` over the native `arr.slice(0, n)` / `arr.slice(-n)` prefix/suffix idiom.                                                                                                    | Yes      |
 
 ### No rules
 
-| Rule | Description | Auto-fix |
-| --- | --- | --- |
-| `no-barrel-file` | Ban barrel files (`index.ts` that re-exports from siblings). Imports must come from the source file directly. | No |
-| `no-collection-issues` | Detects lodash collection issues: missing return values, unnecessary unwrap, and chain method values used outside chains. | No |
-| `no-lodash-misuse` | Detect common lodash misuse: calling `.commit()` on chains, double unwrap via `.value().value()`, passing extra arguments to single-arg functions, and using `this` in iteratees without binding. | No |
-| `no-explicit-return-type` | Ban all explicit return type annotations (per AGENTS.md rule 6). Auto-fix removes the annotation. | Yes |
-| `no-try-catch` | Ban `try`/`catch`/`throw`. Use the Effect typed error system (`Effect.try`, `Effect.tryPromise`, `Effect.catchTag`, `Effect.catchAll`, `Effect.fail`) instead. | No |
-| `validate-unknown` | Require that calls returning `unknown`/`any` (e.g. `JSON.parse`, `response.json()`, `fetch(...)`) are validated by an Effect Schema (`Schema.decodeUnknown*` / `Schema.is` / `Schema.validate*` / `S.decode*` family) before being used downstream. | No |
+| Rule                      | Description                                                                                                                                                                                                                                         | Auto-fix |
+|---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------|
+| `no-barrel-file`          | Ban barrel files (`index.ts` that re-exports from siblings). Imports must come from the source file directly.                                                                                                                                       | No       |
+| `no-collection-issues`    | Detects lodash collection issues: missing return values, unnecessary unwrap, and chain method values used outside chains.                                                                                                                           | No       |
+| `no-lodash-misuse`        | Detect common lodash misuse: calling `.commit()` on chains, double unwrap via `.value().value()`, passing extra arguments to single-arg functions, and using `this` in iteratees without binding.                                                   | No       |
+| `no-explicit-return-type` | Ban all explicit return type annotations (per AGENTS.md rule 6). Auto-fix removes the annotation.                                                                                                                                                   | Yes      |
+| `no-try-catch`            | Ban `try`/`catch`/`throw`. Use the Effect typed error system (`Effect.try`, `Effect.tryPromise`, `Effect.catchTag`, `Effect.catchAll`, `Effect.fail`) instead.                                                                                      | No       |
+| `validate-unknown`        | Require that calls returning `unknown`/`any` (e.g. `JSON.parse`, `response.json()`, `fetch(...)`) are validated by an Effect Schema (`Schema.decodeUnknown*` / `Schema.is` / `Schema.validate*` / `S.decode*` family) before being used downstream. | No       |
 
 ### Stylistic rules
 
-| Rule | Description | Auto-fix |
-| --- | --- | --- |
-| `chain-style` | Enforce a specific chain style for lodash methods. | Yes |
-| `chaining` | Check if a lodash expression could be better expressed as a chain. | Yes |
-| `consistent-compose` | Enforce a consistent composition direction (flow/pipe vs flowRight/compose). | Yes |
-| `identity-shorthand` | Prefer omitting the iteratee when an identity function is used (e.g. `filter(xs)` over `filter(xs, x => x)`). | Yes |
-| `import-scope` | Enforce a specific Lodash import scope (method, member, full, or method-package). | Yes |
-| `matches-property-shorthand` | Prefer matches-property shorthand syntax (e.g. `filter(xs, ['key', value])` over `filter(xs, x => x.key === value)`). | Yes |
-| `matches-shorthand` | Prefer matches shorthand syntax (e.g. `filter(xs, { active: true })` over `filter(xs, x => x.active === true)`). | Yes |
-| `path-style` | Enforce consistent path style (array or string) for lodash path methods. | Yes |
-| `preferred-alias` | Prefer canonical lodash method names over aliases (e.g. `forEach` over `each`). | Yes |
-| `property-shorthand` | Prefer property shorthand syntax (e.g. `map(xs, 'name')` over `map(xs, x => x.name)`). | Yes |
-| `unwrap` | Require lodash chains to end with a chain-breaking method. | No |
+| Rule                         | Description                                                                                                           | Auto-fix |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------------|----------|
+| `chain-style`                | Enforce a specific chain style for lodash methods.                                                                    | Yes      |
+| `chaining`                   | Check if a lodash expression could be better expressed as a chain.                                                    | Yes      |
+| `consistent-compose`         | Enforce a consistent composition direction (flow/pipe vs flowRight/compose).                                          | Yes      |
+| `identity-shorthand`         | Prefer omitting the iteratee when an identity function is used (e.g. `filter(xs)` over `filter(xs, x => x)`).         | Yes      |
+| `import-scope`               | Enforce a specific Lodash import scope (method, member, full, or method-package).                                     | Yes      |
+| `matches-property-shorthand` | Prefer matches-property shorthand syntax (e.g. `filter(xs, ['key', value])` over `filter(xs, x => x.key === value)`). | Yes      |
+| `matches-shorthand`          | Prefer matches shorthand syntax (e.g. `filter(xs, { active: true })` over `filter(xs, x => x.active === true)`).      | Yes      |
+| `path-style`                 | Enforce consistent path style (array or string) for lodash path methods.                                              | Yes      |
+| `preferred-alias`            | Prefer canonical lodash method names over aliases (e.g. `forEach` over `each`).                                       | Yes      |
+| `property-shorthand`         | Prefer property shorthand syntax (e.g. `map(xs, 'name')` over `map(xs, x => x.name)`).                                | Yes      |
+| `unwrap`                     | Require lodash chains to end with a chain-breaking method.                                                            | No       |
 
 ## Import convention
 

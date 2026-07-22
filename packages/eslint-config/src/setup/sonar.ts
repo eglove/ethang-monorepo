@@ -23,7 +23,9 @@ const customRules = [
   { name: "no-implicit-dependencies", rule: "off" },
   { name: "shorthand-property-grouping", rule: "off" }, // Conflicts with perfectionist sorting
   { name: "todo-tag", rule: "off" },
-  { name: "no-reference-error", rule: "off" }
+  { name: "no-reference-error", rule: "off" },
+  { name: "no-os-command-from-path", rule: "off" },
+  { name: "prefer-native-lodash-alternative", rule: "off" }
 ];
 
 export const sonarRules = genRules(ruleNames, customRules, "sonar");

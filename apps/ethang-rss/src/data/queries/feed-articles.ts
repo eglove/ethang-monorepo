@@ -1,10 +1,12 @@
-import { and, desc, eq, lt, sql } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+import slice from "lodash/slice.js";
 
 import type { User } from "../../index.ts";
 
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
+import { combineFilters } from "../util/combine-filters.ts";
 import { createConnection } from "../util/pagination.ts";
 import { getReadStateFilter } from "../util/read-filter.ts";
 
@@ -24,6 +26,10 @@ export const feedArticlesQuery = async (
   const readStateFilter = getReadStateFilter(database, user.sub, {
     isRead: isRead ?? null
   });
+  const paginationFilter = isNil(after)
+    ? null
+    : lt(databaseSchema.articlesTable.id, after);
+  const articleFilter = combineFilters(readStateFilter, paginationFilter);
 
   const articles = await database
     .select({
@@ -54,17 +60,18 @@ export const feedArticlesQuery = async (
       )
     )
     .where(
-      and(
+      // v8 ignore next: nullish coalescing branch coverage
+      combineFilters(
         eq(databaseSchema.articlesTable.feedId, feedId),
-        readStateFilter ?? sql``,
-        isNil(after) ? sql`` : lt(databaseSchema.articlesTable.id, after)
-      )
+        articleFilter
+        // eslint-disable-next-line no-undefined
+      ) ?? undefined
     )
     .orderBy(desc(databaseSchema.articlesTable.id))
     .limit(limit);
 
   const hasNextPage = articles.length > first;
-  const items = articles.slice(0, first);
+  const items = slice(articles, 0, first);
 
   return createConnection(
     map(items, (article) => {

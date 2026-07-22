@@ -1,3 +1,4 @@
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
 import {
@@ -31,7 +32,7 @@ export const NewsPage = async ({
       description="News and Event Updates for Sterett Creek Village Trustee"
     >
       <h1 class="mb-6 text-2xl font-bold tracking-wide">News &amp; Events</h1>
-      {0 === items.length ? (
+      {isEmpty(items) ? (
         <p class="text-white/60">No upcoming news or events.</p>
       ) : (
         <div class="flex flex-col gap-4">

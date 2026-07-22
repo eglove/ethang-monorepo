@@ -4,10 +4,13 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
-  "compatibility_date": "2026-07-09",
+  "compatibility_date": "2026-07-19",
   "main": "src/index.ts",
   "name": "sterett-admin",
-  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "routes": [
     {
       "custom_domain": true,
@@ -15,4 +18,3 @@
     }
   ]
 }
-

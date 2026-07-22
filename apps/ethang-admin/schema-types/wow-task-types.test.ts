@@ -53,22 +53,17 @@ describe("wowTaskType schema", () => {
   describe("prepare preview method", () => {
     const prepare = wowTaskType.preview?.prepare;
 
-    it("prepares weekly task labels correctly", () => {
+    it.each([
+      [{ taskType: "weekly", title: "My Task" }, { title: "Weekly - My Task" }],
+      [{ taskType: "daily", title: "My Task" }, { title: "Daily - My Task" }],
+      [
+        { taskType: "one-time", title: "My Task" },
+        { title: "One Time - My Task" }
+      ]
+    ])("prepares tasks labels correctly", (testCase, expected) => {
       expect(prepare).toBeDefined();
-      const result = prepare?.({ taskType: "weekly", title: "My Task" });
-      expect(result).toEqual({ title: "Weekly - My Task" });
-    });
-
-    it("prepares daily task labels correctly", () => {
-      expect(prepare).toBeDefined();
-      const result = prepare?.({ taskType: "daily", title: "My Task" });
-      expect(result).toEqual({ title: "Daily - My Task" });
-    });
-
-    it("prepares one-time task labels correctly", () => {
-      expect(prepare).toBeDefined();
-      const result = prepare?.({ taskType: "one-time", title: "My Task" });
-      expect(result).toEqual({ title: "One Time - My Task" });
+      const result = prepare?.(testCase);
+      expect(result).toEqual(expected);
     });
   });
 });

@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { hasNativeArrayAlias, isLodashArrayFunction } from "./lodash-api.ts";
+import {
+  hasNativeArrayAlias,
+  isLodashArrayFunction,
+  isRuntimeOnlyLodashMethod
+} from "./lodash-api.ts";
+
+const RETURNS_FALSE_FOR_NON_LODASH_NAMES = "returns false for non-lodash names";
+const UNKNOWN = "nonExistent";
 
 describe("hasNativeArrayAlias", () => {
   it("returns true for collection methods with native aliases", () => {
@@ -17,8 +24,8 @@ describe("hasNativeArrayAlias", () => {
     expect(hasNativeArrayAlias("orderBy")).toBe(false);
   });
 
-  it("returns false for non-lodash names", () => {
-    expect(hasNativeArrayAlias("nonExistent")).toBe(false);
+  it(RETURNS_FALSE_FOR_NON_LODASH_NAMES, () => {
+    expect(hasNativeArrayAlias(UNKNOWN)).toBe(false);
     expect(hasNativeArrayAlias("")).toBe(false);
   });
 });
@@ -34,7 +41,27 @@ describe("isLodashArrayFunction", () => {
     expect(isLodashArrayFunction("groupBy")).toBe(true);
   });
 
+  it(RETURNS_FALSE_FOR_NON_LODASH_NAMES, () => {
+    expect(isLodashArrayFunction(UNKNOWN)).toBe(false);
+  });
+});
+
+describe("isRuntimeOnlyLodashMethod", () => {
+  it.each(["chain", "runInContext", "toChain", "mixin"])(
+    "recognises runtime-only lodash method %s",
+    (name) => {
+      expect(isRuntimeOnlyLodashMethod(name)).toBe(true);
+    }
+  );
+
+  it("returns false for normal lodash methods", () => {
+    expect(isRuntimeOnlyLodashMethod("map")).toBe(false);
+    expect(isRuntimeOnlyLodashMethod("chunk")).toBe(false);
+    expect(isRuntimeOnlyLodashMethod("noConflict")).toBe(false);
+  });
+
   it("returns false for non-lodash names", () => {
-    expect(isLodashArrayFunction("nonExistent")).toBe(false);
+    expect(isRuntimeOnlyLodashMethod("notALodashMethod")).toBe(false);
+    expect(isRuntimeOnlyLodashMethod("")).toBe(false);
   });
 });

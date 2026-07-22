@@ -65,7 +65,7 @@ export const reportAsNeeded = (
     current = getParentCall(current);
   }
 
-  if (!isNil(current) && isMethodCall(current) && !isNeeded) {
+  if (!isNeeded && !isNil(current) && isMethodCall(current)) {
     context.report({ messageId: "unnecessary", node });
   }
 };

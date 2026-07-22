@@ -1,11 +1,13 @@
-import { and, desc, eq, isNull, lt, or, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, or, type SQL } from "drizzle-orm";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+import slice from "lodash/slice.js";
 
 import type { User } from "../../index.ts";
 
 import { type Database, databaseSchema } from "../../db/database-schema.ts";
+import { combineFilters } from "../util/combine-filters.ts";
 import { decodeCursor, encodeCursor } from "../util/cursor.ts";
 import { getReadStateFilter } from "../util/read-filter.ts";
 
@@ -35,7 +37,7 @@ export const allArticlesQuery = async (
     }
   }
 
-  let paginationFilter;
+  let paginationFilter: null | SQL | undefined = null;
   if (!isNil(lastId)) {
     paginationFilter = isNil(lastPublishedAt)
       ? and(
@@ -51,6 +53,8 @@ export const allArticlesQuery = async (
           isNull(databaseSchema.articlesTable.publishedAt)
         );
   }
+
+  const articleFilter = combineFilters(readStateFilter, paginationFilter);
 
   const articles = await database
     .select({
@@ -90,7 +94,8 @@ export const allArticlesQuery = async (
         eq(databaseSchema.userItemStatesTable.userId, user.sub)
       )
     )
-    .where(and(readStateFilter ?? sql``, paginationFilter ?? sql``))
+    // eslint-disable-next-line no-undefined
+    .where(articleFilter ?? undefined)
     .orderBy(
       desc(databaseSchema.articlesTable.publishedAt),
       desc(databaseSchema.articlesTable.id)
@@ -98,7 +103,7 @@ export const allArticlesQuery = async (
     .limit(limit);
 
   const hasNextPage = articles.length > first;
-  const items = articles.slice(0, first);
+  const items = slice(articles, 0, first);
 
   const edges = map(items, (article) => {
     const {

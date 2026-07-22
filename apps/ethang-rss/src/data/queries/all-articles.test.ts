@@ -1,4 +1,5 @@
-/* eslint-disable unicorn/prefer-uint8array-base64 */
+import { SQLiteSyncDialect } from "drizzle-orm/sqlite-core";
+import { Encoding } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { encodeCursor } from "../util/cursor.ts";
@@ -65,6 +66,41 @@ describe("allArticlesQuery - basic query path", () => {
 });
 
 describe("allArticlesQuery - filtering", () => {
+  it("should not append an empty pagination condition for unread articles", async () => {
+    let whereSql = "";
+    const dialect = new SQLiteSyncDialect();
+    const articleQuery = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      leftJoin: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue([]),
+      orderBy: vi.fn().mockReturnThis(),
+      where: vi.fn()
+    };
+    articleQuery.where.mockImplementation((condition) => {
+      whereSql = dialect.sqlToQuery(condition.getSQL()).sql;
+      return articleQuery;
+    });
+    const mockDatabase = {
+      select: vi
+        .fn()
+        .mockReturnValueOnce({
+          from: vi.fn().mockReturnThis(),
+          where: vi.fn().mockReturnValue({})
+        })
+        .mockReturnValueOnce(articleQuery)
+    };
+
+    await allArticlesQuery(
+      // @ts-expect-error test double
+      mockDatabase,
+      { isRead: false },
+      mockContext
+    );
+
+    expect(whereSql).not.toContain("and )");
+  });
+
   it("should filter by isRead = true", async () => {
     const mockArticles = [
       {
@@ -184,35 +220,32 @@ describe("allArticlesQuery - pagination and cursors", () => {
   });
 
   it("should handle cursor with null publishedAt", async () => {
-    const mockArticles = [
-      {
-        feedId: FEED_ID_1,
-        id: "1",
-        publishedAt: null,
-        title: ARTICLE_TITLE_1
-      }
-    ];
-    const mockDatabase = {
-      select: vi.fn().mockReturnValue({
-        from: vi.fn().mockReturnThis(),
-        innerJoin: vi.fn().mockReturnThis(),
-        leftJoin: vi.fn().mockReturnThis(),
-        limit: vi.fn().mockResolvedValue(mockArticles),
-        orderBy: vi.fn().mockReturnThis(),
-        where: vi.fn().mockReturnThis()
+    let whereCaptured: unknown = null;
+    const articleQuery = {
+      from: vi.fn().mockReturnThis(),
+      innerJoin: vi.fn().mockReturnThis(),
+      leftJoin: vi.fn().mockReturnThis(),
+      limit: vi.fn().mockResolvedValue([]),
+      orderBy: vi.fn().mockReturnThis(),
+      where: vi.fn().mockImplementation((condition) => {
+        whereCaptured = condition;
+        return articleQuery;
       })
     };
+    const mockDatabase = {
+      select: vi.fn().mockReturnValue(articleQuery)
+    };
 
-    const result = await allArticlesQuery(
+    await allArticlesQuery(
       // @ts-expect-error test double
       mockDatabase,
-      {
-        after: encodeCursor([null, "3"]),
-        first: 1
-      },
+      { after: encodeCursor([null, "cursor-id"]) },
       mockContext
     );
-    expect(result.edges).toHaveLength(1);
+
+    // The where clause should contain a pagination filter (not null/undefined)
+    expect(articleQuery.where).toHaveBeenCalled();
+    expect(whereCaptured).not.toBeNull();
   });
 });
 
@@ -276,7 +309,7 @@ describe("allArticlesQuery - validation error paths", () => {
   });
 
   it("should handle invalid JSON in cursor", async () => {
-    const invalidJsonBase64 = Buffer.from("abc{").toString("base64");
+    const invalidJsonBase64 = Encoding.encodeBase64("abc{");
     const mockDatabase = {
       select: vi.fn().mockReturnValue({
         from: vi.fn().mockReturnThis(),
@@ -297,9 +330,9 @@ describe("allArticlesQuery - validation error paths", () => {
   });
 
   it("should handle invalid cursor array shape", async () => {
-    const invalidShapeBase64 = Buffer.from(
+    const invalidShapeBase64 = Encoding.encodeBase64(
       JSON.stringify(["only-one-item"])
-    ).toString("base64");
+    );
     const mockDatabase = {
       select: vi.fn().mockReturnValue({
         from: vi.fn().mockReturnThis(),
@@ -320,9 +353,9 @@ describe("allArticlesQuery - validation error paths", () => {
   });
 
   it("should handle cursor array where first element is not a string or null", async () => {
-    const invalidElementBase64 = Buffer.from(
+    const invalidElementBase64 = Encoding.encodeBase64(
       JSON.stringify([123, "some-id"])
-    ).toString("base64");
+    );
     const mockDatabase = {
       select: vi.fn().mockReturnValue({
         from: vi.fn().mockReturnThis(),
@@ -343,9 +376,9 @@ describe("allArticlesQuery - validation error paths", () => {
   });
 
   it("should handle cursor array where second element is not a string", async () => {
-    const invalidSecondBase64 = Buffer.from(
+    const invalidSecondBase64 = Encoding.encodeBase64(
       JSON.stringify(["published-at", 123])
-    ).toString("base64");
+    );
     const mockDatabase = {
       select: vi.fn().mockReturnValue({
         from: vi.fn().mockReturnThis(),

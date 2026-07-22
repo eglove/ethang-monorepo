@@ -8,7 +8,7 @@ export type Blog = {
   _id: string;
   _updatedAt: string;
   author: string;
-  blogCategory: BlogCategory;
+  blogCategory?: BlogCategory;
   description: string;
   slug: Slug;
   title: string;

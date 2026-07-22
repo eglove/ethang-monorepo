@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "compatibility_date": "2026-07-09",
+  "compatibility_date": "2026-07-19",
   "compatibility_flags": ["experimental", "nodejs_compat"],
   "d1_databases": [
     {
@@ -11,7 +11,10 @@
   ],
   "main": "src/index.ts",
   "name": "auth",
-  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "placement": {
     "mode": "smart"
   },
@@ -22,4 +25,3 @@
     }
   ]
 }
-

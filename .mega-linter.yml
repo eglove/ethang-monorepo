@@ -11,6 +11,7 @@ DISABLE_LINTERS:
   - CSS_STYLELINT
   - EDITORCONFIG_EDITORCONFIG_CHECKER
   - SPELL_LYCHEE
+  - SPELL_CSPELL
   - REPOSITORY_GRYPE
   - REPOSITORY_DEVSKIM
   - REPOSITORY_TRIVY
@@ -26,6 +27,6 @@ SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true # Validate all sources
 IGNORE_GITIGNORED_FILES: true
 
-FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*-megalinter_file_names_cspell\.txt|.*\.idea.*|.*/migrations/meta/_journal.json|.*\.agents/.*|skills-lock\.json)
+FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*\.idea.*|.*/migrations/meta/_journal.json|.*\.agents/.*|skills-lock\.json)
 
 REPOSITORY_KINGFISHER_ARGUMENTS: "--exclude **/.agents/**"

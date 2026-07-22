@@ -1,4 +1,4 @@
-import { Effect, Option, Schema } from "effect";
+import { Effect, Encoding, Option, Schema } from "effect";
 import constant from "lodash/constant.js";
 import isFunction from "lodash/isFunction.js";
 import { Buffer } from "node:buffer";
@@ -24,8 +24,8 @@ export const encodeCursor = (value: [null | string, string]) => {
   if (isFunction(bytes.toBase64)) {
     return bytes.toBase64();
   }
-  // eslint-disable-next-line unicorn/prefer-uint8array-base64
-  return Buffer.from(bytes).toString("base64");
+
+  return Encoding.encodeBase64(bytes);
 };
 
 const decodeBase64ToBytes = (cursor: string) => {

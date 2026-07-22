@@ -91,7 +91,7 @@ const hasUnboundThis = (_function: TSESTree.FunctionExpression) => {
       return;
     }
 
-    if (isFunctionExpression(node) && node !== _function) {
+    if (node !== _function && isFunctionExpression(node)) {
       return;
     }
 

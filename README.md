@@ -39,6 +39,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities (auth, caching, last-modified) reused across the Workers-based apps.
 - **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends (no barrel file; import from subpaths).
 - **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by `agents-build` and other tooling.
+- **[monorepo-tools](packages/monorepo-tools)**: Bun/TypeScript monorepo checker and Copilot hook tooling.
 - **[schemas](packages/schemas)**: Shared data schemas and validation utilities (Effect Schema) used across apps, including JWT helpers built on `jose`.
 - **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks (CI workflow validation, JSON sorting, rule generation).
 - **[service-worker](packages/service-worker)**: Shared Workbox-based service worker (with esbuild build step) used by the frontends.
@@ -55,7 +56,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - **Auth & Validation**: `jose` (JWT), `bcryptjs`, Effect Schema, `@hono/zod-validator`, `uuid`
 - **Build & Tooling**: Vite 8, Bun, `@cloudflare/vite-plugin`, `@tanstack/router-plugin`, `@vitejs/plugin-react`, Wrangler, tsx, `@tailwindcss/vite`
 - **Testing**: Vitest 4, `@vitest/coverage-v8`, Testing Library, jsdom, happy-dom, `@faker-js/faker`, Vitest UI, `@effect/vitest`
-- **Code Quality**: TypeScript 6, ESLint 10, `@ethang/eslint-config`, `@ethang/eslint-plugin` (custom rules: `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, shorthand variants), MegaLinter, SonarCloud, cspell, `typescript-eslint`
+- **Code Quality**: TypeScript 6, ESLint 10, `@ethang/eslint-config`, `@ethang/eslint-plugin` (custom rules: `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, shorthand variants), MegaLinter, SonarCloud, `typescript-eslint`
 - **Functional & Utility**: Effect 3, lodash, Immer, `@total-typescript/ts-reset`
 - **Workspace Management**: pnpm workspaces (Node `>=24`)
 

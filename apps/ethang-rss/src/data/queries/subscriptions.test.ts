@@ -1,4 +1,4 @@
-import { Effect, pipe } from "effect";
+import { Effect, Encoding, pipe } from "effect";
 import isFunction from "lodash/isFunction.js";
 import isNil from "lodash/isNil.js";
 import { Buffer } from "node:buffer";
@@ -52,7 +52,7 @@ const encodeTestCursor = (value: [string, string]) => {
   if (isFunction(bytes.toBase64)) {
     return bytes.toBase64();
   }
-  return Buffer.from(bytes).toString("base64");
+  return Encoding.encodeBase64(bytes);
 };
 
 const decodeTestCursor = (cursor: string) => {
@@ -397,12 +397,9 @@ describe("subscriptionsQuery - sorting by TITLE", () => {
     const encoder = new TextEncoder();
     const bytes = encoder.encode('{"feedId":"sub-1"}');
 
-    /* eslint-disable unicorn/prefer-uint8array-base64 */
-
     const invalidCursor = isFunction(bytes.toBase64)
       ? bytes.toBase64()
-      : Buffer.from(bytes).toString("base64");
-    /* eslint-enable unicorn/prefer-uint8array-base64 */
+      : Encoding.encodeBase64(bytes);
 
     const result = await subscriptionsQuery(
       // @ts-expect-error test double
@@ -611,7 +608,7 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
     Object.defineProperty(Uint8Array.prototype, "toBase64", {
       configurable: true,
       value: () => {
-        return Buffer.from('["Feed A","sub-1"]').toString("base64");
+        return Encoding.encodeBase64('["Feed A","sub-1"]');
       },
       writable: true
     });
@@ -689,12 +686,10 @@ describe("subscriptionsQuery - environment fallbacks and invalid inputs", () => 
 
     const encoder = new TextEncoder();
     const bytes = encoder.encode("[1, 2]");
-    /* eslint-disable unicorn/prefer-uint8array-base64 */
 
     const invalidCursor = isFunction(bytes.toBase64)
       ? bytes.toBase64()
-      : Buffer.from(bytes).toString("base64");
-    /* eslint-enable unicorn/prefer-uint8array-base64 */
+      : Encoding.encodeBase64(bytes);
 
     const result = await subscriptionsQuery(
       // @ts-expect-error test double

@@ -39,7 +39,6 @@ export default defineConfig({
     visionTool(),
     codeInput()
   ],
-  // cspell:disable-next-line
   projectId: "3rkvshhk",
   schema: {
     types: schemaTypes

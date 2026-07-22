@@ -101,7 +101,8 @@ const customRules = [
         varsIgnorePattern: "^_"
       }
     ]
-  }
+  },
+  { name: "prefer-destructuring", rule: "off" }
 ];
 
 export const typescriptRules = genRules(

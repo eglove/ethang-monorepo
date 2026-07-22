@@ -97,34 +97,40 @@ describe("DECODE_ALIASES", () => {
 });
 
 describe("getMemberExpressionPropertyName", () => {
-  it("returns the identifier name for non-computed properties", () => {
-    const member = parseMemberExpression("Schema.decodeUnknownSync;");
-    expect(getMemberExpressionPropertyName(member)).toBe("decodeUnknownSync");
-  });
-
-  it("returns the string value for computed string literals", () => {
-    const member = parseMemberExpression('Schema["decodeUnknownSync"];');
-    expect(getMemberExpressionPropertyName(member)).toBe("decodeUnknownSync");
-  });
-
-  it("returns the cooked value for static template literals", () => {
-    const member = parseMemberExpression("Schema[`decodeUnknownSync`];");
-    expect(getMemberExpressionPropertyName(member)).toBe("decodeUnknownSync");
-  });
-
-  it("returns null for computed non-string, non-template literals", () => {
-    const member = parseMemberExpression("Schema[123];");
-    expect(getMemberExpressionPropertyName(member)).toBeNull();
-  });
-
-  it("returns null for computed identifier properties", () => {
-    const member = parseMemberExpression("Schema[someVar];");
-    expect(getMemberExpressionPropertyName(member)).toBeNull();
-  });
-
-  it("returns null for template literals with expressions", () => {
-    const member = parseMemberExpression("Schema[`decode${x}Sync`];");
-    expect(getMemberExpressionPropertyName(member)).toBeNull();
+  it.each([
+    {
+      expected: "decodeUnknownSync",
+      source: "Schema.decodeUnknownSync;",
+      title: "returns the identifier name for non-computed properties"
+    },
+    {
+      expected: "decodeUnknownSync",
+      source: 'Schema["decodeUnknownSync"];',
+      title: "returns the string value for computed string literals"
+    },
+    {
+      expected: "decodeUnknownSync",
+      source: "Schema[`decodeUnknownSync`];",
+      title: "returns the cooked value for static template literals"
+    },
+    {
+      expected: null,
+      source: "Schema[123];",
+      title: "returns null for computed non-string, non-template literals"
+    },
+    {
+      expected: null,
+      source: "Schema[someVar];",
+      title: "returns null for computed identifier properties"
+    },
+    {
+      expected: null,
+      source: "Schema[`decode${x}Sync`];",
+      title: "returns null for template literals with expressions"
+    }
+  ])("$title", ({ expected, source }) => {
+    const member = parseMemberExpression(source);
+    expect(getMemberExpressionPropertyName(member)).toBe(expected);
   });
 
   it("returns null for non-string literals (e.g. numeric, boolean, null)", () => {
@@ -147,35 +153,20 @@ describe("getMemberExpressionPropertyName", () => {
 });
 
 describe("isSchemaAliasReceiver", () => {
-  it("returns true for Schema.foo()", () => {
-    const call = parseCall("Schema.decodeUnknownSync(1);");
-    expect(isSchemaAliasReceiver(call.callee)).toBe(true);
-  });
-
-  it("returns true for S.foo()", () => {
-    const call = parseCall("S.is(1);");
-    expect(isSchemaAliasReceiver(call.callee)).toBe(true);
-  });
-
-  it("returns true for Schema$.foo()", () => {
-    const call = parseCall("Schema$.is(1);");
-    expect(isSchemaAliasReceiver(call.callee)).toBe(true);
-  });
-
-  it("returns false for non-MemberExpression callees", () => {
-    const call = parseCall("foo();");
-    expect(isSchemaAliasReceiver(call.callee)).toBe(false);
-  });
-
-  it("returns false for non-Schema receivers (Effect, lodash, etc.)", () => {
-    const call = parseCall(EFFECT_SUCCEED_CALL);
-    expect(isSchemaAliasReceiver(call.callee)).toBe(false);
-  });
-
-  it("returns false when the object is a non-Identifier expression", () => {
-    const call = parseCall("obj[1]();");
-    expect(isSchemaAliasReceiver(call.callee)).toBe(false);
-  });
+  it.each([
+    { expected: true, source: "Schema.decodeUnknownSync(1);" },
+    { expected: true, source: "S.is(1);" },
+    { expected: true, source: "Schema$.is(1);" },
+    { expected: false, source: "foo();" },
+    { expected: false, source: EFFECT_SUCCEED_CALL },
+    { expected: false, source: "obj[1]();" }
+  ])(
+    "isSchemaAliasReceiver returns $expected for $source",
+    ({ expected, source }) => {
+      const call = parseCall(source);
+      expect(isSchemaAliasReceiver(call.callee)).toBe(expected);
+    }
+  );
 
   it("returns false for non-node inputs (e.g. an Identifier)", () => {
     const identifier = firstNodeOf("plainIdent;") as TSESTree.Identifier;
@@ -210,63 +201,72 @@ describe("isSchemaDecodeCall", () => {
     expect(isSchemaDecodeCall(parseCall(code))).toBe(true);
   });
 
-  it("returns true for computed string-literal decode method", () => {
-    expect(
-      isSchemaDecodeCall(parseCall('Schema["decodeUnknownSync"](1);'))
-    ).toBe(true);
-  });
-
-  it("returns true for static template-literal decode method", () => {
-    expect(
-      isSchemaDecodeCall(parseCall("Schema[`decodeUnknownSync`](1);"))
-    ).toBe(true);
-  });
-
-  it("returns false for non-decode Schema methods", () => {
-    expect(isSchemaDecodeCall(parseCall("Schema.parse(1);"))).toBe(false);
-  });
-
-  it("returns false for non-Schema member calls", () => {
-    expect(isSchemaDecodeCall(parseCall(EFFECT_SUCCEED_CALL))).toBe(false);
-  });
-
-  it("returns false for non-MemberExpression callees", () => {
-    expect(isSchemaDecodeCall(parseCall("decodeUnknownSync(1);"))).toBe(false);
-  });
-
-  it("returns false for computed non-string-literal properties", () => {
-    expect(isSchemaDecodeCall(parseCall("Schema[123](1);"))).toBe(false);
-  });
-
-  it("returns false for computed template literals with expressions", () => {
-    expect(isSchemaDecodeCall(parseCall("Schema[`decode${x}Sync`](1);"))).toBe(
-      false
-    );
-  });
-
-  it("returns false for computed identifier properties (dynamic)", () => {
-    expect(
-      isSchemaDecodeCall(
-        parseCall("const m = 'decodeUnknownSync'; Schema[m](1);")
-      )
-    ).toBe(false);
+  it.each([
+    {
+      expected: true,
+      source: 'Schema["decodeUnknownSync"](1);',
+      title: "returns true for computed string-literal decode method"
+    },
+    {
+      expected: true,
+      source: "Schema[`decodeUnknownSync`](1);",
+      title: "returns true for static template-literal decode method"
+    },
+    {
+      expected: false,
+      source: "Schema.parse(1);",
+      title: "returns false for non-decode Schema methods"
+    },
+    {
+      expected: false,
+      source: EFFECT_SUCCEED_CALL,
+      title: "returns false for non-Schema member calls"
+    },
+    {
+      expected: false,
+      source: "decodeUnknownSync(1);",
+      title: "returns false for non-MemberExpression callees"
+    },
+    {
+      expected: false,
+      source: "Schema[123](1);",
+      title: "returns false for computed non-string-literal properties"
+    },
+    {
+      expected: false,
+      source: "Schema[`decode${x}Sync`](1);",
+      title: "returns false for computed template literals with expressions"
+    },
+    {
+      expected: false,
+      source: "const m = 'decodeUnknownSync'; Schema[m](1);",
+      title: "returns false for computed identifier properties (dynamic)"
+    }
+  ])("isSchemaDecodeCall $title", ({ expected, source }) => {
+    expect(isSchemaDecodeCall(parseCall(source))).toBe(expected);
   });
 });
 
 describe("isSchemaDecodeCallee", () => {
-  it("returns true for curried Schema decode", () => {
-    const call = parseCall("Schema.decodeUnknownSync(MySchema)(value);");
-    expect(isSchemaDecodeCallee(call.callee)).toBe(true);
-  });
-
-  it("returns false for plain function call", () => {
-    const call = parseCall("myFn(value);");
-    expect(isSchemaDecodeCallee(call.callee)).toBe(false);
-  });
-
-  it("returns false for non-Schema member calls", () => {
-    const call = parseCall(EFFECT_SUCCEED_CALL);
-    expect(isSchemaDecodeCallee(call.callee)).toBe(false);
+  it.each([
+    {
+      expected: true,
+      source: "Schema.decodeUnknownSync(MySchema)(value);",
+      title: "returns true for curried Schema decode"
+    },
+    {
+      expected: false,
+      source: "myFn(value);",
+      title: "returns false for plain function call"
+    },
+    {
+      expected: false,
+      source: EFFECT_SUCCEED_CALL,
+      title: "returns false for non-Schema member calls"
+    }
+  ])("isSchemaDecodeCallee $title", ({ expected, source }) => {
+    const call = parseCall(source);
+    expect(isSchemaDecodeCallee(call.callee)).toBe(expected);
   });
 
   it("returns false for non-CallExpression nodes", () => {

@@ -25,6 +25,8 @@ export type LodashApiEntry = {
   readonly category: LodashApiCategory;
   readonly description: string;
   readonly nativeAliases: readonly string[];
+  /** Runtime-only methods mutate lodash itself or return a chain wrapper. */
+  readonly runtimeOnly?: boolean;
 };
 
 export const lodashApi = {
@@ -542,6 +544,26 @@ export const lodashApi = {
     description: "Like defaults but recursively.",
     nativeAliases: []
   },
+  entries: {
+    category: "object",
+    description: "Creates an array of own enumerable string keyed-value pairs.",
+    nativeAliases: ["Object.entries"]
+  },
+  entriesIn: {
+    category: "object",
+    description: "Like entries but includes inherited properties.",
+    nativeAliases: []
+  },
+  extend: {
+    category: "object",
+    description: "Alias of assignIn.",
+    nativeAliases: []
+  },
+  extendWith: {
+    category: "object",
+    description: "Like extend but uses a customizer.",
+    nativeAliases: []
+  },
   findKey: {
     category: "object",
     description:
@@ -559,9 +581,19 @@ export const lodashApi = {
       "Iterates over own and inherited enumerable string keyed properties.",
     nativeAliases: []
   },
+  forInRight: {
+    category: "object",
+    description: "Like forIn but iterates from the end.",
+    nativeAliases: []
+  },
   forOwn: {
     category: "object",
     description: "Iterates over own enumerable string keyed properties.",
+    nativeAliases: []
+  },
+  forOwnRight: {
+    category: "object",
+    description: "Like forOwn but iterates from the end.",
     nativeAliases: []
   },
   functions: {
@@ -1265,6 +1297,11 @@ export const lodashApi = {
     description: "Creates a function that invokes with this binding.",
     nativeAliases: []
   },
+  bindAll: {
+    category: "function",
+    description: "Binds methods of object to the object itself.",
+    nativeAliases: []
+  },
   bindKey: {
     category: "function",
     description: "Like bind but with a key on object.",
@@ -1365,7 +1402,8 @@ export const lodashApi = {
   chain: {
     category: "seq",
     description: "Creates a lodash wrapper instance.",
-    nativeAliases: []
+    nativeAliases: [],
+    runtimeOnly: true
   },
   tap: {
     category: "seq",
@@ -1380,10 +1418,17 @@ export const lodashApi = {
   toChain: {
     category: "seq",
     description: "Converts a wrapped value to a chainable sequence.",
-    nativeAliases: []
+    nativeAliases: [],
+    runtimeOnly: true
   },
 
   // Util
+  attempt: {
+    category: "util",
+    description:
+      "Invokes func with the binding of thisArg and returns the result or caught error.",
+    nativeAliases: []
+  },
   cond: {
     category: "util",
     description: "Creates a function that iterates over pairs.",
@@ -1448,7 +1493,8 @@ export const lodashApi = {
   mixin: {
     category: "util",
     description: "Adds properties to lodash.",
-    nativeAliases: []
+    nativeAliases: [],
+    runtimeOnly: true
   },
   noop: {
     category: "util",
@@ -1495,7 +1541,8 @@ export const lodashApi = {
   runInContext: {
     category: "util",
     description: "Creates a new lodash instance.",
-    nativeAliases: []
+    nativeAliases: [],
+    runtimeOnly: true
   },
   stubArray: {
     category: "util",
@@ -1530,6 +1577,11 @@ export const lodashApi = {
   toJSON: {
     category: "util",
     description: "Returns a JSON representation of value.",
+    nativeAliases: []
+  },
+  toPath: {
+    category: "util",
+    description: "Converts value to a property path array.",
     nativeAliases: []
   },
   uniqueId: {
@@ -1620,4 +1672,23 @@ const COMMON_USER_METHOD_NAMES = new Set([
 
 export const isCommonUserMethodName = (name: string) => {
   return COMMON_USER_METHOD_NAMES.has(name);
+};
+
+/**
+Returns true if the lodash function is runtime-only — i.e. it mutates
+the lodash namespace, returns a chain wrapper, or otherwise cannot be
+trivially aliased to a deep import. These methods must be excluded from
+chained-call detection (`foo.chain(...)`, `foo.mixin(...)`, etc.) because
+they have no native equivalent and the rule's auto-fix cannot produce a
+valid replacement.
+*/
+const RUNTIME_ONLY_LODASH_METHODS = new Set([
+  "chain",
+  "mixin",
+  "runInContext",
+  "toChain"
+]);
+
+export const isRuntimeOnlyLodashMethod = (name: string) => {
+  return RUNTIME_ONLY_LODASH_METHODS.has(name);
 };

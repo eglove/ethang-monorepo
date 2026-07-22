@@ -6,7 +6,7 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       exclude: ["src/en/http.ts", "src/en/index.ts"],
       provider: "v8",
-      reporter: ["text", "json", "html", "lcov"],
+      reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         autoUpdate: true,
         branches: 100,

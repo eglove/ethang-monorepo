@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/prefer-uint8array-base64, unicorn/no-this-outside-of-class */
-import { Effect, pipe } from "effect";
+import { Effect, Encoding, pipe } from "effect";
 import isNil from "lodash/isNil.js";
 import { Buffer } from "node:buffer";
 import { describe, expect, it } from "vitest";
@@ -25,12 +25,12 @@ describe("cursor utilities", () => {
 
   it.each([
     { input: "invalid-base64-string!!" },
-    { input: Buffer.from("invalid-json").toString("base64") },
-    { input: Buffer.from("[]").toString("base64") },
-    { input: Buffer.from("[1]").toString("base64") },
-    { input: Buffer.from("[1, 2, 3]").toString("base64") },
-    { input: Buffer.from('["val1", 2]').toString("base64") },
-    { input: Buffer.from('[2, "val2"]').toString("base64") }
+    { input: Encoding.encodeBase64("invalid-json") },
+    { input: Encoding.encodeBase64("[]") },
+    { input: Encoding.encodeBase64("[1]") },
+    { input: Encoding.encodeBase64("[1, 2, 3]") },
+    { input: Encoding.encodeBase64('["val1", 2]') },
+    { input: Encoding.encodeBase64('[2, "val2"]') }
   ])(
     "should return null for invalid cursor structure: $input",
     async ({ input }) => {
@@ -48,7 +48,7 @@ describe("cursor utilities", () => {
       Object.defineProperty(Uint8Array.prototype, "toBase64", {
         configurable: true,
         value() {
-          return Buffer.from(this).toString("base64");
+          return Encoding.encodeBase64(this);
         },
         writable: true
       });

@@ -4,6 +4,7 @@ import {
   type TSESTree
 } from "@typescript-eslint/utils";
 import isNil from "lodash/isNil.js";
+import slice from "lodash/slice.js";
 
 import {
   isChainBreaker,
@@ -62,7 +63,7 @@ export const isNestedNLevels = (
     return false;
   }
 
-  for (const [index, call] of calls.slice(0, depth).entries()) {
+  for (const [index, call] of slice(calls, 0, depth).entries()) {
     if (!isLodashIdentifierCall(call)) {
       return false;
     }
@@ -94,7 +95,7 @@ export const reportOnSingleChain = (
       isMethodCall(grandParent) &&
       isChainBreaker(grandParent));
 
-  if (isMethodCall(node) && isStandaloneChain) {
+  if (isStandaloneChain && isMethodCall(node)) {
     context.report({ messageId: "single", node });
   }
 };

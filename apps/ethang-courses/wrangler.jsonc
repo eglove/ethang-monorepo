@@ -3,7 +3,7 @@
   "cache": {
     "enabled": true
   },
-  "compatibility_date": "2026-07-09",
+  "compatibility_date": "2026-07-19",
   "compatibility_flags": ["nodejs_compat"],
   "d1_databases": [
     {
@@ -15,7 +15,10 @@
   ],
   "main": "src/index.ts",
   "name": "ethang-courses",
-  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
   "placement": {
     "mode": "smart"
   },

@@ -2,6 +2,7 @@ import { asc, eq } from "drizzle-orm";
 import { Effect } from "effect";
 import filter from "lodash/filter.js";
 import flatMap from "lodash/flatMap.js";
+import isEmpty from "lodash/isEmpty.js";
 import isError from "lodash/isError.js";
 import map from "lodash/map.js";
 
@@ -293,7 +294,7 @@ export const coursesAllQuery = (database: Database, _parameters: null) => {
           asc(learningPathCoursesTable.orderRank)
         );
 
-      if (0 === learningPathCourses.length) {
+      if (isEmpty(learningPathCourses)) {
         return [];
       }
 

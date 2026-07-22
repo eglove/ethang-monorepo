@@ -1097,7 +1097,7 @@
       "source": "mattpocock/skills",
       "sourceType": "github",
       "skillPath": "skills/productivity/grill-me/SKILL.md",
-      "computedHash": "f321507f77702a54af1db66549ec1685fc625390d06c57d7949cdcda8eb1b5c7"
+      "computedHash": "f361db4e15e6bfd562a9282b1dccda513910a50061f9e838ce017be9c69dde3f"
     },
     "gsap-framer-scroll-animation": {
       "source": "github/awesome-copilot",
@@ -1373,7 +1373,7 @@
       "source": "chromedevtools/chrome-devtools-mcp",
       "sourceType": "github",
       "skillPath": "skills/memory-leak-debugging/SKILL.md",
-      "computedHash": "5476f2dbfab1650c724f16774ad695bf39db7a41f2494501d70bb08a717a5ea6"
+      "computedHash": "b62abc901d998b48c36b0cd8739f407c5504dbfd5d53d4373b6099c0e00abb0f"
     },
     "memory-merger": {
       "source": "github/awesome-copilot",
@@ -1619,7 +1619,7 @@
       "source": "microsoft/playwright-cli",
       "sourceType": "github",
       "skillPath": "skills/playwright-cli/SKILL.md",
-      "computedHash": "bf3fd079a642ccd949d6eb4e702c9aa6d3bba62768b08bc772eb0a5f743dd959"
+      "computedHash": "f602822b51bcb6d033749c60731b8f1e80f308222fcb2e4af551905a817c6e08"
     },
     "playwright-dev": {
       "source": "microsoft/playwright",
@@ -2087,7 +2087,7 @@
       "source": "harshanandak/forge",
       "sourceType": "github",
       "skillPath": "skills/sonarcloud-analysis/SKILL.md",
-      "computedHash": "c212b0407bb355a28abcfd1fa74f442599775f7f5bd5b2376cedc8f6e175ee50"
+      "computedHash": "196fc21d3b0f30a11cb2169d66e9f3dab7aafcf84a2528dc789cd0a074d41fb6"
     },
     "sponsor-finder": {
       "source": "github/awesome-copilot",
@@ -2303,7 +2303,7 @@
       "source": "cloudflare/skills",
       "sourceType": "github",
       "skillPath": "skills/turnstile-spin/SKILL.md",
-      "computedHash": "ec3868fef71e9ca926c177c4e2f8a5e234ae501bba4258746507ed095613bbb2"
+      "computedHash": "ef7aad524e5162704dd70b131c674f74f035bd01f430e852604ef9391cd39d0c"
     },
     "typescript-mcp-server-generator": {
       "source": "github/awesome-copilot",

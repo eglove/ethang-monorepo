@@ -5,14 +5,14 @@
 > [!CAUTION]
 > Prettier is already included for styling!
 
-* 953 rules.
-* 310 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
-* 246 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
-* 145 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
-* 111 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
+* 981 rules.
+* 317 rules from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
+* 255 rules from [eslint-plugin-sonarjs](https://github.com/SonarSource/SonarJS/blob/master/packages/jsts/src/rules/README.md)
+* 144 rules from [@eslint/js](https://github.com/eslint/eslint/tree/main/packages/js)
+* 109 rules from [@typescript/eslint](https://github.com/typescript-eslint/typescript-eslint)
+* 35 rules from [@ethang/eslint-plugin](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-plugin)
 * 34 rules from [jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
 * 22 rules from [eslint-plugin-perfectionist](https://github.com/azat-io/eslint-plugin-perfectionist)
-* 21 rules from [@ethang/eslint-plugin](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-plugin)
 * 21 rules from [@eslint/markdown](https://github.com/eslint/markdown)
 * 13 rules from [@eslint/css](https://github.com/eslint/css)
 * 8 rules from [@tanstack/eslint-plugin-query](https://tanstack.com/query/latest/docs/eslint/eslint-plugin-query)
@@ -21,6 +21,7 @@
 * 6 rules from [@eslint/json](https://github.com/eslint/json)
 * 2 rules from [@tanstack/eslint-plugin-router](https://tanstack.com/router/latest/docs/eslint/eslint-plugin-router)
 * 1 rule from [eslint-plugin-compat](https://github.com/amilajack/eslint-plugin-compat)
+* 1 rule from [sindresorhus/eslint-plugin-unicorn](https://github.com/sindresorhus/eslint-plugin-unicorn)
 * 1 rule from [prettier](https://github.com/prettier/eslint-plugin-prettier)
 
 ## Add Even More
@@ -28,9 +29,9 @@
 * 61 rules for **HTML**
 	* `import htmlConfig from "@ethang/eslint-config/config.html.js";`
 	* 61 rules from [@html-eslint/eslint-plugin](https://github.com/html-eslint/html-eslint)
-* 55 rules for **Astro**
+* 53 rules for **Astro**
 	* `import astroConfig from "@ethang/eslint-config/config.astro.js";`
-	* 55 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
+	* 53 rules from [eslint-plugin-astro](https://github.com/ota-meshi/eslint-plugin-astro)
 * 168 rules for **React**
 	* `import reactConfig from "@ethang/eslint-config/config.react.js";`
 	* 139 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
@@ -38,19 +39,19 @@
 * 18 rules for **Solid**
 	* `import solidConfig from "@ethang/eslint-config/config.solid.js";`
 	* 18 rules from [eslint-plugin-solid](https://github.com/solidjs-community/eslint-plugin-solid)
-* 85 rules for **Angular**
+* 89 rules for **Angular**
 	* `import angularConfig from "@ethang/eslint-config/config.angular.js";`
-	* 48 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
-	* 37 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
+	* 50 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
+	* 39 rules from [@angular-eslint/eslint-plugin-template](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/README.md)
 * 16 rules for **Storybook**
 	* `import storybookConfig from "@ethang/eslint-config/config.storybook.js";`
 	* 16 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
-* 5 rules for **Tailwind**
+* 6 rules for **Tailwind**
 	* `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`
-	* 5 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
-* 72 rules for **Vitest**
+	* 6 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
+* 70 rules for **Vitest**
 	* `import vitestConfig from "@ethang/eslint-config/config.vitest.js";`
-	* 72 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)
+	* 70 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)
 * 55 rules for **Playwright**
 	* `import playwright from "eslint-plugin-playwright";`
 	* 55 rules from [eslint-plugin-playwright](https://github.com/mskelton/eslint-plugin-playwright)

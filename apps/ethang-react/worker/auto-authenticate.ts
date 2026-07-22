@@ -9,7 +9,7 @@ export const autoAuthenticate = async (
   const destinationUrl = new URL("https://graphql.ethang.dev/");
   destinationUrl.search = url.search;
 
-  if (!isNil(clientToken) && "" !== clientToken) {
+  if ("" !== clientToken && !isNil(clientToken)) {
     const newHeaders = new Headers(request.headers);
     newHeaders.set("Content-Type", "application/json");
     newHeaders.set("X-Token", clientToken);

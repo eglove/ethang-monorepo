@@ -1,4 +1,5 @@
 import { DateTime } from "effect";
+import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
 import type { FileRecord } from "../sanity/get-files.ts";
@@ -12,7 +13,7 @@ export const FileTable = async ({ files, title }: FileTableProperties) => {
   return (
     <div>
       <h2 class="mb-3 text-lg font-semibold">{title}</h2>
-      {0 === files.length ? (
+      {isEmpty(files) ? (
         <p class="text-sm text-white/50">No files available.</p>
       ) : (
         <ul class="flex flex-col gap-2">
