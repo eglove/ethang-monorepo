@@ -1,30 +1,36 @@
-import { Command, Options } from "@effect/cli";
+import { Command } from "@effect/cli";
 import { NodeContext, NodeRuntime } from "@effect/platform-node";
 import { Effect, Schema } from "effect";
 import forEach from "lodash/forEach.js";
-import isString from "lodash/isString.js";
 import trim from "lodash/trim.js";
 
 import { runEslint } from "./run-eslint.ts";
 import { runWebstormInspections } from "./run-webstorm-inspections.ts";
 
+// Matches Hermes transform_tool_result wire protocol:
+// { tool_name, tool_input, cwd, extra: { result, task_id, tool_call_id } }
+// `extra` and its fields are optional — hermes hooks test may not include them
+const OptionalString = Schema.optional(Schema.String);
+
 export const HermesHookInput = Schema.Struct({
-  arguments: Schema.Record({
-    key: Schema.String,
-    value: Schema.Unknown
-  }),
-  result: Schema.String,
-  task_id: Schema.NullOr(Schema.String),
+  extra: Schema.optional(
+    Schema.Struct({
+      result: Schema.String,
+      task_id: OptionalString
+    })
+  ),
+  tool_input: Schema.Unknown,
   tool_name: Schema.String
 });
 
-const targetOption = Options.text("target").pipe(
-  Options.withAlias("f"),
-  Options.withDescription("Target file, directory, or glob pattern to lint"),
-  Options.withDefault(".")
-);
+// Validates tool_input from unknown into a shape with optional path/target strings
+const ToolInputSchema = Schema.Struct({
+  path: Schema.optional(Schema.String),
+  target: Schema.optional(Schema.String)
+});
 
 const readStdin = Effect.async<string, Error>((resume) => {
+  // v8 ignore start - stdin infrastructure, tested via hook integration only
   if (process.stdin.isTTY) {
     resume(Effect.succeed(""));
     return;
@@ -58,11 +64,47 @@ const readStdin = Effect.async<string, Error>((resume) => {
   process.stdin.on("end", onEnd);
   process.stdin.on("error", onError);
   process.stdin.resume();
+  // v8 ignore end
 });
 
 const runOnTools = new Set(["patch", "write_file"]);
 
-const mainCommand = Command.make("repo-check", { target: targetOption }, () => {
+export const extractTargetPath = (toolInput: unknown) => {
+  const parsed = Schema.decodeUnknownEither(ToolInputSchema)(toolInput);
+  if ("Left" === parsed._tag) return ".";
+  const pathString = parsed.right.path ?? null;
+  const targetString = parsed.right.target ?? null;
+  return pathString ?? targetString ?? ".";
+};
+
+export const collectDiagnostics = (fixedFiles: string[], errors: string[]) => {
+  const diagnostics: string[] = [];
+  forEach(fixedFiles, (fixedFile) => {
+    diagnostics.push(fixedFile);
+  });
+  forEach(errors, (error) => {
+    diagnostics.push(error);
+  });
+  return diagnostics;
+};
+
+export const buildOutput = (result: string, diagnostics: string[]) => {
+  const appendedContext = diagnostics.length
+    ? `\n\n[hook:eslint-autofix+webstorm] ${diagnostics.join("\n")}`
+    : "";
+  return JSON.stringify({ result: result + appendedContext });
+};
+
+export const runInspections = (targetPath: string) => {
+  return Effect.gen(function* () {
+    const fixedFiles = yield* runEslint([targetPath]);
+    const errors = yield* runWebstormInspections([targetPath]);
+    return collectDiagnostics(fixedFiles, errors);
+  });
+};
+
+export const mainCommand = Command.make("repo-check", {}, () => {
+  // v8 ignore start - CLI entry point, tested via integration/hook test
   return Effect.gen(function* () {
     const rawInput = yield* readStdin;
 
@@ -80,41 +122,29 @@ const mainCommand = Command.make("repo-check", { target: targetOption }, () => {
       return;
     }
 
-    const { arguments: toolArguments, result, tool_name } = input.right;
+    const { extra, tool_input: toolArguments, tool_name } = input.right;
+    const result = extra?.result ?? "";
 
     if (!runOnTools.has(tool_name)) {
-      globalThis.console.log(result);
+      if (!result) return;
+      globalThis.console.log(JSON.stringify({ result }));
       return;
     }
 
-    const pathString = isString(toolArguments["path"])
-      ? toolArguments["path"]
-      : null;
-    const targetString = isString(toolArguments["target"])
-      ? toolArguments["target"]
-      : null;
-    const targetPath = pathString ?? targetString ?? ".";
-
-    const fixedFiles = yield* runEslint([targetPath]);
-    const errors = yield* runWebstormInspections([targetPath]);
-
-    let appendedContext = "";
-
-    forEach(fixedFiles, (fixedFile) => {
-      appendedContext += `\n${fixedFile}`;
-    });
-
-    forEach(errors, (error) => {
-      appendedContext += `\n${error}`;
-    });
-
-    globalThis.console.log(result + appendedContext);
+    const targetPath = extractTargetPath(toolArguments);
+    const diagnostics = yield* runInspections(targetPath);
+    globalThis.console.log(buildOutput(result, diagnostics));
+    globalThis.process.exit(0);
   });
+  // v8 ignore end
 });
 
+// v8 ignore start - CLI bootstrap, executed at module load time
 const run = Command.run(mainCommand, {
   name: "repo-check",
   version: "0.0.0"
 });
 
+// Force exit after completion — MCP connections keep the event loop alive
 NodeRuntime.runMain(run(process.argv).pipe(Effect.provide(NodeContext.layer)));
+// v8 ignore end

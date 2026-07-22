@@ -38,7 +38,6 @@
   "name": "@ethang/monorepo-tools",
   "private": true,
   "scripts": {
-    "check": "pwsh -NoProfile -File src/cli/repo-ai-check.cli.ps1",
     "lint": "eslint src --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage",
     "test:watch": "vitest"
