@@ -2,11 +2,14 @@ import type { drizzle } from "drizzle-orm/d1";
 
 import { inArray, lt } from "drizzle-orm";
 import { DateTime, Duration } from "effect";
+import chunk from "lodash/chunk.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
 import { databaseSchema } from "../../db/database-schema.ts";
+
+const CHUNK_SIZE = 100;
 
 export const cleanupOldArticles = async (
   database: ReturnType<typeof drizzle>,
@@ -33,11 +36,22 @@ export const cleanupOldArticles = async (
     return;
   }
 
-  const oldIds = map(oldArticles, "id");
+  const allOldIds = map(oldArticles, "id");
+  const idChunks = chunk(allOldIds, CHUNK_SIZE);
 
-  await database
-    .delete(userItemStatesTable)
-    .where(inArray(userItemStatesTable.articleId, oldIds));
+  await Promise.all(
+    map(idChunks, (idChunk) => {
+      return database
+        .delete(userItemStatesTable)
+        .where(inArray(userItemStatesTable.articleId, idChunk));
+    })
+  );
 
-  await database.delete(articlesTable).where(inArray(articlesTable.id, oldIds));
+  await Promise.all(
+    map(idChunks, (idChunk) => {
+      return database
+        .delete(articlesTable)
+        .where(inArray(articlesTable.id, idChunk));
+    })
+  );
 };

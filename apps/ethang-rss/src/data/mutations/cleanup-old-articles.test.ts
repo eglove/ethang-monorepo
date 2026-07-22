@@ -148,4 +148,51 @@ describe("cleanupOldArticles", () => {
     const whereCalls = mockWhere.mock.calls;
     expect(whereCalls).toHaveLength(2);
   });
+
+  it("should batch-delete articles when there are more than 100 old articles", async () => {
+    // Create 250 old articles to test chunking behavior
+    const mockArticles = Array.from({ length: 250 }, (_, index) => {
+      return { id: `article-${index}` };
+    });
+    const mockSelect = vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnValue(mockArticles)
+    });
+    const mockWhere = vi.fn().mockResolvedValue({});
+    const mockDelete = vi.fn().mockReturnValue({ where: mockWhere });
+
+    const mockDatabase = {
+      delete: mockDelete,
+      select: mockSelect
+    };
+
+    // @ts-expect-error for test
+    await cleanupOldArticles(mockDatabase, CUTOFF_ISO);
+
+    // 250 articles → 3 chunks of userItemStates + 3 chunks of articles = 6 delete calls
+    expect(mockDelete).toHaveBeenCalledTimes(6);
+  });
+
+  it("should batch-delete articles when there are exactly 100 old articles", async () => {
+    const mockArticles = Array.from({ length: 100 }, (_, index) => {
+      return { id: `article-${index}` };
+    });
+    const mockSelect = vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnThis(),
+      where: vi.fn().mockReturnValue(mockArticles)
+    });
+    const mockWhere = vi.fn().mockResolvedValue({});
+    const mockDelete = vi.fn().mockReturnValue({ where: mockWhere });
+
+    const mockDatabase = {
+      delete: mockDelete,
+      select: mockSelect
+    };
+
+    // @ts-expect-error for test
+    await cleanupOldArticles(mockDatabase, CUTOFF_ISO);
+
+    // 100 articles → 1 chunk of userItemStates + 1 chunk of articles = 2 delete calls
+    expect(mockDelete).toHaveBeenCalledTimes(2);
+  });
 });
