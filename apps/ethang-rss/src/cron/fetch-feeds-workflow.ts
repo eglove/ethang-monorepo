@@ -13,6 +13,7 @@ import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 
+import { cleanupOldArticles } from "../data/mutations/cleanup-old-articles.ts";
 import { articlesTable, feedsTable } from "../db/schema.ts";
 import { normalizeDate } from "../util/normalize-date.ts";
 import { parseFeedMetadata } from "../util/parse-feed-metadata.ts";
@@ -252,6 +253,8 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
                 .update(feedsTable)
                 .set(updateFields)
                 .where(eq(feedsTable.id, feed.id));
+
+              await cleanupOldArticles(database);
             }
           }).pipe(
             Effect.matchEffect({
