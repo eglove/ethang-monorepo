@@ -30,6 +30,7 @@ describe("plugin", () => {
         "prefer-effect-datetime",
         "prefer-effect-encoding-base64",
         "prefer-effect-log",
+        "prefer-effect-number-parse",
         "prefer-effect-predicate",
         "prefer-effect-predicate-is-iterable",
         "prefer-lodash",

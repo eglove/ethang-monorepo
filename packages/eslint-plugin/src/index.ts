@@ -15,6 +15,7 @@ import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
+import { preferEffectNumberParseRule } from "./rules/prefer-effect-number-parse.ts";
 import { preferEffectPredicateIsIterableRule } from "./rules/prefer-effect-predicate-is-iterable.ts";
 import { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
 import { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
@@ -53,6 +54,7 @@ export const rules = {
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-encoding-base64": preferEffectEncodingBase64Rule,
   "prefer-effect-log": preferEffectLogRule,
+  "prefer-effect-number-parse": preferEffectNumberParseRule,
   "prefer-effect-predicate": preferEffectPredicateRule,
   "prefer-effect-predicate-is-iterable": preferEffectPredicateIsIterableRule,
   "prefer-lodash": preferLodashRule,
@@ -101,6 +103,7 @@ export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
+export { preferEffectNumberParseRule } from "./rules/prefer-effect-number-parse.ts";
 export { preferEffectPredicateIsIterableRule } from "./rules/prefer-effect-predicate-is-iterable.ts";
 export { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
 export { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";

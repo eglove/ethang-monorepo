@@ -1,4 +1,5 @@
-import { DateTime } from "effect";
+import { DateTime, Number, Option } from "effect";
+import constant from "lodash/constant.js";
 import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 import slice from "lodash/slice.js";
@@ -108,7 +109,10 @@ export const WeekView = async ({
           {map(weekDays, async (dayKey) => {
             const cellEvents = eventsByDate.get(dayKey) ?? [];
             const isToday = dayKey === today;
-            const dayNumber = Number(dayKey.slice(8, 10));
+            const dayNumber = Option.getOrElse(
+              Number.parse(dayKey.slice(8, 10)),
+              constant(1)
+            );
 
             return (
               <div

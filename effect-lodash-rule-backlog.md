@@ -2,7 +2,7 @@
 
 > **Precedence policy.** When lodash and Effect both offer an equivalent, **prefer the lodash form**. This applies across the `Array`, `Predicate`, `String`, `Number`, `Object`, `RegExp`, etc. modules. Effect is only the right answer when lodash has no equivalent at all.
 >
-> **Skip rules already covered.** `prefer-lodash` (the umbrella rule) and its pattern-specific messageIds already cover: `preferCompact`, `preferFilter`, `preferFind`, `preferFlatMap`, `preferIsNil`, `preferMap`, `preferTypecheck`, `preferTimes`, `preferSome`, `preferReject`, `preferStartsWith`, `preferIncludes`, `preferGet`, `preferNoop`, `preferConstant`, `preferMatches`, `preferOverQuantifier`, `preferInvokeMap`, `preferImmutable`, plus `preferUniq`, `preferUnzip`, `preferZip`, `preferPartition`, `preferCountBy`, `preferKeyBy`, `preferChunk`, `preferIsEmpty`. Additionally, dedicated rules exist for: `prefer-lodash-clamp`, `prefer-lodash-group-by`, `prefer-lodash-find-key`, `prefer-lodash-from-pairs`, `prefer-lodash-slice`, `prefer-lodash-union`, `prefer-lodash-intersection`, `prefer-lodash-difference`, `prefer-lodash-uniq`, `prefer-lodash-count-by`, `prefer-lodash-key-by`, `prefer-lodash-escape-regexp`, `prefer-effect-datetime`, `prefer-effect-encoding-base64`, `prefer-effect-log`, `prefer-effect-predicate`, `prefer-effect-predicate-is-iterable`. See `packages/eslint-plugin/src/rules/` and `packages/eslint-plugin/src/utils/prefer-patterns.ts`.
+> **Skip rules already covered.** `prefer-lodash` (the umbrella rule) and its pattern-specific messageIds already cover: `preferCompact`, `preferFilter`, `preferFind`, `preferFlatMap`, `preferIsNil`, `preferMap`, `preferTypecheck`, `preferTimes`, `preferSome`, `preferReject`, `preferStartsWith`, `preferIncludes`, `preferGet`, `preferNoop`, `preferConstant`, `preferMatches`, `preferOverQuantifier`, `preferInvokeMap`, `preferImmutable`, plus `preferUniq`, `preferUnzip`, `preferZip`, `preferPartition`, `preferCountBy`, `preferKeyBy`, `preferChunk`, `preferIsEmpty`. Additionally, dedicated rules exist for: `prefer-lodash-clamp`, `prefer-lodash-group-by`, `prefer-lodash-find-key`, `prefer-lodash-from-pairs`, `prefer-lodash-slice`, `prefer-lodash-union`, `prefer-lodash-intersection`, `prefer-lodash-difference`, `prefer-lodash-uniq`, `prefer-lodash-count-by`, `prefer-lodash-key-by`, `prefer-lodash-escape-regexp`, `prefer-effect-datetime`, `prefer-effect-encoding-base64`, `prefer-effect-log`, `prefer-effect-number-parse`, `prefer-effect-predicate`, `prefer-effect-predicate-is-iterable`. See `packages/eslint-plugin/src/rules/` and `packages/eslint-plugin/src/utils/prefer-patterns.ts`.
 >
 > **Severity convention.** "Report-only" means *no autofix* — **not** a lower severity. Every rule in `@ethang/eslint-config` is registered at ESLint's default severity of `error` (never `warn` or `off`); new rules follow the same convention. A "report-only" rule still fails the build; the user is responsible for the migration and `--fix` simply does not rewrite the source.
 
@@ -30,13 +30,11 @@
 | 12 | `prefer-lodash-pick` | `const { a, b } = obj` → `pick(obj, ["a","b"])` | S | ✅ | S |
 | 13 | `prefer-lodash-omit` | `const { a, ...rest } = obj` → `omit(obj, ["a"])` | S | ✅ | S |
 | 22 | `prefer-lodash-trim` / `prefer-lodash-trimStart` / `prefer-lodash-trimEnd` | Native `s.trim()` / `trimStart()` / `trimEnd()` → `trim(s, chars?)` etc. | S | ⚠ | M |
-| 23 | (removed — `prefer-lodash-escape-regexp` implemented) | — | — | — | — |
 
 ## Effect (non-array — lodash has no equivalent)
 
 | # | Rule | Why | Sev | Fix | Effort |
 |---|---|---|---|---|---|
-| 25 | `prefer-effect-number-parse` | `Number(x)` / `parseFloat(x)` → `Number.parse(x)` (returns `Option<number>`, fails safely) | S | ✅ | S |
 | 26 | `prefer-effect-duration-millis` | `n * 1000` in `setTimeout(fn, n)` / `Date.now() - ts` → `Duration.millis(n)` / `Duration.seconds(n)` | S | ⚠ | M |
 | 27 | `prefer-effect-bigint-clamp` | Ternary clamp on bigints → `BigInt.clamp(x, {min, max})` | S | ✅ | S |
 | 29 | `prefer-effect-redacted` | String literal flagged as secret → `Redacted.make(value)` (heuristic) | S | ❌ | M |

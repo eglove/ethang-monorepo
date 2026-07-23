@@ -905,7 +905,7 @@
       "source": "vercel-labs/skills",
       "sourceType": "github",
       "skillPath": "skills/find-skills/SKILL.md",
-      "computedHash": "781bd6d3f9b19f8c9af6b53d8d0e4876d0183841b565db34ca7092ffa412d111"
+      "computedHash": "b146008599c31057cef1c145774cea5d5afb30e8f43fa802e47a4b461419aaaf"
     },
     "finnish-humanizer": {
       "source": "github/awesome-copilot",
@@ -2087,7 +2087,7 @@
       "source": "harshanandak/forge",
       "sourceType": "github",
       "skillPath": "skills/sonarcloud-analysis/SKILL.md",
-      "computedHash": "196fc21d3b0f30a11cb2169d66e9f3dab7aafcf84a2528dc789cd0a074d41fb6"
+      "computedHash": "48360cde57e880ef0af98fee0f0e13a54c58764a4eaf0fc62af5402bf22d8c4c"
     },
     "sponsor-finder": {
       "source": "github/awesome-copilot",
