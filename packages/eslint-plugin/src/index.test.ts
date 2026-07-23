@@ -34,6 +34,7 @@ describe("plugin", () => {
         "prefer-effect-predicate-is-iterable",
         "prefer-lodash",
         "prefer-lodash-clamp",
+        "prefer-lodash-escape-regexp",
         "prefer-lodash-count-by",
         "prefer-lodash-difference",
         "prefer-lodash-find-key",

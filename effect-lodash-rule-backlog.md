@@ -2,7 +2,7 @@
 
 > **Precedence policy.** When lodash and Effect both offer an equivalent, **prefer the lodash form**. This applies across the `Array`, `Predicate`, `String`, `Number`, `Object`, `RegExp`, etc. modules. Effect is only the right answer when lodash has no equivalent at all.
 >
-> **Skip rules already covered.** `prefer-lodash` (the umbrella rule) and its pattern-specific messageIds already cover: `preferCompact`, `preferFilter`, `preferFind`, `preferFlatMap`, `preferIsNil`, `preferMap`, `preferTypecheck`, `preferTimes`, `preferSome`, `preferReject`, `preferStartsWith`, `preferIncludes`, `preferGet`, `preferNoop`, `preferConstant`, `preferMatches`, `preferOverQuantifier`, `preferInvokeMap`, `preferImmutable`, plus the Wave 3 umbrella extensions `preferUniq`, `preferUnzip`, `preferZip`, `preferPartition`, `preferCountBy`, `preferKeyBy`, `preferChunk`, `preferIsEmpty`. See `packages/eslint-plugin/src/utils/prefer-patterns.ts` and `packages/eslint-plugin/src/utils/prefer-patterns-shape.ts`.
+> **Skip rules already covered.** `prefer-lodash` (the umbrella rule) and its pattern-specific messageIds already cover: `preferCompact`, `preferFilter`, `preferFind`, `preferFlatMap`, `preferIsNil`, `preferMap`, `preferTypecheck`, `preferTimes`, `preferSome`, `preferReject`, `preferStartsWith`, `preferIncludes`, `preferGet`, `preferNoop`, `preferConstant`, `preferMatches`, `preferOverQuantifier`, `preferInvokeMap`, `preferImmutable`, plus `preferUniq`, `preferUnzip`, `preferZip`, `preferPartition`, `preferCountBy`, `preferKeyBy`, `preferChunk`, `preferIsEmpty`. Additionally, dedicated rules exist for: `prefer-lodash-clamp`, `prefer-lodash-group-by`, `prefer-lodash-find-key`, `prefer-lodash-from-pairs`, `prefer-lodash-slice`, `prefer-lodash-union`, `prefer-lodash-intersection`, `prefer-lodash-difference`, `prefer-lodash-uniq`, `prefer-lodash-count-by`, `prefer-lodash-key-by`, `prefer-lodash-escape-regexp`, `prefer-effect-datetime`, `prefer-effect-encoding-base64`, `prefer-effect-log`, `prefer-effect-predicate`, `prefer-effect-predicate-is-iterable`. See `packages/eslint-plugin/src/rules/` and `packages/eslint-plugin/src/utils/prefer-patterns.ts`.
 >
 > **Severity convention.** "Report-only" means *no autofix* — **not** a lower severity. Every rule in `@ethang/eslint-config` is registered at ESLint's default severity of `error` (never `warn` or `off`); new rules follow the same convention. A "report-only" rule still fails the build; the user is responsible for the migration and `--fix` simply does not rewrite the source.
 
@@ -26,22 +26,19 @@
 
 | # | Rule | Why | Sev | Fix | Effort |
 |---|---|---|---|---|---|
-| 5 | `prefer-lodash-find` / `prefer-lodash-findLast` | ⚠️ `find` / `findLast` are in `NATIVE_EQUIVALENT_METHODS` (`packages/eslint-plugin/src/utils/ast.ts`), so the umbrella rule treats native as fine. Enforcing lodash here requires dropping them from that set first — out of scope. |  |  |  |
 | 6 | `prefer-lodash-sortBy` / `prefer-lodash-orderBy` | `arr.sort((a,b) => ...)` → `sortBy(arr, fn)` / `orderBy(arr, [fn], ["asc"])`. Include ES2023 non-mutating coverage: `toSorted`, `toReversed`, `toSpliced`. | S | ⚠ | M |
 | 12 | `prefer-lodash-pick` | `const { a, b } = obj` → `pick(obj, ["a","b"])` | S | ✅ | S |
 | 13 | `prefer-lodash-omit` | `const { a, ...rest } = obj` → `omit(obj, ["a"])` | S | ✅ | S |
-| 14 | `prefer-lodash-groupBy` | `reduce` accumulator building a keyed map → `groupBy(arr, fn)` | S | ⚠ | M |
 | 22 | `prefer-lodash-trim` / `prefer-lodash-trimStart` / `prefer-lodash-trimEnd` | Native `s.trim()` / `trimStart()` / `trimEnd()` → `trim(s, chars?)` etc. | S | ⚠ | M |
-| 23 | `prefer-lodash-escapeRegExp` | Hand-rolled `[].escape` pattern → `escapeRegExp(s)` | S | ✅ | S |
+| 23 | (removed — `prefer-lodash-escape-regexp` implemented) | — | — | — | — |
 
 ## Effect (non-array — lodash has no equivalent)
 
 | # | Rule | Why | Sev | Fix | Effort |
 |---|---|---|---|---|---|
 | 25 | `prefer-effect-number-parse` | `Number(x)` / `parseFloat(x)` → `Number.parse(x)` (returns `Option<number>`, fails safely) | S | ✅ | S |
-| 26 | `prefer-effect-duration-millis` | Investigate overlap with `prefer-effect-datetime` before scoping. `n * 1000` in `setTimeout(fn, n)` / `Date.now() - ts` → `Duration.millis(n)` / `Duration.seconds(n)` | S | ⚠ | M |
+| 26 | `prefer-effect-duration-millis` | `n * 1000` in `setTimeout(fn, n)` / `Date.now() - ts` → `Duration.millis(n)` / `Duration.seconds(n)` | S | ⚠ | M |
 | 27 | `prefer-effect-bigint-clamp` | Ternary clamp on bigints → `BigInt.clamp(x, {min, max})` | S | ✅ | S |
-| 28 | `prefer-effect-encoding-base64` | `Buffer.from(x).toString("base64")` / `atob(btoa(x))` → `Encoding.encodeBase64/decodeBase64` | S | ✅ | S |
 | 29 | `prefer-effect-redacted` | String literal flagged as secret → `Redacted.make(value)` (heuristic) | S | ❌ | M |
 
 ## Policy-driven (report-only by default — semantic-shift migrations)
@@ -80,20 +77,6 @@ Not new rules — extending the umbrella rule's `lodashApi` / `nativeAliases` ta
 |---|---|---|
 | M3 | `preferLodash` on `arr.head()` / `arr.last()` (via `Array.prototype.at` nativeAliases) | ⚠️ `at` is in `NATIVE_EQUIVALENT_METHODS` — would need that removed first. |
 | M4 | `preferLodash` on `Object.keys/values/entries` | ⚠️ `keys` / `values` / `entries` are in `NATIVE_EQUIVALENT_METHODS` — would need those removed first. Open policy question. |
-
----
-
-## Implementation checklist
-
-The order below is the suggested wave rollout. Each wave is a focused PR with tests + lint + tsc green.
-
-- [x] **Wave 0** — metadata cleanup. Extended `lodashApi` with 9 missing entries, added `runtimeOnly` flag on `chain` / `mixin` / `runInContext` / `toChain`, extended `effectApi` with 8 Array entries, seeded sibling Effect tables (`effectPredicateApi`, `effectStringApi`, `effectNumberApi`, `effectBigIntApi`, `effectEncodingApi`, `effectDurationApi`, `effectRedactedApi`) + `EFFECT_NAMESPACES` set.
-- [x] **Wave 1** — `prefer-effect-predicate` for `_.isBigInt` / `_.isSymbol` / `_.isNotNullable`.
-- [x] **Wave 2** — `prefer-lodash-findKey` (`Object.keys(o).find(...)` → `findKey(o, v => v ...)`).
-- [x] **Wave 3** — umbrella `prefer-lodash` extensions: `preferUniq`, `preferUnzip`, `preferZip`, `preferPartition`, `preferCountBy`, `preferKeyBy`, `preferChunk`, `preferIsEmpty`.
-- [ ] **Wave 4** — remaining safe + helpers. Candidates ordered by smallest impact first: #9, #10, #11, #23, #25, #27, #28, #29, #6 (with `toSorted` / `toReversed` / `toSpliced`), #22, #12, #13, #14, #26 (after overlap check), plus H1, H2, H3.
-- [ ] **Policy wave** — smallest-first from the policy bucket: #45 (`mapKeys`) and #46 (`mapValues`), then #43 (`debounce` / `throttle` / `memoize`), then #37 (`effect.match` always over `switch`).
-- [ ] **Optional policy decisions** — promote `find` / `findLast` (#5), `at` (M3), `keys` / `values` / `entries` (M4) from native-acceptable to lodash-required by removing them from `NATIVE_EQUIVALENT_METHODS`. Requires explicit user buy-in per method.
 
 ---
 

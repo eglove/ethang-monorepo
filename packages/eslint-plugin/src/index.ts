@@ -20,6 +20,7 @@ import { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
 import { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
 import { preferLodashCountByRule } from "./rules/prefer-lodash-count-by.ts";
 import { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts";
+import { preferLodashEscapeRegexpRule } from "./rules/prefer-lodash-escape-regexp.ts";
 import { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 import { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 import { preferLodashGroupByRule } from "./rules/prefer-lodash-group-by.ts";
@@ -58,6 +59,7 @@ export const rules = {
   "prefer-lodash-clamp": preferLodashClampRule,
   "prefer-lodash-count-by": preferLodashCountByRule,
   "prefer-lodash-difference": preferLodashDifferenceRule,
+  "prefer-lodash-escape-regexp": preferLodashEscapeRegexpRule,
   "prefer-lodash-find-key": preferLodashFindKeyRule,
   "prefer-lodash-from-pairs": preferLodashFromPairsRule,
   "prefer-lodash-group-by": preferLodashGroupByRule,
@@ -104,6 +106,7 @@ export { preferEffectPredicateRule } from "./rules/prefer-effect-predicate.ts";
 export { preferLodashClampRule } from "./rules/prefer-lodash-clamp.ts";
 export { preferLodashCountByRule } from "./rules/prefer-lodash-count-by.ts";
 export { preferLodashDifferenceRule } from "./rules/prefer-lodash-difference.ts";
+export { preferLodashEscapeRegexpRule } from "./rules/prefer-lodash-escape-regexp.ts";
 export { preferLodashFindKeyRule } from "./rules/prefer-lodash-find-key.ts";
 export { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 export { preferLodashGroupByRule } from "./rules/prefer-lodash-group-by.ts";
