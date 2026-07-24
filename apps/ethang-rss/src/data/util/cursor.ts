@@ -21,6 +21,7 @@ export const encodeCursor = (value: [null | string, string]) => {
   const encoder = new TextEncoder();
   const bytes = encoder.encode(json) as Uint8ArrayWithBase64;
 
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   if (isFunction(bytes.toBase64)) {
     return bytes.toBase64();
   }
@@ -31,6 +32,7 @@ export const encodeCursor = (value: [null | string, string]) => {
 const decodeBase64ToBytes = (cursor: string) => {
   const ctor = Uint8Array as Uint8ArrayConstructorWithBase64;
 
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   if (isFunction(ctor.fromBase64)) {
     return ctor.fromBase64(cursor);
   }

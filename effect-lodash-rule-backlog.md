@@ -55,7 +55,6 @@
 | 42 | `prefer-effect-data` | Hand-rolled error classes → `Data.TaggedError` / `Data.TaggedClass` | P | ❌ | L |
 | 43 | `prefer-lodash-debounce/throttle/memoize` | Hand-rolled equivalents → lodash equivalents | P | ⚠ | M |
 | 45 | `prefer-lodash-mapKeys` | `Object.fromEntries(Object.entries(o).map(...))` → `mapKeys(o, fn)` | P | ✅ | S |
-| 46 | `prefer-lodash-mapValues` | `Object.fromEntries(Object.entries(o).map(...))` (value-only) → `mapValues(o, fn)` | P | ✅ | S |
 | 47 | `prefer-lodash-merge` | Hand-rolled recursive merge → `merge(a, b)` | P | ❌ | L |
 | 48 | `prefer-effect-tracer` | Manual `performance.now()` spans → `Effect.withSpan("name")` | P | ❌ | L |
 

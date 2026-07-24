@@ -6,7 +6,7 @@
   ],
   "dependencies": {
     "effect": "^3.22.0",
-    "jose": "^6.2.3"
+    "jose": "^6.2.4"
   },
   "devDependencies": {
     "@effect/vitest": "^0.30.0",
