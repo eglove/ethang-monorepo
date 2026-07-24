@@ -27,6 +27,7 @@ import { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 import { preferLodashGroupByRule } from "./rules/prefer-lodash-group-by.ts";
 import { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 import { preferLodashKeyByRule } from "./rules/prefer-lodash-key-by.ts";
+import { preferLodashMapValuesRule } from "./rules/prefer-lodash-map-values.ts";
 import { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
 import { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
 import { preferLodashUniqRule } from "./rules/prefer-lodash-uniq.ts";
@@ -67,6 +68,7 @@ export const rules = {
   "prefer-lodash-group-by": preferLodashGroupByRule,
   "prefer-lodash-intersection": preferLodashIntersectionRule,
   "prefer-lodash-key-by": preferLodashKeyByRule,
+  "prefer-lodash-mapValues": preferLodashMapValuesRule,
   "prefer-lodash-slice": preferLodashSliceRule,
   "prefer-lodash-union": preferLodashUnionRule,
   "prefer-lodash-uniq": preferLodashUniqRule,
@@ -115,6 +117,7 @@ export { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 export { preferLodashGroupByRule } from "./rules/prefer-lodash-group-by.ts";
 export { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 export { preferLodashKeyByRule } from "./rules/prefer-lodash-key-by.ts";
+export { preferLodashMapValuesRule } from "./rules/prefer-lodash-map-values.ts";
 export { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
 export { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
 export { preferLodashUniqRule } from "./rules/prefer-lodash-uniq.ts";

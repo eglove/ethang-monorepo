@@ -43,6 +43,7 @@ describe("plugin", () => {
         "prefer-lodash-group-by",
         "prefer-lodash-intersection",
         "prefer-lodash-key-by",
+        "prefer-lodash-mapValues",
         "prefer-lodash-slice",
         "prefer-lodash-union",
         "prefer-lodash-uniq",
