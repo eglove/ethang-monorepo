@@ -12,6 +12,7 @@ import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
+import { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
@@ -27,6 +28,7 @@ import { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 import { preferLodashGroupByRule } from "./rules/prefer-lodash-group-by.ts";
 import { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 import { preferLodashKeyByRule } from "./rules/prefer-lodash-key-by.ts";
+import { preferLodashMapKeysRule } from "./rules/prefer-lodash-map-keys.ts";
 import { preferLodashMapValuesRule } from "./rules/prefer-lodash-map-values.ts";
 import { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
 import { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
@@ -52,6 +54,7 @@ export const rules = {
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
   "path-style": pathStyleRule,
+  "prefer-effect-bigint-clamp": preferEffectBigIntClampRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-encoding-base64": preferEffectEncodingBase64Rule,
   "prefer-effect-log": preferEffectLogRule,
@@ -68,6 +71,7 @@ export const rules = {
   "prefer-lodash-group-by": preferLodashGroupByRule,
   "prefer-lodash-intersection": preferLodashIntersectionRule,
   "prefer-lodash-key-by": preferLodashKeyByRule,
+  "prefer-lodash-mapKeys": preferLodashMapKeysRule,
   "prefer-lodash-mapValues": preferLodashMapValuesRule,
   "prefer-lodash-slice": preferLodashSliceRule,
   "prefer-lodash-union": preferLodashUnionRule,
@@ -102,6 +106,7 @@ export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
+export { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
@@ -117,6 +122,7 @@ export { preferLodashFromPairsRule } from "./rules/prefer-lodash-from-pairs.ts";
 export { preferLodashGroupByRule } from "./rules/prefer-lodash-group-by.ts";
 export { preferLodashIntersectionRule } from "./rules/prefer-lodash-intersection.ts";
 export { preferLodashKeyByRule } from "./rules/prefer-lodash-key-by.ts";
+export { preferLodashMapKeysRule } from "./rules/prefer-lodash-map-keys.ts";
 export { preferLodashMapValuesRule } from "./rules/prefer-lodash-map-values.ts";
 export { preferLodashSliceRule } from "./rules/prefer-lodash-slice.ts";
 export { preferLodashUnionRule } from "./rules/prefer-lodash-union.ts";
