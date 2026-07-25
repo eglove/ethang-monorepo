@@ -15,6 +15,7 @@ import { pathStyleRule } from "./rules/path-style.ts";
 import { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
+import { preferEffectEqualRule } from "./rules/prefer-effect-equal.ts";
 import { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 import { preferEffectNumberParseRule } from "./rules/prefer-effect-number-parse.ts";
 import { preferEffectPredicateIsIterableRule } from "./rules/prefer-effect-predicate-is-iterable.ts";
@@ -57,6 +58,7 @@ export const rules = {
   "prefer-effect-bigint-clamp": preferEffectBigIntClampRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-encoding-base64": preferEffectEncodingBase64Rule,
+  "prefer-effect-equal": preferEffectEqualRule,
   "prefer-effect-log": preferEffectLogRule,
   "prefer-effect-number-parse": preferEffectNumberParseRule,
   "prefer-effect-predicate": preferEffectPredicateRule,
@@ -109,6 +111,7 @@ export { pathStyleRule } from "./rules/path-style.ts";
 export { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
+export { preferEffectEqualRule } from "./rules/prefer-effect-equal.ts";
 export { preferEffectLogRule } from "./rules/prefer-effect-log.ts";
 export { preferEffectNumberParseRule } from "./rules/prefer-effect-number-parse.ts";
 export { preferEffectPredicateIsIterableRule } from "./rules/prefer-effect-predicate-is-iterable.ts";

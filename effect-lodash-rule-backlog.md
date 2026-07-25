@@ -60,7 +60,6 @@
 
 | # | Helper | Why |
 |---|---|---|
-| H1 | `prefer-effect-equal` | `JSON.stringify(a) === JSON.stringify(b)` → `Equal.equals(a, b)` |
 | H2 | `prefer-effect-hash` | Primary-key comparisons in maps/sets → `Hash.hash(a) === Hash.hash(b)` |
 | H3 | `prefer-effect-order` | `a.x < b.x ? -1 : a.x > b.x ? 1 : 0` → `Order.make(...)` / `Order.number` |
 

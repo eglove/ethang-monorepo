@@ -29,6 +29,7 @@ describe("plugin", () => {
         "path-style",
         "prefer-effect-bigint-clamp",
         "prefer-effect-datetime",
+        "prefer-effect-equal",
         "prefer-effect-encoding-base64",
         "prefer-effect-log",
         "prefer-effect-number-parse",
