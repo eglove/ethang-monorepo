@@ -27,6 +27,8 @@ describe("plugin", () => {
         "no-null-undefined-check",
         "no-try-catch",
         "path-style",
+        "prefer-effect-array-intersperse",
+        "prefer-effect-array-scan",
         "prefer-effect-bigint-clamp",
         "prefer-effect-datetime",
         "prefer-effect-equal",

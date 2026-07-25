@@ -12,6 +12,8 @@ import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
+import { preferEffectArrayIntersperseRule } from "./rules/prefer-effect-array-intersperse.ts";
+import { preferEffectArrayScanRule } from "./rules/prefer-effect-array-scan.ts";
 import { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
@@ -55,6 +57,8 @@ export const rules = {
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
   "path-style": pathStyleRule,
+  "prefer-effect-array-intersperse": preferEffectArrayIntersperseRule,
+  "prefer-effect-array-scan": preferEffectArrayScanRule,
   "prefer-effect-bigint-clamp": preferEffectBigIntClampRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-encoding-base64": preferEffectEncodingBase64Rule,
@@ -108,6 +112,8 @@ export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
+export { preferEffectArrayIntersperseRule } from "./rules/prefer-effect-array-intersperse.ts";
+export { preferEffectArrayScanRule } from "./rules/prefer-effect-array-scan.ts";
 export { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
