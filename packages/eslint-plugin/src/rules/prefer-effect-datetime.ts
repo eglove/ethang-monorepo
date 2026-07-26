@@ -531,10 +531,10 @@ const checkDateInstanceMemberCall = (
   if (isIdentifier(callee.object) && isDateIdentifier(callee.object)) {
     return;
   }
-  if (isBridgeReceiver(context, callee.object)) {
+  if (isPascalCaseIdentifier(callee.object)) {
     return;
   }
-  if (isPascalCaseIdentifier(callee.object)) {
+  if (isBridgeReceiver(context, callee.object)) {
     return;
   }
   if (!isReceiverIncludingDate(services, callee.object)) {
