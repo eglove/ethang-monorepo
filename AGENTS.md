@@ -44,6 +44,8 @@ workspaces, frameworks, or scripts are current.
    - When fixing a tsc / lint / test failure, read `lint.autofix` (from the monorepo-tools checker's JSON output, or `pnpm -r lint:fix` summary) **before** re-running the script — it tells you what was already rewritten so you don't get a different fix set.
    - This is why the rules above say "examine the surrounding context and design a better solution" rather than "fix what the linter complained about" — the linter and its autofix are tools; you are responsible for the result.
 
+8. **Refactor When Touching Existing Code**: When modifying existing code — whether for a feature, bugfix, or test — scan the surrounding module for structural improvements. Look for: duplicated logic extractable into a shared utility, functions that have grown too large and should be split, conditionals simplifiable via polymorphism or pattern matching, and test gaps that can be filled. Scope refactoring to the module being changed; do not expand into unrelated files. Run the test suite before and after to confirm no behavior change.
+
 ---
 
 ## CRITICAL: Tool Usage

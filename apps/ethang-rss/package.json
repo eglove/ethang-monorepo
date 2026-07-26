@@ -13,7 +13,7 @@
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.18.6",
+    "@cloudflare/vitest-pool-workers": "^0.18.8",
     "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.24",
@@ -24,7 +24,7 @@
     "eslint": "^10.7.0",
     "typescript": "^6.0.3",
     "vitest": "~4.1.10",
-    "wrangler": "^4.112.0"
+    "wrangler": "^4.114.0"
   },
   "engines": {
     "node": ">=24"

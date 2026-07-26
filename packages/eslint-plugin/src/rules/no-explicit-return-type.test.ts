@@ -7,7 +7,6 @@ import { afterAll } from "vitest";
 import { noExplicitReturnTypeRule } from "./no-explicit-return-type.ts";
 
 const pluginDirectory = import.meta.dirname;
-const packageRoot = path.resolve(pluginDirectory, "..", "..");
 
 const ruleTester = new RuleTester({
   languageOptions: {
@@ -15,9 +14,7 @@ const ruleTester = new RuleTester({
     parserOptions: {
       ecmaFeatures: { jsx: true },
       ecmaVersion: 2024,
-      project: [path.join(packageRoot, "tsconfig.test.json")],
       sourceType: "module",
-      tsconfigRootDir: packageRoot,
       warnOnUnsupportedTypeScriptVersion: false
     }
   }

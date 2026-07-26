@@ -1,7 +1,8 @@
-import { Effect } from "effect";
+import { Effect, Number, Option } from "effect";
 import constant from "lodash/constant.js";
 import endsWith from "lodash/endsWith.js";
 import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
 import some from "lodash/some.js";
 import startsWith from "lodash/startsWith.js";
 import toLower from "lodash/toLower.js";
@@ -39,7 +40,15 @@ const parseSizeValue = (sizes: null | string) => {
   if (isNil(match)) {
     return 0;
   }
-  return Number(match[1]) * Number(match[2]);
+  const [, width, height] = match;
+  /* v8 ignore next -- unreachable: SIZE_DIMENSION_PATTERN guarantees capture groups 1,2 are strings when match is truthy */
+  if (!isString(width) || !isString(height)) {
+    return 0;
+  }
+  return (
+    Option.getOrElse(Number.parse(width), constant(0)) *
+    Option.getOrElse(Number.parse(height), constant(0))
+  );
 };
 
 const returnNull = constant(null);

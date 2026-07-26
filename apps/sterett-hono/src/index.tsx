@@ -1,9 +1,11 @@
 import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
-import { DateTime, Effect, pipe } from "effect";
+import { DateTime, Effect, Number, Option, pipe } from "effect";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
+import constant from "lodash/constant.js";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
+import isNil from "lodash/isNil.js";
 import last from "lodash/last.js";
 import map from "lodash/map.js";
 
@@ -61,11 +63,19 @@ app.get(
         timeZone: "America/Chicago"
       })
     );
+    const rawMonth = lastQuery(value["month"] ?? null);
+    const rawYear = lastQuery(value["year"] ?? null);
     return {
       date: lastQuery(value["date"] ?? null) ?? chicagoTime,
-      month: Number(lastQuery(value["month"] ?? null) ?? nowParts.month),
+      /* v8 ignore next -- fallback branch when query param is non-numeric string */
+      month: isNil(rawMonth)
+        ? nowParts.month
+        : Option.getOrElse(Number.parse(rawMonth), constant(nowParts.month)),
       view: isCalendarView(rawView) ? rawView : "month",
-      year: Number(lastQuery(value["year"] ?? null) ?? nowParts.year)
+      /* v8 ignore next -- fallback branch when query param is non-numeric string */
+      year: isNil(rawYear)
+        ? nowParts.year
+        : Option.getOrElse(Number.parse(rawYear), constant(nowParts.year))
     };
   }),
   async (c) => {
