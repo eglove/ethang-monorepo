@@ -7,14 +7,10 @@ import {
 import isNil from "lodash/isNil.js";
 
 import {
+  detectEntriesMapPattern,
   extractBodyExpression,
-  isMapCall,
-  isObjectEntriesCall,
-  isObjectFromEntriesCall,
   validateArrayParameter
 } from "../utils/lodash-map-utilities.ts";
-
-// Re-export shared utilities for tests
 
 const createRule = ESLintUtils.RuleCreator((name) => {
   return `https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-plugin/src/rules/${name}.ts`;
@@ -103,58 +99,20 @@ export type MapValuesMatch = {
 };
 
 export const detectMapValuesPattern = (node: TSESTree.Node) => {
-  // Layer 1: Object.fromEntries(...)
-  if (!isObjectFromEntriesCall(node)) {
-    return null;
-  }
-
-  const [argument1] = node.arguments;
-  if (!argument1) {
-    return null;
-  }
-
-  // Layer 2: .map(callback)
-  if (!isMapCall(argument1)) {
-    return null;
-  }
-
-  const mapCall = argument1;
-  const [callback] = mapCall.arguments;
-  if (!callback) {
-    return null;
-  }
-
-  // Layer 3: Object.entries(obj) as mapCall.callee.object
-  const mapCallee = mapCall.callee;
-  /* v8 ignore next 3 -- unreachable: isMapCall already guarantees callee is MemberExpression */
-  if (AST_NODE_TYPES.MemberExpression !== mapCallee.type) {
-    return null;
-  }
-
-  const entriesCall = mapCallee.object;
-  if (!isObjectEntriesCall(entriesCall)) {
-    return null;
-  }
-
-  const [objectArgument] = entriesCall.arguments;
-  if (!objectArgument) {
-    return null;
-  }
-
-  // Reject spread argument - Object.entries expects a plain expression
-  if (AST_NODE_TYPES.SpreadElement === objectArgument.type) {
+  const pattern = detectEntriesMapPattern(node);
+  if (isNil(pattern)) {
     return null;
   }
 
   // Check callback passes key through unchanged
-  const callbackInfo = findKeyPassthroughCallback(callback);
+  const callbackInfo = findKeyPassthroughCallback(pattern.callback);
   if (isNil(callbackInfo)) {
     return null;
   }
 
   return {
-    fullCall: node,
-    objExpr: objectArgument,
+    fullCall: pattern.fullCall,
+    objExpr: pattern.objExpr,
     valName: callbackInfo.valName,
     valueTransform: callbackInfo.valueTransform
   };
@@ -206,11 +164,3 @@ export const preferLodashMapValuesRule = createRule<Options, MessageIds>({
   },
   name: "prefer-lodash-mapValues"
 });
-
-export {
-  extractBodyExpression,
-  isMapCall,
-  isObjectEntriesCall,
-  isObjectFromEntriesCall,
-  validateArrayParameter
-} from "../utils/lodash-map-utilities.ts";

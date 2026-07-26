@@ -112,3 +112,79 @@ export const validateArrayParameter = (parameter: TSESTree.Node) => {
   }
   return { keyName: keyPat.name, valueName: valuePat.name };
 };
+
+export type EntriesMapPattern = {
+  readonly callback:
+    TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
+  readonly fullCall: TSESTree.CallExpression;
+  readonly objExpr: TSESTree.Expression;
+};
+
+// Check if callback is a function expression type
+const isValidCallback = (
+  callback: TSESTree.Node
+): callback is
+  TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression => {
+  return (
+    AST_NODE_TYPES.ArrowFunctionExpression === callback.type ||
+    AST_NODE_TYPES.FunctionExpression === callback.type
+  );
+};
+
+// Shared detection for Object.fromEntries(Object.entries(obj).map(callback))
+// Returns the intermediate structure before callback-specific validation
+export const detectEntriesMapPattern = (node: TSESTree.Node) => {
+  // Layer 1: Object.fromEntries(...)
+  if (!isObjectFromEntriesCall(node)) {
+    return null;
+  }
+
+  const [argument1] = node.arguments;
+  if (!argument1) {
+    return null;
+  }
+
+  // Layer 2: .map(callback)
+  if (!isMapCall(argument1)) {
+    return null;
+  }
+
+  const mapCall = argument1;
+  const [callback] = mapCall.arguments;
+  if (!callback) {
+    return null;
+  }
+
+  // Layer 3: Object.entries(obj) as mapCall.callee.object
+  const mapCallee = mapCall.callee;
+  /* v8 ignore next 2 -- unreachable: isMapCall already guarantees callee is MemberExpression */
+  if (AST_NODE_TYPES.MemberExpression !== mapCallee.type) {
+    return null;
+  }
+
+  const entriesCall = mapCallee.object;
+  if (!isObjectEntriesCall(entriesCall)) {
+    return null;
+  }
+
+  const [objectArgument] = entriesCall.arguments;
+  if (!objectArgument) {
+    return null;
+  }
+
+  // Reject spread argument - Object.entries expects a plain expression
+  if (AST_NODE_TYPES.SpreadElement === objectArgument.type) {
+    return null;
+  }
+
+  // Validate callback is a function expression
+  if (!isValidCallback(callback)) {
+    return null;
+  }
+
+  return {
+    callback,
+    fullCall: node,
+    objExpr: objectArgument
+  };
+};

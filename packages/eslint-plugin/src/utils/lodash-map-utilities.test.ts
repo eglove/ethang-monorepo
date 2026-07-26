@@ -2,7 +2,9 @@ import { parseForESLint } from "@typescript-eslint/parser";
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
+import { findCall, linkParents } from "../rules/.fixture.ts";
 import {
+  detectEntriesMapPattern,
   extractBodyExpression,
   isMapCall,
   isObjectEntriesCall,
@@ -16,6 +18,7 @@ const parseExpression = (code: string) => {
     ecmaVersion: 2024,
     sourceType: "module"
   }).ast;
+  linkParents(program);
   for (const node of program.body) {
     if (AST_NODE_TYPES.ExpressionStatement !== node.type) {
       continue;
@@ -25,15 +28,10 @@ const parseExpression = (code: string) => {
   throw new Error(`no expression statement found in: ${code}`);
 };
 
-const parseFunction = (code: string) => {
-  const { expression } = parseExpression(code);
-  return expression as TSESTree.ArrowFunctionExpression;
-};
-
 describe("isObjectFromEntriesCall", () => {
   it("returns true for Object.fromEntries(...)", () => {
-    const { expression } = parseExpression("Object.fromEntries(pairs);");
-    expect(isObjectFromEntriesCall(expression)).toBe(true);
+    const { call } = findCall("Object.fromEntries(pairs);");
+    expect(isObjectFromEntriesCall(call)).toBe(true);
   });
 
   it.each([
@@ -50,8 +48,8 @@ describe("isObjectFromEntriesCall", () => {
 
 describe("isObjectEntriesCall", () => {
   it("returns true for Object.entries(...)", () => {
-    const { expression } = parseExpression("Object.entries(obj);");
-    expect(isObjectEntriesCall(expression)).toBe(true);
+    const { call } = findCall("Object.entries(obj);");
+    expect(isObjectEntriesCall(call)).toBe(true);
   });
 
   it.each([
@@ -68,8 +66,8 @@ describe("isObjectEntriesCall", () => {
 
 describe("isMapCall", () => {
   it("returns true for .map() calls", () => {
-    const { expression } = parseExpression("arr.map(fn);");
-    expect(isMapCall(expression)).toBe(true);
+    const { call } = findCall("arr.map(fn);");
+    expect(isMapCall(call)).toBe(true);
   });
 
   it.each([
@@ -85,8 +83,9 @@ describe("isMapCall", () => {
 
 describe("validateArrayParameter", () => {
   it("returns key/value names for valid array pattern", () => {
-    const function_ = parseFunction("([k, v]) => [k.toUpperCase(), v];");
-    const [firstParameter] = function_.params;
+    const { expression } = parseExpression("([k, v]) => [k, v * 2];");
+    const arrowFunction = expression as TSESTree.ArrowFunctionExpression;
+    const [firstParameter] = arrowFunction.params;
     if (!firstParameter) throw new Error("no param");
     const result = validateArrayParameter(firstParameter);
     expect(result).toEqual({ keyName: "k", valueName: "v" });
@@ -97,8 +96,9 @@ describe("validateArrayParameter", () => {
     ["missing value", "([k]) => [k, 1];"],
     ["nested pattern", "([k, [nested]]) => [k, nested];"]
   ])(`returns null for %s`, (_, code) => {
-    const function_ = parseFunction(code);
-    const [firstParameter] = function_.params;
+    const { expression } = parseExpression(code);
+    const arrowFunction = expression as TSESTree.ArrowFunctionExpression;
+    const [firstParameter] = arrowFunction.params;
     if (!firstParameter) throw new Error("no param");
     expect(validateArrayParameter(firstParameter)).toBeNull();
   });
@@ -106,26 +106,105 @@ describe("validateArrayParameter", () => {
 
 describe("extractBodyExpression", () => {
   it("returns expression body directly", () => {
-    const function_ = parseFunction("([k, v]) => [k.toUpperCase(), v];");
-    const result = extractBodyExpression(function_);
+    const { expression } = parseExpression("([k, v]) => [k, v * 2];");
+    const arrowFunction = expression as TSESTree.ArrowFunctionExpression;
+    const result = extractBodyExpression(arrowFunction);
     expect(result?.type).toBe(AST_NODE_TYPES.ArrayExpression);
   });
 
   it("returns argument from block with single return", () => {
-    const function_ = parseFunction("([k, v]) => { return [String(k), v]; };");
-    const result = extractBodyExpression(function_);
+    const { expression } = parseExpression(
+      "([k, v]) => { return [k, String(v)]; };"
+    );
+    const arrowFunction = expression as TSESTree.ArrowFunctionExpression;
+    const result = extractBodyExpression(arrowFunction);
     expect(result?.type).toBe(AST_NODE_TYPES.ArrayExpression);
   });
 
   it("returns null for block with multiple statements", () => {
-    const function_ = parseFunction(
-      "([k, v]) => { const x = k.toUpperCase(); return [x, v]; };"
+    const { expression } = parseExpression(
+      "([k, v]) => { const x = v * 2; return [k, x]; };"
     );
-    expect(extractBodyExpression(function_)).toBeNull();
+    const arrowFunction = expression as TSESTree.ArrowFunctionExpression;
+    expect(extractBodyExpression(arrowFunction)).toBeNull();
   });
 
   it("returns null for bare return statement", () => {
-    const function_ = parseFunction("([k, v]) => { return; };");
-    expect(extractBodyExpression(function_)).toBeNull();
+    const { expression } = parseExpression("([k, v]) => { return; };");
+    const arrowFunction = expression as TSESTree.ArrowFunctionExpression;
+    expect(extractBodyExpression(arrowFunction)).toBeNull();
+  });
+});
+
+describe("detectEntriesMapPattern", () => {
+  it("detects the canonical Object.fromEntries(entries(map)) pattern", () => {
+    const { call } = findCall(
+      "Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, v * 2]));"
+    );
+    const match = detectEntriesMapPattern(call);
+    expect(match).not.toBeNull();
+    expect(match?.objExpr.type).toBe(AST_NODE_TYPES.Identifier);
+    expect(match?.callback.type).toBe(AST_NODE_TYPES.ArrowFunctionExpression);
+  });
+
+  it("works with block body callbacks", () => {
+    const { call } = findCall(
+      "Object.fromEntries(Object.entries(obj).map(([k, v]) => { return [k, String(v)]; }));"
+    );
+    const match = detectEntriesMapPattern(call);
+    expect(match).not.toBeNull();
+  });
+
+  it("works with function expression callbacks", () => {
+    const { call } = findCall(
+      "Object.fromEntries(Object.entries(obj).map(function([k, v]) { return [k, v.length]; }));"
+    );
+    const match = detectEntriesMapPattern(call);
+    expect(match).not.toBeNull();
+  });
+
+  it("works with nested object expressions", () => {
+    const { call } = findCall(
+      "Object.fromEntries(Object.entries(config.settings).map(([k, v]) => [k, v.default]));"
+    );
+    const match = detectEntriesMapPattern(call);
+    expect(match).not.toBeNull();
+    expect(match?.objExpr.type).toBe(AST_NODE_TYPES.MemberExpression);
+  });
+
+  it("returns null when callback is not a function expression", () => {
+    const { call } = findCall(
+      "Object.fromEntries(Object.entries(obj).map(someFn));"
+    );
+    expect(detectEntriesMapPattern(call)).toBeNull();
+  });
+
+  it.each([
+    ["Object.fromEntries without map", "Object.fromEntries(pairs);"],
+    ["map without Object.entries", "Object.fromEntries(arr.map(x => [x, x]));"],
+    ["non-call node", "obj;"]
+  ])(`returns null for %s`, (_, code) => {
+    const { expression } = parseExpression(code);
+    expect(detectEntriesMapPattern(expression)).toBeNull();
+  });
+
+  it.each([
+    ["no fromEntries args", "Object.fromEntries();"],
+    ["no map callback", "Object.fromEntries(Object.entries(obj).map());"],
+    [
+      "no entries args",
+      "Object.fromEntries(Object.entries().map(([k, v]) => [k, v * 2]));"
+    ],
+    [
+      "mapCallee not MemberExpression",
+      "Object.fromEntries(mapFn(Object.entries(obj)));"
+    ],
+    [
+      "spread object argument",
+      "Object.fromEntries(Object.entries(...args).map(([k, v]) => [k, v * 2]));"
+    ]
+  ])(`returns null when %s`, (_, code) => {
+    const { call } = findCall(code);
+    expect(detectEntriesMapPattern(call)).toBeNull();
   });
 });
