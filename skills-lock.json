@@ -2303,7 +2303,7 @@
       "source": "cloudflare/skills",
       "sourceType": "github",
       "skillPath": "skills/turnstile-spin/SKILL.md",
-      "computedHash": "ef7aad524e5162704dd70b131c674f74f035bd01f430e852604ef9391cd39d0c"
+      "computedHash": "1b1d7b58ff1a7805b7d86347cc842dcda4cffa4228cfd958225755c2d2a9e4b7"
     },
     "typescript-mcp-server-generator": {
       "source": "github/awesome-copilot",
