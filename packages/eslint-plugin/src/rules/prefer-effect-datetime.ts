@@ -477,6 +477,39 @@ const isAssignedFromDateProducingCall = (
   return isDateProducingCallExpression(declarator.init);
 };
 
+// True when `callee.object` is a PascalCase identifier (not `Date`).
+// These are namespace/class references like `DateTime.unsafeNow()` rather
+// than Date instance variables (`date`, `d`). Skipping them avoids sending
+// complex module namespace types through the TypeScript type checker, which
+// can hang indefinitely.
+const isPascalCaseIdentifier = (node: TSESTree.Node) => {
+  if (!isIdentifier(node)) {
+    return false;
+  }
+  const firstChar = node.name.charAt(0);
+  return "A" <= firstChar && "Z" >= firstChar;
+};
+
+// Effect → native `Date` bridge. `DateTime.toDateUtc(x).toUTCString()` and
+// `const d = DateTime.toDateUtc(...); d.toUTCString()` are the documented
+// pattern for HTTP interop; skip the instance-member check because the
+// native `Date.prototype` call is intentional.
+const isBridgeReceiver = (
+  context: TSESLint.RuleContext<MessageIds, Options>,
+  receiver: TSESTree.Node
+) => {
+  if (isCallExpression(receiver) && isDateProducingCallExpression(receiver)) {
+    return true;
+  }
+  if (
+    isIdentifier(receiver) &&
+    isAssignedFromDateProducingCall(context, receiver)
+  ) {
+    return true;
+  }
+  return false;
+};
+
 const checkDateInstanceMemberCall = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   services: ReturnType<typeof getParserServices>,
@@ -498,20 +531,10 @@ const checkDateInstanceMemberCall = (
   if (isIdentifier(callee.object) && isDateIdentifier(callee.object)) {
     return;
   }
-  // Effect → native `Date` bridge. `DateTime.toDateUtc(x).toUTCString()` and
-  // `const d = DateTime.toDateUtc(...); d.toUTCString()` are the documented
-  // pattern for HTTP interop; skip the instance-member check because the
-  // native `Date.prototype` call is intentional.
-  if (
-    isCallExpression(callee.object) &&
-    isDateProducingCallExpression(callee.object)
-  ) {
+  if (isBridgeReceiver(context, callee.object)) {
     return;
   }
-  if (
-    isIdentifier(callee.object) &&
-    isAssignedFromDateProducingCall(context, callee.object)
-  ) {
+  if (isPascalCaseIdentifier(callee.object)) {
     return;
   }
   if (!isReceiverIncludingDate(services, callee.object)) {
