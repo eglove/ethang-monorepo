@@ -35,7 +35,6 @@ PARALLEL: true
 SHOW_ELAPSED_TIME: true
 VALIDATE_ALL_CODEBASE: true # Validate all sources
 IGNORE_GITIGNORED_FILES: true
-MARKDOWN_MARKDOWNLINT_ERROR_LEVEL: warning # markdownlint warnings are informational, not CI-blocking
 
 FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*\.idea.*|.*/migrations/meta/_journal.json|.*\.agents/.*|skills-lock\.json)
 
