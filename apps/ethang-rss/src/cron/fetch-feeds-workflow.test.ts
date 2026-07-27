@@ -46,11 +46,18 @@ const mockDelete = vi.fn();
 vi.mock("drizzle-orm/d1", () => {
   return {
     drizzle: () => {
-      return {
+      const mockDatabase = {
         delete: mockDelete,
         insert: mockInsert,
         select: mockSelect,
         update: mockUpdate
+      };
+
+      return {
+        ...mockDatabase,
+        transaction: vi.fn().mockImplementation(async (callback) => {
+          return callback(mockDatabase);
+        })
       };
     }
   };
@@ -561,6 +568,80 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
     await expect(workflow.run({}, step)).rejects.toThrow("network failure");
   });
 
+  it("should propagate error when feed update fails after inserts", async () => {
+    const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
+    });
+
+    mockInsert.mockReturnValue({
+      values: vi.fn().mockReturnValue({
+        onConflictDoNothing: vi.fn().mockResolvedValue({})
+      })
+    });
+
+    let updateCallCount = 0;
+    mockUpdate.mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockImplementation(async () => {
+          updateCallCount += 1;
+          if (1 === updateCallCount) {
+            throw new Error("Database connection lost");
+          }
+          return {};
+        })
+      })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
+    });
+
+    const mockEnvironment = {
+      ethang_rss: {}
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => {
+        return `
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <rss version="2.0">
+          <channel>
+            <title>Test Feed</title>
+            <link>https://example.com</link>
+            <item>
+              <title>Article 1</title>
+              <link>https://example.com/art1</link>
+              <guid>guid-1</guid>
+              <description>Description 1</description>
+              <pubDate>2026-06-14T00:00:00Z</pubDate>
+            </item>
+          </channel>
+        </rss>
+      `;
+      }
+    } as Response);
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, _function) => {
+        return _function();
+      })
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      { waitUntil: noop },
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await expect(workflow.run({}, step)).rejects.toThrow(
+      "Database connection lost"
+    );
+  });
+
   it("calls normalizeDate and inserts normalized ISO string into database", async () => {
     const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
 
@@ -605,7 +686,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
               <link>https://example.com/art1</link>
               <guid>guid-1</guid>
               <description>Description 1</description>
-              <pubDate>Tue, 17 Feb 2026 17:58:47 GMT</pubDate>
+              <pubDate>Tue, 17 Jun 2026 17:58:47 GMT</pubDate>
             </item>
           </channel>
         </rss>
@@ -634,7 +715,7 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
 
     expect(mockValues).toHaveBeenCalledWith(
       expect.objectContaining({
-        publishedAt: "2026-02-17T17:58:47.000Z"
+        publishedAt: "2026-06-17T17:58:47.000Z"
       })
     );
   });
@@ -740,5 +821,158 @@ describe("FetchFeedsWorkflow - error and normalization", () => {
         title: "Regular Article"
       })
     );
+  });
+
+  it("should not insert articles older than 90 days", async () => {
+    const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
+    });
+
+    const mockValues = vi.fn().mockReturnValue({
+      onConflictDoNothing: vi.fn().mockResolvedValue({})
+    });
+
+    mockInsert.mockReturnValue({
+      values: mockValues
+    });
+
+    mockUpdate.mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue({})
+      })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
+    });
+
+    const mockEnvironment = {
+      ethang_rss: {}
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => {
+        return `
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <rss version="2.0">
+          <channel>
+            <title>Test Feed</title>
+            <link>https://example.com</link>
+            <item>
+              <title>Recent Article</title>
+              <link>https://example.com/recent</link>
+              <guid>guid-recent</guid>
+              <description>Recent</description>
+              <pubDate>2026-07-01T00:00:00Z</pubDate>
+            </item>
+            <item>
+              <title>Old Article</title>
+              <link>https://example.com/old</link>
+              <guid>guid-old</guid>
+              <description>Old</description>
+              <pubDate>2025-01-01T00:00:00Z</pubDate>
+            </item>
+          </channel>
+        </rss>
+      `;
+      }
+    } as Response);
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, _function) => {
+        return _function();
+      })
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      { waitUntil: noop },
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await expect(workflow.run({}, step)).resolves.not.toThrow();
+
+    // Only the recent article should be inserted
+    expect(mockValues).toHaveBeenCalledTimes(1);
+    expect(mockValues).toHaveBeenCalledWith(
+      expect.objectContaining({
+        guid: "guid-recent",
+        title: "Recent Article"
+      })
+    );
+    expect(mockValues).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        guid: "guid-old",
+        title: "Old Article"
+      })
+    );
+  });
+
+  it("should roll back transaction when insert fails mid-batch", async () => {
+    const mockFeeds = [{ id: FEED_1, xmlAddress: FEED_XML_URL }];
+
+    mockSelect.mockReturnValue({
+      from: vi.fn().mockReturnValue(makeThenableFrom(mockFeeds))
+    });
+
+    let insertIndex = 0;
+    mockInsert.mockReturnValue({
+      values: vi.fn().mockReturnValue({
+        onConflictDoNothing: vi.fn().mockImplementation(async () => {
+          insertIndex += 1;
+          if (2 === insertIndex) {
+            throw new Error("Constraint violation");
+          }
+          return {};
+        })
+      })
+    });
+
+    mockUpdate.mockReturnValue({
+      set: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue({})
+      })
+    });
+
+    mockDelete.mockReturnValue({
+      where: vi.fn().mockResolvedValue({})
+    });
+
+    const mockEnvironment = { ethang_rss: {} };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue({
+      ok: true,
+      text: async () => {
+        return `<?xml version="1.0"?><rss version="2.0"><channel>
+          <title>T</title><link>https://example.com</link>
+          <item><title>A1</title><link>https://example.com/1</link><guid>g1</guid><pubDate>2026-07-01</pubDate></item>
+          <item><title>A2</title><link>https://example.com/2</link><guid>g2</guid><pubDate>2026-07-01</pubDate></item>
+        </channel></rss>`;
+      }
+    } as Response);
+
+    const step = {
+      do: vi.fn().mockImplementation(async (_name, function_) => {
+        return function_();
+      })
+    };
+
+    const workflow = new FetchFeedsWorkflow(
+      // @ts-expect-error for test
+      { waitUntil: noop },
+      mockEnvironment as unknown as Env
+    );
+
+    // @ts-expect-error for test
+    await expect(workflow.run({}, step)).rejects.toThrow(
+      "Constraint violation"
+    );
+
+    // The update should NOT have been called because the transaction rolled back
+    expect(mockUpdate).not.toHaveBeenCalled();
   });
 });
