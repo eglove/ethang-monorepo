@@ -52,9 +52,9 @@
 * 70 rules for **Vitest**
 	* `import vitestConfig from "@ethang/eslint-config/config.vitest.js";`
 	* 70 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)
-* 55 rules for **Playwright**
+* 56 rules for **Playwright**
 	* `import playwright from "eslint-plugin-playwright";`
-	* 55 rules from [eslint-plugin-playwright](https://github.com/mskelton/eslint-plugin-playwright)
+	* 56 rules from [eslint-plugin-playwright](https://github.com/mskelton/eslint-plugin-playwright)
 
 ## Install
 
