@@ -65,6 +65,6 @@ When installing and using packages in this repository, **do not assume the `work
 
 ## Documentation Discipline
 
-1. **Read `docs/` before implementing.** The `docs/apps/` directory contains implementation documentation for each app (architecture, data flow, configuration, key exports). Search `docs/` for existing notes about the feature or module you are changing before writing code — the backlog and app docs encode design decisions, schema details, and operational behavior that are not obvious from source alone.
+1. **Read `docs/` before implementing.** The `docs/` directory contains documentation (architecture, data flow, configuration, key exports). Search `docs/` for existing notes about the feature or module you are changing before writing code — the backlog and docs encode design decisions, schema details, and operational behavior that are not obvious from source alone.
 
-2. **Update `docs/` after making changes.** When a change alters architecture, data lifecycle, configuration, exported APIs, or operational behavior, update the relevant `docs/apps/<app>.md` (or create one if it does not exist) in the same commit. Documentation is part of the change, not a follow-up task.
+2. **Update `docs/` after making changes.** When a change alters architecture, data lifecycle, configuration, exported APIs, or operational behavior, update the relevant `docs/` (or create one if it does not exist) in the same commit. Documentation is part of the change, not a follow-up task.
