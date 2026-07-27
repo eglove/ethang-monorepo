@@ -60,3 +60,11 @@ AI agents must follow this tool priority order:
 ## Package Dependency Conventions
 
 When installing and using packages in this repository, **do not assume the `workspace:*` convention**. Many packages are published and installed via the registry. Always look at how other apps/packages use them before adding a new dependency.
+
+---
+
+## Documentation Discipline
+
+1. **Read `docs/` before implementing.** The `docs/apps/` directory contains implementation documentation for each app (architecture, data flow, configuration, key exports). Search `docs/` for existing notes about the feature or module you are changing before writing code — the backlog and app docs encode design decisions, schema details, and operational behavior that are not obvious from source alone.
+
+2. **Update `docs/` after making changes.** When a change alters architecture, data lifecycle, configuration, exported APIs, or operational behavior, update the relevant `docs/apps/<app>.md` (or create one if it does not exist) in the same commit. Documentation is part of the change, not a follow-up task.
