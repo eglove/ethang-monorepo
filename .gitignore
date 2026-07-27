@@ -17,6 +17,7 @@ reports
 .repos
 repo-plan.md
 .hermes/plans
+docs/.obsidian
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs

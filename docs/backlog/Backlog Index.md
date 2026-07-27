@@ -9,7 +9,6 @@ Open tasks and planned work for the monorepo.
 
 ## Active
 
-- [[Ethang RSS Workflow — Transactional Updates]]
 - [[Package Cleanup — Remove Dead Packages]]
 - [[Frontend Migration to TanStack Start-Astryx]]
 - [[ESLint — Make Private, Stop Publishing]]

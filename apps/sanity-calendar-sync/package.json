@@ -6,7 +6,7 @@
   "dependencies": {
     "@portabletext/react": "^7.0.1",
     "@portabletext/types": "^4.0.2",
-    "@sanity/client": "^7.24.0",
+    "@sanity/client": "^7.25.0",
     "effect": "^3.22.0",
     "lodash": "^4.18.1",
     "ts-ics": "^2.4.6"

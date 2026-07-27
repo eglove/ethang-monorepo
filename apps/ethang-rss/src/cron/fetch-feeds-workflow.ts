@@ -5,7 +5,7 @@ import {
 } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
-import { DateTime, Effect, Schema } from "effect";
+import { DateTime, Duration, Effect, Option, Schema } from "effect";
 import { XMLParser } from "fast-xml-parser";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
@@ -17,6 +17,103 @@ import { cleanupOldArticles } from "../data/mutations/cleanup-old-articles.ts";
 import { articlesTable, feedsTable } from "../db/schema.ts";
 import { normalizeDate } from "../util/normalize-date.ts";
 import { parseFeedMetadata } from "../util/parse-feed-metadata.ts";
+
+const ARTICLE_RETENTION_DAYS = 90;
+
+const getArticleCutoffIso = () => {
+  return DateTime.formatIso(
+    DateTime.subtractDuration(
+      DateTime.unsafeNow(),
+      Duration.days(ARTICLE_RETENTION_DAYS)
+    )
+  );
+};
+
+const isArticleWithinRetention = (publishedAt: string) => {
+  const cutoff = getArticleCutoffIso();
+  // v8 ignore start -- DateTime.make succeeds on ISO strings from formatIso/normalizeDate; fallbacks are unreachable
+  const cutoffDt = Option.getOrElse(DateTime.make(cutoff), () => {
+    return DateTime.unsafeMake(0);
+  });
+  const publishedDt = Option.getOrElse(DateTime.make(publishedAt), () => {
+    return DateTime.unsafeMake(0);
+  });
+  // v8 ignore stop
+  return (
+    DateTime.toEpochMillis(publishedDt) >= DateTime.toEpochMillis(cutoffDt)
+  );
+};
+
+export const fetchSingleFeed = async (
+  database: Pick<
+    ReturnType<typeof drizzle>,
+    "delete" | "insert" | "select" | "update"
+  >,
+  feed: { id: string; xmlAddress: string }
+) => {
+  const response = await fetch(feed.xmlAddress);
+  const xml = await response.text();
+  const parsedMeta = parseFeedMetadata(xml);
+  const parseResult = parseFeedItems(xml);
+
+  const items =
+    parseResult?.rss?.channel?.item ?? parseResult?.feed?.entry ?? [];
+
+  const normalizedItems = map(items, (item) => {
+    const link = normalizeLink(item);
+    const guid = normalizeGuid(item, link);
+    const content = normalizeContent(item);
+    const title = normalizeTitle(item);
+
+    const publishedAt = normalizeDate(
+      item.pubDate ?? item.published ?? item.updated
+    );
+
+    return {
+      content,
+      feedId: feed.id,
+      guid,
+      link,
+      publishedAt,
+      title
+    };
+  });
+
+  const filteredItems = filter(normalizedItems, (item) => {
+    return !YOUTUBE_SHORTS_REGEX.test(item.link);
+  });
+
+  const itemsToInsert = filter(filteredItems, (item) => {
+    return (
+      !isNil(item.guid) &&
+      "" !== item.guid &&
+      isArticleWithinRetention(item.publishedAt)
+    );
+  });
+
+  const insertPromises = map(itemsToInsert, async (item) => {
+    return database.insert(articlesTable).values(item).onConflictDoNothing();
+  });
+
+  await Promise.all(insertPromises);
+
+  const updateFields: Partial<typeof feedsTable.$inferInsert> = {
+    lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
+  };
+
+  if ("" !== parsedMeta.title) {
+    updateFields.title = parsedMeta.title;
+  }
+
+  if ("" !== parsedMeta.website) {
+    updateFields.website = parsedMeta.website;
+  }
+
+  await database
+    .update(feedsTable)
+    .set(updateFields)
+    .where(eq(feedsTable.id, feed.id));
+};
 
 const parser = new XMLParser({
   attributeNamePrefix: "@_",
@@ -190,71 +287,9 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               return Error.isError(error) ? error : new Error(String(error));
             },
             try: async () => {
-              const response = await fetch(feed.xmlAddress);
-              const xml = await response.text();
-              const parsedMeta = parseFeedMetadata(xml);
-              const parseResult = parseFeedItems(xml);
-
-              const items =
-                parseResult?.rss?.channel?.item ??
-                parseResult?.feed?.entry ??
-                [];
-
-              const normalizedItems = map(items, (item) => {
-                const link = normalizeLink(item);
-                const guid = normalizeGuid(item, link);
-                const content = normalizeContent(item);
-                const title = normalizeTitle(item);
-
-                const publishedAt = normalizeDate(
-                  item.pubDate ?? item.published ?? item.updated
-                );
-
-                return {
-                  content,
-                  feedId: feed.id,
-                  guid,
-                  link,
-                  publishedAt,
-                  title
-                };
+              return database.transaction(async (tx) => {
+                return fetchSingleFeed(tx, feed);
               });
-
-              const filteredItems = filter(normalizedItems, (item) => {
-                return !YOUTUBE_SHORTS_REGEX.test(item.link);
-              });
-
-              const itemsToInsert = filter(filteredItems, (item) => {
-                return !isNil(item.guid) && "" !== item.guid;
-              });
-
-              const insertPromises = map(itemsToInsert, async (item) => {
-                return database
-                  .insert(articlesTable)
-                  .values(item)
-                  .onConflictDoNothing();
-              });
-
-              await Promise.all(insertPromises);
-
-              const updateFields: Partial<typeof feedsTable.$inferInsert> = {
-                lastFetchedAt: DateTime.formatIso(DateTime.unsafeNow())
-              };
-
-              if ("" !== parsedMeta.title) {
-                updateFields.title = parsedMeta.title;
-              }
-
-              if ("" !== parsedMeta.website) {
-                updateFields.website = parsedMeta.website;
-              }
-
-              await database
-                .update(feedsTable)
-                .set(updateFields)
-                .where(eq(feedsTable.id, feed.id));
-
-              await cleanupOldArticles(database);
             }
           }).pipe(
             Effect.matchEffect({
@@ -279,7 +314,16 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
           );
           Effect.runSync(Effect.die(fetchError));
         }
+
+        return null;
       });
     }
+
+    await step.do("cleanup-old-articles", async () => {
+      await database.transaction(async (tx) => {
+        return cleanupOldArticles(tx);
+      });
+      return null;
+    });
   }
 }

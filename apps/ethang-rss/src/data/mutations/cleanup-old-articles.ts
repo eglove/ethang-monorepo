@@ -12,7 +12,10 @@ import { databaseSchema } from "../../db/database-schema.ts";
 const CHUNK_SIZE = 100;
 
 export const cleanupOldArticles = async (
-  database: ReturnType<typeof drizzle>,
+  database: Pick<
+    ReturnType<typeof drizzle>,
+    "delete" | "insert" | "select" | "update"
+  >,
   cutoffIso?: null | string
 ) => {
   const ninetyDaysAgo = DateTime.formatIso(
