@@ -30,7 +30,6 @@ export const updateReadme = () => {
 
   const ruleDocumentation = [`${total} rules.`];
   for (const list of coreRules) {
-
     if (0 < list.count) {
       ruleDocumentation.push(
         `${list.count} ${
@@ -38,7 +37,6 @@ export const updateReadme = () => {
         } from [${list.name}](${list.url})`
       );
     }
-
   }
 
   const featuredOutputs = filter(outputConfigs, (c) => {

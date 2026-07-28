@@ -23,7 +23,6 @@ type MessageIds = "preferLodashCountBy";
 type Options = [];
 
 const isPlusOne = (node: TSESTree.Node): node is TSESTree.BinaryExpression => {
-
   if (AST_NODE_TYPES.BinaryExpression !== node.type) {
     return false;
   }
@@ -43,7 +42,6 @@ const isPlusOne = (node: TSESTree.Node): node is TSESTree.BinaryExpression => {
 };
 
 const isOrZero = (node: TSESTree.Node): node is TSESTree.LogicalExpression => {
-
   if (AST_NODE_TYPES.LogicalExpression !== node.type) {
     return false;
   }

@@ -137,7 +137,6 @@ const reportArray = (
       target
     },
     fix: (fixer) => {
-
       if (node.callee.type !== AST_NODE_TYPES.MemberExpression) {
         return null;
       }
@@ -207,7 +206,6 @@ const markInnerCallAndMember = (
   node: TSESTree.CallExpression,
   context: CallCheckContext
 ) => {
-
   if (!(
     isMemberExpression(node.callee) && isCallExpression(node.callee.object)
   )) {
@@ -260,7 +258,6 @@ const checkCallExpression = (
     {
       detect: shouldPreferFindShift,
       markInner: (n) => {
-
         if (isMemberExpression(n.callee) && isCallExpression(n.callee.object)) {
           handledCallNodes.add(n.callee.object);
         }
@@ -532,7 +529,6 @@ export const preferLodashRule = createRule<PreferLodashOptions, MessageIds>({
 
         // prefer-find: filter(...)[0] — MemberExpression with computed literal 0
         if (shouldPreferFindMember(node)) {
-
           if (isCallExpression(node.object)) {
             handledCallNodes.add(node.object);
           }

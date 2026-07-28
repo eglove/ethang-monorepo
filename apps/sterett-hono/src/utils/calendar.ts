@@ -114,7 +114,6 @@ const buildMonthGrid = ({
   }
   const remainder = cells.length % 7;
   if (0 < remainder) {
-
     for (let d = 1; d <= 7 - remainder; d += 1) {
       cells.push({ current: false, day: d, month: nextMonth, year: nextYear });
     }

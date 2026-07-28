@@ -197,7 +197,6 @@ const getItemCursor = (
   } | null,
   sortBy?: { field: "PUBLISHED_AT" | "TITLE" }
 ) => {
-
   if (isNil(item)) {
     return "";
   }

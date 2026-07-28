@@ -94,16 +94,10 @@ const linkHref = (entry: FeedLinkEntry | null) => {
 };
 
 const objectHrefOrText = (entry: LinkObject) => {
-  return (
-    entry["@_href"] ??
-
-    entry["#text"] ??
-    ""
-  );
+  return entry["@_href"] ?? entry["#text"] ?? "";
 };
 
 const chooseArrayLink = (links: readonly FeedLinkEntry[]) => {
-
   const chosen: FeedLinkEntry | null =
     findAlternate(links) ?? findNonSelf(links) ?? links[0] ?? null;
   return linkHref(chosen);
@@ -131,7 +125,6 @@ export const parseFeedMetadata = (xmlText: string) => {
   const decoded = Effect.runSync(
     Effect.try({
       catch: (error: unknown) => {
-
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: () => {

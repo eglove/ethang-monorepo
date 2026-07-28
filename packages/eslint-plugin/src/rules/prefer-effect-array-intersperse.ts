@@ -68,7 +68,6 @@ const extractCallbackBody = (
 
 // Check if the ternary test is `indexName === 0`
 const isIndexEqualsZero = (test: TSESTree.Node, indexName: string) => {
-
   if (AST_NODE_TYPES.BinaryExpression !== test.type) {
     return false;
   }
@@ -116,7 +115,6 @@ const validateConsequent = (consequent: TSESTree.Node, elementName: string) => {
 
 // Check if alternate is `[sep, elementName]` (two-element array with some separator and the element identifier)
 const validateAlternate = (alternate: TSESTree.Node, elementName: string) => {
-
   if (AST_NODE_TYPES.ArrayExpression !== alternate.type) {
     return null;
   }

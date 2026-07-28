@@ -30,7 +30,6 @@ const isNullOrUndefinedLiteral = (node: TSESTree.Node) => {
 };
 
 const isTypeofUndefinedComparison = (node: TSESTree.BinaryExpression) => {
-
   if ("===" !== node.operator) {
     return false;
   }
@@ -202,7 +201,6 @@ const isIndexOfLtOne = (node: TSESTree.BinaryExpression) => {
 // --- prefer-compact ---
 
 const isBooleanIdentifier = (node: TSESTree.Node) => {
-
   return isIdentifier(node) && "Boolean" === node.name;
 };
 
@@ -360,7 +358,6 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression) => {
     let current: TSESTree.Expression = expression;
 
     while (isMemberExpression(current)) {
-
       if (!isIdentifier(current.property)) {
         return "";
       }
@@ -491,7 +488,6 @@ export const shouldPreferFilterPattern = (node: TSESTree.CallExpression) => {
 };
 
 const isPushStatement = (statement: null | TSESTree.Statement) => {
-
   if (
     isNil(statement) ||
     !isExpressionStatement(statement) ||
@@ -556,7 +552,6 @@ const isLiteralValue = (node: TSESTree.Node) => {
     AST_NODE_TYPES.TemplateLiteral === node.type &&
     0 === node.expressions.length
   );
-
 };
 
 export const shouldPreferConstant = (node: FunctionLike) => {
@@ -613,7 +608,6 @@ export const resolvePreferImmutable = (node: TSESTree.CallExpression) => {
       ? MUTATING_METHODS[node.callee.name]
       : null;
     if (!isNil(preferred)) {
-
       return { method: node.callee.name, preferred };
     }
   }
@@ -787,7 +781,6 @@ const isEqualityComparison = (expression: TSESTree.Expression) => {
 };
 
 const isAllEqualityChecks = (node: TSESTree.LogicalExpression) => {
-
   if ("&&" !== node.operator) {
     return false;
   }

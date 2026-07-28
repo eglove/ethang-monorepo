@@ -22,7 +22,6 @@ export type ReduceCallInfo = {
 export const isReduceCallback = (
   node: TSESTree.Node
 ): node is ReduceCallback => {
-
   if (AST_NODE_TYPES.ArrowFunctionExpression === node.type) {
     return true;
   }
@@ -36,7 +35,6 @@ export const isReduceCallback = (
 export function isReduceCall(
   callee: TSESTree.Node
 ): callee is { property: TSESTree.Identifier } & TSESTree.MemberExpression {
-
   if (!isMemberExpression(callee)) {
     return false;
   }
@@ -52,7 +50,6 @@ export function isReduceCall(
 }
 
 export const isEmptyObject = (node: TSESTree.Node) => {
-
   if (AST_NODE_TYPES.ObjectExpression !== node.type) {
     return false;
   }
@@ -64,7 +61,6 @@ export function hasTwoIdentifierParameters(
 ): callback is {
   params: [TSESTree.Identifier, TSESTree.Identifier];
 } & ReduceCallback {
-
   if (2 > callback.params.length) {
     return false;
   }
@@ -96,7 +92,6 @@ export function isMemberAccumulator(
   node: TSESTree.Node,
   accumulatorName: string
 ): node is TSESTree.MemberExpression {
-
   if (!isMemberExpression(node)) {
     return false;
   }
@@ -112,7 +107,6 @@ export function isMemberAccumulator(
 }
 
 export const isItemProperty = (node: TSESTree.Node, itemName: string) => {
-
   if (!isMemberExpression(node)) {
     return false;
   }
@@ -135,7 +129,6 @@ export const extractKeyFromMember = (
   member: TSESTree.MemberExpression,
   itemName: string
 ) => {
-
   if (!isItemProperty(member.property, itemName)) {
     return null;
   }

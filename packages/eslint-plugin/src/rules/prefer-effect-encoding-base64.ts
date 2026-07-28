@@ -62,7 +62,6 @@ export const getBufferFromArguments = (node: TSESTree.Node) => {
 export const isBase64ToStringCall = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
-
   if (!isCallExpression(node)) {
     // This branch is unreachable: callers only pass CallExpression nodes
     return false;

@@ -121,7 +121,6 @@ export const extractNodesFromValue = (value: unknown) => {
     return isNodeLike(value) ? [value] : [];
   }
   return flatMap(value, (item) => {
-
     return isNodeLike(item) ? [item] : [];
   });
 };

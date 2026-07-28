@@ -27,7 +27,6 @@ type MessageIds = "preferLodashGroupBy";
 type Options = [];
 
 const isEmptyArray = (node: TSESTree.Node) => {
-
   if (AST_NODE_TYPES.ArrayExpression !== node.type) {
     return false;
   }
@@ -65,7 +64,6 @@ function getAssignmentKey(
   itemName: string,
   accumulatorName: string
 ) {
-
   if (AST_NODE_TYPES.AssignmentExpression !== object.type) {
     return null;
   }

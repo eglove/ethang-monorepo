@@ -257,7 +257,6 @@ export const buildAllCoursesFromSortedLpIds = (
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
 ) => {
   const entries = flatMap(sortedLpIds, (lpId) => {
-
     return coursesByLp.get(lpId) ?? [];
   });
   const allCourses: LearningPathCourseEntry[] = [];

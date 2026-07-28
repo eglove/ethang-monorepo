@@ -122,7 +122,6 @@ const isGlobalDateIdentifier = (
     identifier: TSESTree.Identifier
   ) => boolean = isDateIdentifier
 ) => {
-
   if (!isDateShadowsGlobal(node)) {
     return false;
   }
@@ -351,7 +350,6 @@ const symbolNameOf = (type: Type) => {
 };
 
 const isTypeIncludingDate = (type: null | Type) => {
-
   if (isNil(type)) {
     return false;
   }

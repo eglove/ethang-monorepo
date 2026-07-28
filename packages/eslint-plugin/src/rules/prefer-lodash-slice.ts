@@ -173,7 +173,6 @@ export const isStringType = (
   }
   const { checker, type } = resolved;
   if (type.isUnion()) {
-
     return (type.types ?? []).some((member) => {
       return isStringText(checker.typeToString(member));
     });
@@ -379,7 +378,6 @@ const isExpression = (node: TSESTree.Node): node is TSESTree.Expression => {
 };
 
 export const preferLodashSliceRule = createRule<Options, MessageIds>({
-
   create(context) {
     const { sourceCode } = context;
     const sourceText = sourceCode.text;

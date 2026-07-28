@@ -201,7 +201,6 @@ const parseFeedItems = (xml: string) => {
   return Effect.runSync(
     Effect.try({
       catch: (error: unknown) => {
-
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: () => {

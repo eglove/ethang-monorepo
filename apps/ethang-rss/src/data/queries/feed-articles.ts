@@ -60,7 +60,6 @@ export const feedArticlesQuery = async (
       )
     )
     .where(
-
       combineFilters(
         eq(databaseSchema.articlesTable.feedId, feedId),
         articleFilter

@@ -107,9 +107,7 @@ export const detectEscapeRegexpPattern = (node: TSESTree.Node) => {
     return null;
   }
   // Unreachable: isReplaceCall already guarantees callee is MemberExpression.
-  // isReplaceCall checks AST_NODE_TYPES.MemberExpression !== callee.type and
-  // returns false if not, so by the time we reach here callee.type is always
-  // MemberExpression. This guard exists for TypeScript type narrowing.
+  // isReplaceCall checks AST_NODE_TYPES.MemberExpression !== callee.type and returns false if not, so by the time we reach here callee.type is always MemberExpression. This guard exists for TypeScript type narrowing.
 
   if (AST_NODE_TYPES.MemberExpression !== node.callee.type) {
     return null;

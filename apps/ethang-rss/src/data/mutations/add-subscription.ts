@@ -19,7 +19,6 @@ const fetchDerivedMetadata = async (xmlAddress: string) => {
   await Effect.runPromise(
     Effect.tryPromise({
       catch: (error: unknown) => {
-
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: async () => {
@@ -67,7 +66,6 @@ const fetchIconUrl = async (website: string) => {
   await Effect.runPromise(
     Effect.tryPromise({
       catch: (error: unknown) => {
-
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: async () => {
