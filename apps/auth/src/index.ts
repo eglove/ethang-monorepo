@@ -28,7 +28,6 @@ const JSON_HEADERS = {
 } as const;
 
 const json = <T>(data: T, status: number) => {
-
   return new Response(isNil(data) ? null : JSON.stringify(data), {
     headers: JSON_HEADERS,
     status
