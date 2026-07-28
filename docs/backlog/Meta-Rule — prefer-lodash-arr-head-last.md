@@ -13,19 +13,19 @@ related: [ESLint — Make Private, Stop Publishing]
 
 ## Goal
 
-Extend the umbrella `prefer-lodash` rule to flag `arr.at(0)` → `head(arr)` and `arr.at(-1)` → `last(arr)` by removing `at` from `NATIVE_EQUIVALENT_METHODS`.
+Extend the umbrella `prefer-lodash` rule. The rule flags `arr.at(0)` and suggests `head(arr)`. The rule flags `arr.at(-1)` and suggests `last(arr)`. Remove `at` from `NATIVE_EQUIVALENT_METHODS`.
 
 ## Plan
 
-1. In `packages/eslint-plugin/src/utils/ast.ts`, remove `"at"` from `NATIVE_EQUIVALENT_METHODS`
-2. Verify `lodashApi` already includes `head` and `last`
-3. Test that `arr.at(0)` is now flagged with `preferLodash` messageId
-4. Test that `arr.at(-1)` is now flagged
-5. Verify no regressions in existing tests
-6. Run full eslint-plugin test suite
+1. In `packages/eslint-plugin/src/utils/ast.ts`, remove `"at"` from `NATIVE_EQUIVALENT_METHODS`.
+2. Verify `lodashApi` already includes `head` and `last`.
+3. Test that `arr.at(0)` is flagged with `preferLodash` messageId.
+4. Test that `arr.at(-1)` is flagged.
+5. Verify no regressions in existing tests.
+6. Run the full eslint-plugin test suite.
 
 ## Risks
 
-- **Global policy shift**: removing `at` from `NATIVE_EQUIVALENT_METHODS` means ALL `.at()` calls in the codebase will be flagged, not just `at(0)` and `at(-1)`
-- `arr.at(2)` is not equivalent to `head` or `last` — the umbrella rule would need `nativeAliases` entries to map specific `at` call patterns to the right lodash function
-- Backlog gotcha #7 explicitly notes this needs user buy-in before proceeding
+- **Global policy shift**: removing `at` from `NATIVE_EQUIVALENT_METHODS` flags ALL `.at()` calls in the codebase. The rule does not flag only `at(0)` and `at(-1)`.
+- `arr.at(2)` is not equivalent to `head` or `last`. The umbrella rule needs `nativeAliases` entries. The entries map specific `at` call patterns to the right lodash function.
+- Backlog gotcha #7 explicitly notes this needs user buy-in before proceeding.

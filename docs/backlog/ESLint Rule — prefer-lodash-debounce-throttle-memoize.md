@@ -10,20 +10,20 @@ related: [ESLint — Make Private, Stop Publishing]
 
 ## Goal
 
-Detect hand-rolled debounce, throttle, and memoize implementations and suggest lodash equivalents.
+Detect hand-rolled debounce, throttle, and memoize implementations. Suggest lodash equivalents.
 
 ## Plan
 
-1. Create `packages/eslint-plugin/src/rules/prefer-lodash-debounce.ts`
-2. Debounce detection: `setTimeout`/`clearTimeout` pair with a timer variable that delays function execution
-3. Throttle detection: timer + last-call-time tracking using `Date.now()`
-4. Memoize detection: manual `Map`/object cache with `has`/`get`/`set` pattern around function calls
-5. Autofix ⚠: simple debounce/throttle patterns autofixable; memoize harder
-6. Create unit test and integration test
-7. Register in `index.ts`
+1. Create `packages/eslint-plugin/src/rules/prefer-lodash-debounce.ts`.
+2. Debounce detection: `setTimeout`/`clearTimeout` pair with a timer variable. The timer delays function execution.
+3. Throttle detection: timer and last-call-time tracking using `Date.now()`.
+4. Memoize detection: manual `Map`/object cache with `has`/`get`/`set` pattern around function calls.
+5. Autofix: simple debounce and throttle patterns are autofixable. Memoize is harder.
+6. Create unit test and integration test.
+7. Register in `index.ts`.
 
 ## Risks
 
-- Debounce/throttle patterns are highly variable — pattern matching will be fragile
-- Must verify the function being wrapped is actually the one the user intends (not a wrapper around another function)
-- React's `useMemo`/`useCallback` are NOT hand-rolled memoize — exclude
+- Debounce and throttle patterns are highly variable. Pattern matching will be fragile.
+- The rule must verify the function being wrapped is the intended function. The rule must not wrap another function.
+- React `useMemo` and `useCallback` are NOT hand-rolled memoize. Exclude these patterns.

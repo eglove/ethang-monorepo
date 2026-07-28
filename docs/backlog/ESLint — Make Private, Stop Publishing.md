@@ -13,34 +13,34 @@ Convert the `eslint` package from a published package to a private monorepo-only
 
 ## Current State
 
-- Package is configured for publishing (public, versioned)
-- May have publish CI workflows
-- Consumed only within the monorepo
+- The package is configured for publishing (public, versioned).
+- Publish CI workflows may exist.
+- Only the monorepo consumes the package.
 
 ## Target State
 
-- `"private": true` in `package.json`
-- No publish CI/CD steps
-- Workspace protocol (`workspace:*`) for all internal consumers
-- Versioning simplified (no changelog generation, no npm publish)
+- `"private": true` exists in `package.json`.
+- No publish CI or CD steps exist.
+- All internal consumers use the workspace protocol (`workspace:*`).
+- The versioning is simplified (no changelog generation, no npm publish).
 
 ## Plan
 
-1. Audit: list all current consumers (should all be internal)
-2. Confirm no external consumers exist (check npm registry downloads, GitHub dependents)
-3. Set `"private": true` in `packages/eslint/package.json`
-4. Verify all consumers use `workspace:*` protocol
-5. Remove publish CI workflow steps/jobs
-6. Remove `files`, `publishConfig`, and other publish-only fields from `package.json`
-7. Remove changelog generation if automated
-8. Run full monorepo lint to confirm everything resolves
+1. Audit: list all current consumers. All consumers should be internal.
+2. Confirm no external consumers exist. Check the npm registry downloads and GitHub dependents.
+3. Set `"private": true` in `packages/eslint/package.json`.
+4. Verify all consumers use the `workspace:*` protocol.
+5. Remove publish CI workflow steps and jobs.
+6. Remove `files`, `publishConfig`, and other publish-only fields from `package.json`.
+7. Remove changelog generation if automated.
+8. Run the full monorepo lint. Confirm everything resolves.
 
 ## Verification
 
-- `pnpm -r lint` passes
-- No publish-related CI steps remain
-- `package.json` has `"private": true` and no publish-only fields
+- `pnpm -r lint` passes.
+- No publish-related CI steps remain.
+- `package.json` has `"private": true`. No publish-only fields exist.
 
 ## Risks
 
-- If any external project depends on `@ethang/eslint-config`, this breaks them — verify first
+- An external project may depend on `@ethang/eslint-config`. Verify first. This breaks the external project.

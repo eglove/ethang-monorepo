@@ -10,18 +10,18 @@ related: [ESLint — Make Private, Stop Publishing]
 
 ## Goal
 
-Detect `instanceof Error` checks and suggest `Cause.failureOption(...)` from Effect.
+Detect `instanceof Error` checks. Suggest `Cause.failureOption(...)` from Effect.
 
 ## Plan
 
-1. Create `packages/eslint-plugin/src/rules/prefer-effect-cause.ts`
-2. Detection: `BinaryExpression` with `instanceof` operator and right side ending in `Error`
-3. Cover: `Error`, `TypeError`, `SyntaxError`, custom errors extending `Error`
-4. Report-only ❌
-5. Create unit test and integration test
-6. Register in `index.ts`
+1. Create `packages/eslint-plugin/src/rules/prefer-effect-cause.ts`.
+2. Detection: `BinaryExpression` with `instanceof` operator. The right side ends in `Error`.
+3. Cover: `Error`, `TypeError`, `SyntaxError`, and custom errors that extend `Error`.
+4. Report-only.
+5. Create unit test and integration test.
+6. Register in `index.ts`.
 
 ## Risks
 
-- `instanceof Array` or other non-Error checks must not be flagged
-- The `Cause` module requires different error handling patterns — this is a migration hint, not a direct replacement
+- The rule must not flag `instanceof Array` or other non-Error checks.
+- The `Cause` module requires different error handling patterns. This is a migration hint. The rule does not provide a direct replacement.

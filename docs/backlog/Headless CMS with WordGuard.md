@@ -9,39 +9,39 @@ created: 2026-07-26
 
 ## Goal
 
-Build a headless CMS where users manage their own content with file/image uploads, embeds, and rich-text editing powered by [WordGuard](https://wordgard.net/).
+Build a headless CMS. Users manage their own content. The system supports file and image uploads, embeds, and rich-text editing. [WordGuard](https://wordgard.net/) powers the rich-text editing.
 
 ## Core Features
 
 ### Multi-Tenant Data
-- Each user has their own data namespace
-- Users manage their own content types/schemas
+- Each user has their own data namespace.
+- Users manage their own content types and schemas.
 
 ### Asset Management
-- File uploads (images, PDFs, etc.)
-- Image optimization and resizing
-- Embed support (YouTube, Twitter, etc.)
+- File uploads (images, PDFs, etc.).
+- Image optimization and resizing.
+- Embed support (YouTube, Twitter, etc.).
 
 ### Rich-Text Editing
-- WordGuard as the rich-text engine
-- Custom blocks and embeds
+- WordGuard serves as the rich-text engine.
+- Custom blocks and embeds.
 - Real-time collaboration? (future)
 
 ### API
-- REST or GraphQL API for content delivery
-- Webhooks for content changes
-- SDK for client consumption
+- REST or GraphQL API for content delivery.
+- Webhooks for content changes.
+- SDK for client consumption.
 
 ## Plan
 
-1. **Research WordGuard**: API, pricing, self-hosting options, integration patterns
-2. **Data model**: Users, workspaces, content types, entries, assets
-3. **Auth**: Multi-tenant auth — users scoped to their own data
-4. **File storage**: R2 or similar for uploads
-5. **API design**: CRUD for content types and entries
-6. **Rich-text integration**: WordGuard editor with custom blocks
-7. **Asset pipeline**: Upload → optimize → serve
-8. **SDK/Client**: TypeScript SDK for consuming the API
+1. **Research WordGuard**: Evaluate the API, pricing, self-hosting options, and integration patterns.
+2. **Data model**: Design the schema for users, workspaces, content types, entries, and assets.
+3. **Auth**: Build multi-tenant auth. Users are scoped to their own data.
+4. **File storage**: Use R2 or similar for uploads.
+5. **API design**: Build CRUD for content types and entries.
+6. **Rich-text integration**: Integrate the WordGuard editor with custom blocks.
+7. **Asset pipeline**: Upload to optimize to serve.
+8. **SDK/Client**: Build a TypeScript SDK for consuming the API.
 
 ## Open Questions
 

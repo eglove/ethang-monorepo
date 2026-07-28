@@ -9,37 +9,37 @@ created: 2026-07-26
 
 ## Goal
 
-Delete packages that are unused, barely used, or redundant. Reduce monorepo surface area.
+Delete unused, barely used, or redundant packages. Reduce the monorepo surface area.
 
 ## Candidates
 
 | Package | Reason | Action |
 |---------|--------|--------|
-| `hono-middleware` | Used only once — inline it | Delete package, move logic to consumer |
-| `intl` | Replace entirely with project constants | Delete package, add constants file |
-| `monorepo-tools` | Remove entirely | Delete package, remove CI references |
-| `service-worker` | Used only once — inline it | Delete package, move logic to consumer |
-| `telemetry` | Remove entirely | Delete package, remove all imports |
+| `hono-middleware` | Used only once — inline it | Delete the package. Move the logic to the consumer. |
+| `intl` | Replace entirely with project constants | Delete the package. Add a constants file. |
+| `monorepo-tools` | Remove entirely | Delete the package. Remove the CI references. |
+| `service-worker` | Used only once — inline it | Delete the package. Move the logic to the consumer. |
+| `telemetry` | Remove entirely | Delete the package. Remove all imports. |
 
 ## Plan
 
 ### For each "used only once" package (hono-middleware, service-worker)
 
-1. Identify the single consumer
-2. Copy the relevant logic into the consumer's codebase
-3. Update the consumer's imports
-4. Verify tests pass
-5. Delete the package directory
-6. Run full monorepo build + test
+1. Identify the single consumer.
+2. Copy the relevant logic into the consumer codebase.
+3. Update the consumer imports.
+4. Verify the tests pass.
+5. Delete the package directory.
+6. Run the full monorepo build and test.
 
 ### For each "remove entirely" package (intl, monorepo-tools, telemetry)
 
-1. Find all imports across the monorepo
-2. Replace intl usage with project-local constants
-3. Remove monorepo-tools from CI scripts, lint configs, and tooling
-4. Strip telemetry calls from all code paths
-5. Delete each package directory
-6. Run full monorepo build + test
+1. Find all imports across the monorepo.
+2. Replace the intl usage with project-local constants.
+3. Remove monorepo-tools from CI scripts, lint configs, and tooling.
+4. Strip the telemetry calls from all code paths.
+5. Delete each package directory.
+6. Run the full monorepo build and test.
 
 ### Cleanup order
 
@@ -51,13 +51,13 @@ Delete packages that are unused, barely used, or redundant. Reduce monorepo surf
 
 ## Verification
 
-- `pnpm -r test` passes
-- `pnpm -r build` passes
-- `pnpm -r lint` passes
-- No imports remain pointing to deleted packages (`rg "from ['\"]@ethang/(hono-middleware|intl|monorepo-tools|service-worker|telemetry)"` returns empty)
+- `pnpm -r test` passes.
+- `pnpm -r build` passes.
+- `pnpm -r lint` passes.
+- No imports remain pointing to deleted packages. The command `rg "from ['\"]@ethang/(hono-middleware|intl|monorepo-tools|service-worker|telemetry)"` returns empty.
 
 ## Risks
 
-- `monorepo-tools` removal may break CI — audit all CI configs first
-- `telemetry` may be deeply embedded — grep exhaustively
-- Order matters — remove in the listed sequence to avoid cascade failures
+- `monorepo-tools` removal may break CI. Audit all CI configs first.
+- `telemetry` may be deeply embedded. Search the code exhaustively.
+- The order matters. Remove the packages in the listed sequence. The sequence avoids cascade failures.
