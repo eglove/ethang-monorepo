@@ -1,4 +1,3 @@
-import { rss } from "@ethang/intl/en/rss.ts";
 import { useStore } from "@ethang/store/use-store.ts";
 import { Box, Button, Card, Flex, Heading, Text } from "@radix-ui/themes";
 import {
@@ -14,6 +13,7 @@ import noop from "lodash/noop";
 import orderBy from "lodash/orderBy";
 
 import { rpcRequest } from "../../clients/rpc-client.ts";
+import { rss } from "../../constants/rss.ts";
 import { allArticlesOptions, feedArticlesOptions } from "./queries.ts";
 import { rssStore } from "./rss-store.ts";
 import { SourceIcon } from "./source-icon.tsx";

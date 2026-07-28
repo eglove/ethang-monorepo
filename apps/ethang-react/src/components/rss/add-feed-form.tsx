@@ -1,4 +1,3 @@
-import { rss } from "@ethang/intl/en/rss.ts";
 import { Box, Button, Card, Flex, TextField } from "@radix-ui/themes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -7,6 +6,7 @@ import trim from "lodash/trim";
 import { type SyntheticEvent, useState } from "react";
 
 import { rpcRequest } from "../../clients/rpc-client.ts";
+import { rss } from "../../constants/rss.ts";
 import { subscriptionsOptions } from "./queries.ts";
 
 const RSS_SERVICE = "ethang_rss";
@@ -43,7 +43,6 @@ export const AddFeedForm = () => {
     useMutation({
       mutationFn: addSubscriptionMutationFunction,
       onSuccess: () => {
-        // v8 ignore next
         queryClient
           .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })
           .catch(noop);
@@ -59,7 +58,6 @@ export const AddFeedForm = () => {
       return;
     }
     await addSubscription({ xmlAddress: cleanUrl });
-    // v8 ignore next -- state reset after async mutation not exercised in jsdom; covered indirectly by sanitizeFeedUrl tests
     setXmlUrl("");
   };
 

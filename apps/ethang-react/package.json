@@ -4,7 +4,6 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/intl": "workspace:*",
     "@ethang/schemas": "workspace:*",
     "@ethang/store": "workspace:*",
     "@portabletext/react": "^7.0.1",

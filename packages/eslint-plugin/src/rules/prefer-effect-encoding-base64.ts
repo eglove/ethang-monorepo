@@ -50,7 +50,7 @@ export const getBufferFromArguments = (node: TSESTree.Node) => {
   if (!isIdentifier(callee.object) || BUFFER !== callee.object.name) {
     return null;
   }
-  /* v8 ignore next 3 */
+
   if (!isIdentifier(callee.property) || FROM !== callee.property.name) {
     // This branch is unreachable: when computed=false, property MUST be an Identifier
     return null;
@@ -62,7 +62,6 @@ export const getBufferFromArguments = (node: TSESTree.Node) => {
 export const isBase64ToStringCall = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
-  /* v8 ignore next 4 */
   if (!isCallExpression(node)) {
     // This branch is unreachable: callers only pass CallExpression nodes
     return false;
@@ -71,7 +70,7 @@ export const isBase64ToStringCall = (
   if (!isMemberExpression(callee) || callee.computed) {
     return false;
   }
-  /* v8 ignore next 3 */
+
   if (!isIdentifier(callee.property) || TO_STRING !== callee.property.name) {
     // This branch is unreachable: when computed=false, property MUST be an Identifier
     return false;
@@ -116,7 +115,7 @@ export const detectEncodeBase64Pattern = (node: TSESTree.Node) => {
     return null;
   }
   const { callee } = node;
-  /* v8 ignore next 3 -- unreachable: isBase64ToStringCall already verified callee is MemberExpression */
+
   if (!isMemberExpression(callee)) {
     return null;
   }
@@ -142,7 +141,7 @@ export const detectDecodeBase64Pattern = (node: TSESTree.Node) => {
   if (!isMemberExpression(callee) || callee.computed) {
     return null;
   }
-  /* v8 ignore next 3 */
+
   if (!isIdentifier(callee.property) || TO_STRING !== callee.property.name) {
     // This branch is unreachable: when computed=false, property MUST be an Identifier
     return null;

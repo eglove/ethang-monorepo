@@ -1,4 +1,3 @@
-import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
 import { DateTime, Effect, Number, Option, pipe } from "effect";
 import { Hono } from "hono";
 import { validator } from "hono/validator";
@@ -16,6 +15,7 @@ import { FilesPage } from "./components/pages/files-page.tsx";
 import { HomePage } from "./components/pages/home-page.tsx";
 import { NewsPage } from "./components/pages/news-page.tsx";
 import { TrusteesPage } from "./components/pages/trustees-page.tsx";
+import { lastModifiedMiddleware } from "./middleware/last-modified.ts";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 
@@ -28,7 +28,6 @@ const isCalendarView = (v: string): v is CalendarView => {
 };
 
 const lastQuery = (value: null | string | string[]) => {
-  /* v8 ignore next -- defensive guard: Hono's validator yields either a non-empty array or a single string for repeated query params, never an empty array */
   return isArray(value) ? (last(value) ?? null) : value;
 };
 
@@ -67,12 +66,10 @@ app.get(
     const rawYear = lastQuery(value["year"] ?? null);
     return {
       date: lastQuery(value["date"] ?? null) ?? chicagoTime,
-      /* v8 ignore next -- fallback branch when query param is non-numeric string */
       month: isNil(rawMonth)
         ? nowParts.month
         : Option.getOrElse(Number.parse(rawMonth), constant(nowParts.month)),
       view: isCalendarView(rawView) ? rawView : "month",
-      /* v8 ignore next -- fallback branch when query param is non-numeric string */
       year: isNil(rawYear)
         ? nowParts.year
         : Option.getOrElse(Number.parse(rawYear), constant(nowParts.year))

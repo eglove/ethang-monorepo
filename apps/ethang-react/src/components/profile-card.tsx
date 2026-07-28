@@ -1,4 +1,3 @@
-import { forms } from "@ethang/intl/en/forms.ts";
 import {
   EnvelopeClosedIcon,
   GitHubLogoIcon,
@@ -9,6 +8,7 @@ import { Avatar, Box, Button, Card, Flex, Text } from "@radix-ui/themes";
 import frontendMastersIcon from "../assets/frontend-masters-icon.png";
 import pluralsightIcon from "../assets/pluralsight-icon.png";
 import profileImage from "../assets/profile.jpeg";
+import { forms } from "../constants/forms.ts";
 import { HybridLink } from "./hybrid-link.tsx";
 import { Image } from "./image.tsx";
 

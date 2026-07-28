@@ -1,4 +1,3 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect, Predicate } from "effect";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
@@ -7,6 +6,7 @@ import isString from "lodash/isString.js";
 import omit from "lodash/omit.js";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { auth } from "./constants/auth.ts";
 import { app } from "./index.js";
 import { carryUserAuthCommand } from "./infrastructure/user/aggregate.js";
 
@@ -501,23 +501,18 @@ describe("GET /verify", () => {
     expect(body).toEqual({ email: TEST_EMAIL });
   });
 
-  it("should return 401 if token is missing", async () => {
-    const response = await sendRequest(
-      "/verify",
-      {
-        method: "GET"
-      },
-      {
-        "token-auth": TEST_SECRET
-      }
-    );
+  it("should return 401 when token is missing", async () => {
+    const response = await sendRequest("/verify", {
+      headers: {},
+      method: "GET"
+    });
 
     expect(response.status).toBe(401);
     const body = await response.json();
     expect(body).toEqual({ error: "Unauthorized" });
   });
 
-  it("should return 401 if token is invalid", async () => {
+  it("should return 401 when token is invalid", async () => {
     vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
       return Effect.fail(new Error("Invalid token"));
     });
@@ -537,32 +532,48 @@ describe("GET /verify", () => {
     const body = await response.json();
     expect(body).toEqual({ error: "Unauthorized" });
   });
+});
 
-  it("should return result directly when no payload property", async () => {
-    // @ts-expect-error for test
-    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
-      return Effect.succeed({ email: hoistedEmail });
+describe("Validation", () => {
+  it("should return 400 when request body is invalid", async () => {
+    const response = await sendRequest("/sign-up", {
+      body: INVALID_BODY,
+      headers: JSON_CONTENT_TYPE_HEADERS,
+      method: "POST"
     });
 
-    const response = await sendRequest(
-      "/verify",
-      {
-        headers: { "X-Token": VALID_TOKEN },
-        method: "GET"
-      },
-      {
-        "token-auth": TEST_SECRET
-      }
-    );
-
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(400);
     const body = await response.json();
-    expect(body).toEqual({ email: TEST_EMAIL });
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
+  });
+
+  it("should return 400 when email is missing", async () => {
+    const response = await sendRequest("/sign-up", {
+      body: JSON.stringify({ password: TEST_PASSWORD }),
+      headers: JSON_CONTENT_TYPE_HEADERS,
+      method: "POST"
+    });
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
+  });
+
+  it("should return 400 when sign-in request body is invalid", async () => {
+    const response = await sendRequest("/sign-in", {
+      body: INVALID_BODY,
+      headers: JSON_CONTENT_TYPE_HEADERS,
+      method: "POST"
+    });
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
   });
 });
 
 describe("POST /verify", () => {
-  it("should validate credentials", async () => {
+  it("should validate credentials when verify is valid", async () => {
     vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
       return Effect.succeed(mockUser);
     });
@@ -574,7 +585,7 @@ describe("POST /verify", () => {
           email: TEST_EMAIL,
           password: TEST_PASSWORD
         }),
-        headers: { "Content-Type": "application/json" },
+        headers: JSON_CONTENT_TYPE_HEADERS,
         method: "POST"
       },
       {
@@ -587,7 +598,7 @@ describe("POST /verify", () => {
     expect(body).toEqual(mockUser);
   });
 
-  it("should return 401 if credentials are invalid", async () => {
+  it("should return 401 when verify fails", async () => {
     vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
       return Effect.fail(new Error("Unauthorized"));
     });
@@ -599,7 +610,7 @@ describe("POST /verify", () => {
           email: TEST_EMAIL,
           password: TEST_PASSWORD
         }),
-        headers: { "Content-Type": "application/json" },
+        headers: JSON_CONTENT_TYPE_HEADERS,
         method: "POST"
       },
       {
@@ -611,29 +622,62 @@ describe("POST /verify", () => {
     const body = await response.json();
     expect(body).toEqual({ error: "Unauthorized" });
   });
-});
 
-describe("auth API", () => {
-  it("should respond to OPTIONS or handle CORS", async () => {
-    const response = await sendRequest("/", { method: "OPTIONS" });
-    expect(response.status).toBe(204);
+  it("should return 400 when verify request body is invalid", async () => {
+    const response = await sendRequest("/verify", {
+      body: INVALID_BODY,
+      headers: JSON_CONTENT_TYPE_HEADERS,
+      method: "POST"
+    });
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
   });
 
-  it.each(["/sign-up", "/sign-in", "/verify"])(
-    "should return 400 when %s body is invalid",
-    async (path) => {
-      const response = await sendRequest(
-        path,
-        {
-          body: INVALID_BODY,
-          headers: JSON_CONTENT_TYPE_HEADERS,
-          method: "POST"
-        },
-        { "token-auth": TEST_SECRET }
-      );
-      expect(response.status).toBe(400);
-      const body = await response.json();
-      expect(body).toEqual({ error: VALIDATION_ERROR_MESSAGE });
-    }
-  );
+  it("should return payload when verify returns a non-payload result", async () => {
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed(mockUser);
+    });
+
+    const response = await sendRequest(
+      "/verify",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD
+        }),
+        headers: JSON_CONTENT_TYPE_HEADERS,
+        method: "POST"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(200);
+  });
+
+  it("should return the payload property when verify returns a result with one", async () => {
+    vi.mocked(carryUserAuthCommand).mockImplementationOnce(() => {
+      return Effect.succeed({ payload: { email: TEST_EMAIL } });
+    });
+
+    const response = await sendRequest(
+      "/verify",
+      {
+        body: JSON.stringify({
+          email: TEST_EMAIL,
+          password: TEST_PASSWORD
+        }),
+        headers: JSON_CONTENT_TYPE_HEADERS,
+        method: "POST"
+      },
+      {
+        "token-auth": TEST_SECRET
+      }
+    );
+
+    expect(response.status).toBe(200);
+  });
 });

@@ -173,7 +173,6 @@ export const isStringType = (
   }
   const { checker, type } = resolved;
   if (type.isUnion()) {
-    /* v8 ignore next -- defensive: a union type always has members */
     return (type.types ?? []).some((member) => {
       return isStringText(checker.typeToString(member));
     });
@@ -223,7 +222,7 @@ export const isSliceCall = (
   const { property } = callee;
   // A non-computed member expression always has an `Identifier` property, so
   // this branch is unreachable for any legal input.
-  /* v8 ignore next */
+
   if (!isIdentifier(property)) {
     return false;
   }
@@ -322,13 +321,13 @@ export const detectSlicePattern = (node: TSESTree.Node) => {
   }
   const { callee } = node;
   // isSliceCall above guarantees a non-computed member-expression callee.
-  /* v8 ignore next */
+
   if (!isMemberExpression(callee)) {
     return null;
   }
   const { object } = callee;
   // isSliceCall above guarantees the receiver is a non-computed identifier.
-  /* v8 ignore next */
+
   if (!isIdentifier(object)) {
     return null;
   }
@@ -339,7 +338,6 @@ export const detectSlicePattern = (node: TSESTree.Node) => {
   };
 };
 
-/* v8 ignore next -- exercised only by RuleTester integration tests */
 const getNodeText = (node: TSESTree.Expression, sourceText: string) => {
   return sourceText.slice(node.range[0], node.range[1]);
 };
@@ -354,7 +352,6 @@ export const formatSliceCall = (
   })`;
 };
 
-/* v8 ignore next 16 -- exercised only by RuleTester integration tests */
 const buildSliceFix = (
   fixer: TSESLint.RuleFixer,
   node: TSESTree.CallExpression,
@@ -373,7 +370,6 @@ const buildSliceFix = (
   return importFix ? [replace, importFix] : replace;
 };
 
-/* v8 ignore next 5 -- exercised only by RuleTester integration tests */
 const isExpression = (node: TSESTree.Node): node is TSESTree.Expression => {
   return (
     AST_NODE_TYPES.PrivateIdentifier !== node.type &&
@@ -382,7 +378,6 @@ const isExpression = (node: TSESTree.Node): node is TSESTree.Expression => {
 };
 
 export const preferLodashSliceRule = createRule<Options, MessageIds>({
-  /* v8 ignore next 26 -- exercised only by RuleTester integration tests */
   create(context) {
     const { sourceCode } = context;
     const sourceText = sourceCode.text;

@@ -1,12 +1,12 @@
 import type { PropsWithChildren } from "react";
 
-import { navigation } from "@ethang/intl/en/navigation.ts";
 import { useStore } from "@ethang/store/use-store.ts";
 import { Button, Flex, Text } from "@radix-ui/themes";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { NavigationMenu } from "radix-ui";
 
+import { navigation } from "../../constants/navigation.ts";
 import { authStore, authStoreActions } from "../auth/auth-store.ts";
 import { InternalLink } from "../internal-link.tsx";
 

@@ -55,7 +55,7 @@ export const tryMatchPattern1 = (
   }
 
   const value = test.left;
-  /* v8 ignore next 3 -- unreachable: PrivateIdentifier can only appear in class bodies as property keys, never as the left operand of a comparison expression */
+
   if (AST_NODE_TYPES.PrivateIdentifier === value.type) {
     return null;
   }
@@ -108,7 +108,7 @@ export const tryMatchPattern2 = (
   }
 
   const value = test.left;
-  /* v8 ignore next 3 -- unreachable: PrivateIdentifier can only appear in class bodies as property keys, never as the left operand of a comparison expression */
+
   if (AST_NODE_TYPES.PrivateIdentifier === value.type) {
     return null;
   }

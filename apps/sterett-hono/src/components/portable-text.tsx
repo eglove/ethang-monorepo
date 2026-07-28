@@ -69,7 +69,6 @@ export const PortableText = async ({ content }: PortableTextProperties) => {
             types: {
               // toHTML handlers must be synchronous and return HTML strings
               image: ({ value }: { value: { _key: string } }) => {
-                // v8 ignore next -- defensive guard: pre-processing above guarantees every image _key is in the map
                 return imageHtmlMap.get(value._key) ?? "";
               }
             }

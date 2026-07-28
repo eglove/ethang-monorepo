@@ -1,4 +1,4 @@
-import { urls } from "@ethang/intl/en/urls.ts";
+import { urls } from "../constants/urls.ts";
 
 export const SOME_OTHER_D1_ERROR = "Some other D1 error";
 export const SOME_NON_ERROR_OBJECT = "Some non-Error object";

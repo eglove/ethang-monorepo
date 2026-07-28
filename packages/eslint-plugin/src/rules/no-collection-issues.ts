@@ -211,7 +211,7 @@ const checkCollectionMethodValue = (
 
   // Check if this chain call's result is used (i.e., not just a statement).
   const { parent } = node;
-  /* v8 ignore next -- AST nodes always have a parent in RuleTester */
+
   if (isNil(parent)) {
     return;
   }

@@ -1,4 +1,3 @@
-import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import {
   Badge,
   Card,
@@ -14,6 +13,7 @@ import isNil from "lodash/isNil";
 import map from "lodash/map";
 
 import { rpcRequest } from "../../clients/rpc-client.ts";
+import { courses as coursesIntl } from "../../constants/courses.ts";
 import { Course } from "./course.tsx";
 
 export type AllCourseData = {

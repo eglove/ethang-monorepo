@@ -20,7 +20,7 @@ const getBinaryFromCode = (code: string) => {
   const program = parseProgram(code);
   linkParents(program);
   const statement = program.body[0];
-  /* v8 ignore next -- defensive guard: parseProgram always returns a program with at least one body item for valid code */
+
   if (!statement) {
     throw new Error(`expected statement in: ${code}`);
   }

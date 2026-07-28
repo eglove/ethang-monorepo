@@ -137,7 +137,6 @@ const reportArray = (
       target
     },
     fix: (fixer) => {
-      /* v8 ignore next -- defensive guard: reportArray only receives MemberExpression callees */
       if (node.callee.type !== AST_NODE_TYPES.MemberExpression) {
         return null;
       }
@@ -207,7 +206,6 @@ const markInnerCallAndMember = (
   node: TSESTree.CallExpression,
   context: CallCheckContext
 ) => {
-  /* v8 ignore next -- defensive guard: detection functions ensure this structure */
   if (!(
     isMemberExpression(node.callee) && isCallExpression(node.callee.object)
   )) {
@@ -260,7 +258,6 @@ const checkCallExpression = (
     {
       detect: shouldPreferFindShift,
       markInner: (n) => {
-        /* v8 ignore next -- defensive guard */
         if (isMemberExpression(n.callee) && isCallExpression(n.callee.object)) {
           handledCallNodes.add(n.callee.object);
         }
@@ -319,7 +316,7 @@ const checkCallExpression = (
   // prefer-invoke-map
   if (shouldPreferInvokeMap(node)) {
     const iteratee = node.arguments.at(0);
-    /* v8 ignore next -- defensive guard: shouldPreferInvokeMap ensures iteratee exists */
+
     if (!isNil(iteratee)) {
       markInnerCallExpressions(iteratee, handledCallNodes);
     }
@@ -396,7 +393,7 @@ const checkBinaryExpression = (
     const receiver = getIsEmptyReceiver(node);
     // getIsEmptyReceiver only returns null when shouldPreferIsEmpty returns
     // false (mutually exclusive by construction).
-    /* v8 ignore next */
+
     if (isNil(receiver)) {
       context.report({ messageId: "preferIsEmpty", node });
     } else {
@@ -532,7 +529,6 @@ export const preferLodashRule = createRule<PreferLodashOptions, MessageIds>({
 
         // prefer-find: filter(...)[0] — MemberExpression with computed literal 0
         if (shouldPreferFindMember(node)) {
-          /* v8 ignore next -- defensive guard: shouldPreferFindMember ensures object is a call */
           if (isCallExpression(node.object)) {
             handledCallNodes.add(node.object);
           }

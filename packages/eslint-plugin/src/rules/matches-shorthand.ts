@@ -36,7 +36,6 @@ export const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
     return node.body;
   }
 
-  /* v8 ignore next 7 -- isFunctionReturningConjunction ensures node is FunctionExpression when ArrowFunctionExpression is already handled above */
   if (node.type === AST_NODE_TYPES.FunctionExpression) {
     const [first] = node.body.body;
 
@@ -185,7 +184,6 @@ export const isConjunctionOfEqualitiesToMemberOf = (
   while (0 < stack.length) {
     const current = stack.pop();
 
-    /* v8 ignore next -- defensive guard: current is always pushed/popped via the stack, never null at this point */
     if (!isNil(current)) {
       const isMatch = processConjunctionLeaf(
         current,

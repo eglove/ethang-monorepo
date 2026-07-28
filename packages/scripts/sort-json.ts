@@ -1,4 +1,3 @@
-import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 import startsWith from "lodash/startsWith.js";
@@ -6,8 +5,6 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 import { sortJson } from "./sort-json-utilities.ts";
-
-installLogger();
 
 export const run = (argv: string[]) => {
   const { 2: filePath } = argv;
@@ -33,7 +30,6 @@ export const run = (argv: string[]) => {
   sortJson(absolutePath);
 };
 
-// v8 ignore next -- autoloader guarded by NODE_ENV; only runs in non-test processes.
 if ("test" !== globalThis.process.env["NODE_ENV"]) {
   run(globalThis.process.argv);
 }

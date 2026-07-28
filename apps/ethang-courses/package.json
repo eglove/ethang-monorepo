@@ -4,7 +4,6 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/intl": "workspace:*",
     "@sanity/client": "^7.25.0",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.22.0",

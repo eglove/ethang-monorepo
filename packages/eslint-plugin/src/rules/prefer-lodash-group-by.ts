@@ -27,7 +27,6 @@ type MessageIds = "preferLodashGroupBy";
 type Options = [];
 
 const isEmptyArray = (node: TSESTree.Node) => {
-  /* v8 ignore next */
   if (AST_NODE_TYPES.ArrayExpression !== node.type) {
     return false;
   }
@@ -40,19 +39,19 @@ function extractGroupByKey(
   itemName: string
 ) {
   const { expression } = expressionStatement;
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.CallExpression !== expression.type) {
     return null;
   }
 
   const callee = getPushCallee(expression);
-  /* v8 ignore next */
+
   if (!callee) {
     return null;
   }
 
   const argument = expression.arguments[0];
-  /* v8 ignore next */
+
   if (!argument || !isIdentifier(argument) || argument.name !== itemName) {
     return null;
   }
@@ -65,19 +64,18 @@ function getAssignmentKey(
   itemName: string,
   accumulatorName: string
 ) {
-  /* v8 ignore next */
   if (AST_NODE_TYPES.AssignmentExpression !== object.type) {
     return null;
   }
-  /* v8 ignore next */
+
   if ("||=" !== object.operator) {
     return null;
   }
-  /* v8 ignore next */
+
   if (!isEmptyArray(object.right)) {
     return null;
   }
-  /* v8 ignore next */
+
   if (!isMemberAccumulator(object.left, accumulatorName)) {
     return null;
   }
@@ -86,16 +84,16 @@ function getAssignmentKey(
 
 function getPushCallee(call: TSESTree.CallExpression) {
   const { callee } = call;
-  /* v8 ignore next */
+
   if (!isMemberExpression(callee) || callee.computed) {
     return null;
   }
-  /* v8 ignore next */
+
   if ("push" !== callee.property.name || 1 !== call.arguments.length) {
     return null;
   }
   const [argument] = call.arguments;
-  /* v8 ignore next */
+
   if (!argument || !isIdentifier(argument)) {
     return null;
   }
@@ -113,7 +111,7 @@ export const detectGroupByPattern = (node: TSESTree.Node) => {
   }
 
   const [firstArgument] = node.arguments;
-  /* v8 ignore next 2 -- verification: arrayInfo exists, firstArgument is provided */
+
   if (!firstArgument) {
     return null;
   }

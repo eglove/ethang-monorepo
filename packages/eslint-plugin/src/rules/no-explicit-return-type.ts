@@ -52,11 +52,11 @@ const isEffectQualifiedName: (node: TSESTree.TSQualifiedName) => boolean = (
   if (left.type === AST_NODE_TYPES.Identifier) {
     return isRootEffectName(left, right);
   }
-  /* v8 ignore next -- defensive guard: TSQualifiedName.left is restricted to Identifier | TSQualifiedName by the AST; reaching the else branch implies parser anomaly */
+
   if (left.type === AST_NODE_TYPES.TSQualifiedName) {
     return isNamespaceEffectName(left, right);
   }
-  /* v8 ignore next -- defensive guard: TSQualifiedName.left is restricted to Identifier | TSQualifiedName by the AST; reaching the fallback implies parser anomaly */
+
   return false;
 };
 
@@ -118,7 +118,7 @@ export const noExplicitReturnTypeRule = createRule<
       context.report({
         fix: (fixer) => {
           const tokenBefore = context.sourceCode.getTokenBefore(returnTypeNode);
-          /* v8 ignore next -- defensive guard: a return type annotation always has a preceding token */
+
           if (isNil(tokenBefore)) {
             return null;
           }

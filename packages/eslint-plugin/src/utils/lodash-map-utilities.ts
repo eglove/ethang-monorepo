@@ -10,7 +10,7 @@ export const isObjectEntriesCall = (
     return false;
   }
   const { callee } = node;
-  /* v8 ignore next 2 -- unreachable: isCallExpression guarantees callee exists */
+
   if (AST_NODE_TYPES.MemberExpression !== callee.type) {
     return false;
   }
@@ -85,7 +85,7 @@ export const extractBodyExpression = (
     return null;
   }
   const [statement] = block.body;
-  /* v8 ignore next 3 */
+
   if (!statement) {
     return null;
   }
@@ -157,7 +157,7 @@ export const detectEntriesMapPattern = (node: TSESTree.Node) => {
 
   // Layer 3: Object.entries(obj) as mapCall.callee.object
   const mapCallee = mapCall.callee;
-  /* v8 ignore next 2 -- unreachable: isMapCall already guarantees callee is MemberExpression */
+
   if (AST_NODE_TYPES.MemberExpression !== mapCallee.type) {
     return null;
   }

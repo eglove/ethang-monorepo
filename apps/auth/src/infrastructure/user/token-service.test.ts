@@ -1,7 +1,7 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
+import { auth } from "../../constants/auth.ts";
 import { TokenSignError } from "../../errors/token-sign-error.ts";
 import { TokenVerifyError } from "../../errors/token-verify-error.ts";
 import { createTokenService } from "./token-service.ts";

@@ -1,5 +1,6 @@
-import { rss } from "@ethang/intl/en/rss.ts";
 import { Button, Dialog, Flex } from "@radix-ui/themes";
+
+import { rss } from "../../constants/rss.ts";
 
 type UnsubscribeDialogProperties = {
   feedTitle: string;

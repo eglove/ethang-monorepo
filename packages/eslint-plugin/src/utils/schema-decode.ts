@@ -35,7 +35,7 @@ const IDENTIFIER_TYPE = AST_NODE_TYPES.Identifier;
 
 const cookedValue = (templateLiteral: TSESTree.TemplateLiteral) => {
   const [first] = templateLiteral.quasis;
-  /* v8 ignore next -- A TSESTree.TemplateLiteral is always produced with at least one quasi by the parser, so this branch is unreachable. */
+
   if (isNil(first)) {
     return null;
   }

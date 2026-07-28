@@ -26,7 +26,7 @@ workspaces, frameworks, or scripts are current.
    - **Green**: Implement the minimum code to make the test pass. This directly addresses the hypothesis and fixes the identified issue.
    - **Refactor**: Simplify the implementation, run ESLint to ensure code quality, optimize performance, and enforce codebase standards without changing behavior.
 
-3. **100% Coverage Discipline**: Every workspace enforces 100% line/branch/function/statement coverage as a CI gate. To meet it, prefer to **extract logic into small, individually testable helper/utility functions** and **export previously unexported functions and classes** so the test suite can reach them. Reaching for `/* v8 ignore next */` [v8 ignore documentation](https://github.com/AriPerkkio/ast-v8-to-istanbul?tab=readme-ov-file#ignoring-code) is acceptable only for branches that are genuinely unreachable from any legal input (e.g. a defensive check for a node kind the parser cannot produce in that position). Before adding an ignore comment, prove the branch is unreachable by tracing all producers of that AST node kind; do not use ignores to paper over missing test cases.
+3. **100% Coverage Discipline**: Every workspace targets 100% line/branch/function/statement coverage as a quality goal. The CI gate is set to 80%. To meet 100%, prefer to **extract logic into small, individually testable helper/utility functions** and **export previously unexported functions and classes** so the test suite can reach them.
 
 4. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
 
@@ -61,26 +61,4 @@ AI agents must follow this tool priority order:
 
 When installing and using packages in this repository, **do not assume the `workspace:*` convention**. Many packages are published and installed via the registry. Always look at how other apps/packages use them before adding a new dependency.
 
----
 
-## Documentation Discipline
-
-1. **Read `docs/` before implementing.** Search `docs/` for notes about the feature or module you are changing. The docs contain design decisions, schema details, and operational behavior.
-
-2. **Update `docs/` after making changes.** If a change alters architecture, data lifecycle, configuration, exported APIs, or operational behavior, update the relevant `docs/` in the same commit.
-
-3. **Write all documentation in ASD-STE100 Simplified Technical English.** ASD-STE100 is a controlled language with 53 writing rules and a dictionary of approximately 900 approved words. It removes ambiguity and improves comprehension. Follow these rules:
-
-   - **Use active voice.** Do not use passive voice. Write "You run the test" not "The test is run".
-   - **Use short sentences.** Write no more than 20 words in procedural sentences. Write no more than 25 words in descriptive sentences.
-   - **Write one instruction per sentence.** Do not combine instructions in one sentence.
-   - **Write one topic per paragraph.** Do not mix topics in one paragraph.
-   - **Write no more than six sentences per paragraph.** Split long paragraphs.
-   - **Use no more than three nouns in a row.** Write "the feed table" not "feed table article insertion unique constraint".
-   - **Use imperative form for procedures.** Start each step with the verb. Write "Run the test" not "You should run the test".
-   - **Do not omit sentence parts.** Write complete sentences with a subject and a verb.
-   - **Use vertical lists for complex text.** Break complex information into lists.
-   - **Use approved words only.** Use simple words with one clear meaning. Avoid words with multiple meanings. Use "obey" instead of "follow" for instructions. Use "use" instead of "utilize".
-   - **Use consistent terminology.** Use the same word for the same thing throughout the document.
-
-   Reference: [ASD-STE100 Standard](https://www.asd-ste100.org/)

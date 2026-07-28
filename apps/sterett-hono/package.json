@@ -4,14 +4,13 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/hono-middleware": "workspace:*",
-    "@ethang/service-worker": "workspace:*",
     "@portabletext/to-html": "^5.0.2",
     "@sanity/client": "^7.25.0",
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/cli": "^4.3.3",
     "calendar-link": "^2.11.4",
     "effect": "^3.22.0",
+    "esbuild": "^0.25.0",
     "hono": "^4.12.32",
     "lodash": "^4.18.1",
     "tailwind-merge": "^3.6.0",
@@ -38,8 +37,9 @@
   },
   "name": "sterett-hono",
   "scripts": {
+    "build:sw": "tsx build.ts",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
-    "deploy": "bun build.ts && pnpm tw && wrangler deploy --minify",
+    "deploy": "pnpm run cf-typegen && pnpm run tw && wrangler deploy --minify",
     "dev": "wrangler dev",
     "lint": "eslint . --fix && pnpm tsc --noEmit",
     "test": "vitest run --coverage",

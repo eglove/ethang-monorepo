@@ -1,6 +1,5 @@
 import type { MouseEvent } from "react";
 
-import { rss } from "@ethang/intl/en/rss.ts";
 import { useStore } from "@ethang/store/use-store.ts";
 import { Box, Button, Card, Flex, Heading, Skeleton } from "@radix-ui/themes";
 import {
@@ -14,6 +13,7 @@ import map from "lodash/map";
 import noop from "lodash/noop";
 import { Trash } from "lucide-react";
 
+import { rss } from "../../constants/rss.ts";
 import {
   allArticlesOptions,
   feedArticlesOptions,
@@ -95,7 +95,6 @@ export const Feeds = () => {
   };
 
   const handleConfirmUnsubscribe = async () => {
-    // v8 ignore next -- defensive guard; dialog never confirms when state is nil
     if (isNil(pendingUnsubscribe)) {
       return;
     }

@@ -1,9 +1,9 @@
-import { courses } from "@ethang/intl/en/courses.ts";
 import { eq } from "drizzle-orm";
 import { Effect } from "effect";
 
 import type { Database } from "../types.ts";
 
+import { courses } from "../../constants/courses.ts";
 import { coursesTable } from "../../db/schema.ts";
 import { FetchError } from "../../errors/fetch-error.ts";
 import { NotFoundError } from "../../errors/not-found-error.ts";

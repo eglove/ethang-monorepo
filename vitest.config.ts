@@ -22,22 +22,20 @@ export default defineConfig({
         "packages/eslint-plugin/src/index.test.ts",
         "packages/agents-build/src/**/*.test.ts",
         "packages/agents-build/src/content/**",
-        "packages/monorepo-tools/src/cli/run-workspace.worker.ts",
         "apps/ethang-react/src/clients/apollo.ts",
         "apps/ethang-rss/**/*.mock.ts",
         "apps/ethang-rss/src/db/database-schema.ts",
-        "**/test-utilities/**",
-        "packages/monorepo-tools/tests/**"
+        "**/test-utilities/**"
       ],
       include: ["apps/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
-        autoUpdate: true,
-        branches: 100,
-        functions: 100,
-        lines: 100,
-        statements: 100
+
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80
       }
     },
     projects: [

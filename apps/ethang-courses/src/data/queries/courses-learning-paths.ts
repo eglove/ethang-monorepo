@@ -57,7 +57,7 @@ export const buildOrderedCourses = (
     }),
     (lpc) => {
       const course = courseMap.get(lpc.courseId);
-      // v8 ignore next -- defensive guard: filter above guarantees courseMap.has(lpc.courseId)
+
       if (!course) {
         return Effect.runSync(Effect.die(new Error("Course not found in map")));
       }
@@ -257,7 +257,6 @@ export const buildAllCoursesFromSortedLpIds = (
   learningPathMap: Map<string, typeof learningPathsTable.$inferSelect>
 ) => {
   const entries = flatMap(sortedLpIds, (lpId) => {
-    // v8 ignore next -- defensive guard: sortedLpIds is derived from coursesByLp.keys() so every id is defined
     return coursesByLp.get(lpId) ?? [];
   });
   const allCourses: LearningPathCourseEntry[] = [];

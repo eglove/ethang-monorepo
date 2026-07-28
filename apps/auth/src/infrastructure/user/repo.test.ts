@@ -1,9 +1,9 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import type { UserState } from "../../domain/user/state.ts";
 
+import { auth } from "../../constants/auth.ts";
 import { FetchError } from "../../errors/fetch-error.ts";
 import { SaveError } from "../../errors/save-error.ts";
 import { createUserRepo } from "./repo.ts";

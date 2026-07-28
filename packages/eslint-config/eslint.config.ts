@@ -17,8 +17,7 @@ export default defineConfig(
     "src/config.storybook.js",
     "src/config.tailwind.js",
     "src/config.vitest.js",
-    "**/*.d.ts",
-    "docs/**"
+    "**/*.d.ts"
   ]),
   ...config,
   ...vitestConfig,

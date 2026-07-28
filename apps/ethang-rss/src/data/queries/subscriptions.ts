@@ -197,7 +197,6 @@ const getItemCursor = (
   } | null,
   sortBy?: { field: "PUBLISHED_AT" | "TITLE" }
 ) => {
-  // v8 ignore next -- defensive guard: buildEdges always passes a non-null item
   if (isNil(item)) {
     return "";
   }

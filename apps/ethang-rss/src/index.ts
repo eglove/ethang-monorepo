@@ -1,5 +1,3 @@
-import { installLogger } from "@ethang/telemetry/logger.ts";
-import { fn } from "@ethang/telemetry/spans.ts";
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect, pipe, Schema } from "effect";
@@ -15,9 +13,6 @@ import { subscriptionQuery } from "./data/queries/subscription.ts";
 import { subscriptionsQuery } from "./data/queries/subscriptions.ts";
 // eslint-disable-next-line sonar/no-wildcard-import
 import * as databaseSchema from "./db/schema.ts";
-
-// Pretty-print Effect logs via console.* for Cloudflare Workers Logs.
-installLogger();
 
 export type User = {
   email: string;
@@ -145,37 +140,39 @@ export default class extends WorkerEntrypoint<Env> {
     const workflowId = `fetch-feeds-${event.scheduledTime}`;
     const workflowBinding = this.env.FETCH_FEEDS_WORKFLOW;
 
-    const startFetchFeedsWorkflow = fn("startFetchFeedsWorkflow")(function* () {
-      const tryCreateWorkflow = Effect.tryPromise({
-        catch: (error: unknown) => {
-          return Error.isError(error) ? error : new Error(String(error));
-        },
-        try: async () => {
-          return workflowBinding.create({ id: workflowId });
-        }
-      });
-
-      return yield* pipe(
-        tryCreateWorkflow,
-        Effect.catchAll((error) => {
-          const { message } = error;
-
-          if (includes(message, "already exists")) {
-            return Effect.void;
+    const startFetchFeedsWorkflow = Effect.fn("startFetchFeedsWorkflow")(
+      function* () {
+        const tryCreateWorkflow = Effect.tryPromise({
+          catch: (error: unknown) => {
+            return Error.isError(error) ? error : new Error(String(error));
+          },
+          try: async () => {
+            return workflowBinding.create({ id: workflowId });
           }
+        });
 
-          return pipe(
-            Effect.logError("Failed to start feed sync workflow", {
-              error: message,
-              stack: error.stack
-            }),
-            Effect.flatMap(() => {
-              return Effect.fail(error);
-            })
-          );
-        })
-      );
-    });
+        return yield* pipe(
+          tryCreateWorkflow,
+          Effect.catchAll((error) => {
+            const { message } = error;
+
+            if (includes(message, "already exists")) {
+              return Effect.void;
+            }
+
+            return pipe(
+              Effect.logError("Failed to start feed sync workflow", {
+                error: message,
+                stack: error.stack
+              }),
+              Effect.flatMap(() => {
+                return Effect.fail(error);
+              })
+            );
+          })
+        );
+      }
+    );
 
     await Effect.runPromise(startFetchFeedsWorkflow());
   }

@@ -70,7 +70,7 @@ export const noBarrelFileRule = createRule<Options, MessageIds>({
         : "noBarrelFile";
 
     const [firstStatement] = statements;
-    /* v8 ignore next -- unreachable: statements.length > 0 checked above */
+
     if (isNil(firstStatement)) {
       return {};
     }

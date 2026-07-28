@@ -1,4 +1,3 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
@@ -9,6 +8,7 @@ import type { TokenSignError } from "../../errors/token-sign-error.ts";
 import type { TokenVerifyError } from "../../errors/token-verify-error.ts";
 import type { UserRepo } from "./repo.ts";
 
+import { auth } from "../../constants/auth.ts";
 import { apply, decide } from "../../domain/user/aggregate.ts";
 import { initialState, type UserState } from "../../domain/user/state.ts";
 import { InvalidCredentialsError } from "../../errors/invalid-credentials-error.ts";

@@ -39,3 +39,7 @@ IGNORE_GITIGNORED_FILES: true
 FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*\.idea.*|.*/migrations/meta/_journal.json|.*\.agents/.*|skills-lock\.json)
 
 REPOSITORY_KINGFISHER_ARGUMENTS: "--exclude **/.agents/**"
+
+REPOSITORY_CHECKOV_CLI_LINT_MODE: file
+
+REPOSITORY_CHECKOV_FILTER_REGEX_EXCLUDE: "(apps/auth/src/index\\.test\\.ts|apps/auth/src/infrastructure/user/aggregate\\.test\\.ts)"

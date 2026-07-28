@@ -27,7 +27,7 @@ const buildOrderedCourses = (
     }),
     (lpc) => {
       const course = courseMap.get(lpc.courseId);
-      // v8 ignore next -- defensive guard: filtered list guarantees course is defined here
+
       if (isNil(course)) {
         return [];
       }

@@ -28,7 +28,6 @@ const JSON_HEADERS = {
 } as const;
 
 const json = <T>(data: T, status: number) => {
-  // v8 ignore next -- defensive guard: every call site passes a non-nil value
   return new Response(isNil(data) ? null : JSON.stringify(data), {
     headers: JSON_HEADERS,
     status
@@ -164,6 +163,7 @@ app.get("/verify", async (context) => {
   if ("error" in result) {
     return json({ error: result.error }, 401);
   }
+
   const payload = "payload" in result ? result.payload : result;
   return json(payload, 200);
 });

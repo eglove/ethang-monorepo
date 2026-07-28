@@ -1,4 +1,3 @@
-import { forms } from "@ethang/intl/en/forms.ts";
 import { useStore } from "@ethang/store/use-store.ts";
 import {
   Box,
@@ -22,6 +21,7 @@ import { type SyntheticEvent, useEffect, useState } from "react";
 
 import { authStore, authStoreActions } from "../components/auth/auth-store.ts";
 import { MainLayout } from "../components/layout/main-layout.tsx";
+import { forms } from "../constants/forms.ts";
 
 const Login = () => {
   const { error, isPending, user } = useStore(authStore, (state) => {

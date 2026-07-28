@@ -1,6 +1,7 @@
-import { lastModifiedMiddleware } from "@ethang/hono-middleware/src/last-modified.ts";
 import { Hono } from "hono";
 import { describe, expect, it } from "vitest";
+
+import { lastModifiedMiddleware } from "./last-modified.ts";
 
 const VALID_ISO = "2024-06-01T12:00:00Z";
 const VALID_HTTP = "Sat, 01 Jun 2024 12:00:00 GMT";
@@ -27,11 +28,36 @@ describe(lastModifiedMiddleware, () => {
     expect(response.headers.get(LAST_MODIFIED_HEADER)).toBe(VALID_HTTP);
   });
 
+  it("sets Last-Modified header from an RFC 2822 date string", async () => {
+    const app = new Hono();
+    app.use(lastModifiedMiddleware);
+    app.get("/", (c) => {
+      return c.html(htmlWith(metaTag(VALID_HTTP)));
+    });
+
+    const response = await app.request("/");
+
+    expect(response.headers.get(LAST_MODIFIED_HEADER)).toBe(VALID_HTTP);
+  });
+
   it("does not set Last-Modified for a non-HTML response", async () => {
     const app = new Hono();
     app.use(lastModifiedMiddleware);
     app.get("/", (c) => {
       return c.json({ key: "value" });
+    });
+
+    const response = await app.request("/");
+
+    expect(response.headers.get(LAST_MODIFIED_HEADER)).toBeNull();
+  });
+
+  it("does not set Last-Modified when content-type header is missing", async () => {
+    const app = new Hono();
+    app.use(lastModifiedMiddleware);
+    app.get("/", () => {
+      // Return a raw Response with no content-type to trigger the early return
+      return new Response(htmlWith(metaTag(VALID_ISO)));
     });
 
     const response = await app.request("/");

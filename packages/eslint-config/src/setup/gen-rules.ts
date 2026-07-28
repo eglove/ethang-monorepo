@@ -1,14 +1,11 @@
 import type { Linter, Rule } from "eslint";
 
-import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect } from "effect";
 import fromPairs from "lodash/fromPairs.js";
 import get from "lodash/get.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
-
-installLogger();
 
 export type EsLintRules = Record<string, Rule.RuleModule>;
 
