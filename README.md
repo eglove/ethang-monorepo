@@ -33,18 +33,12 @@ This monorepo contains a collection of web applications, libraries, and tools us
 
 ### Packages
 
-- **[agents-build](packages/agents-build)**: Compiler that generates GitHub Copilot CLI rules, commands, and skills into `.agents/` from typed TypeScript definitions (driven by Bun + `@ethang/markdown-generator`).
 - **[eslint-config](packages/eslint-config)**: Shared ESLint configuration supporting React, Angular, Astro, Solid, TanStack Query/Router, Storybook, Playwright, Tailwind, and more.
 - **[eslint-plugin](packages/eslint-plugin)**: Custom ESLint plugin encoding monorepo standards — 18 custom rules including `prefer-lodash`, `no-try-catch`, `no-barrel-files`, `chain-style`, `path-style`, `matches-shorthand`, `identity-shorthand`, `import-scope`, and auto-fixers for redundant explicit return types.
-- **[hono-middleware](packages/hono-middleware)**: Shared Hono middleware utilities (auth, caching, last-modified) reused across the Workers-based apps.
-- **[intl](packages/intl)**: Internationalization package providing locale-specific strings and translations for the frontends (no barrel file; import from subpaths).
-- **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by `agents-build` and other tooling.
-- **[monorepo-tools](packages/monorepo-tools)**: Bun/TypeScript monorepo checker and Copilot hook tooling.
+- **[markdown-generator](packages/markdown-generator)**: Programmatic GitHub-flavored markdown generator used by tooling.
 - **[schemas](packages/schemas)**: Shared data schemas and validation utilities (Effect Schema) used across apps, including JWT helpers built on `jose`.
-- **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks (CI workflow validation, JSON sorting, rule generation).
-- **[service-worker](packages/service-worker)**: Shared Workbox-based service worker (with esbuild build step) used by the frontends.
+- **[scripts](packages/scripts)**: Collection of utility scripts for development, deployment, and maintenance tasks.
 - **[store](packages/store)**: Fine-grained state management built on Immer (`Producer<T>`), Effect, `use-sync-external-store`, and lodash for the React frontends.
-- **[telemetry](packages/telemetry)**: Telemetry primitives built on Effect for instrumentation across services (no barrel file; import from subpaths like `@ethang/telemetry/logger.ts`).
 - **[tsconfig](packages/tsconfig)**: Shared TypeScript configuration presets (`@tsconfig/node-lts`, `@tsconfig/strictest`, `@tsconfig/vite-react`).
 
 ## Technologies
@@ -65,4 +59,3 @@ This monorepo contains a collection of web applications, libraries, and tools us
 - Continuous integration runs the `ci.yml` GitHub Actions workflow.
 - MegaLinter and SonarCloud enforce style, security, and coverage gates (see badges above).
 - All apps and packages target Node `>=24` and ESM.
-- The `agents-build` package compiles the agent rule and skill definitions consumed in `.agents/`; rebuild it after any change to its source.
