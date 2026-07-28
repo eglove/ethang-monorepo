@@ -9,41 +9,41 @@ created: 2026-07-26
 
 ## Goal
 
-Add end-to-end tests for all backend services. Tests should exercise real HTTP endpoints against a test database.
+Add end-to-end tests for all backend services. The tests exercise real HTTP endpoints against a test database.
 
 ## Plan
 
 ### Phase 1: Test Infrastructure
 
-1. Audit all backend services and their endpoints
-2. Create shared test harness:
-   - Test database setup/teardown (D1 local, Postgres test instance, etc.)
-   - Test auth tokens
-   - Shared HTTP client (fetch wrapper with auth)
-   - Fixture factories for test data
-3. Add test scripts to each backend's `package.json`
+1. Audit all backend services and their endpoints.
+2. Create a shared test harness:
+   - Set up and tear down the test database (D1 local, Postgres test instance, etc.).
+   - Create test auth tokens.
+   - Create a shared HTTP client (fetch wrapper with auth).
+   - Create fixture factories for test data.
+3. Add test scripts to each backend `package.json`.
 
 ### Phase 2: Per-Backend Tests
 
 For each backend service:
 
-1. Write health-check test
-2. Write CRUD tests for each resource
-3. Write auth/authorization tests (unauthorized, forbidden, etc.)
-4. Write error-case tests (invalid input, missing fields, etc.)
-5. Write concurrency tests if applicable
+1. Write a health-check test.
+2. Write CRUD tests for each resource.
+3. Write auth and authorization tests (unauthorized, forbidden, etc.).
+4. Write error-case tests (invalid input, missing fields, etc.).
+5. Write concurrency tests if applicable.
 
 ### Phase 3: CI Integration
 
-1. Add backend E2E jobs to CI pipeline
-2. Ensure test databases are provisioned in CI
-3. Set timeouts appropriate for CI environment
+1. Add backend E2E jobs to the CI pipeline.
+2. Provision test databases in CI.
+3. Set timeouts appropriate for the CI environment.
 
 ## Verification
 
-- `pnpm -r test:e2e` passes for all backends
-- All endpoints covered for happy path + error cases
-- Auth enforcement verified
+- `pnpm -r test:e2e` passes for all backends.
+- All endpoints are covered for happy path and error cases.
+- Auth enforcement is verified.
 
 ## Related
 

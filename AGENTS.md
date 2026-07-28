@@ -65,6 +65,22 @@ When installing and using packages in this repository, **do not assume the `work
 
 ## Documentation Discipline
 
-1. **Read `docs/` before implementing.** The `docs/` directory contains documentation (architecture, data flow, configuration, key exports). Search `docs/` for existing notes about the feature or module you are changing before writing code — the backlog and docs encode design decisions, schema details, and operational behavior that are not obvious from source alone.
+1. **Read `docs/` before implementing.** Search `docs/` for notes about the feature or module you are changing. The docs contain design decisions, schema details, and operational behavior.
 
-2. **Update `docs/` after making changes.** When a change alters architecture, data lifecycle, configuration, exported APIs, or operational behavior, update the relevant `docs/` (or create one if it does not exist) in the same commit. Documentation is part of the change, not a follow-up task.
+2. **Update `docs/` after making changes.** If a change alters architecture, data lifecycle, configuration, exported APIs, or operational behavior, update the relevant `docs/` in the same commit.
+
+3. **Write all documentation in ASD-STE100 Simplified Technical English.** ASD-STE100 is a controlled language with 53 writing rules and a dictionary of approximately 900 approved words. It removes ambiguity and improves comprehension. Follow these rules:
+
+   - **Use active voice.** Do not use passive voice. Write "You run the test" not "The test is run".
+   - **Use short sentences.** Write no more than 20 words in procedural sentences. Write no more than 25 words in descriptive sentences.
+   - **Write one instruction per sentence.** Do not combine instructions in one sentence.
+   - **Write one topic per paragraph.** Do not mix topics in one paragraph.
+   - **Write no more than six sentences per paragraph.** Split long paragraphs.
+   - **Use no more than three nouns in a row.** Write "the feed table" not "feed table article insertion unique constraint".
+   - **Use imperative form for procedures.** Start each step with the verb. Write "Run the test" not "You should run the test".
+   - **Do not omit sentence parts.** Write complete sentences with a subject and a verb.
+   - **Use vertical lists for complex text.** Break complex information into lists.
+   - **Use approved words only.** Use simple words with one clear meaning. Avoid words with multiple meanings. Use "obey" instead of "follow" for instructions. Use "use" instead of "utilize".
+   - **Use consistent terminology.** Use the same word for the same thing throughout the document.
+
+   Reference: [ASD-STE100 Standard](https://www.asd-ste100.org/)

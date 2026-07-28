@@ -10,18 +10,18 @@ related: [ESLint — Make Private, Stop Publishing]
 
 ## Goal
 
-Detect manual pub/sub patterns (array of subscribers with notify loop) and suggest `PubSub` from Effect.
+Detect manual pub/sub patterns. The pattern uses an array of subscribers with a notify loop. Suggest `PubSub` from Effect.
 
 ## Plan
 
-1. Create `packages/eslint-plugin/src/rules/prefer-effect-pub-sub.ts`
-2. Detection: array/Set used for subscribers + `.push`/`.add` + `.forEach(fn => fn(data))` pattern
-3. Must detect the guard pattern: Ref/Mutex/boolean flag used to protect the subscriber list
-4. Report-only ❌
-5. Create unit test and integration test
-6. Register in `index.ts`
+1. Create `packages/eslint-plugin/src/rules/prefer-effect-pub-sub.ts`.
+2. Detection: array or Set used for subscribers. The code uses `.push`/`.add`. The code uses `.forEach(fn => fn(data))`.
+3. The rule must detect the guard pattern. The guard uses a Ref or Mutex or boolean flag to protect the subscriber list.
+4. Report-only.
+5. Create unit test and integration test.
+6. Register in `index.ts`.
 
 ## Risks
 
-- Simple event emitters (Node `EventEmitter`, DOM `addEventListener`) should NOT be flagged — only the manual array-of-callbacks pattern
-- Distinguishing pub/sub from simple callback lists is context-dependent
+- The rule must NOT flag simple event emitters. Node `EventEmitter` and DOM `addEventListener` are not manual patterns. Flag only the manual array-of-callbacks pattern.
+- Distinguishing pub/sub from simple callback lists depends on context.
