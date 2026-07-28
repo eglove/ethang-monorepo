@@ -1,0 +1,11 @@
+# Checkov Configuration
+# Suppresses false-positive CKV_SECRET_6 (Base64 High Entropy String)
+# detections in test files where placeholder strings like "valid-token"
+# and "invalid-token" are used as test fixtures.
+
+quiet: true
+suppress-checks:
+  - id: CKV_SECRET_6
+    paths:
+      - apps/auth/src/index.test.ts
+      - apps/auth/src/infrastructure/user/aggregate.test.ts
