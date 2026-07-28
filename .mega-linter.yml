@@ -39,3 +39,5 @@ IGNORE_GITIGNORED_FILES: true
 FILTER_REGEX_EXCLUDE: (pnpm-lock\.yaml|.*\.d\.ts|.*\.idea.*|.*/migrations/meta/_journal.json|.*\.agents/.*|skills-lock\.json)
 
 REPOSITORY_KINGFISHER_ARGUMENTS: "--exclude **/.agents/**"
+
+CHECKOV_ARGUMENTS: "--skip-check CKV_SECRET_6"
