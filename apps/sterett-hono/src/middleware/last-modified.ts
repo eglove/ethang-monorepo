@@ -34,7 +34,7 @@ export const lastModifiedMiddleware: MiddlewareHandler = async (
   if (!context.res.body) {
     return;
   }
-  /* v8 ignore next -- defensive branch: Hono always sets a content-type header; the null/undefined path is unreachable from any legal input */
+
   if (!includes(context.res.headers.get("content-type") ?? "", "text/html")) {
     return;
   }

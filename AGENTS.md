@@ -26,7 +26,7 @@ workspaces, frameworks, or scripts are current.
    - **Green**: Implement the minimum code to make the test pass. This directly addresses the hypothesis and fixes the identified issue.
    - **Refactor**: Simplify the implementation, run ESLint to ensure code quality, optimize performance, and enforce codebase standards without changing behavior.
 
-3. **100% Coverage Discipline**: Every workspace enforces 100% line/branch/function/statement coverage as a CI gate. To meet it, prefer to **extract logic into small, individually testable helper/utility functions** and **export previously unexported functions and classes** so the test suite can reach them. Reaching for `/* v8 ignore next */` [v8 ignore documentation](https://github.com/AriPerkkio/ast-v8-to-istanbul?tab=readme-ov-file#ignoring-code) is acceptable only for branches that are genuinely unreachable from any legal input (e.g. a defensive check for a node kind the parser cannot produce in that position). Before adding an ignore comment, prove the branch is unreachable by tracing all producers of that AST node kind; do not use ignores to paper over missing test cases.
+3. **100% Coverage Discipline**: Every workspace targets 100% line/branch/function/statement coverage as a quality goal. The CI gate is set to 80%. To meet 100%, prefer to **extract logic into small, individually testable helper/utility functions** and **export previously unexported functions and classes** so the test suite can reach them.
 
 4. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
 

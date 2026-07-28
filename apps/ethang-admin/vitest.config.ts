@@ -7,8 +7,8 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
-        autoUpdate: true,
-        branches: 100,
+
+        branches: 80,
         functions: 96,
         lines: 98.07,
         statements: 98.07

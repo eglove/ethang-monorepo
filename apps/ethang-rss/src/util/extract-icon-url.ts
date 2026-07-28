@@ -41,7 +41,7 @@ const parseSizeValue = (sizes: null | string) => {
     return 0;
   }
   const [, width, height] = match;
-  /* v8 ignore next -- unreachable: SIZE_DIMENSION_PATTERN guarantees capture groups 1,2 are strings when match is truthy */
+
   if (!isString(width) || !isString(height)) {
     return 0;
   }

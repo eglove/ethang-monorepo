@@ -30,7 +30,7 @@ const isNullOrUndefinedLiteral = (node: TSESTree.Node) => {
 };
 
 const isTypeofUndefinedComparison = (node: TSESTree.BinaryExpression) => {
-  /* v8 ignore if -- defensive guard: shouldPreferIsNil only passes === comparisons */
+
   if ("===" !== node.operator) {
     return false;
   }
@@ -103,7 +103,7 @@ const getTypecheckLiteral = (expression: TSESTree.Node) => {
     isString(expression.value)
   ) {
     const { value } = expression;
-    /* v8 ignore next -- defensive guard: TYPECHECK_MAP values are always non-null strings */
+
     return Object.hasOwn(TYPECHECK_MAP, value)
       ? (TYPECHECK_MAP[value] ?? null)
       : null;
@@ -202,7 +202,7 @@ const isIndexOfLtOne = (node: TSESTree.BinaryExpression) => {
 // --- prefer-compact ---
 
 const isBooleanIdentifier = (node: TSESTree.Node) => {
-  /* v8 ignore next -- branch: isIdentifier false short-circuits the && */
+
   return isIdentifier(node) && "Boolean" === node.name;
 };
 
@@ -212,7 +212,7 @@ const getReturnedValue = (_function: FunctionLike) => {
       return null;
     }
     const first = _function.body.body.at(0);
-    /* v8 ignore if -- defensive guard: length check ensures first exists */
+
     if (isNil(first)) {
       return null;
     }
@@ -346,7 +346,7 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression) => {
   }
 
   const members = extractAndChain(node);
-  /* v8 ignore if -- defensive guard: && always produces 2+ members */
+
   if (2 > members.length) {
     return false;
   }
@@ -360,7 +360,7 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression) => {
     let current: TSESTree.Expression = expression;
 
     while (isMemberExpression(current)) {
-      /* v8 ignore next -- defensive guard: chained MemberExpressions with non-Identifier properties (computed access) are exceedingly rare in this codebase and uninteresting to test */
+
       if (!isIdentifier(current.property)) {
         return "";
       }
@@ -378,7 +378,7 @@ export const shouldPreferGet = (node: TSESTree.LogicalExpression) => {
   };
 
   const [firstMember] = members;
-  /* v8 ignore next -- defensive guard: extractAndChain always returns 2+ members */
+
   if (!firstMember) {
     return false;
   }
@@ -487,12 +487,11 @@ export const shouldPreferFilterPattern = (node: TSESTree.CallExpression) => {
     return false;
   }
 
-  /* v8 ignore next -- length check guarantees at(0) returns a value */
   return isPushStatement(consequent.body.at(0) ?? null);
 };
 
 const isPushStatement = (statement: null | TSESTree.Statement) => {
-  /* v8 ignore if */
+
   if (
     isNil(statement) ||
     !isExpressionStatement(statement) ||
@@ -532,7 +531,7 @@ export const shouldPreferFindShift = (node: TSESTree.CallExpression) => {
   }
 
   const { callee } = node;
-  /* v8 ignore if -- defensive guard: isMemberCallOnNamed ensures callee is a member */
+
   if (!isMemberExpression(callee)) {
     return false;
   }
@@ -552,12 +551,12 @@ const isLiteralValue = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.UnaryExpression === node.type) {
     return isLiteralValue(node.argument);
   }
-  /* v8 ignore start -- TemplateLiteral check: right side only matters when left is true */
+
   return (
     AST_NODE_TYPES.TemplateLiteral === node.type &&
     0 === node.expressions.length
   );
-  /* v8 ignore stop */
+
 };
 
 export const shouldPreferConstant = (node: FunctionLike) => {
@@ -614,7 +613,7 @@ export const resolvePreferImmutable = (node: TSESTree.CallExpression) => {
       ? MUTATING_METHODS[node.callee.name]
       : null;
     if (!isNil(preferred)) {
-      /* v8 ignore next -- defensive guard: bare identifier mutating calls are unusual */
+
       return { method: node.callee.name, preferred };
     }
   }
@@ -705,7 +704,7 @@ export const shouldPreferFlatMap = (node: TSESTree.CallExpression) => {
   }
 
   const { callee } = node;
-  /* v8 ignore if -- defensive guard: isMemberCallOnNamed ensures callee is a member */
+
   if (!isMemberExpression(callee)) {
     return false;
   }
@@ -728,18 +727,17 @@ export const shouldPreferTimes = (node: TSESTree.CallExpression) => {
   }
 
   const fillCallee = fillCall.callee;
-  /* v8 ignore if -- defensive guard: fill method is always a member expression */
+
   if (!isMemberExpression(fillCallee)) {
     return false;
   }
 
   const arrayCall = fillCallee.object;
-  /* v8 ignore if -- defensive guard: arrayCall is validated by fill check */
+
   if (!isCallExpression(arrayCall)) {
     return false;
   }
 
-  /* v8 ignore if -- defensive guard: calling an array literal as a function is invalid JS */
   if (AST_NODE_TYPES.ArrayExpression === arrayCall.callee.type) {
     return false;
   }
@@ -789,7 +787,7 @@ const isEqualityComparison = (expression: TSESTree.Expression) => {
 };
 
 const isAllEqualityChecks = (node: TSESTree.LogicalExpression) => {
-  /* v8 ignore next -- defensive guard: shouldPreferMatches pre-rejects non-&& operators before calling */
+
   if ("&&" !== node.operator) {
     return false;
   }

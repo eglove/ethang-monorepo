@@ -35,7 +35,7 @@ export const isObjectFromEntriesCall = (
   if (!isIdentifier(callee.object) || "Object" !== callee.object.name) {
     return false;
   }
-  /* v8 ignore next 3 */
+
   if (
     !isIdentifier(callee.property) ||
     "fromEntries" !== callee.property.name
@@ -52,7 +52,7 @@ const buildFix = (
   sourceCode: TSESLint.SourceCode
 ) => {
   const [argument] = node.arguments;
-  /* v8 ignore next 2 */
+
   const argumentText = argument ? sourceCode.getText(argument) : "";
   // This is unreachable: isObjectFromEntriesCall ensures exactly 1 argument exists
   return fixer.replaceText(node, `fromPairs(${argumentText})`);

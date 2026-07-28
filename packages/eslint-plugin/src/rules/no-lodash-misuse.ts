@@ -188,7 +188,7 @@ const checkNoUnboundThis = (
   }
 
   const [, iteratee] = node.arguments;
-  /* v8 ignore next -- arguments.length >= 2 checked above, so iteratee is never nil */
+
   if (isNil(iteratee)) {
     return;
   }

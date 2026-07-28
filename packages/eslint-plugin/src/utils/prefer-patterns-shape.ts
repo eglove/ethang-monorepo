@@ -176,7 +176,7 @@ export const getIndexedByParameter = (
     return null;
   }
   const member = node;
-  /* v8 ignore next 3 -- isMatchingIndexedAccess guarantees an identifier property. */
+
   if (!isIdentifier(member.property)) {
     return null;
   }
@@ -455,7 +455,7 @@ export const isMatchingNegatedFilter = (
     return false;
   }
   const parameter = singleParameterIteratee.params.at(0);
-  /* v8 ignore next 3 -- getSingleParameterArrow guarantees one identifier parameter. */
+
   if (isNil(parameter) || !isIdentifier(parameter)) {
     return false;
   }
@@ -496,7 +496,7 @@ export const getPartitionIterateeInfo = (node: TSESTree.CallExpression) => {
     return null;
   }
   const parameter = singleParameterIteratee.params.at(0);
-  /* v8 ignore next 3 -- getSingleParameterArrow guarantees one identifier parameter. */
+
   if (isNil(parameter) || !isIdentifier(parameter)) {
     return null;
   }
@@ -748,7 +748,7 @@ export const isChunkBlockBody = (block: TSESTree.BlockStatement) => {
   }
   const first = block.body.at(0);
   const second = block.body.at(1);
-  /* v8 ignore next 3 -- exact two-element length above makes both indices present. */
+
   if (isNil(first) || isNil(second)) {
     return false;
   }
@@ -838,16 +838,16 @@ export const getIsEmptyReceiver = (node: TSESTree.BinaryExpression) => {
     if (isLengthMemberAccess(left) && isZeroLiteral(right)) {
       return left.object;
     }
-    /* v8 ignore next 3 -- isLengthEqualsZero guarantees this reverse orientation here. */
+
     if (isLengthMemberAccess(right) && isZeroLiteral(left)) {
       return right.object;
     }
-    /* v8 ignore next -- isLengthEqualsZero guarantees one of the two orientations. */
+
     return null;
   }
   if (isObjectKeysLengthEqualsZero(node) && isLengthMemberAccess(node.left)) {
     const innerCall = node.left.object;
-    /* v8 ignore next 3 -- isObjectKeysLengthEqualsZero guarantees a call receiver. */
+
     if (isCallExpression(innerCall)) {
       return getObjectKeysArgument(innerCall);
     }

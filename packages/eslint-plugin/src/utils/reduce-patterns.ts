@@ -22,11 +22,11 @@ export type ReduceCallInfo = {
 export const isReduceCallback = (
   node: TSESTree.Node
 ): node is ReduceCallback => {
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.ArrowFunctionExpression === node.type) {
     return true;
   }
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.FunctionExpression === node.type) {
     return true;
   }
@@ -36,15 +36,15 @@ export const isReduceCallback = (
 export function isReduceCall(
   callee: TSESTree.Node
 ): callee is { property: TSESTree.Identifier } & TSESTree.MemberExpression {
-  /* v8 ignore next */
+
   if (!isMemberExpression(callee)) {
     return false;
   }
-  /* v8 ignore next */
+
   if (callee.computed) {
     return false;
   }
-  /* v8 ignore next */
+
   if ("reduce" !== callee.property.name) {
     return false;
   }
@@ -52,7 +52,7 @@ export function isReduceCall(
 }
 
 export const isEmptyObject = (node: TSESTree.Node) => {
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.ObjectExpression !== node.type) {
     return false;
   }
@@ -64,12 +64,12 @@ export function hasTwoIdentifierParameters(
 ): callback is {
   params: [TSESTree.Identifier, TSESTree.Identifier];
 } & ReduceCallback {
-  /* v8 ignore next */
+
   if (2 > callback.params.length) {
     return false;
   }
   const [first, second] = callback.params;
-  /* v8 ignore next */
+
   if (!first || !second) {
     return false;
   }
@@ -81,11 +81,11 @@ export const returnsAccumulator = (
   accumulatorName: string
 ) => {
   const last = block.body.at(-1);
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.ReturnStatement !== last?.type) {
     return false;
   }
-  /* v8 ignore next */
+
   if (!last.argument || !isIdentifier(last.argument)) {
     return false;
   }
@@ -96,15 +96,15 @@ export function isMemberAccumulator(
   node: TSESTree.Node,
   accumulatorName: string
 ): node is TSESTree.MemberExpression {
-  /* v8 ignore next */
+
   if (!isMemberExpression(node)) {
     return false;
   }
-  /* v8 ignore next */
+
   if (!node.computed) {
     return false;
   }
-  /* v8 ignore next */
+
   if (!isIdentifier(node.object)) {
     return false;
   }
@@ -112,19 +112,19 @@ export function isMemberAccumulator(
 }
 
 export const isItemProperty = (node: TSESTree.Node, itemName: string) => {
-  /* v8 ignore next */
+
   if (!isMemberExpression(node)) {
     return false;
   }
-  /* v8 ignore next */
+
   if (!isIdentifier(node.object)) {
     return false;
   }
-  /* v8 ignore next */
+
   if (itemName !== node.object.name) {
     return false;
   }
-  /* v8 ignore next */
+
   if (!isIdentifier(node.property)) {
     return false;
   }
@@ -135,16 +135,16 @@ export const extractKeyFromMember = (
   member: TSESTree.MemberExpression,
   itemName: string
 ) => {
-  /* v8 ignore next */
+
   if (!isItemProperty(member.property, itemName)) {
     return null;
   }
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.MemberExpression !== member.property.type) {
     return null;
   }
   const { property } = member.property;
-  /* v8 ignore next */
+
   if (!isIdentifier(property)) {
     return null;
   }
@@ -186,7 +186,7 @@ export const validateBlockStructure = (
     return null;
   }
   const [firstStatement] = block.body;
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.ExpressionStatement !== firstStatement?.type) {
     return null;
   }

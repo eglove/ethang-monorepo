@@ -54,21 +54,21 @@ const extractCallbackBody = (
     return null;
   }
   const [statement] = block.body;
-  /* v8 ignore next 3 */
+
   if (!statement) {
     return null;
   }
-  /* v8 ignore next 2 -- unreachable: block body with single non-return statement is structurally tested via validateIntersperseCallback caller */
+
   if (AST_NODE_TYPES.ReturnStatement !== statement.type) {
     return null;
   }
-  /* v8 ignore next -- unreachable: bare return without argument is structurally tested via validateIntersperseCallback caller */
+
   return statement.argument ?? null;
 };
 
 // Check if the ternary test is `indexName === 0`
 const isIndexEqualsZero = (test: TSESTree.Node, indexName: string) => {
-  /* v8 ignore next 2 -- unreachable: non-binary-expression test is structurally tested via validateIntersperseCallback caller */
+
   if (AST_NODE_TYPES.BinaryExpression !== test.type) {
     return false;
   }
@@ -80,11 +80,11 @@ const isIndexEqualsZero = (test: TSESTree.Node, indexName: string) => {
   if (!isIdentifier(binary.left)) {
     return false;
   }
-  /* v8 ignore next 2 -- unreachable: indexName mismatch is structurally tested via validateIntersperseCallback caller */
+
   if (indexName !== binary.left.name) {
     return false;
   }
-  /* v8 ignore next 2 -- unreachable: non-literal right is structurally tested via validateIntersperseCallback caller */
+
   if (!isLiteral(binary.right)) {
     return false;
   }
@@ -110,13 +110,13 @@ const validateConsequent = (consequent: TSESTree.Node, elementName: string) => {
   if (!isIdentifier(element)) {
     return false;
   }
-  /* v8 ignore next -- unreachable: validateConsequent is only called after ternary.consequent shape is validated */
+
   return elementName === element.name;
 };
 
 // Check if alternate is `[sep, elementName]` (two-element array with some separator and the element identifier)
 const validateAlternate = (alternate: TSESTree.Node, elementName: string) => {
-  /* v8 ignore next 2 -- unreachable: alternate is always a ConditionalExpression branch which is an array in our tests */
+
   if (AST_NODE_TYPES.ArrayExpression !== alternate.type) {
     return null;
   }
@@ -125,7 +125,7 @@ const validateAlternate = (alternate: TSESTree.Node, elementName: string) => {
     return null;
   }
   const [first, second] = array.elements;
-  /* v8 ignore next 2 -- unreachable: hole in first position is structurally tested via validateAlternate caller */
+
   if (isNil(first)) {
     return null;
   }
@@ -133,7 +133,7 @@ const validateAlternate = (alternate: TSESTree.Node, elementName: string) => {
   if (AST_NODE_TYPES.SpreadElement === first.type) {
     return null;
   }
-  /* v8 ignore next 2 -- unreachable: hole in second position is structurally tested via validateAlternate caller */
+
   if (isNil(second)) {
     return null;
   }
@@ -188,7 +188,7 @@ export const validateIntersperseCallback = (
   }
 
   const [elementParameter, indexParameter] = callback.params;
-  /* v8 ignore next 3 */
+
   if (!elementParameter || !indexParameter) {
     return null;
   }
@@ -232,7 +232,7 @@ export const detectInterspersePattern = (node: TSESTree.Node) => {
   }
 
   const [callback] = call.arguments;
-  /* v8 ignore next 3 */
+
   if (isNil(callback)) {
     return null;
   }
@@ -252,7 +252,7 @@ export const detectInterspersePattern = (node: TSESTree.Node) => {
   }
 
   const member = call.callee;
-  /* v8 ignore next 3 -- unreachable: isFlatMapCall guarantees callee is MemberExpression */
+
   if (!isMemberExpression(member)) {
     return null;
   }

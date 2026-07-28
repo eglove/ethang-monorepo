@@ -64,7 +64,7 @@ const getSymbolForNode = (
   node: TSESTree.Identifier
 ) => {
   const tsNode = services.esTreeNodeToTSNodeMap.get(node);
-  /* v8 ignore next -- `getParserServices` types `program` as `Program | null` but throws when it is null (per its default `allowWithoutFullTypeInformation: false` contract), so this defensive branch is unreachable. */
+
   if (!services.program) {
     return null;
   }
@@ -77,11 +77,11 @@ const isGlobalDeclarationSourceFile = (sourceFile: SourceFile) => {
 
 const getFirstDeclaration = (symbol: TsSymbol) => {
   const declarations = symbol.getDeclarations();
-  /* v8 ignore next -- `Symbol.getDeclarations()` returns `undefined` only for symbols whose `flags & CheckTypeAlias` etc. resolve to invalid (e.g. synthetic alias-only symbols); the resolved `Date` / `Temporal` / user-defined class symbols we pass in always carry at least one declaration. */
+
   if (isNil(declarations) || 0 === declarations.length) {
     return null;
   }
-  /* v8 ignore next 2 -- the previous guard guarantees `declarations` is non-empty, so `declarations[0]` is always defined. */
+
   return declarations[0] ?? null;
 };
 
@@ -90,12 +90,12 @@ const resolveSymbolOrigin = (
   node: TSESTree.Identifier
 ) => {
   const symbol = getSymbolForNode(services, node);
-  /* v8 ignore next -- `getSymbolAtLocation` returns `undefined` only for synthetic / unmapped nodes that typescript-eslint never emits for the positions we resolve: callee identifiers of `NewExpression` / `CallExpression`, the `object` of a `MemberExpression`, and the right-hand side of an `instanceof` `BinaryExpression`. */
+
   if (isNil(symbol)) {
     return "unknown";
   }
   const firstDeclaration = getFirstDeclaration(symbol);
-  /* v8 ignore next -- `getDeclarations()` is never empty for a non-null symbol, so `getFirstDeclaration` never returns `null` here. */
+
   if (isNil(firstDeclaration)) {
     return "global";
   }
@@ -108,7 +108,7 @@ const isGlobalOriginIdentifier = (
   node: TSESTree.Identifier
 ) => {
   const origin = resolveSymbolOrigin(services, node);
-  /* v8 ignore next -- `resolveSymbolOrigin` only returns `"unknown"` from the unreachable `v8 ignore`'d branch above. */
+
   if ("unknown" === origin) {
     return true;
   }
@@ -122,7 +122,7 @@ const isGlobalDateIdentifier = (
     identifier: TSESTree.Identifier
   ) => boolean = isDateIdentifier
 ) => {
-  /* v8 ignore next -- every caller of `isGlobalDateIdentifier` / `isGlobalTemporalIdentifier` pre-filters the identifier by name (`isDateIdentifier` / `isTemporalIdentifier`) before reaching this helper, so this `false` branch is unreachable. */
+
   if (!isDateShadowsGlobal(node)) {
     return false;
   }
@@ -290,7 +290,7 @@ const isDateTypeReference = (node: TSESTree.TSTypeReference) => {
   // `Identifier` and `this` (lowercase) is parsed as a dedicated
   // `TSThisType` node rather than a `TSTypeReference`. So this branch is
   // unreachable from any legal TypeScript source.
-  /* v8 ignore next -- ThisExpression typeName is unreachable: parser produces Identifier for `This` and TSThisType for `this` */
+
   if (
     AST_NODE_TYPES.Identifier !== node.typeName.type &&
     AST_NODE_TYPES.TSQualifiedName !== node.typeName.type
@@ -334,7 +334,7 @@ const getTypeForNode = (
   node: TSESTree.Node
 ) => {
   const tsNode = services.esTreeNodeToTSNodeMap.get(node);
-  /* v8 ignore next -- `getParserServices` types `program` as `Program | null` but throws when it is null (per its default `allowWithoutFullTypeInformation: false` contract), so this defensive branch is unreachable. */
+
   if (!services.program) {
     return null;
   }
@@ -351,7 +351,7 @@ const symbolNameOf = (type: Type) => {
 };
 
 const isTypeIncludingDate = (type: null | Type) => {
-  /* v8 ignore next -- `getTypeForNode` is called with `services.program` which is always non-null under the standard parser configuration, so the `null` branch is unreachable. */
+
   if (isNil(type)) {
     return false;
   }
@@ -404,19 +404,19 @@ const isDateProducingCallExpression = (node: TSESTree.CallExpression) => {
   // execute; the missing instrumentation is a v8 limitation, not a
   // coverage gap, so the v8-ignore comments below are scoped to those
   // edges.
-  /* v8 ignore next -- exercised by `date-instance-bridge-miss-global-call`. */
+
   if (!isMemberExpression(node.callee)) {
     return false;
   }
-  /* v8 ignore next -- exercised by `date-instance-bridge-miss-nested-member`. */
+
   if (!isIdentifier(node.callee.object)) {
     return false;
   }
-  /* v8 ignore next -- exercised by `date-instance-bridge-miss-other-namespace`. */
+
   if ("DateTime" !== node.callee.object.name) {
     return false;
   }
-  /* v8 ignore next -- exercised by `date-instance-bridge-miss-computed-property`. */
+
   if (!isIdentifier(node.callee.property)) {
     return false;
   }
@@ -448,12 +448,11 @@ const isAssignedFromDateProducingCall = (
   // the guards inside `isDateProducingCallExpression`; the v8-ignore
   // comments below are scoped to the un-instrumented entry edges of the
   // guards inside this function.
-  /* v8 ignore next -- entry edge of single-return guard; covered transitively by `date-instance-bridge-miss-*` tests but v8 does not instrument the fall-through return. */
   if (isNil(variable)) {
     return false;
   }
   const [definition] = variable.defs;
-  /* v8 ignore next -- a scope variable resolved from an Identifier reference always has at least one definition (the binding site). */
+
   if (isNil(definition)) {
     return false;
   }
@@ -461,16 +460,16 @@ const isAssignedFromDateProducingCall = (
   // we can inspect; function parameters, catch clauses, and `import`
   // bindings have a different `definition.node` shape and can never
   // resolve to a `DateTime.toDate*(...)` call.
-  /* v8 ignore next -- entry edge of single-return guard. */
+
   if (definition.node.type !== AST_NODE_TYPES.VariableDeclarator) {
     return false;
   }
   const declarator = definition.node;
-  /* v8 ignore next -- entry edge of single-return guard. */
+
   if (isNil(declarator.init)) {
     return false;
   }
-  /* v8 ignore next -- entry edge of single-return guard; covered by the existing 2 invalid tests where `d.init` is not a CallExpression. */
+
   if (!isCallExpression(declarator.init)) {
     return false;
   }

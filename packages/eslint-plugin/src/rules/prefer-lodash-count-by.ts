@@ -23,19 +23,19 @@ type MessageIds = "preferLodashCountBy";
 type Options = [];
 
 const isPlusOne = (node: TSESTree.Node): node is TSESTree.BinaryExpression => {
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.BinaryExpression !== node.type) {
     return false;
   }
-  /* v8 ignore next */
+
   if ("+" !== node.operator) {
     return false;
   }
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.Literal !== node.right.type) {
     return false;
   }
-  /* v8 ignore next */
+
   if (1 !== node.right.value) {
     return false;
   }
@@ -43,19 +43,19 @@ const isPlusOne = (node: TSESTree.Node): node is TSESTree.BinaryExpression => {
 };
 
 const isOrZero = (node: TSESTree.Node): node is TSESTree.LogicalExpression => {
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.LogicalExpression !== node.type) {
     return false;
   }
-  /* v8 ignore next */
+
   if ("||" !== node.operator) {
     return false;
   }
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.Literal !== node.right.type) {
     return false;
   }
-  /* v8 ignore next */
+
   if (0 !== node.right.value) {
     return false;
   }
@@ -68,15 +68,15 @@ function extractCountByKey(
   itemName: string
 ) {
   const { expression } = expressionStatement;
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.AssignmentExpression !== expression.type) {
     return null;
   }
-  /* v8 ignore next */
+
   if ("=" !== expression.operator) {
     return null;
   }
-  /* v8 ignore next */
+
   if (!isMemberAccumulator(expression.left, accumulatorName)) {
     return null;
   }
@@ -86,21 +86,21 @@ function extractCountByKey(
     return null;
   }
   const rightNode = expression.right;
-  /* v8 ignore next */
+
   if (!isPlusOne(rightNode)) {
     return null;
   }
-  /* v8 ignore next */
+
   if (!isOrZero(rightNode.left)) {
     return null;
   }
   const logical = rightNode.left;
-  /* v8 ignore next */
+
   if (!isMemberAccumulator(logical.left, accumulatorName)) {
     return null;
   }
   const logKey = extractKeyFromMember(logical.left, itemName);
-  /* v8 ignore next */
+
   if (logKey !== key || isNil(logKey)) {
     return null;
   }
@@ -116,7 +116,7 @@ export const detectCountByPattern = (node: TSESTree.Node) => {
     return null;
   }
   const [firstArgument] = node.arguments;
-  /* v8 ignore next 2 -- verification: arrayInfo exists, firstArgument is provided */
+
   if (!firstArgument) {
     return null;
   }

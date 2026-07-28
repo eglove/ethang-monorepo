@@ -28,27 +28,25 @@ function getKeyByAssignment(
   itemName: string
 ) {
   const { expression } = expressionStatement;
-  /* v8 ignore next */
+
   if (AST_NODE_TYPES.AssignmentExpression !== expression.type) {
     return null;
   }
-  /* v8 ignore next */
+
   if ("=" !== expression.operator) {
     return null;
   }
   const assign = expression;
 
-  /* v8 ignore next */
   if (!isMemberAccumulator(assign.left, accumulatorName)) {
     return null;
   }
   const member = assign.left;
 
-  /* v8 ignore next */
   if (!isIdentifier(assign.right)) {
     return null;
   }
-  /* v8 ignore next */
+
   if (itemName !== assign.right.name) {
     return null;
   }
@@ -67,7 +65,7 @@ export const detectKeyByPattern = (node: TSESTree.Node) => {
   }
 
   const [firstArgument] = node.arguments;
-  /* v8 ignore next -- verification: arrayInfo exists, firstArgument is provided */
+
   if (!firstArgument) {
     return null;
   }

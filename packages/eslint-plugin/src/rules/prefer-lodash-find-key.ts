@@ -230,7 +230,7 @@ export const detectFindKeyPattern = (node: TSESTree.CallExpression) => {
     return null;
   }
   const outerCallee = getFindCallTarget(node);
-  /* v8 ignore next 3 -- isFindCall above guarantees a member-expression callee. */
+
   if (!outerCallee) {
     return null;
   }

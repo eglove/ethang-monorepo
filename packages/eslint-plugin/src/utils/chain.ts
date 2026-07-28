@@ -21,7 +21,7 @@ export const isChainStarter = (name: string) => {
 
 export const isChainStarterCall = (node: TSESTree.CallExpression) => {
   const { callee } = node;
-  /* v8 ignore next -- isLodashChain is only called on member calls, never direct identifier calls */
+
   return isIdentifier(callee) && isChainStarter(callee.name);
 };
 
@@ -39,7 +39,7 @@ export const isMemberCallOn = (
 
 export const getMemberObject = (node: TSESTree.CallExpression) => {
   const { callee } = node;
-  /* v8 ignore next -- always called after isMemberCallOn confirms MemberExpression */
+
   if (!isMemberExpression(callee)) {
     return null;
   }
@@ -54,7 +54,6 @@ export const isTraceableToChainStarter = (node: TSESTree.CallExpression) => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const { callee } = current as TSESTree.CallExpression;
 
-    /* v8 ignore next -- isChainStarterCall already handles identifier chain starters */
     if (isIdentifier(callee) && isChainStarter(callee.name)) {
       return true;
     }
@@ -122,7 +121,7 @@ export const extractNodesFromValue = (value: unknown) => {
     return isNodeLike(value) ? [value] : [];
   }
   return flatMap(value, (item) => {
-    /* v8 ignore next -- TSESTree arrays contain only nodes or null (handled by isNodeLike) */
+
     return isNodeLike(item) ? [item] : [];
   });
 };

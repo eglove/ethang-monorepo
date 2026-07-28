@@ -56,7 +56,7 @@ const extractArrayFromBlockBody = (block: TSESTree.BlockStatement) => {
   }
   const [statement] = block.body;
   // unreachable: length === 1 guarantees index 0 exists
-  /* v8 ignore next 2 */
+
   if (isNil(statement)) {
     return null;
   }
@@ -153,7 +153,7 @@ const validateCallback = (
   }
   const [accumulatorParameter] = callback.params;
   // unreachable: length >= 2 guarantees index 0 exists
-  /* v8 ignore next 2 */
+
   if (isNil(accumulatorParameter)) {
     return null;
   }
@@ -169,7 +169,7 @@ const validateCallback = (
 export const detectArrayScanPattern = (node: TSESTree.Node) => {
   // unreachable: the rule listener only visits CallExpression nodes, so this
   // guard is defensive only
-  /* v8 ignore next 3 */
+
   if (AST_NODE_TYPES.CallExpression !== node.type) {
     return null;
   }
@@ -187,7 +187,7 @@ export const detectArrayScanPattern = (node: TSESTree.Node) => {
 
   const [callbackArgument, initialValueArgument] = call.arguments;
   // unreachable: length === 2 guarantees indices 0 and 1 exist
-  /* v8 ignore next 2 */
+
   if (isNil(callbackArgument) || isNil(initialValueArgument)) {
     return null;
   }

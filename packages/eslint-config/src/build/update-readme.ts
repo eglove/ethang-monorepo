@@ -30,7 +30,7 @@ export const updateReadme = () => {
 
   const ruleDocumentation = [`${total} rules.`];
   for (const list of coreRules) {
-    /* v8 ignore start */
+
     if (0 < list.count) {
       ruleDocumentation.push(
         `${list.count} ${
@@ -38,7 +38,7 @@ export const updateReadme = () => {
         } from [${list.name}](${list.url})`
       );
     }
-    /* v8 ignore stop */
+
   }
 
   const featuredOutputs = filter(outputConfigs, (c) => {
@@ -194,8 +194,6 @@ export default defineConfig(
   );
 };
 
-/* v8 ignore start */
 if (process.argv[1] === import.meta.filename) {
   updateReadme();
 }
-/* v8 ignore stop */

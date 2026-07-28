@@ -43,7 +43,6 @@ export const AddFeedForm = () => {
     useMutation({
       mutationFn: addSubscriptionMutationFunction,
       onSuccess: () => {
-        // v8 ignore next
         queryClient
           .invalidateQueries({ queryKey: subscriptionsOptions().queryKey })
           .catch(noop);
@@ -59,7 +58,6 @@ export const AddFeedForm = () => {
       return;
     }
     await addSubscription({ xmlAddress: cleanUrl });
-    // v8 ignore next -- state reset after async mutation not exercised in jsdom; covered indirectly by sanitizeFeedUrl tests
     setXmlUrl("");
   };
 

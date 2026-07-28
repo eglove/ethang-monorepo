@@ -44,7 +44,7 @@ export const validateReturnArray = (
   if (first.name !== keyName) {
     return null;
   }
-  /* v8 ignore next 2 */
+
   if (!second) {
     return null;
   }

@@ -28,7 +28,6 @@ const isCalendarView = (v: string): v is CalendarView => {
 };
 
 const lastQuery = (value: null | string | string[]) => {
-  /* v8 ignore next -- defensive guard: Hono's validator yields either a non-empty array or a single string for repeated query params, never an empty array */
   return isArray(value) ? (last(value) ?? null) : value;
 };
 
@@ -67,12 +66,10 @@ app.get(
     const rawYear = lastQuery(value["year"] ?? null);
     return {
       date: lastQuery(value["date"] ?? null) ?? chicagoTime,
-      /* v8 ignore next -- fallback branch when query param is non-numeric string */
       month: isNil(rawMonth)
         ? nowParts.month
         : Option.getOrElse(Number.parse(rawMonth), constant(nowParts.month)),
       view: isCalendarView(rawView) ? rawView : "month",
-      /* v8 ignore next -- fallback branch when query param is non-numeric string */
       year: isNil(rawYear)
         ? nowParts.year
         : Option.getOrElse(Number.parse(rawYear), constant(nowParts.year))

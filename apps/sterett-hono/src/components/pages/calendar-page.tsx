@@ -86,7 +86,6 @@ export const CalendarPage = async ({
   const today = DateTime.formatIsoDate(
     DateTime.unsafeMakeZoned(DateTime.unsafeNow(), { timeZone: CHICAGO })
   );
-  // v8 ignore next -- defensive guard: formatIsoDate on an unsafeNow zoned datetime always returns a string
   if (isNil(today))
     Effect.runSync(Effect.die(new Error("Could not determine current date")));
 
@@ -120,7 +119,6 @@ export const CalendarPage = async ({
   const crossViewDate = DateTime.formatIsoDate(
     DateTime.unsafeMake(crossViewDt)
   );
-  // v8 ignore next -- defensive guard: formatIsoDate on unsafeMake epoch millis always returns a string
   if (isNil(crossViewDate))
     Effect.runSync(
       Effect.die(new Error("Could not determine cross-view date"))

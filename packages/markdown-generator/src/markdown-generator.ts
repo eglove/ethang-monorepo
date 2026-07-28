@@ -121,7 +121,7 @@ const renderFrontmatter = (
     if ("title" === a) {
       return -1;
     }
-    // v8 ignore next -- defensive guard: with "title" === a always returning -1, the engine hoists title to position 0 and never evaluates the b-as-title branch.
+
     if ("title" === b) {
       return 1;
     }

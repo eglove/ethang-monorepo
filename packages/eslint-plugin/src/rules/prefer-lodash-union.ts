@@ -70,7 +70,7 @@ const validateOuterSpread = (spreadArgument: TSESTree.Expression) => {
   }
   const [firstArgument] = spreadArgument.arguments;
   // Unreachable: arguments.length === 1 guarantees arguments[0] exists
-  /* v8 ignore next 3 */
+
   if (!firstArgument) {
     return null;
   }

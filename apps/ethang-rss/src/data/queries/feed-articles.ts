@@ -60,7 +60,7 @@ export const feedArticlesQuery = async (
       )
     )
     .where(
-      // v8 ignore next: nullish coalescing branch coverage
+
       combineFilters(
         eq(databaseSchema.articlesTable.feedId, feedId),
         articleFilter

@@ -110,7 +110,7 @@ export const detectEscapeRegexpPattern = (node: TSESTree.Node) => {
   // isReplaceCall checks AST_NODE_TYPES.MemberExpression !== callee.type and
   // returns false if not, so by the time we reach here callee.type is always
   // MemberExpression. This guard exists for TypeScript type narrowing.
-  /* v8 ignore next 2 */
+
   if (AST_NODE_TYPES.MemberExpression !== node.callee.type) {
     return null;
   }

@@ -34,7 +34,6 @@ export const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
     return node.body;
   }
 
-  /* v8 ignore next 7 -- isExplicitPropertyFunction ensures node is FunctionExpression when ArrowFunctionExpression is already handled above */
   if (node.type === AST_NODE_TYPES.FunctionExpression) {
     const [first] = node.body.body;
 

@@ -31,14 +31,14 @@ const getArticleCutoffIso = () => {
 
 const isArticleWithinRetention = (publishedAt: string) => {
   const cutoff = getArticleCutoffIso();
-  // v8 ignore start -- DateTime.make succeeds on ISO strings from formatIso/normalizeDate; fallbacks are unreachable
+
   const cutoffDt = Option.getOrElse(DateTime.make(cutoff), () => {
     return DateTime.unsafeMake(0);
   });
   const publishedDt = Option.getOrElse(DateTime.make(publishedAt), () => {
     return DateTime.unsafeMake(0);
   });
-  // v8 ignore stop
+
   return (
     DateTime.toEpochMillis(publishedDt) >= DateTime.toEpochMillis(cutoffDt)
   );
@@ -155,7 +155,7 @@ const FeedItemsSchema = Schema.Union(FeedItemSchema, FeedItemArraySchema).pipe(
     decode: (items) => {
       return Schema.is(FeedItemArraySchema)(items) ? items : [items];
     },
-    // v8 ignore next -- encode is not used; feeds are decoded from XML only
+
     encode: (items) => {
       return items;
     },
@@ -201,7 +201,7 @@ const parseFeedItems = (xml: string) => {
   return Effect.runSync(
     Effect.try({
       catch: (error: unknown) => {
-        // v8 ignore next -- XMLParser throws Error instances; normalization is defensive
+
         return Error.isError(error) ? error : new Error(String(error));
       },
       try: () => {
