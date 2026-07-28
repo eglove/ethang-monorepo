@@ -1,8 +1,9 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { makeStore, type Store } from "@ethang/store/store.ts";
 import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
+
+import { auth } from "../../constants/auth.ts";
 export type User = {
   email: string;
   sessionToken: string;

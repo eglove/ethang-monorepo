@@ -1,8 +1,8 @@
-import { courses as coursesIntl } from "@ethang/intl/en/courses.ts";
 import { Link, Skeleton, Text } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import find from "lodash/find.js";
 
+import { courses as coursesIntl } from "../../constants/courses.ts";
 import {
   type AllCourseData,
   coursesAllQueryOptions

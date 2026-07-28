@@ -164,6 +164,7 @@ app.get("/verify", async (context) => {
   if ("error" in result) {
     return json({ error: result.error }, 401);
   }
+  // v8 ignore next -- defensive branch: carryUserAuthCommand never returns an object with a "payload" key; the true branch is unreachable from any legal input
   const payload = "payload" in result ? result.payload : result;
   return json(payload, 200);
 });

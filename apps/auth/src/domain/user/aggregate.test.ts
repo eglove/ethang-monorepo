@@ -1,9 +1,9 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { describe, expect, it } from "vitest";
 
 import type { UserCommand } from "./commands.d.ts";
 import type { UserEvent } from "./events.d.ts";
 
+import { auth } from "../../constants/auth.ts";
 import { apply, decide } from "./aggregate.ts";
 import { initialState, type UserState } from "./state.ts";
 

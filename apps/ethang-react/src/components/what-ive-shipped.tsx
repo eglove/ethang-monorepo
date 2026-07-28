@@ -1,7 +1,8 @@
-import { home } from "@ethang/intl/en/home.ts";
 import { Card, Flex, Heading, Text } from "@radix-ui/themes";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
+
+import { home } from "../constants/home.ts";
 
 type Project = {
   readonly detail: string;

@@ -4,8 +4,6 @@
     "current node"
   ],
   "dependencies": {
-    "@ethang/intl": "workspace:*",
-    "@ethang/telemetry": "workspace:*",
     "drizzle-orm": "^0.45.2",
     "effect": "^3.22.0",
     "fast-xml-parser": "^5.10.1",

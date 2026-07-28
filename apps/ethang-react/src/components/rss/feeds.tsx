@@ -1,6 +1,5 @@
 import type { MouseEvent } from "react";
 
-import { rss } from "@ethang/intl/en/rss.ts";
 import { useStore } from "@ethang/store/use-store.ts";
 import { Box, Button, Card, Flex, Heading, Skeleton } from "@radix-ui/themes";
 import {
@@ -14,6 +13,7 @@ import map from "lodash/map";
 import noop from "lodash/noop";
 import { Trash } from "lucide-react";
 
+import { rss } from "../../constants/rss.ts";
 import {
   allArticlesOptions,
   feedArticlesOptions,

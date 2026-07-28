@@ -1,4 +1,3 @@
-import { installLogger } from "@ethang/telemetry/logger.ts";
 import { Effect, Schema } from "effect";
 import includes from "lodash/includes.js";
 import isArray from "lodash/isArray.js";
@@ -7,8 +6,6 @@ import isObject from "lodash/isObject.js";
 import startsWith from "lodash/startsWith.js";
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-
-installLogger();
 
 const isPlainObject = (value: unknown): value is Record<string, unknown> => {
   return !isNil(value) && isObject(value) && !isArray(value);

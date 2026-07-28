@@ -1,4 +1,3 @@
-import { rss } from "@ethang/intl/en/rss.ts";
 import { Box, Button, Card, Flex, TextField } from "@radix-ui/themes";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import isNil from "lodash/isNil";
@@ -7,6 +6,7 @@ import trim from "lodash/trim";
 import { type SyntheticEvent, useState } from "react";
 
 import { rpcRequest } from "../../clients/rpc-client.ts";
+import { rss } from "../../constants/rss.ts";
 import { subscriptionsOptions } from "./queries.ts";
 
 const RSS_SERVICE = "ethang_rss";

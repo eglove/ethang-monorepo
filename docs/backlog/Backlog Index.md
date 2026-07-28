@@ -10,6 +10,9 @@ Open tasks and planned work for the monorepo.
 ## Active
 
 - [[Package Cleanup — Remove Dead Packages]]
+- [[Coverage Requirements to 80% and Remove v8 Ignore Comments]]
+- [[Remove Tool Usage Notes from AGENTS.md, Delete monorepo-tools and .hermes/agent-hooks]]
+- [[Remove skills.sh References and .agents/skills Directory]]
 - [[Frontend Migration to TanStack Start-Astryx]]
 - [[ESLint — Make Private, Stop Publishing]]
 - [[Playwright Testing — Frontends]]

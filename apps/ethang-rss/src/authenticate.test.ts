@@ -1,8 +1,8 @@
-import { urls } from "@ethang/intl/en/urls.ts";
 import { DateTime, Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { authenticate, UnauthorizedError } from "./authenticate.ts";
+import { urls } from "./constants/urls.ts";
 
 const UNAUTHORIZED = "Unauthorized";
 const { EXAMPLE_URL } = urls;

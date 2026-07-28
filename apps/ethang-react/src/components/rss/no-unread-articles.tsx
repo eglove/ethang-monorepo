@@ -1,5 +1,6 @@
-import { rss } from "@ethang/intl/en/rss.ts";
 import { Flex, Text } from "@radix-ui/themes";
+
+import { rss } from "../../constants/rss.ts";
 
 export const NoUnreadArticles = () => {
   return (

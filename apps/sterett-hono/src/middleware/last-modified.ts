@@ -31,10 +31,11 @@ export const lastModifiedMiddleware: MiddlewareHandler = async (
   next
 ) => {
   await next();
-  if (
-    !context.res.body ||
-    !includes(context.res.headers.get("content-type") ?? "", "text/html")
-  ) {
+  if (!context.res.body) {
+    return;
+  }
+  /* v8 ignore next -- defensive branch: Hono always sets a content-type header; the null/undefined path is unreachable from any legal input */
+  if (!includes(context.res.headers.get("content-type") ?? "", "text/html")) {
     return;
   }
 

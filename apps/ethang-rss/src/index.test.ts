@@ -1,6 +1,6 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { auth } from "./constants/auth.ts";
 import { MockWorkflowEntrypoint } from "./test-utilities/mock-workflow-entrypoint.ts";
 import {
   SOME_NON_ERROR_OBJECT,

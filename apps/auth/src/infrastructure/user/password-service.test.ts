@@ -1,7 +1,7 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { auth } from "../../constants/auth.ts";
 import { HashError } from "../../errors/hash-error.ts";
 import { createPasswordService } from "./password-service.ts";
 

@@ -1,4 +1,3 @@
-import { auth } from "@ethang/intl/en/auth.ts";
 import { Effect } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
@@ -7,6 +6,7 @@ import type { UserEvent } from "../../domain/user/events.ts";
 import type { UserState } from "../../domain/user/state.ts";
 import type { UserRepo } from "./repo.ts";
 
+import { auth } from "../../constants/auth.ts";
 import { FetchError } from "../../errors/fetch-error.ts";
 import { HashError } from "../../errors/hash-error.ts";
 import { InvalidCredentialsError } from "../../errors/invalid-credentials-error.ts";
