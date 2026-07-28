@@ -1,0 +1,3 @@
+skip-path:
+  - apps/auth/src/index.test.ts
+  - apps/auth/src/infrastructure/user/aggregate.test.ts
