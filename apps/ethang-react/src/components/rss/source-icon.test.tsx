@@ -1,5 +1,5 @@
 import { render } from "@testing-library/react";
-import { Effect } from "effect";
+import { Array, Effect, pipe } from "effect";
 import isNil from "lodash/isNil.js";
 import some from "lodash/some.js";
 import { describe, expect, it } from "vitest";
@@ -20,8 +20,10 @@ const EXPECTED_IMG_ERROR = "expected img element to be present";
 const EXPECTED_SVG_ERROR = "expected svg element to be present";
 
 const hasYouTubeRedFill = (svg: SVGSVGElement) => {
-  return some([...svg.querySelectorAll("path")], (path) => {
-    return path.getAttribute("fill") === YOUTUBE_RED_FILL;
+  return pipe(Array.fromIterable(svg.querySelectorAll("path")), (paths) => {
+    return some(paths, (path) => {
+      return path.getAttribute("fill") === YOUTUBE_RED_FILL;
+    });
   });
 };
 
