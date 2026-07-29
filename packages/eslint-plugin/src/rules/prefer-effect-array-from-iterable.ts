@@ -51,60 +51,57 @@ const isArrayFromCallee = (callee: TSESTree.Expression) => {
   return isIdentifier(member.property) && "from" === member.property.name;
 };
 
-// Check second arg is callback with at least 2 params
-const isCallbackWithTwoParameters = (secondArgument: TSESTree.Node) => {
+// Check node is Array.from({ length: n }, callback) pattern
+// Returns match object with extracted AST nodes, or null if not matched
+// eslint-disable-next-line sonar/cyclomatic-complexity -- complex pattern detection
+export const detectArrayFromWithLengthObject = (node: TSESTree.Node) => {
+  if (!isCallExpression(node)) {
+    return null;
+  }
+  const call = node;
+  if (!isArrayFromCallee(call.callee)) {
+    return null;
+  }
+  if (2 !== call.arguments.length) {
+    return null;
+  }
+
+  const [firstArgument, secondArgument] = call.arguments;
+  if (isNil(firstArgument) || isNil(secondArgument)) {
+    return null;
+  }
+  // First arg must be object with { length: n }
+  if (AST_NODE_TYPES.ObjectExpression !== firstArgument.type) {
+    return null;
+  }
+  const object = firstArgument;
+  if (1 !== object.properties.length) {
+    return null;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
+  const theProperty = object.properties[0]!;
+  if (!("value" in theProperty) || !isIdentifier(theProperty.key)) {
+    return null;
+  }
+  if ("length" !== theProperty.key.name) {
+    return null;
+  }
+  // Second arg must be callback with at least 2 params
   if (
     AST_NODE_TYPES.ArrowFunctionExpression !== secondArgument.type &&
     AST_NODE_TYPES.FunctionExpression !== secondArgument.type
   ) {
-    return false;
+    return null;
   }
-  const callback = secondArgument;
-  return 2 <= callback.params.length;
-};
-
-// Check first arg is object with { length: n } property
-const isFirstArgumentLengthObject = (firstArgument: TSESTree.Node) => {
-  if (AST_NODE_TYPES.ObjectExpression !== firstArgument.type) {
-    return false;
+  if (2 > secondArgument.params.length) {
+    return null;
   }
-  const object = firstArgument;
-  if (1 !== object.properties.length) {
-    return false;
-  }
-  const theProperty = object.properties[0];
-  if (isNil(theProperty) || AST_NODE_TYPES.Property !== theProperty.type) {
-    return false;
-  }
-  const property = theProperty;
-  return isIdentifier(property.key) && "length" === property.key.name;
-};
-
-// Check node is Array.from({ length: n }, callback) pattern
-export const isArrayFromWithLengthObject = (node: TSESTree.Node) => {
-  if (!isCallExpression(node)) {
-    return false;
-  }
-  const call = node;
-  if (!isArrayFromCallee(call.callee)) {
-    return false;
-  }
-  if (2 !== call.arguments.length) {
-    return false;
-  }
-  const [firstArgument, secondArgument] = call.arguments;
-  if (isNil(firstArgument) || isNil(secondArgument)) {
-    return false;
-  }
-  // First arg must be object with { length: n }
-  if (!isFirstArgumentLengthObject(firstArgument)) {
-    return false;
-  }
-  // Second arg must be callback with at least 2 params
-  return isCallbackWithTwoParameters(secondArgument);
+  const lengthExpression = theProperty.value;
+  return { call, callback: secondArgument, lengthExpression };
 };
 
 // Check node is [...Array(n)].map(fn) pattern
+// eslint-disable-next-line sonar/cyclomatic-complexity -- complex pattern detection
 export const isArraySpreadMapPattern = (node: TSESTree.Node) => {
   if (!isCallExpression(node)) {
     return false;
@@ -140,6 +137,7 @@ export const isArraySpreadMapPattern = (node: TSESTree.Node) => {
 };
 
 // Check node is new Array(n).fill(v) pattern
+// eslint-disable-next-line sonar/cyclomatic-complexity -- complex pattern detection
 export const detectAllocatePattern = (node: TSESTree.Node) => {
   if (!isCallExpression(node)) {
     return null;
@@ -180,7 +178,48 @@ export const detectAllocatePattern = (node: TSESTree.Node) => {
   if (isNil(lengthArgument)) {
     return null;
   }
-  return { arrayCall: newExpression, valueExpr: valueExpression };
+  return { arrayCall: newExpression, valueExpression };
+};
+
+// Extract Array.make fix details from a [...Array(n)].map(fn) pattern match
+const extractMakeFixDetails = (node: TSESTree.CallExpression) => {
+  const callee = node.callee;
+  if (!isMemberExpression(callee)) {
+    return null;
+  }
+  const member = callee;
+  if (!isIdentifier(member.property) || "map" !== member.property.name) {
+    return null;
+  }
+  const receiver = member.object;
+  if (!isArrayExpression(receiver)) {
+    return null;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
+  const element = receiver.elements[0]!;
+  if (!isSpreadElement(element)) {
+    return null;
+  }
+  const spreadArgument = element.argument;
+  if (AST_NODE_TYPES.CallExpression !== spreadArgument.type) {
+    return null;
+  }
+  const arrayCall = spreadArgument;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
+  const lengthArgument = arrayCall.arguments[0]!;
+  const mapCallback = node.arguments[0];
+  if (
+    !mapCallback ||
+    (AST_NODE_TYPES.ArrowFunctionExpression !== mapCallback.type &&
+      AST_NODE_TYPES.FunctionExpression !== mapCallback.type)
+  ) {
+    return null;
+  }
+  return {
+    call: node,
+    callback: mapCallback,
+    lengthExpression: lengthArgument
+  };
 };
 
 export const preferEffectArrayFromIterableRule = createRule<
@@ -238,6 +277,7 @@ export const preferEffectArrayFromIterableRule = createRule<
           }
         }
       },
+      // eslint-disable-next-line sonar/cyclomatic-complexity -- complex AST traversal
       CallExpression: (node: TSESTree.CallExpression) => {
         // Check for [...Array(n)].map(fn) pattern first - mark the inner ArrayExpression
         if (isArraySpreadMapPattern(node)) {
@@ -278,19 +318,29 @@ export const preferEffectArrayFromIterableRule = createRule<
         }
 
         // Check for Array.from({length:n}, callback) pattern
-        if (isArrayFromWithLengthObject(node)) {
-          const call = node;
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-          const object = call.arguments[0]! as TSESTree.ObjectExpression;
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-          const property = object.properties[0]! as TSESTree.Property;
-          if (!("value" in property)) {
-            return;
-          }
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-          const callback = call.arguments[1]! as
-            TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
-          const lengthText = sourceCode.getText(property.value);
+        const makeMatch = detectArrayFromWithLengthObject(node);
+        if (!isNil(makeMatch)) {
+          const { call, callback, lengthExpression } = makeMatch;
+          const lengthText = sourceCode.getText(lengthExpression);
+          const callbackText = sourceCode.getText(callback);
+          context.report({
+            fix: (fixer) => {
+              return fixer.replaceText(
+                call,
+                `Array.make(${lengthText}, ${callbackText})`
+              );
+            },
+            messageId: "preferEffectMake",
+            node: call
+          });
+          return;
+        }
+
+        // Check for [...Array(n)].map(fn) pattern
+        const spreadMapDetails = extractMakeFixDetails(node);
+        if (!isNil(spreadMapDetails)) {
+          const { callback, lengthExpression } = spreadMapDetails;
+          const lengthText = sourceCode.getText(lengthExpression);
           const callbackText = sourceCode.getText(callback);
           context.report({
             fix: (fixer) => {
@@ -305,64 +355,14 @@ export const preferEffectArrayFromIterableRule = createRule<
           return;
         }
 
-        // Check for [...Array(n)].map(fn) pattern
-        if (isArraySpreadMapPattern(node)) {
-          const callee = node.callee;
-          if (!isMemberExpression(callee)) {
-            return;
-          }
-          const member = callee;
-          if (
-            !isIdentifier(member.property) ||
-            "map" !== member.property.name
-          ) {
-            return;
-          }
-          const receiver = member.object;
-          if (!isArrayExpression(receiver)) {
-            return;
-          }
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-          const element = receiver.elements[0]!;
-          if (isSpreadElement(element)) {
-            const spreadArgument = element.argument;
-            if (AST_NODE_TYPES.CallExpression === spreadArgument.type) {
-              const arrayCall = spreadArgument;
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-              const lengthArgument = arrayCall.arguments[0]!;
-              const mapCallback = node.arguments[0];
-              if (
-                !mapCallback ||
-                (AST_NODE_TYPES.ArrowFunctionExpression !== mapCallback.type &&
-                  AST_NODE_TYPES.FunctionExpression !== mapCallback.type)
-              ) {
-                return;
-              }
-              const lengthText = sourceCode.getText(lengthArgument);
-              const callbackText = sourceCode.getText(mapCallback);
-              context.report({
-                fix: (fixer) => {
-                  return fixer.replaceText(
-                    node,
-                    `Array.make(${lengthText}, ${callbackText})`
-                  );
-                },
-                messageId: "preferEffectMake",
-                node
-              });
-            }
-          }
-          return;
-        }
-
         // Check for new Array(n).fill(v) pattern
         const allocateMatch = detectAllocatePattern(node);
         if (!isNil(allocateMatch)) {
-          const { arrayCall, valueExpr } = allocateMatch;
+          const { arrayCall, valueExpression } = allocateMatch;
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
           const lengthArgument = arrayCall.arguments[0]!;
           const lengthText = sourceCode.getText(lengthArgument);
-          const valueText = sourceCode.getText(valueExpr);
+          const valueText = sourceCode.getText(valueExpression);
           context.report({
             fix: (fixer) => {
               return fixer.replaceText(

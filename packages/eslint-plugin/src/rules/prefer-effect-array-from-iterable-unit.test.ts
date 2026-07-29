@@ -5,7 +5,7 @@ import { findCall, linkParents, parseProgram } from "./.fixture.ts";
 import {
   detectAllocatePattern,
   detectSpreadPattern,
-  isArrayFromWithLengthObject,
+  detectArrayFromWithLengthObject,
   isArraySpreadMapPattern
 } from "./prefer-effect-array-from-iterable.ts";
 
@@ -41,7 +41,7 @@ describe("detectSpreadPattern", () => {
   });
 });
 
-describe("isArrayFromWithLengthObject", () => {
+describe("detectArrayFromWithLengthObject", () => {
   it.each([
     [true, "Array.from({ length: 5 }, (_, i) => i * 2)"],
     [false, "Array.from(iterable)"],
@@ -50,7 +50,8 @@ describe("isArrayFromWithLengthObject", () => {
     [false, "Array.from({ length: 5 }, x => x)"]
   ])("returns %s for Array.from pattern", (expected, code) => {
     const { call } = findCall(code);
-    expect(isArrayFromWithLengthObject(call)).toBe(expected);
+    const result = detectArrayFromWithLengthObject(call);
+    expect(result !== null).toBe(expected);
   });
 });
 
