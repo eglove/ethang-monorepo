@@ -132,7 +132,7 @@ export const createCurriculumRepo = (database: Database) => {
             return database
               .select({ id: learningPathsTable.id })
               .from(learningPathsTable)
-              .where(inArray(learningPathsTable.id, [...ids]));
+              .where(inArray(learningPathsTable.id, Array.fromIterable(ids)));
           }
         });
 
