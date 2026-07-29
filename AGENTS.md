@@ -52,8 +52,8 @@ workspaces, frameworks, or scripts are current.
 
 AI agents must follow this tool priority order:
 
-1. **WebStorm MCP** — use for: file reads/writes/creates/renames, refactoring, builds, database/SQL queries, code search, symbol navigation, rename refactoring
-2. **PowerShell + Specialized CLIs** (fallback) — use `rg`, `jq`, `es` (Everything Search), `gh`
+1. **PowerShell (pwsh)** — use for ALL terminal commands. Never use bash. Use `rg`, `jq`, `es` (Everything Search), `gh`. Invoke with `powershell -Command "..."` or `pwsh -Command "..."`.
+2. **Specialized CLIs** (fallback) — when PowerShell is unavailable, use the appropriate CLI directly.
 
 ---
 
