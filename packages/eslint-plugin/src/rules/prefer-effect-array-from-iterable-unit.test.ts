@@ -1,4 +1,5 @@
 import { AST_NODE_TYPES } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 import { describe, expect, it } from "vitest";
 
 import { findCall, linkParents, parseProgram } from "./.fixture.ts";
@@ -13,7 +14,7 @@ const getExpressionStatement = (code: string) => {
   const program = parseProgram(code);
   linkParents(program);
   const statement = program.body[0];
-  if (!statement || AST_NODE_TYPES.ExpressionStatement !== statement.type) {
+  if (statement?.type !== AST_NODE_TYPES.ExpressionStatement) {
     throw new Error(`expected expression statement in: ${code}`);
   }
   return statement;
@@ -51,7 +52,7 @@ describe("detectArrayFromWithLengthObject", () => {
   ])("returns %s for Array.from pattern", (expected, code) => {
     const { call } = findCall(code);
     const result = detectArrayFromWithLengthObject(call);
-    expect(null !== result).toBe(expected);
+    expect(!isNil(result)).toBe(expected);
   });
 });
 

@@ -208,7 +208,7 @@ export const getWeekDays = (dateString: string) => {
   const anchor = maybeAnchor.value;
   const weekday = DateTime.toPartsUtc(anchor).weekDay % 7;
   const sunday = DateTime.subtract(anchor, { days: weekday });
-  return Array.makeBy(7, (_, index) => {
+  return Array.makeBy(7, (index: number) => {
     return DateTime.formatIsoDate(DateTime.add(sunday, { days: index }));
   });
 };
