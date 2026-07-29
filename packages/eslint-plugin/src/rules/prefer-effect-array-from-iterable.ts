@@ -105,7 +105,7 @@ export const isArrayFromWithLengthObject = (node: TSESTree.Node) => {
 };
 
 // Check node is [...Array(n)].map(fn) pattern
-export const isArraySpreadMapPattern = (node: TSESTree.Node): boolean => {
+export const isArraySpreadMapPattern = (node: TSESTree.Node) => {
   if (!isCallExpression(node)) {
     return false;
   }
@@ -290,8 +290,7 @@ export const preferEffectArrayFromIterableRule = createRule<
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
           const callback = call.arguments[1]! as
             TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
-          const lengthExpression = property.value as TSESTree.Expression;
-          const lengthText = sourceCode.getText(lengthExpression);
+          const lengthText = sourceCode.getText(property.value);
           const callbackText = sourceCode.getText(callback);
           context.report({
             fix: (fixer) => {
@@ -331,9 +330,14 @@ export const preferEffectArrayFromIterableRule = createRule<
               const arrayCall = spreadArgument;
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
               const lengthArgument = arrayCall.arguments[0]!;
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-              const mapCallback = node.arguments[0]! as
-                TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression;
+              const mapCallback = node.arguments[0];
+              if (
+                !mapCallback ||
+                (AST_NODE_TYPES.ArrowFunctionExpression !== mapCallback.type &&
+                  AST_NODE_TYPES.FunctionExpression !== mapCallback.type)
+              ) {
+                return;
+              }
               const lengthText = sourceCode.getText(lengthArgument);
               const callbackText = sourceCode.getText(mapCallback);
               context.report({

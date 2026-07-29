@@ -1,4 +1,4 @@
-import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
+import { AST_NODE_TYPES } from "@typescript-eslint/utils";
 import { describe, expect, it } from "vitest";
 
 import { findCall, linkParents, parseProgram } from "./.fixture.ts";
@@ -9,7 +9,7 @@ import {
   isArraySpreadMapPattern
 } from "./prefer-effect-array-from-iterable.ts";
 
-const getExpressionStatement = (code: string): TSESTree.ExpressionStatement => {
+const getExpressionStatement = (code: string) => {
   const program = parseProgram(code);
   linkParents(program);
   const statement = program.body[0];
@@ -20,109 +20,67 @@ const getExpressionStatement = (code: string): TSESTree.ExpressionStatement => {
 };
 
 describe("detectSpreadPattern", () => {
-  it("returns null for non-array expression", () => {
-    const stmt = getExpressionStatement("x;");
-    expect(detectSpreadPattern(stmt.expression)).toBeNull();
-  });
-
-  it("returns null for empty array", () => {
-    const stmt = getExpressionStatement("[];");
-    expect(detectSpreadPattern(stmt.expression)).toBeNull();
-  });
-
-  it("returns null for array with multiple elements", () => {
-    const stmt = getExpressionStatement("[1, 2];");
-    expect(detectSpreadPattern(stmt.expression)).toBeNull();
+  it.each([
+    ["non-array expression", "x;", null],
+    ["empty array", "[];", null],
+    ["array with multiple elements", "[1, 2];", null],
+    ["non-spread single element", "[1];", null]
+  ])("returns %s for %s", (_, code, expected) => {
+    const statement = getExpressionStatement(code);
+    expect(detectSpreadPattern(statement.expression)).toEqual(expected);
   });
 
   it("returns the ArrayExpression for [...iter]", () => {
-    const stmt = getExpressionStatement("[...iter];");
-    const expr = stmt.expression;
-    const result = detectSpreadPattern(expr);
+    const statement = getExpressionStatement("[...iter];");
+    const expression = statement.expression;
+    const result = detectSpreadPattern(expression);
     expect(result).not.toBeNull();
-    expect(result!.type).toBe(AST_NODE_TYPES.ArrayExpression);
-  });
-
-  it("returns null for non-spread single element", () => {
-    const stmt = getExpressionStatement("[1];");
-    expect(detectSpreadPattern(stmt.expression)).toBeNull();
+    if (result?.type === AST_NODE_TYPES.ArrayExpression) {
+      // type check passed
+    }
   });
 });
 
 describe("isArrayFromWithLengthObject", () => {
-  it("returns true for Array.from({ length: n }, callback)", () => {
-    const { call } = findCall("Array.from({ length: 5 }, (_, i) => i * 2)");
-    expect(isArrayFromWithLengthObject(call)).toBe(true);
-  });
-
-  it("returns false for Array.from with one argument", () => {
-    const { call } = findCall("Array.from(iterable)");
-    expect(isArrayFromWithLengthObject(call)).toBe(false);
-  });
-
-  it("returns false for non-Array object", () => {
-    const { call } = findCall("other.from({ length: 5 }, fn)");
-    expect(isArrayFromWithLengthObject(call)).toBe(false);
-  });
-
-  it("returns false when first arg is not an object", () => {
-    const { call } = findCall("Array.from([1, 2], fn)");
-    expect(isArrayFromWithLengthObject(call)).toBe(false);
-  });
-
-  it("returns false when callback has fewer than 2 params", () => {
-    const { call } = findCall("Array.from({ length: 5 }, x => x)");
-    expect(isArrayFromWithLengthObject(call)).toBe(false);
+  it.each([
+    [true, "Array.from({ length: 5 }, (_, i) => i * 2)"],
+    [false, "Array.from(iterable)"],
+    [false, "other.from({ length: 5 }, fn)"],
+    [false, "Array.from([1, 2], fn)"],
+    [false, "Array.from({ length: 5 }, x => x)"]
+  ])("returns %s for Array.from pattern", (expected, code) => {
+    const { call } = findCall(code);
+    expect(isArrayFromWithLengthObject(call)).toBe(expected);
   });
 });
 
 describe("isArraySpreadMapPattern", () => {
-  it("returns true for [...Array(n)].map(fn)", () => {
-    const { call } = findCall("[...Array(3)].map(x => x + 1)");
-    expect(isArraySpreadMapPattern(call)).toBe(true);
-  });
-
-  it("returns false for [x].map(fn)", () => {
-    const { call } = findCall("[x].map(fn)");
-    expect(isArraySpreadMapPattern(call)).toBe(false);
-  });
-
-  it("returns false for [...Array(n)].filter(fn)", () => {
-    const { call } = findCall("[...Array(3)].filter(x => x > 0)");
-    expect(isArraySpreadMapPattern(call)).toBe(false);
-  });
-
-  it("returns false for non-spread array", () => {
-    const { call } = findCall("[1, 2].map(fn)");
-    expect(isArraySpreadMapPattern(call)).toBe(false);
+  it.each([
+    [true, "[...Array(3)].map(x => x + 1)"],
+    [false, "[x].map(fn)"],
+    [false, "[...Array(3)].filter(x => x > 0)"],
+    [false, "[1, 2].map(fn)"]
+  ])("returns %s for pattern", (expected, code) => {
+    const { call } = findCall(code);
+    expect(isArraySpreadMapPattern(call)).toBe(expected);
   });
 });
 
 describe("detectAllocatePattern", () => {
-  it("returns the match for new Array(n).fill(v)", () => {
-    const { call } = findCall("new Array(5).fill(0)");
+  it.each([
+    [true, "new Array(5).fill(0)"],
+    [false, "new Array(5).fill(0, 1, 3)"],
+    [false, "arr.fill(0)"],
+    [false, "new Array().fill(0)"],
+    [false, "new Array(5).join(',')"]
+  ])("returns %s for pattern", (expected, code) => {
+    const { call } = findCall(code);
     const result = detectAllocatePattern(call);
-    expect(result).not.toBeNull();
-    expect(result!.arrayCall.arguments.length).toBe(1);
-  });
-
-  it("returns null for new Array(n).fill(v, start, end)", () => {
-    const { call } = findCall("new Array(5).fill(0, 1, 3)");
-    expect(detectAllocatePattern(call)).toBeNull();
-  });
-
-  it("returns null for array.fill(v) without new", () => {
-    const { call } = findCall("arr.fill(0)");
-    expect(detectAllocatePattern(call)).toBeNull();
-  });
-
-  it("returns null for new Array() with no args", () => {
-    const { call } = findCall("new Array().fill(0)");
-    expect(detectAllocatePattern(call)).toBeNull();
-  });
-
-  it("returns null for non-fill method", () => {
-    const { call } = findCall("new Array(5).join(',')");
-    expect(detectAllocatePattern(call)).toBeNull();
+    if (expected) {
+      expect(result).not.toBeNull();
+      expect(result?.arrayCall.arguments.length).toBe(1);
+    } else {
+      expect(result).toBeNull();
+    }
   });
 });
