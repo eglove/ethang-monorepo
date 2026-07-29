@@ -5,6 +5,7 @@ import {
 } from "@typescript-eslint/utils";
 import isNil from "lodash/isNil.js";
 
+import { ensureEffectImport } from "./../utils/ast.ts";
 import {
   isArrayExpression,
   isCallExpression,
@@ -231,6 +232,7 @@ export const preferEffectArrayFromIterableRule = createRule<
     // Track ArrayExpressions that are part of a [...Array(n)].map() pattern
     // to avoid double-reporting
     const handledSpreadArrays = new WeakSet<TSESTree.ArrayExpression>();
+    const program = sourceCode.ast;
 
     return {
       ArrayExpression: (node: TSESTree.ArrayExpression) => {
@@ -261,10 +263,12 @@ export const preferEffectArrayFromIterableRule = createRule<
             const iterText = sourceCode.getText(iterExpression);
             context.report({
               fix: (fixer) => {
-                return fixer.replaceText(
+                const replace = fixer.replaceText(
                   node,
                   `Array.fromIterable(${iterText})`
                 );
+                const importFix = ensureEffectImport(program, fixer);
+                return importFix ? [replace, importFix] : replace;
               },
               messageId: "preferEffectArrayFromIterable",
               node
@@ -305,10 +309,12 @@ export const preferEffectArrayFromIterableRule = createRule<
           if (!isNil(iterable)) {
             context.report({
               fix: (fixer) => {
-                return fixer.replaceText(
+                const replace = fixer.replaceText(
                   node,
                   `Array.fromIterable(${sourceCode.getText(iterable)})`
                 );
+                const importFix = ensureEffectImport(program, fixer);
+                return importFix ? [replace, importFix] : replace;
               },
               messageId: "preferEffectArrayFromIterable",
               node
@@ -325,10 +331,12 @@ export const preferEffectArrayFromIterableRule = createRule<
           const callbackText = sourceCode.getText(callback);
           context.report({
             fix: (fixer) => {
-              return fixer.replaceText(
+              const replace = fixer.replaceText(
                 call,
                 `Array.make(${lengthText}, ${callbackText})`
               );
+              const importFix = ensureEffectImport(program, fixer);
+              return importFix ? [replace, importFix] : replace;
             },
             messageId: "preferEffectMake",
             node: call
@@ -344,10 +352,12 @@ export const preferEffectArrayFromIterableRule = createRule<
           const callbackText = sourceCode.getText(callback);
           context.report({
             fix: (fixer) => {
-              return fixer.replaceText(
+              const replace = fixer.replaceText(
                 node,
                 `Array.make(${lengthText}, ${callbackText})`
               );
+              const importFix = ensureEffectImport(program, fixer);
+              return importFix ? [replace, importFix] : replace;
             },
             messageId: "preferEffectMake",
             node
@@ -365,10 +375,12 @@ export const preferEffectArrayFromIterableRule = createRule<
           const valueText = sourceCode.getText(valueExpression);
           context.report({
             fix: (fixer) => {
-              return fixer.replaceText(
+              const replace = fixer.replaceText(
                 node,
                 `Array.allocate(${lengthText})(${valueText})`
               );
+              const importFix = ensureEffectImport(program, fixer);
+              return importFix ? [replace, importFix] : replace;
             },
             messageId: "preferEffectAllocate",
             node
