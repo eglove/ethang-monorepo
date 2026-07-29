@@ -8,67 +8,6 @@ Write-Output "Updating dependencies in eslint-config..."
 pnpm up -i --latest
 pnpm --bail build
 
-$updateTypeOptions = @(
-    [PSCustomObject]@{ Name = "patch"; Value = "patch" },
-    [PSCustomObject]@{ Name = "minor"; Value = "minor" },
-    [PSCustomObject]@{ Name = "major"; Value = "major" },
-    [PSCustomObject]@{ Name = "none"; Value = "none" }
-)
-
-$updateType = $null
-while ($null -eq $updateType) {
-    Write-Output "Choose Semver update type:"
-    for ($i = 0; $i -lt $updateTypeOptions.Count; $i++) {
-        Write-Output "$( $i + 1 ). $( $updateTypeOptions[$i].Name )"
-    }
-    $selection = Read-Host "Enter number (1-4)"
-
-    if ($selection -match "^[1-4]$") {
-        $updateType = $updateTypeOptions[[int]$selection - 1].Value
-    }
-    else {
-        Write-Output "Invalid selection. Please try again."
-    }
-}
-
-if ($updateType -ne "none") {
-    # Get current version from npm registry
-    Write-Output "Fetching current version from npm registry..."
-    $response = Invoke-RestMethod -Uri "https://registry.npmjs.org/@ethang/eslint-config"
-    $currentVersion = $response."dist-tags".latest
-
-    # Update version, build, and publish
-    Write-Output "Updating version to $updateType..."
-    npm version $updateType
-
-    Write-Output "Building package..."
-    pnpm build
-
-    Set-Location (Join-Path $eslintConfigDirectory "dist")
-    Write-Output "Publishing package..."
-    npm login
-    npm publish --git-no-checks
-
-    # Wait for registry to update
-    $registryUpdated = $false
-    $attempts = 1
-    Write-Output "Waiting for registry to update..."
-    while (-not $registryUpdated) {
-        Write-Output "Attempt $attempts..."
-        $attempts++
-
-        $response = Invoke-RestMethod -Uri "https://registry.npmjs.org/@ethang/eslint-config"
-        $latestVersion = $response."dist-tags".latest
-
-        if ($latestVersion -ne $currentVersion) {
-            $registryUpdated = $true
-        }
-        else {
-            Start-Sleep -Seconds 5
-        }
-    }
-}
-
 # Return to root directory and update dependencies
 Set-Location $scriptDir
 Write-Output "Updating dependencies in monorepo..."
