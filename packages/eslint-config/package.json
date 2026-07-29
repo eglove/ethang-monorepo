@@ -65,6 +65,7 @@
   "license": "ISC",
   "main": "src/config.main.js",
   "name": "@ethang/eslint-config",
+  "private": true,
   "repository": {
     "url": "git+https://github.com/eglove/ethang-monorepo.git#master"
   },
