@@ -1,3 +1,4 @@
+import { Array } from "effect";
 import assign from "lodash/assign.js";
 import filter from "lodash/filter.js";
 import find from "lodash/find.js";
@@ -102,7 +103,7 @@ const buildConfigBlock = (
   output: OutputConfig,
   reactSettings: null | string
 ) => {
-  const sorted = [...plugins].toSorted((a, b) => {
+  const sorted = Array.fromIterable(plugins).toSorted((a, b) => {
     return (a.order ?? 0) - (b.order ?? 0);
   });
 

@@ -15,7 +15,7 @@ export const LODASH_V4_ALIASES: ReadonlyMap<string, readonly string[]> =
 
 // Reverse lookup: alias → main method name
 export const LODASH_V4_ALIAS_TO_MAIN: ReadonlyMap<string, string> = new Map(
-  flatMap([...LODASH_V4_ALIASES], ([main, aliases]) => {
+  flatMap(Array.fromIterable(LODASH_V4_ALIASES), ([main, aliases]) => {
     return map(aliases, (alias) => {
       return [alias, main] as const;
     });
@@ -339,5 +339,6 @@ export const getMethodMaxArguments = (method: string) => {
   };
   return maxArguments[method] ?? 3;
 };
+import { Array } from "effect";
 import flatMap from "lodash/flatMap.js";
 import map from "lodash/map.js";

@@ -1,3 +1,4 @@
+import { Array } from "effect";
 import keys from "lodash/keys.js";
 import sortBy from "lodash/sortBy.js";
 import values from "lodash/values.js";
@@ -6,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import plugin, { rules } from "./index.ts";
 
 const sortNames = (names: readonly string[]) => {
-  return sortBy([...names]);
+  return sortBy(Array.fromIterable(names));
 };
 
 describe("plugin", () => {
@@ -28,6 +29,7 @@ describe("plugin", () => {
         "no-try-catch",
         "path-style",
         "prefer-effect-array-intersperse",
+        "prefer-effect-array-from-iterable",
         "prefer-effect-array-scan",
         "prefer-effect-bigint-clamp",
         "prefer-effect-datetime",

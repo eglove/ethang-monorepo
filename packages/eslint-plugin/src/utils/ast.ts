@@ -139,17 +139,6 @@ export const getImportedKind = (context: {
   return detectImportKind(context.sourceCode.ast);
 };
 
-const isEffectImportNode = (node: TSESTree.Node) => {
-  return (
-    AST_NODE_TYPES.ImportDeclaration === node.type &&
-    "effect" === node.source.value
-  );
-};
-
-const hasEffectImport = (program: TSESTree.Program) => {
-  return some(program.body, isEffectImportNode);
-};
-
 const isLodashDeepImportNode = (node: TSESTree.Node, importName: string) => {
   if (AST_NODE_TYPES.ImportDeclaration !== node.type) {
     return false;
@@ -187,14 +176,46 @@ const insertImportAfterLastImport = (
   return fixer.insertTextBeforeRange(program.range, text);
 };
 
+const hasArraySpecifier = (importDeclaration: TSESTree.ImportDeclaration) => {
+  return importDeclaration.specifiers.some((spec) => {
+    if (AST_NODE_TYPES.ImportSpecifier === spec.type) {
+      return "Array" === spec.local.name;
+    }
+    return false;
+  });
+};
+
+const ensureEffectImportForDeclaration = (
+  importDeclaration: TSESTree.ImportDeclaration,
+  fixer: RuleFixer
+) => {
+  if ("effect" !== importDeclaration.source.value) {
+    return null;
+  }
+  if (hasArraySpecifier(importDeclaration)) {
+    return null;
+  }
+  const lastSpecifier = importDeclaration.specifiers.at(-1);
+  if (!lastSpecifier) {
+    return fixer.insertTextAfter(importDeclaration.source, " { Array }");
+  }
+  return fixer.insertTextAfter(lastSpecifier, ", Array");
+};
+
 export const ensureEffectImport = (
   program: TSESTree.Program,
   fixer: RuleFixer
 ) => {
-  if (hasEffectImport(program)) {
-    return null;
+  for (const node of program.body) {
+    if (
+      AST_NODE_TYPES.ImportDeclaration === node.type &&
+      "effect" === node.source.value
+    ) {
+      return ensureEffectImportForDeclaration(node, fixer);
+    }
   }
 
+  // No effect import exists - add a new one
   return insertImportAfterLastImport(
     program,
     fixer,

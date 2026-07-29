@@ -1,3 +1,4 @@
+import { Array } from "effect";
 import { describe, expect, it, vi } from "vitest";
 
 import { cleanupOldArticles } from "./cleanup-old-articles.ts";
@@ -151,7 +152,7 @@ describe("cleanupOldArticles", () => {
 
   it("should batch-delete articles when there are more than 100 old articles", async () => {
     // Create 250 old articles to test chunking behavior
-    const mockArticles = Array.from({ length: 250 }, (_, index) => {
+    const mockArticles = Array.makeBy(250, (index: number) => {
       return { id: `article-${index}` };
     });
     const mockSelect = vi.fn().mockReturnValue({
@@ -174,7 +175,7 @@ describe("cleanupOldArticles", () => {
   });
 
   it("should batch-delete articles when there are exactly 100 old articles", async () => {
-    const mockArticles = Array.from({ length: 100 }, (_, index) => {
+    const mockArticles = Array.makeBy(100, (index: number) => {
       return { id: `article-${index}` };
     });
     const mockSelect = vi.fn().mockReturnValue({

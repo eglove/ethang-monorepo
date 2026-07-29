@@ -110,10 +110,38 @@ describe("getImportedKind", () => {
 });
 
 describe("ensureEffectImport", () => {
-  it("returns null when effect is already imported", () => {
-    const program = parseProgram(EFFECT_FOO_IMPORT);
+  it("returns null when Array is already imported from effect", () => {
+    const program = parseProgram('import { Array } from "effect";');
     const fixer = buildFakeFixer({ insertTextAfter: NOOP_FIX });
     expect(ensureEffectImport(program, fixer)).toBeNull();
+  });
+
+  it("appends Array to an existing effect import that lacks it", () => {
+    const calls: string[] = [];
+    const program = parseProgram('import { Option } from "effect";');
+    const fixer = buildFakeFixer({
+      insertTextAfter: (_node, text) => {
+        calls.push(`insertTextAfter:${text}`);
+        return FAKE_FIX();
+      }
+    });
+    const fix = ensureEffectImport(program, fixer);
+    expect(fix).toBeDefined();
+    expect(calls[0]).toBe("insertTextAfter:, Array");
+  });
+
+  it("adds curly braces when appending to an empty effect import", () => {
+    const calls: string[] = [];
+    const program = parseProgram('import {} from "effect";');
+    const fixer = buildFakeFixer({
+      insertTextAfter: (_node, text) => {
+        calls.push(`insertTextAfter:${text}`);
+        return FAKE_FIX();
+      }
+    });
+    const fix = ensureEffectImport(program, fixer);
+    expect(fix).toBeDefined();
+    expect(calls[0]).toBe("insertTextAfter: { Array }");
   });
 
   it("inserts an import at the start when program is empty", () => {

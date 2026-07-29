@@ -12,6 +12,7 @@ import { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 import { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 import { noTryCatchRule } from "./rules/no-try-catch.ts";
 import { pathStyleRule } from "./rules/path-style.ts";
+import { preferEffectArrayFromIterableRule } from "./rules/prefer-effect-array-from-iterable.ts";
 import { preferEffectArrayIntersperseRule } from "./rules/prefer-effect-array-intersperse.ts";
 import { preferEffectArrayScanRule } from "./rules/prefer-effect-array-scan.ts";
 import { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
@@ -57,6 +58,7 @@ export const rules = {
   "no-null-undefined-check": noNullUndefinedCheckRule,
   "no-try-catch": noTryCatchRule,
   "path-style": pathStyleRule,
+  "prefer-effect-array-from-iterable": preferEffectArrayFromIterableRule,
   "prefer-effect-array-intersperse": preferEffectArrayIntersperseRule,
   "prefer-effect-array-scan": preferEffectArrayScanRule,
   "prefer-effect-bigint-clamp": preferEffectBigIntClampRule,
@@ -112,6 +114,7 @@ export { noLodashMisuseRule } from "./rules/no-lodash-misuse.ts";
 export { noNullUndefinedCheckRule } from "./rules/no-null-undefined-check.ts";
 export { noTryCatchRule } from "./rules/no-try-catch.ts";
 export { pathStyleRule } from "./rules/path-style.ts";
+export { preferEffectArrayFromIterableRule } from "./rules/prefer-effect-array-from-iterable.ts";
 export { preferEffectArrayIntersperseRule } from "./rules/prefer-effect-array-intersperse.ts";
 export { preferEffectArrayScanRule } from "./rules/prefer-effect-array-scan.ts";
 export { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";

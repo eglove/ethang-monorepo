@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { Array } from "effect";
 import map from "lodash/map.js";
 import slice from "lodash/slice.js";
 import { describe, expect, it, vi } from "vitest";
@@ -108,7 +109,7 @@ describe("Index Route", () => {
     const indices = map(positions, (position) => {
       return SECTION_ORDER[position];
     });
-    expect(indices).toEqual([...SECTION_ORDER]);
+    expect(indices).toEqual(Array.fromIterable(SECTION_ORDER));
   });
 
   it("does not render a separate contact section (card is the only CTA)", () => {
