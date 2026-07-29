@@ -333,7 +333,7 @@ export const preferEffectArrayFromIterableRule = createRule<
             fix: (fixer) => {
               const replace = fixer.replaceText(
                 call,
-                `Array.make(${lengthText}, ${callbackText})`
+                `Array.makeBy(${lengthText}, ${callbackText})`
               );
               const importFix = ensureEffectImport(program, fixer);
               return importFix ? [replace, importFix] : replace;
@@ -354,7 +354,7 @@ export const preferEffectArrayFromIterableRule = createRule<
             fix: (fixer) => {
               const replace = fixer.replaceText(
                 node,
-                `Array.make(${lengthText}, ${callbackText})`
+                `Array.makeBy(${lengthText}, ${callbackText})`
               );
               const importFix = ensureEffectImport(program, fixer);
               return importFix ? [replace, importFix] : replace;

@@ -1,4 +1,5 @@
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
+import { Array } from "effect";
 import isNil from "lodash/isNil.js";
 import { describe, expect, it } from "vitest";
 
@@ -61,7 +62,7 @@ const CONST_X_EQ_1 = "const x = 1;";
 const buildBlock = (code: string) => {
   const program = parseProgram(code);
   return {
-    body: [...program.body],
+    body: Array.fromIterable(program.body),
     type: AST_NODE_TYPES.BlockStatement
   } as TSESTree.BlockStatement;
 };

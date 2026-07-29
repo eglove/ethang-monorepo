@@ -1,5 +1,5 @@
 import { inArray } from "drizzle-orm";
-import { DateTime, Effect } from "effect";
+import { Array, DateTime, Effect } from "effect";
 import chunk from "lodash/chunk.js";
 import filter from "lodash/filter.js";
 import isEmpty from "lodash/isEmpty.js";

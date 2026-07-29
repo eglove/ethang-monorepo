@@ -1,5 +1,5 @@
 import { toHTML } from "@portabletext/to-html";
-import { DateTime, Option } from "effect";
+import { Array, DateTime, Option } from "effect";
 import constant from "lodash/constant.js";
 import filter from "lodash/filter.js";
 import isArray from "lodash/isArray.js";
@@ -208,7 +208,7 @@ export const getWeekDays = (dateString: string) => {
   const anchor = maybeAnchor.value;
   const weekday = DateTime.toPartsUtc(anchor).weekDay % 7;
   const sunday = DateTime.subtract(anchor, { days: weekday });
-  return Array.make(7, (_, index) => {
+  return Array.makeBy(7, (_, index) => {
     return DateTime.formatIsoDate(DateTime.add(sunday, { days: index }));
   });
 };

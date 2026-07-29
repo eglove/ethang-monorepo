@@ -1,4 +1,4 @@
-import { Chunk, Effect, PubSub, Stream } from "effect";
+import { Array, Chunk, Effect, PubSub, Stream } from "effect";
 import { enableMapSet, produce, type Producer } from "immer";
 import forEach from "lodash/forEach.js";
 
@@ -85,7 +85,7 @@ export const makeStore = <T>(initial: T) => {
   const listeners = new Set<() => void>();
 
   const notify = () => {
-    forEach([...listeners], (listener) => {
+    forEach(Array.fromIterable(listeners), (listener) => {
       listener();
     });
   };

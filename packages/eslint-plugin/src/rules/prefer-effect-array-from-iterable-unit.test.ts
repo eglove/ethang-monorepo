@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import { findCall, linkParents, parseProgram } from "./.fixture.ts";
 import {
   detectAllocatePattern,
-  detectSpreadPattern,
   detectArrayFromWithLengthObject,
+  detectSpreadPattern,
   isArraySpreadMapPattern
 } from "./prefer-effect-array-from-iterable.ts";
 
@@ -51,7 +51,7 @@ describe("detectArrayFromWithLengthObject", () => {
   ])("returns %s for Array.from pattern", (expected, code) => {
     const { call } = findCall(code);
     const result = detectArrayFromWithLengthObject(call);
-    expect(result !== null).toBe(expected);
+    expect(null !== result).toBe(expected);
   });
 });
 

@@ -19,37 +19,42 @@ ruleTester.run(
       {
         code: "const arr = [...iter];",
         errors: [{ messageId: "preferEffectArrayFromIterable" }],
-        output: 'import { Array } from "effect";\nconst arr = Array.fromIterable(iter);'
+        output:
+          'import { Array } from "effect";\nconst arr = Array.fromIterable(iter);'
       },
       // -------- fromIterable: Array.from() pattern --------
       {
         code: "const arr = Array.from(iterable);",
         errors: [{ messageId: "preferEffectArrayFromIterable" }],
-        output: 'import { Array } from "effect";\nconst arr = Array.fromIterable(iterable);'
+        output:
+          'import { Array } from "effect";\nconst arr = Array.fromIterable(iterable);'
       },
       // -------- make: Array.from({length:n}, callback) pattern --------
       {
         code: "const arr = Array.from({ length: 5 }, (_, i) => i * 2);",
         errors: [{ messageId: "preferEffectMake" }],
-        output: 'import { Array } from "effect";\nconst arr = Array.make(5, (_, i) => i * 2);'
+        output:
+          'import { Array } from "effect";\nconst arr = Array.makeBy(5, (_, i) => i * 2);'
       },
       // -------- make: [...Array(n)].map(fn) pattern --------
       {
         code: "[...Array(3)].map(x => x + 1);",
         errors: [{ messageId: "preferEffectMake" }],
-        output: 'import { Array } from "effect";\nArray.make(3, x => x + 1);'
+        output: 'import { Array } from "effect";\nArray.makeBy(3, x => x + 1);'
       },
       // -------- allocate: new Array(n).fill(v) pattern --------
       {
         code: "const arr = new Array(5).fill(0);",
         errors: [{ messageId: "preferEffectAllocate" }],
-        output: 'import { Array } from "effect";\nconst arr = Array.allocate(5)(0);'
+        output:
+          'import { Array } from "effect";\nconst arr = Array.allocate(5)(0);'
       },
       // -------- allocate: with variable count and value --------
       {
         code: "const arr = new Array(count).fill(value);",
         errors: [{ messageId: "preferEffectAllocate" }],
-        output: 'import { Array } from "effect";\nconst arr = Array.allocate(count)(value);'
+        output:
+          'import { Array } from "effect";\nconst arr = Array.allocate(count)(value);'
       },
       // -------- spread with function call (side effects) - reports but no fix --------
       {

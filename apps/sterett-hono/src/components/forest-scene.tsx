@@ -19,7 +19,7 @@ const FRONT_HEIGHTS = [105, 132, 110, 140, 96, 126, 114, 136, 105, 128];
 const SPACING = 68;
 const COUNT = 22; // covers 1440px
 
-const backPaths = Array.make(COUNT, (_, index) => {
+const backPaths = Array.makeBy(COUNT, (_, index) => {
   return tree(
     34 + index * SPACING,
     173,
@@ -28,7 +28,7 @@ const backPaths = Array.make(COUNT, (_, index) => {
   );
 }).join(" ");
 
-const frontPaths = Array.make(COUNT, (_, index) => {
+const frontPaths = Array.makeBy(COUNT, (_, index) => {
   return tree(
     index * SPACING,
     178,
