@@ -5,11 +5,11 @@
   ],
   "dependencies": {
     "drizzle-orm": "^0.45.2",
-    "effect": "^3.22.0",
+    "effect": "^3.22.1",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^5.20260729.1",
+    "@cloudflare/workers-types": "^5.20260731.1",
     "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/node": "^26.1.2",
@@ -20,7 +20,7 @@
     "eslint": "^10.8.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10",
-    "wrangler": "^4.115.0"
+    "wrangler": "^4.118.0"
   },
   "engines": {
     "node": ">=24"

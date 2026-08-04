@@ -839,7 +839,13 @@
       "source": "effect-ts/skills",
       "sourceType": "github",
       "skillPath": "skills/effect-ts/SKILL.md",
-      "computedHash": "301521e167410dd42d834dd0e7cedbe9cfffa519f630a12241dbea7b1d932324"
+      "computedHash": "16dc62c9087d4b74035d4071fe931ff43c4218acb414407a17066045a80762fa"
+    },
+    "effect-v3-to-v4": {
+      "source": "effect-ts/skills",
+      "sourceType": "github",
+      "skillPath": "skills/effect-v3-to-v4/SKILL.md",
+      "computedHash": "6b16daab60925a09aa1c4d678cd4a74724410d0ca11d2019ed17d20843a870da"
     },
     "em-dash": {
       "source": "github/awesome-copilot",
