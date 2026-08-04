@@ -1,0 +1,28 @@
+{
+  "addOnOptions": {
+    "drizzle": {
+      "database": "sqlite"
+    }
+  },
+  "chosenAddOns": [
+    "cloudflare",
+    "compiler",
+    "drizzle",
+    "form",
+    "table",
+    "tanstack-query"
+  ],
+  "framework": "react",
+  "git": false,
+  "includeExamples": true,
+  "install": false,
+  "intent": true,
+  "mode": "file-router",
+  "packageManager": "pnpm",
+  "projectName": "ethang-start",
+  "projectPreset": "default",
+  "routerOnly": false,
+  "tailwind": true,
+  "typescript": true,
+  "version": 1
+}

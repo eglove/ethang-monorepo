@@ -1,0 +1,84 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@astryxdesign/cli": "^0.2.0",
+    "@astryxdesign/core": "^0.2.0",
+    "@astryxdesign/theme-neutral": "^0.2.0",
+    "@faker-js/faker": "^10.3.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/match-sorter-utils": "latest",
+    "@tanstack/react-devtools": "latest",
+    "@tanstack/react-form": "latest",
+    "@tanstack/react-query": "latest",
+    "@tanstack/react-query-devtools": "latest",
+    "@tanstack/react-router": "latest",
+    "@tanstack/react-router-devtools": "latest",
+    "@tanstack/react-router-ssr-query": "latest",
+    "@tanstack/react-start": "latest",
+    "@tanstack/react-table": "latest",
+    "better-sqlite3": "^12.6.2",
+    "drizzle-kit": "^0.31.9",
+    "drizzle-orm": "^0.45.1",
+    "effect": "^3.22.1",
+    "lodash": "^4.18.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.18",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.26.0",
+    "@ethang/eslint-config": "workspace:*",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tanstack/devtools-vite": "latest",
+    "@tanstack/router-cli": "^1.132.0",
+    "@total-typescript/ts-reset": "^0.6.1",
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/lodash": "^4.17.24",
+    "@types/node": "^22.20.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "browserslist-config-baseline": "^0.5.0",
+    "dotenv": "^17.3.1",
+    "eslint": "^10.8.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.0",
+    "wrangler": "^4.118.0"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "ethang-start",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lightningcss",
+      "sharp",
+      "workerd",
+      "better-sqlite3"
+    ]
+  },
+  "private": true,
+  "scripts": {
+    "build": "vite build",
+    "cf-typegen": "wrangler types",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:pull": "drizzle-kit pull",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "deploy": "pnpm run build && wrangler deploy",
+    "dev": "vite dev --port 3000",
+    "generate-routes": "tsr generate",
+    "lint": "eslint . --fix",
+    "preview": "pnpm run build && vite preview"
+  },
+  "type": "module"
+}
