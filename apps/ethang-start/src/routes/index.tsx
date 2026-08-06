@@ -1,7 +1,11 @@
+import { VStack } from "@astryxdesign/core";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { HowIWork } from "../components/how-work.tsx";
 import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { ProfileCard } from "../components/profile-card.tsx";
+import { StackAndTools } from "../components/stack-and-tools.tsx";
+import { WhatIveShipped } from "../components/what-ive-shipped.tsx";
 
 export const Route = createFileRoute("/")({
   component: App
@@ -10,9 +14,12 @@ export const Route = createFileRoute("/")({
 function App() {
   return (
     <MainLayout>
-      <div className="mt-6 flex gap-4">
+      <VStack gap={4}>
         <ProfileCard />
-      </div>
+        <HowIWork />
+        <StackAndTools />
+        <WhatIveShipped />
+      </VStack>
     </MainLayout>
   );
 }

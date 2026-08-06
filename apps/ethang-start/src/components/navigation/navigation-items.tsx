@@ -14,10 +14,9 @@ export const NavigationItems = () => {
     <>
       {Array.map(navigationItems, (navigationItem) => {
         return (
-          <div className="px-2">
+          <div className="px-2" key={navigationItem.label}>
             <TopNavItem
               href={navigationItem.href}
-              key={navigationItem.label}
               label={navigationItem.label}
             />
           </div>

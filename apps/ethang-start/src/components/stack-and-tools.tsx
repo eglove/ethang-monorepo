@@ -62,12 +62,10 @@ const Column = ({
   return (
     <div data-column="">
       <VStack gap={1}>
-        <Text as="span" size="sm" weight="bold">
+        <Text as="span" weight="bold">
           {title}
         </Text>
-        <Text as="p" size="sm">
-          {listFormatter.format(items)}
-        </Text>
+        <Text as="p">{listFormatter.format(items)}</Text>
       </VStack>
     </div>
   );

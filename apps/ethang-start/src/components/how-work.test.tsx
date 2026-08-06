@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { HowIWork } from "./how-index-work.tsx";
+import { HowIWork } from "./how-work.tsx";
 
 describe("HowIWork", () => {
   it("renders the component with data-testid", () => {

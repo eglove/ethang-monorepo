@@ -12,11 +12,11 @@ import profileImage from "../assets/profile.jpeg";
 export const ProfileCard = () => {
   return (
     <Card padding={4} width="100%">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Avatar size="xl" src={profileImage} name="Ethan Glover" />
         <div>
           <span className="m-1 text-xl font-bold">Ethan Glover</span>
-          <div className="my-1 flex items-center gap-4">
+          <div className="my-1 flex flex-wrap items-center gap-4">
             <Link
               target="_blank"
               aria-label="LinkedIn"

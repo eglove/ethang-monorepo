@@ -11,7 +11,11 @@ const config = defineConfig({
     devtools(),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      router: {
+        routeFileIgnorePattern: String.raw`.*\.test\..*`,
+      }
+    }),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] })
   ],
