@@ -1,4 +1,6 @@
 import { resolveThemeTokens } from "@astryxdesign/core/theme/tokens";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { nightowlTheme } from "./nightowl.ts";
@@ -51,4 +53,15 @@ describe("nightowlTheme", () => {
       expect(value).not.toContain("inset");
     }
   );
+
+  it("applies the body backdrop to the html/body element in style.css", () => {
+    // Astryx only applies --color-background-body via the AppShell component,
+    // which this app does not render. Without an explicit rule the html/body
+    // background stays transparent and the browser default shows through.
+    const styleCss = readFileSync(
+      path.join(import.meta.dirname, "..", "style.css"),
+      "utf8"
+    );
+    expect(styleCss).toMatch(/body\s*\{[^}]*var\(--color-background-body\)/u);
+  });
 });

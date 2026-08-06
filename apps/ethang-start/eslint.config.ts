@@ -22,6 +22,15 @@ export default defineConfig(
   ...htmlConfig,
   ...tailwindConfig(path.join(import.meta.dirname, "src", "style.css")),
   {
+    files: ["src/style.css"],
+    rules: {
+      // style.css legitimately references theme tokens (var(--color-*)) that
+      // are defined in the imported nightowl.css, which @eslint/css cannot
+      // resolve across @import boundaries. False positive — disable here.
+      "css/no-invalid-properties": "off"
+    }
+  },
+  {
     languageOptions: {
       parserOptions: {
         project: true,
