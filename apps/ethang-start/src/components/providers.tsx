@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 
 import { getContext } from "../router.tsx";
-import { nightowlTheme } from "../themes/nightowl.ts";
+import { nightowlTheme } from "../themes/nightowl.js";
 
 export const Providers = ({ children }: Readonly<PropsWithChildren>) => {
   return (
