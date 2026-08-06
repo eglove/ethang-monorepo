@@ -24,12 +24,10 @@ export const HowIWork = () => {
         {map(principles, (principle) => {
           return (
             <div data-principle="" key={principle.title}>
-              <Text as="p" size="sm" weight="bold">
+              <Text as="p" weight="bold">
                 {principle.title}
-              </Text>
-              <Text as="p" size="sm">
-                {principle.body}
-              </Text>
+              </Text>{" "}
+              <Text as="p">{principle.body}</Text>
             </div>
           );
         })}
