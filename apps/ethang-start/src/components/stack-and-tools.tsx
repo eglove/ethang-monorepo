@@ -47,6 +47,11 @@ const practices = [
   "Legacy migrations"
 ] as const;
 
+const listFormatter = new Intl.ListFormat("en", {
+  style: "long",
+  type: "conjunction"
+});
+
 const Column = ({
   items,
   title
@@ -61,7 +66,7 @@ const Column = ({
           {title}
         </Text>
         <Text as="p" size="sm">
-          {items.join(", ")}
+          {listFormatter.format(items)}
         </Text>
       </VStack>
     </div>
