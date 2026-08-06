@@ -1,5 +1,5 @@
 import { Card, Heading, Text, VStack } from "@astryxdesign/core";
-import map from "lodash/map.js";
+import { Array } from "effect";
 
 const principles = [
   {
@@ -21,7 +21,7 @@ export const HowIWork = () => {
     <Card data-testid="how-i-work">
       <VStack gap={3}>
         <Heading level={2}>How I work</Heading>
-        {map(principles, (principle) => {
+        {Array.map(principles, (principle) => {
           return (
             <div key={principle.title}>
               <Text as="p" weight="bold">
