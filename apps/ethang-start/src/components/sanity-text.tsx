@@ -11,6 +11,7 @@ import { Option, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import LiteYouTubeEmbed from "react-lite-youtube-embed";
+import "react-lite-youtube-embed/dist/LiteYouTubeEmbed.css";
 
 const MarkValueSchema = Schema.Struct({
   href: Schema.optional(Schema.String)

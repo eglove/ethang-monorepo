@@ -1,7 +1,7 @@
 import { createClient } from "@sanity/client";
 import { createServerFn } from "@tanstack/react-start";
 
-import type { BlogPost } from "./blog-types.ts";
+import type { BlogPost, BlogPostDetail } from "./blog-types.ts";
 
 const sanity = createClient({
   apiVersion: "1",
@@ -42,4 +42,38 @@ export const getPaginatedBlogs = createServerFn()
     const maxPages = Math.ceil(total / pageSize) || 1;
 
     return { maxPages, posts, total };
+  });
+
+const blogDetailSchema = `{
+    ...,
+    "featuredImage": {
+      "alt": featuredImage.alt,
+      "asset": featuredImage.asset->{...}
+    },
+    "body": body[]{
+      ...,
+      _type == "image" => {
+        ...,
+        "asset": asset->{...}
+      },
+      _type == "videoEmbed" => {
+        ...,
+        "url": url
+      },
+      _type == "blockquote" || _type == "quote" => {
+        ...,
+        "quote": quote
+      }
+    }
+  }`;
+
+export const getBlogBySlug = createServerFn()
+  .validator((data: { slug: string }) => {
+    return data;
+  })
+  .handler(async ({ data: { slug } }) => {
+    return sanity.fetch<BlogPostDetail>(
+      `*[_type == "blog" && slug.current == $slug][0]${blogDetailSchema}`,
+      { slug }
+    );
   });
