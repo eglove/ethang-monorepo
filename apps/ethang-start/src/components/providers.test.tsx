@@ -6,7 +6,7 @@ import { Providers } from "./providers.tsx";
 
 beforeAll(() => {
   // jsdom does not implement matchMedia; stub it for useTheme's media query.
-  vi.stubGlobal("matchMedia", (query: string) => {
+  const matchMediaStub = (query: string) => {
     return {
       addEventListener: vi.fn(),
       addListener: vi.fn(),
@@ -15,10 +15,11 @@ beforeAll(() => {
       media: query,
       onchange: null,
       removeEventListener: vi.fn(),
-      removeListener: vi.fn(),
+      removeListener: vi.fn()
     };
-  });
-  window.matchMedia = globalThis.matchMedia;
+  };
+  vi.stubGlobal("matchMedia", matchMediaStub);
+  Object.defineProperty(globalThis, "matchMedia", { value: matchMediaStub });
 });
 
 const ModeProbe = () => {
@@ -40,7 +41,7 @@ describe("Providers", () => {
     );
 
     const probe = screen.getByTestId("probe");
-    expect(probe.dataset.mode).toBe("dark");
+    expect(probe.dataset["mode"]).toBe("dark");
     expect(probe.textContent).toBe("#011627");
   });
 });

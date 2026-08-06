@@ -12,7 +12,10 @@ export default defineConfig(
     "src/routeTree.gen.ts",
     "vite.config.ts",
     "tsconfig.json",
-    "worker-configuration.d.ts"
+    "worker-configuration.d.ts",
+    "src/themes/nightowl.css",
+    "src/themes/nightowl.js",
+    "src/themes/nightowl.d.ts"
   ]),
   ...config,
   ...reactConfig,

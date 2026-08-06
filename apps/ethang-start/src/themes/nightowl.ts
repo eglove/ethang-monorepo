@@ -1,16 +1,16 @@
 import { defineSyntaxTheme, defineTheme } from "@astryxdesign/core/theme";
 
 /**
- * Night Owl Theme
- *
- * Dark-only theme built on the canonical Night Owl palette (Sarah Drasner).
- * Midnight backdrop (#011627) with luminous syntax-inspired accents of cyan
- * (#7fdbca), magenta (#c792ea), and golden amber (#ffcb8b). Razor-sharp
- * rectangular geometry (radius 0) with tactile, hard-edged block shadows.
- *
- * Light token slots are locked to the dark values — the theme is forced to
- * dark mode via `<Theme mode="dark">` and renders identically in both slots.
- */
+Night Owl Theme
+
+Dark-only theme built on the canonical Night Owl palette (Sarah Drasner).
+Midnight backdrop (#011627) with luminous syntax-inspired accents of cyan
+(#7fdbca), magenta (#c792ea), and golden amber (#ffcb8b). Razor-sharp
+rectangular geometry (radius 0) with tactile, hard-edged block shadows.
+
+Light token slots are locked to the dark values — the theme is forced to
+dark mode via `<Theme mode="dark">` and renders identically in both slots.
+*/
 
 const nightowlSyntax = defineSyntaxTheme({
   name: "nightowl",
@@ -28,8 +28,8 @@ const nightowlSyntax = defineSyntaxTheme({
     string: "#7fdbca",
     tag: "#f78c6c",
     type: "#c792ea",
-    variable: "#d6deeb",
-  },
+    variable: "#d6deeb"
+  }
 });
 
 export const nightowlTheme = defineTheme({
@@ -40,30 +40,30 @@ export const nightowlTheme = defineTheme({
       "variant:info": { backgroundColor: "#82aaff", color: "#011627" },
       "variant:neutral": {
         backgroundColor: "var(--color-background-gray)",
-        color: "var(--color-text-gray)",
+        color: "var(--color-text-gray)"
       },
       "variant:success": { backgroundColor: "#22da6e", color: "#011627" },
-      "variant:warning": { backgroundColor: "#ffcb8b", color: "#011627" },
+      "variant:warning": { backgroundColor: "#ffcb8b", color: "#011627" }
     },
     button: {
       base: { borderRadius: "0" },
       "variant:destructive": {
         backgroundColor: "var(--color-error-muted)",
-        color: "var(--color-error)",
+        color: "var(--color-error)"
       },
       "variant:primary": {
         backgroundColor: "var(--color-accent)",
         boxShadow: "2px 2px 0 0 #21c7a8",
-        color: "var(--color-on-accent)",
-      },
+        color: "var(--color-on-accent)"
+      }
     },
     card: {
       base: {
         border: "1px solid var(--color-border)",
         borderRadius: "0",
-        boxShadow: "var(--shadow-med)",
-      },
-    },
+        boxShadow: "var(--shadow-med)"
+      }
+    }
   },
   motion: { fast: 125, medium: 300, ratio: 0.75, slow: 700 },
   name: "nightowl",
@@ -180,25 +180,25 @@ export const nightowlTheme = defineTheme({
     "--shadow-inset-success": "inset 0 0 0 2px #22da6e4D",
     "--shadow-inset-warning": "inset 0 0 0 2px #ffcb8b4D",
     "--shadow-low": "2px 2px 0 0 #010b14",
-    "--shadow-med": "4px 4px 0 0 #010b14",
+    "--shadow-med": "4px 4px 0 0 #010b14"
   },
   typography: {
     body: {
       fallbacks:
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-      family: "Figtree",
+      family: "Figtree"
     },
     code: {
       fallbacks:
         '"SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-      family: "ui-monospace",
+      family: "ui-monospace"
     },
     heading: {
       fallbacks:
         '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
       family: "Figtree",
-      weights: { 3: "bold", 4: "bold" },
+      weights: { 3: "bold", 4: "bold" }
     },
-    scale: { base: 14, ratio: 1.2 },
-  },
+    scale: { base: 14, ratio: 1.2 }
+  }
 });
