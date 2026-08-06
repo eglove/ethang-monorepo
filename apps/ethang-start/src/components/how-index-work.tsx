@@ -23,7 +23,7 @@ export const HowIWork = () => {
         <Heading level={2}>How I work</Heading>
         {map(principles, (principle) => {
           return (
-            <div data-principle="" key={principle.title}>
+            <div key={principle.title}>
               <Text as="p" weight="bold">
                 {principle.title}
               </Text>{" "}

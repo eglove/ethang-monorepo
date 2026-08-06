@@ -27,9 +27,4 @@ describe("HowIWork", () => {
     expect(text).toContain("SWEBOK software engineering body of knowledge");
     expect(text).toContain("Domain-Driven Design as the bridge");
   });
-
-  it("renders data-principle attributes for each principle", () => {
-    const { container } = render(<HowIWork />);
-    expect(container.querySelectorAll("[data-principle]")).toHaveLength(3);
-  });
 });
