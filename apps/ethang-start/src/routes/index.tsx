@@ -1,9 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { Navigation } from "../components/navigation.tsx";
+import { MainLayout } from "../components/layouts/main-layout.tsx";
+import { ProfileCard } from "../components/profile-card.tsx";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/")({
+  component: App
+});
 
 function App() {
-  return <Navigation />;
+  return (
+    <MainLayout>
+      <div className="mt-6 flex gap-4">
+        <ProfileCard />
+      </div>
+    </MainLayout>
+  );
 }

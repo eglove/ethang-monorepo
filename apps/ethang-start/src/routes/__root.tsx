@@ -39,6 +39,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
       ]
     };
   },
+  server: { middleware: [] },
   shellComponent: RootDocument
 });
 

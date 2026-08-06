@@ -743,7 +743,7 @@
       "source": "microsoft/playwright-cli",
       "sourceType": "github",
       "skillPath": ".claude/skills/dev/SKILL.md",
-      "computedHash": "da14d3749ab3f65b479db8b056ab64cd262ce15d07dd642f7d3263ad10708c1b"
+      "computedHash": "245c4f70e2a2dee2924994a39af9db21f301f3ecb742bf78a5b1f9a106dbcca0"
     },
     "devops-rollout-plan": {
       "source": "github/awesome-copilot",
@@ -1379,7 +1379,7 @@
       "source": "chromedevtools/chrome-devtools-mcp",
       "sourceType": "github",
       "skillPath": "skills/memory-leak-debugging/SKILL.md",
-      "computedHash": "b62abc901d998b48c36b0cd8739f407c5504dbfd5d53d4373b6099c0e00abb0f"
+      "computedHash": "f904c3b87b6be0b2dc4a5d0eed2f362df6884dac41ce34b7a3c5bb7a8225df8c"
     },
     "memory-merger": {
       "source": "github/awesome-copilot",
