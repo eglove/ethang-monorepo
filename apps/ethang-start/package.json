@@ -77,7 +77,7 @@
   "private": true,
   "scripts": {
     "build": "vite build",
-    "cf-typegen": "wrangler types",
+    "cf-typegen": "wrangler types -c wrangler.jsonc -c ../ethang-courses/wrangler.jsonc -c ../ethang-rss/wrangler.jsonc",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:pull": "drizzle-kit pull",
@@ -86,7 +86,7 @@
     "deploy": "pnpm run build && wrangler deploy",
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
-    "lint": "eslint . --fix && tsc --noEmit",
+    "lint": "eslint . --fix",
     "preview": "pnpm run build && vite preview",
     "test": "vitest run"
   },

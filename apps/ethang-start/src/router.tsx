@@ -32,5 +32,10 @@ declare module "@tanstack/react-router" {
   // @ts-expect-error global types
   type Register = {
     router: ReturnType<typeof getRouter>;
+    server: {
+      requestContext: {
+        env: Env;
+      };
+    };
   };
 }

@@ -115,7 +115,11 @@ describe("Scrollbar Gutter Route", () => {
     const withoutRegion = screen.getByLabelText(
       "Without scrollbar-gutter demo"
     );
-    expect(withRegion.className).toContain("h-72");
-    expect(withoutRegion.className).toContain("h-72");
+    expect(withRegion.className).toContain(
+      "h-60 overflow-auto rounded-md border border-emerald-800 bg-slate-900/60 p-4"
+    );
+    expect(withoutRegion.className).toContain(
+      "h-60 overflow-auto rounded-md border border-amber-800 bg-slate-900/60 p-4"
+    );
   });
 });

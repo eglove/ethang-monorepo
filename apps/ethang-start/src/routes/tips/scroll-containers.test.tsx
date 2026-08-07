@@ -118,6 +118,8 @@ describe("Scroll Containers Route", () => {
     const demo = screen.getByTestId("scroll-containers-demo");
     expect(demo.className).toContain("max-w-lg");
     const region = screen.getByLabelText("Scroll container demo");
-    expect(region.className).toContain("size-64");
+    expect(region.className).toContain(
+      "h-64 overflow-auto rounded-md bg-slate-800/80 p-4"
+    );
   });
 });

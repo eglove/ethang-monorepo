@@ -10,5 +10,19 @@
   "placement": {
     "mode": "smart"
   },
+  "services": [
+    {
+      "binding": "ethang_courses",
+      "entrypoint": "default",
+      "remote": true,
+      "service": "ethang-courses"
+    },
+    {
+      "binding": "ethang_rss",
+      "entrypoint": "default",
+      "remote": true,
+      "service": "ethang-rss"
+    }
+  ],
   "upload_source_maps": true
 }

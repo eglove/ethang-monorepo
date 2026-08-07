@@ -3,10 +3,10 @@
   "include": ["**/*.ts", "**/*.tsx"],
   "compilerOptions": {
     "types": [
-        "./worker-configuration.d.ts",
+      "./worker-configuration.d.ts",
       "./reset.d.ts",
-        "node",
-        "vite/client"
+      "node",
+      "vite/client"
     ],
   }
 }
