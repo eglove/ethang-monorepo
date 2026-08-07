@@ -21,6 +21,7 @@ import isString from "lodash/isString.js";
 import trim from "lodash/trim.js";
 import { type SyntheticEvent, useEffect, useState } from "react";
 
+import { MainLayout } from "../components/layouts/main-layout.tsx";
 import { getAuthState } from "../models/auth.ts";
 import { authStore, authStoreActions } from "../store/auth-store.ts";
 
@@ -37,8 +38,12 @@ const forms = {
 export const Route = createFileRoute("/login")({
   component: Login,
   validateSearch: (search: Record<string, unknown>) => {
+    // Only include redirect if it's a non-empty string
     return {
-      redirect: isString(search["redirect"]) ? search["redirect"] : ""
+      redirect:
+        isString(search["redirect"]) && "" !== search["redirect"]
+          ? search["redirect"]
+          : null
     };
   },
   // loaderDeps
@@ -51,7 +56,8 @@ export const Route = createFileRoute("/login")({
   loader: async ({ deps }) => {
     const { isAuthenticated } = await getAuthState();
     if (isAuthenticated) {
-      const target = isString(deps.redirect) ? deps.redirect : "/";
+      // Use redirect param if present, otherwise default to home
+      const target = deps.redirect ?? "/";
       // TanStack loader redirects must throw; a returned Redirect object
       // triggers circular type inference against the route being defined.
       // eslint-disable-next-line @ethang/no-try-catch,@typescript-eslint/only-throw-error
@@ -80,7 +86,7 @@ function Login() {
       return;
     }
 
-    const target = search.redirect || "/";
+    const target = search.redirect ?? "/";
     navigate({ to: target }).catch(Effect.logError);
   }, [user, navigate, search.redirect]);
 
@@ -97,60 +103,62 @@ function Login() {
   };
 
   return (
-    <VStack gap={4} align="center" justify="center">
-      <Card padding={6} maxWidth={400} variant="muted">
-        <form noValidate onSubmit={handleSubmit}>
-          <VStack gap={3}>
-            <Heading level={3} justify="center">
-              {forms.SIGN_IN_TO_ACCOUNT}
-            </Heading>
+    <MainLayout>
+      <VStack gap={4} align="center" justify="center">
+        <Card padding={6} maxWidth={400} variant="muted">
+          <form noValidate onSubmit={handleSubmit}>
+            <VStack gap={3}>
+              <Heading level={3} justify="center">
+                {forms.SIGN_IN_TO_ACCOUNT}
+              </Heading>
 
-            {!isNil(error) && (
-              <Text size="sm" color="accent" justify="center">
-                {error}
-              </Text>
-            )}
+              {!isNil(error) && (
+                <Text size="sm" color="accent" justify="center">
+                  {error}
+                </Text>
+              )}
 
-            <Field isRequired inputID="email" label={forms.EMAIL_ADDRESS}>
-              <TextInput
-                id="email"
-                type="email"
-                isLabelHidden
-                value={email}
-                label={forms.EMAIL_ADDRESS}
-                placeholder={forms.ENTER_YOUR_EMAIL}
-                onChange={(value) => {
-                  setEmail(value);
-                }}
+              <Field isRequired inputID="email" label={forms.EMAIL_ADDRESS}>
+                <TextInput
+                  id="email"
+                  type="email"
+                  isLabelHidden
+                  value={email}
+                  label={forms.EMAIL_ADDRESS}
+                  placeholder={forms.ENTER_YOUR_EMAIL}
+                  onChange={(value) => {
+                    setEmail(value);
+                  }}
+                />
+              </Field>
+
+              <Field isRequired inputID="password" label={forms.PASSWORD}>
+                <TextInput
+                  id="password"
+                  isLabelHidden
+                  type="password"
+                  value={password}
+                  label={forms.PASSWORD}
+                  placeholder={forms.ENTER_YOUR_PASSWORD}
+                  onChange={(value) => {
+                    setPassword(value);
+                  }}
+                />
+              </Field>
+
+              <Button
+                size="lg"
+                type="submit"
+                variant="primary"
+                isLoading={isPending}
+                isDisabled={isPending}
+                style={{ marginTop: "1rem", width: "100%" }}
+                label={isPending ? forms.SIGNING_IN : forms.SIGN_IN}
               />
-            </Field>
-
-            <Field isRequired inputID="password" label={forms.PASSWORD}>
-              <TextInput
-                id="password"
-                isLabelHidden
-                type="password"
-                value={password}
-                label={forms.PASSWORD}
-                placeholder={forms.ENTER_YOUR_PASSWORD}
-                onChange={(value) => {
-                  setPassword(value);
-                }}
-              />
-            </Field>
-
-            <Button
-              size="lg"
-              type="submit"
-              variant="primary"
-              isLoading={isPending}
-              isDisabled={isPending}
-              style={{ marginTop: "1rem", width: "100%" }}
-              label={isPending ? forms.SIGNING_IN : forms.SIGN_IN}
-            />
-          </VStack>
-        </form>
-      </Card>
-    </VStack>
+            </VStack>
+          </form>
+        </Card>
+      </VStack>
+    </MainLayout>
   );
 }

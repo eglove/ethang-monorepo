@@ -14,7 +14,7 @@ miktex packages update
 # NPM globals
 corepack install -g npm@latest yarn@latest pnpm@latest
 pnpm store prune
-npm i -g -y wrangler @google/gemini-cli @angular/cli sanity chrome-devtools-mcp@latest @playwright/cli@latest
+npm i -g -y wrangler @google/gemini-cli @angular/cli sanity chrome-devtools-mcp@latest @playwright/cli@latest @earendil-works/pi-coding-agent
 
 Set-Location ~/projects/ethang-monorepo/
 Remove-Item -Recurse -Force ./.agents/skills
