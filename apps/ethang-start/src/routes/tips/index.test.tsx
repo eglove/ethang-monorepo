@@ -25,11 +25,32 @@ vi.mock("../../components/layouts/main-layout.tsx", () => {
 
 vi.mock("@astryxdesign/core", () => {
   return {
+    Button: ({ label }: { label: string }) => {
+      return <button type="button">{label}</button>;
+    },
     Heading: ({ children }: { children: React.ReactNode }) => {
       return <h1>{children}</h1>;
     },
+    Icon: () => {
+      return null;
+    },
     Link: ({ children, href }: { children: React.ReactNode; href: string }) => {
       return <a href={href}>{children}</a>;
+    },
+    MobileNav: ({ children }: { children: React.ReactNode }) => {
+      return <div>{children}</div>;
+    },
+    SideNavSection: ({ children }: { children: React.ReactNode }) => {
+      return <nav>{children}</nav>;
+    },
+    TopNav: () => {
+      return null;
+    },
+    TopNavHeading: () => {
+      return null;
+    },
+    TopNavItem: ({ label }: { label: string }) => {
+      return <span>{label}</span>;
     }
   };
 });
@@ -51,7 +72,8 @@ describe("Tips Index Route", () => {
     render(<Component />);
     const links = screen.getAllByRole("link");
     expect(links).toHaveLength(2);
-    expect(links[0].getAttribute("href")).toBe("/tips/scroll-containers");
-    expect(links[1].getAttribute("href")).toBe("/tips/scrollbar-gutter");
+    const [firstLink, secondLink] = links;
+    expect(firstLink?.getAttribute("href")).toBe("/tips/scroll-containers");
+    expect(secondLink?.getAttribute("href")).toBe("/tips/scrollbar-gutter");
   });
 });

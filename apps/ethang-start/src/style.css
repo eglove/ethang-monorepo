@@ -3,6 +3,10 @@
 @import "@astryxdesign/core/astryx.css";
 @import "./themes/nightowl.css";
 
+html {
+  scrollbar-gutter: stable both-edges;
+}
+
 /* Astryx applies --color-background-body only via its AppShell component,
    which this app does not render. Paint the midnight backdrop on the page
    root so scroll/overscroll and non-carded regions use the theme color. */

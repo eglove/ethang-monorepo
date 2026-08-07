@@ -1,5 +1,5 @@
 /* eslint-disable a11y/no-noninteractive-tabindex */
-import { CodeBlock, Heading, Text } from "@astryxdesign/core";
+import { Badge, CodeBlock, Heading, Text } from "@astryxdesign/core";
 import { createFileRoute } from "@tanstack/react-router";
 import times from "lodash/times.js";
 
@@ -34,56 +34,75 @@ export const Route = createFileRoute("/tips/scroll-containers")({
 function ScrollContainersPage() {
   return (
     <MainLayout>
-      <Heading level={1}>Easy Sticky Header/Footer</Heading>
-      <Text as="p" my={3} size="sm">
-        A very simple approach to creating both a "sticky header" and "sticky
-        footer" using grid.
-      </Text>
-      <Heading mt={4} mb={3} level={2}>
-        CSS
-      </Heading>
-      <CodeBlock code={cssExample} language="css" />
-      <CodeBlock code={htmlExample} language="html" />
-      <Heading mt={4} mb={3} level={2}>
-        Tailwind
-      </Heading>
-      <CodeBlock code={tailwindExample} language="html" />
-      <Heading mt={4} mb={3} level={2}>
-        Demo
-      </Heading>
-      <div className="my-4 grid grid-rows-[auto_1fr_auto] gap-4 border-2 border-gray-700 px-2 py-4">
-        <Heading level={2} className="border-b border-gray-700 pb-4">
-          Header
-        </Heading>
-        <section
-          tabIndex={0}
-          className="h-64 overflow-auto"
-          aria-label="Scroll container demo"
-        >
-          {times(5, (index) => {
-            return (
-              <div key={index}>
-                <Text as="p" size="sm" className="leading-7">
-                  Peter Piper picked a peck of pickled peppers.
-                </Text>
-                <Text as="p" size="sm" className="leading-7">
-                  A peck of pickled peppers Peter Piper picked.
-                </Text>
-                <Text as="p" size="sm" className="leading-7">
-                  If Peter Piper picked a peck of pickled peppers,
-                </Text>
-                <Text as="p" size="sm" className="leading-7">
-                  Where&apos;s the peck of pickled peppers Peter Piper picked?
-                </Text>
-              </div>
-            );
-          })}
+      <div data-testid="tips-page" className="flex flex-col gap-8">
+        <Heading level={1}>Easy Sticky Header/Footer</Heading>
+        <Text as="p">
+          A very simple approach to creating both a "sticky header" and "sticky
+          footer" using grid.
+        </Text>
+        <section>
+          <Heading level={2}>CSS</Heading>
+          <div className="mt-4 flex flex-col gap-4">
+            <CodeBlock language="css" code={cssExample} />
+            <CodeBlock language="html" code={htmlExample} />
+          </div>
         </section>
-        <div className="my-4 border-t border-gray-700 pt-4">
-          <Text as="p" size="sm">
-            Footer
+        <section>
+          <Heading level={2}>Tailwind</Heading>
+          <div className="mt-4">
+            <CodeBlock language="html" code={tailwindExample} />
+          </div>
+        </section>
+        <section>
+          <Heading level={2}>Demo</Heading>
+          <Text as="p" className="my-4">
+            Scroll the middle panel. The Header and Footer stay fixed while the
+            content area scrolls.
           </Text>
-        </div>
+          <div
+            data-testid="scroll-containers-demo"
+            className="grid w-full max-w-lg grid-rows-[auto_1fr_auto] gap-4 rounded-md border border-gray-700 bg-slate-900/60 p-4"
+          >
+            <div className="flex flex-col gap-2 rounded-md bg-cyan-950 p-3">
+              <Badge label="Header" variant="cyan" />
+              <Text as="p" className="text-cyan-200">
+                Fixed at the top — stays put while the middle area scrolls.
+              </Text>
+            </div>
+            <section
+              tabIndex={0}
+              aria-label="Scroll container demo"
+              className="h-64 overflow-auto rounded-md bg-slate-800/80 p-4"
+            >
+              <Badge variant="neutral" label="Scrollable content" />
+              {times(5, (index) => {
+                return (
+                  <div key={index}>
+                    <Text as="p" className="leading-7">
+                      Peter Piper picked a peck of pickled peppers.
+                    </Text>{" "}
+                    <Text as="p" className="leading-7">
+                      A peck of pickled peppers Peter Piper picked.
+                    </Text>{" "}
+                    <Text as="p" className="leading-7">
+                      If Peter Piper picked a peck of pickled peppers,
+                    </Text>{" "}
+                    <Text as="p" className="leading-7">
+                      Where&apos;s the peck of pickled peppers Peter Piper
+                      picked?
+                    </Text>
+                  </div>
+                );
+              })}
+            </section>
+            <div className="flex flex-col gap-2 rounded-md bg-cyan-950 p-3">
+              <Badge label="Footer" variant="cyan" />
+              <Text as="p" className="text-cyan-200">
+                Fixed at the bottom — stays put while the middle area scrolls.
+              </Text>
+            </div>
+          </div>
+        </section>
       </div>
     </MainLayout>
   );

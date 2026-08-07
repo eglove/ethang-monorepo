@@ -46,14 +46,7 @@ function BlogIndex() {
           {map(data.posts, (blog) => {
             return (
               <Card key={blog._id}>
-                <Text
-                  className="uppercase"
-                  color={
-                    "Dev Reads" === blog.blogCategory?.title
-                      ? "accent"
-                      : "primary"
-                  }
-                >
+                <Text color="secondary" className="uppercase">
                   {blog.blogCategory?.title}
                 </Text>
                 <Heading level={2}>

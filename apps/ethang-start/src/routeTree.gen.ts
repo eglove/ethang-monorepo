@@ -13,6 +13,9 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
+import { Route as TipsIndexRouteImport } from './routes/tips/index'
+import { Route as TipsScrollContainersRouteImport } from './routes/tips/scroll-containers'
+import { Route as TipsScrollbarGutterRouteImport } from './routes/tips/scrollbar-gutter'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,39 +37,88 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TipsIndexRoute = TipsIndexRouteImport.update({
+  id: '/tips/',
+  path: '/tips/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TipsScrollContainersRoute = TipsScrollContainersRouteImport.update({
+  id: '/tips/scroll-containers',
+  path: '/tips/scroll-containers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TipsScrollbarGutterRoute = TipsScrollbarGutterRouteImport.update({
+  id: '/tips/scrollbar-gutter',
+  path: '/tips/scrollbar-gutter',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/tips/scroll-containers': typeof TipsScrollContainersRoute
+  '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
   '/blog/': typeof BlogIndexRoute
+  '/tips/': typeof TipsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/tips/scroll-containers': typeof TipsScrollContainersRoute
+  '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
   '/blog': typeof BlogIndexRoute
+  '/tips': typeof TipsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/tips/scroll-containers': typeof TipsScrollContainersRoute
+  '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
   '/blog/': typeof BlogIndexRoute
+  '/tips/': typeof TipsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$' | '/blog/$slug' | '/blog/'
+  fullPaths:
+    | '/'
+    | '/$'
+    | '/blog/$slug'
+    | '/tips/scroll-containers'
+    | '/tips/scrollbar-gutter'
+    | '/blog/'
+    | '/tips/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$' | '/blog/$slug' | '/blog'
-  id: '__root__' | '/' | '/$' | '/blog/$slug' | '/blog/'
+  to:
+    | '/'
+    | '/$'
+    | '/blog/$slug'
+    | '/tips/scroll-containers'
+    | '/tips/scrollbar-gutter'
+    | '/blog'
+    | '/tips'
+  id:
+    | '__root__'
+    | '/'
+    | '/$'
+    | '/blog/$slug'
+    | '/tips/scroll-containers'
+    | '/tips/scrollbar-gutter'
+    | '/blog/'
+    | '/tips/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  TipsScrollContainersRoute: typeof TipsScrollContainersRoute
+  TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
   BlogIndexRoute: typeof BlogIndexRoute
+  TipsIndexRoute: typeof TipsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +151,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tips/': {
+      id: '/tips/'
+      path: '/tips'
+      fullPath: '/tips/'
+      preLoaderRoute: typeof TipsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/scroll-containers': {
+      id: '/tips/scroll-containers'
+      path: '/tips/scroll-containers'
+      fullPath: '/tips/scroll-containers'
+      preLoaderRoute: typeof TipsScrollContainersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tips/scrollbar-gutter': {
+      id: '/tips/scrollbar-gutter'
+      path: '/tips/scrollbar-gutter'
+      fullPath: '/tips/scrollbar-gutter'
+      preLoaderRoute: typeof TipsScrollbarGutterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,7 +179,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   BlogSlugRoute: BlogSlugRoute,
+  TipsScrollContainersRoute: TipsScrollContainersRoute,
+  TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,
   BlogIndexRoute: BlogIndexRoute,
+  TipsIndexRoute: TipsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

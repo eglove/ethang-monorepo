@@ -25,14 +25,8 @@ vi.mock("../../components/layouts/main-layout.tsx", () => {
 
 vi.mock("@astryxdesign/core", () => {
   return {
-    Heading: ({ children }: { children: React.ReactNode }) => {
-      return <h1>{children}</h1>;
-    },
-    Text: ({ children }: { children: React.ReactNode }) => {
-      return <p>{children}</p>;
-    },
-    CodeBlock: ({ code }: { code?: string }) => {
-      return <pre data-testid="code-block">{code ?? ""}</pre>;
+    Badge: ({ label }: { label: string }) => {
+      return <span>{label}</span>;
     },
     Button: (properties: any) => {
       return (
@@ -41,8 +35,17 @@ vi.mock("@astryxdesign/core", () => {
         </button>
       );
     },
+    CodeBlock: ({ code }: { code?: string }) => {
+      return <pre data-testid="code-block">{code ?? ""}</pre>;
+    },
+    Heading: ({ children }: { children: React.ReactNode }) => {
+      return <h1>{children}</h1>;
+    },
     Link: ({ children, href }: { children: React.ReactNode; href: string }) => {
       return <a href={href}>{children}</a>;
+    },
+    Text: ({ children }: { children: React.ReactNode }) => {
+      return <p>{children}</p>;
     }
   };
 });
@@ -61,7 +64,9 @@ describe("Scrollbar Gutter Route", () => {
     const Component = Route.component;
     render(<Component />);
     const codeBlock = screen.getByTestId("code-block");
-    expect(codeBlock.textContent).toContain("scrollbar-gutter: stable both-edges");
+    expect(codeBlock.textContent).toContain(
+      "scrollbar-gutter: stable both-edges"
+    );
   });
 
   it("renders external links", () => {
@@ -88,5 +93,29 @@ describe("Scrollbar Gutter Route", () => {
 
     fireEvent.click(button);
     expect(screen.getByText("Show Extra Content")).toBeDefined();
+  });
+
+  it("describes the visual difference between the two panels", () => {
+    // @ts-expect-error test
+    const Component = Route.component;
+    render(<Component />);
+    expect(screen.getByText(/content stays fixed/iu)).toBeDefined();
+    expect(screen.getByText(/shifts sideways/iu)).toBeDefined();
+  });
+
+  it("spaces content and bounds the panels so the scrollbars appear", () => {
+    // @ts-expect-error test
+    const Component = Route.component;
+    render(<Component />);
+    const page = screen.getByTestId("tips-page");
+    expect(page.className).toContain("gap-8");
+    const grid = screen.getByTestId("scrollbar-gutter-demo");
+    expect(grid.className).toContain("max-w-4xl");
+    const withRegion = screen.getByLabelText("With scrollbar-gutter demo");
+    const withoutRegion = screen.getByLabelText(
+      "Without scrollbar-gutter demo"
+    );
+    expect(withRegion.className).toContain("h-72");
+    expect(withoutRegion.className).toContain("h-72");
   });
 });
