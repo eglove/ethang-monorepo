@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getCookie, setCookie } from "@tanstack/react-start/server";
+import { deleteCookie, getCookie, setCookie } from "@tanstack/react-start/server";
 import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
-const AUTH_COOKIE_NAME = "ethang-auth-token";
+export const AUTH_COOKIE_NAME = "ethang-auth-token";
 const SIGN_IN_ENDPOINT = "https://auth.ethang.dev/sign-in";
 const INVALID_RESPONSE = "Invalid response from server";
 
@@ -23,6 +23,11 @@ export type User = {
   sessionToken: string;
   username: string;
 };
+
+export const signOut = createServerFn({ method: "POST", strict: false })
+  .handler(() => {
+    deleteCookie(AUTH_COOKIE_NAME);
+  });
 
 export const getAuthState = createServerFn().handler(() => {
   const token = getCookie(AUTH_COOKIE_NAME);

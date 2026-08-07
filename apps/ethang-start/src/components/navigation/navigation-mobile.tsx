@@ -1,6 +1,7 @@
 import { Button, Icon, MobileNav, SideNavSection } from "@astryxdesign/core";
 import { useState } from "react";
 
+import { AuthButtons } from "./auth-buttons.tsx";
 import { NavigationItems } from "./navigation-items.tsx";
 
 export const NavigationMobile = () => {
@@ -26,6 +27,9 @@ export const NavigationMobile = () => {
       >
         <SideNavSection title="Main" isHeaderHidden>
           <NavigationItems />
+          <div className="my-6 px-2">
+            <AuthButtons />
+          </div>
         </SideNavSection>
       </MobileNav>
     </div>

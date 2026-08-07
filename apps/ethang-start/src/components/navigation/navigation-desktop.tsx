@@ -1,5 +1,6 @@
-import { Button, TopNav, TopNavHeading } from "@astryxdesign/core";
+import { TopNav, TopNavHeading } from "@astryxdesign/core";
 
+import { AuthButtons } from "./auth-buttons.tsx";
 import { NavigationItems } from "./navigation-items.tsx";
 
 export const NavigationDesktop = () => {
@@ -7,13 +8,9 @@ export const NavigationDesktop = () => {
     <div className="hidden md:block">
       <TopNav
         label="Main navigation"
+        endContent={<AuthButtons />}
         centerContent={<NavigationItems />}
         heading={<TopNavHeading heading="EthanG" />}
-        endContent={
-          <div>
-            <Button as="a" href="/login" label="Login" variant="primary" />
-          </div>
-        }
       />
     </div>
   );

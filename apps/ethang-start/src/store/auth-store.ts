@@ -1,7 +1,7 @@
 import { makeStore, type Store } from "@ethang/store/store.ts";
 import isNil from "lodash/isNil.js";
 
-import { signIn, type User } from "../models/auth.ts";
+import { signIn, signOut, type User } from "../models/auth.ts";
 
 export type AuthState = {
   error: null | string;
@@ -44,5 +44,9 @@ export const authStore: Store<AuthState> = makeStore(initialState);
 export const authStoreActions = {
   signIn: async (email: string, password: string) => {
     return signInAction(authStore, email, password);
+  },
+  signOut: async () => {
+    await signOut();
+    authStore.reset();
   }
 };
