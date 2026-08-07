@@ -179,7 +179,7 @@ describe("Login Route", () => {
 
   it("renders the login heading", async () => {
     const Component = Route.options.component;
-    // @ts-expect-error for test
+    // @ts-expect-error route components require router context
     render(<Component />);
     expect(screen.getByRole("heading", { level: 3 })).toBeDefined();
     expect(screen.getByText(/sign in to your account/iu)).toBeDefined();
@@ -187,7 +187,7 @@ describe("Login Route", () => {
 
   it("renders email and password inputs", async () => {
     const Component = Route.options.component;
-    // @ts-expect-error for test
+    // @ts-expect-error route components require router context
     render(<Component />);
     expect(screen.getByTestId(EMAIL_INPUT_TEST_ID)).toBeDefined();
     expect(screen.getByTestId(PASSWORD_INPUT_TEST_ID)).toBeDefined();
@@ -195,17 +195,19 @@ describe("Login Route", () => {
 
   it("renders a submit button", async () => {
     const Component = Route.options.component;
-    // @ts-expect-error for test
+    // @ts-expect-error route components require router context
     render(<Component />);
     expect(screen.getByTestId(SUBMIT_BUTTON_TEST_ID)).toBeDefined();
     expect(screen.getByRole("button", { name: /sign in$/iu })).toBeDefined();
   });
 
   it("shows error text when login fails", async () => {
-    mockSignIn.mockResolvedValue({ failure: new Error(FAILED_MESSAGE) });
+    mockSignIn.mockResolvedValue({
+      failure: new Error(FAILED_MESSAGE)
+    } as never);
 
     const Component = Route.options.component;
-    // @ts-expect-error for test
+    // @ts-expect-error route components require router context
     render(<Component />);
 
     const emailInput = screen.getByTestId(EMAIL_INPUT_TEST_ID);
@@ -221,7 +223,7 @@ describe("Login Route", () => {
 
   it("does not submit when email or password is empty", async () => {
     const Component = Route.options.component;
-    // @ts-expect-error for test
+    // @ts-expect-error route components require router context
     render(<Component />);
 
     const submitButton = screen.getByTestId(SUBMIT_BUTTON_TEST_ID);
@@ -237,7 +239,7 @@ describe("Login Route", () => {
     mockSignIn.mockReturnValue(promise);
 
     const Component = Route.options.component;
-    // @ts-expect-error for test
+    // @ts-expect-error route components require router context
     render(<Component />);
 
     const emailInput = screen.getByTestId(EMAIL_INPUT_TEST_ID);

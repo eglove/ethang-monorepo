@@ -21,12 +21,10 @@ const signInAction = async (
     draft.isPending = true;
   });
 
-  // eslint-disable-next-line @ethang/validate-unknown
   const outcome = await signIn({ data: { email, password } });
 
   if (!isNil(outcome.failure)) {
     store.update((draft) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
       draft.error = outcome.failure?.message ?? "Failed to sign in";
       draft.isPending = false;
     });
@@ -36,8 +34,8 @@ const signInAction = async (
   store.update((draft) => {
     draft.error = null;
     draft.isPending = false;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    draft.user = outcome.success;
+
+    draft.user = outcome.success ?? null;
   });
 };
 

@@ -30,7 +30,7 @@ export const getAuthState = createServerFn().handler(() => {
   return { isAuthenticated: hasToken };
 });
 
-export const signIn = createServerFn()
+export const signIn = createServerFn({ method: "POST", strict: false })
   .validator((data: { email: string; password: string }) => {
     return data;
   })

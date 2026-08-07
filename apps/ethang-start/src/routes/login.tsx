@@ -41,12 +41,21 @@ export const Route = createFileRoute("/login")({
       redirect: isString(search["redirect"]) ? search["redirect"] : ""
     };
   },
+  // loaderDeps
+  loaderDeps: ({ search }) => {
+    return {
+      redirect: search.redirect
+    };
+  },
   // loader
-  loader: async ({ search }: { search: { redirect: string } }) => {
+  loader: async ({ deps }) => {
     const { isAuthenticated } = await getAuthState();
     if (isAuthenticated) {
-      const target = isString(search.redirect) ? search.redirect : "/";
-      return redirect({ to: target });
+      const target = isString(deps.redirect) ? deps.redirect : "/";
+      // TanStack loader redirects must throw; a returned Redirect object
+      // triggers circular type inference against the route being defined.
+      // eslint-disable-next-line @ethang/no-try-catch,@typescript-eslint/only-throw-error
+      throw redirect({ to: target });
     }
     return {};
   }
@@ -64,15 +73,15 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@ethang/validate-unknown
   const search = useSearch({ from: "/login" });
 
   useEffect(() => {
-    if (!isNil(user)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      navigate({ to: search.redirect ?? "/" }).catch(Effect.logError);
+    if (isNil(user)) {
+      return;
     }
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
+    const target = search.redirect || "/";
+    navigate({ to: target }).catch(Effect.logError);
   }, [user, navigate, search.redirect]);
 
   const handleSubmit = (event: SyntheticEvent) => {
@@ -92,12 +101,12 @@ function Login() {
       <Card padding={6} maxWidth={400} variant="muted">
         <form noValidate onSubmit={handleSubmit}>
           <VStack gap={3}>
-            <Heading level={3} align="center">
+            <Heading level={3} justify="center">
               {forms.SIGN_IN_TO_ACCOUNT}
             </Heading>
 
             {!isNil(error) && (
-              <Text size="sm" color="red" align="center">
+              <Text size="sm" color="accent" justify="center">
                 {error}
               </Text>
             )}
@@ -106,7 +115,9 @@ function Login() {
               <TextInput
                 id="email"
                 type="email"
+                isLabelHidden
                 value={email}
+                label={forms.EMAIL_ADDRESS}
                 placeholder={forms.ENTER_YOUR_EMAIL}
                 onChange={(value) => {
                   setEmail(value);
@@ -117,8 +128,10 @@ function Login() {
             <Field isRequired inputID="password" label={forms.PASSWORD}>
               <TextInput
                 id="password"
+                isLabelHidden
                 type="password"
                 value={password}
+                label={forms.PASSWORD}
                 placeholder={forms.ENTER_YOUR_PASSWORD}
                 onChange={(value) => {
                   setPassword(value);
