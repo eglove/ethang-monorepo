@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as CoursesRouteImport } from './routes/courses'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as BlogIndexRouteImport } from './routes/blog/index'
 import { Route as BlogSlugRouteImport } from './routes/blog/$slug'
 import { Route as TipsIndexRouteImport } from './routes/tips/index'
@@ -31,6 +32,11 @@ const SplatRoute = SplatRouteImport.update({
 const CoursesRoute = CoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/courses': typeof CoursesRoute
+  '/login': typeof LoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/courses': typeof CoursesRoute
+  '/login': typeof LoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/courses': typeof CoursesRoute
+  '/login': typeof LoginRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/tips/scroll-containers': typeof TipsScrollContainersRoute
   '/tips/scrollbar-gutter': typeof TipsScrollbarGutterRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/courses'
+    | '/login'
     | '/blog/$slug'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/courses'
+    | '/login'
     | '/blog/$slug'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/courses'
+    | '/login'
     | '/blog/$slug'
     | '/tips/scroll-containers'
     | '/tips/scrollbar-gutter'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   CoursesRoute: typeof CoursesRoute
+  LoginRoute: typeof LoginRoute
   BlogSlugRoute: typeof BlogSlugRoute
   TipsScrollContainersRoute: typeof TipsScrollContainersRoute
   TipsScrollbarGutterRoute: typeof TipsScrollbarGutterRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/courses'
       fullPath: '/courses'
       preLoaderRoute: typeof CoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog/': {
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   CoursesRoute: CoursesRoute,
+  LoginRoute: LoginRoute,
   BlogSlugRoute: BlogSlugRoute,
   TipsScrollContainersRoute: TipsScrollContainersRoute,
   TipsScrollbarGutterRoute: TipsScrollbarGutterRoute,

@@ -1,19 +1,56 @@
 import { render, screen } from "@testing-library/react";
-import React from "react";
 import userEvent from "@testing-library/user-event";
+import noop from "lodash/noop.js";
+import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Route } from "./login.tsx";
 
-const { mockNavigate, mockSearchStore, mockRouteConfig } = vi.hoisted(() => {
-  const navigateMock = vi.fn(async () => {});
+const TEST_EMAIL = "test@ethang.email";
+// eslint-disable-next-line sonar/no-hardcoded-passwords
+const TEST_PASSWORD = "password123";
+const EMAIL_INPUT_TEST_ID = "input-email";
+// eslint-disable-next-line sonar/no-hardcoded-passwords
+const PASSWORD_INPUT_TEST_ID = "input-password";
+const SUBMIT_BUTTON_TEST_ID = "login-button";
+const FAILED_MESSAGE = "Failed to sign in";
+
+const {
+  mockGetAuthState,
+  mockNavigate,
+  mockRouteConfig,
+  mockSearchStore,
+  mockSignIn
+} = vi.hoisted(() => {
+  const navigateMock = vi.fn(async () => {
+    noop();
+  });
   const searchStore = { search: { redirect: null as null | string } };
+  const getAuthStateMock = vi.fn(async () => {
+    return { isAuthenticated: false };
+  });
+  const signInMock = vi.fn(async () => {
+    return {
+      success: { email: TEST_EMAIL, sessionToken: "tok", username: "u" }
+    };
+  });
   return {
+    mockGetAuthState: getAuthStateMock,
     mockNavigate: navigateMock,
+    mockRouteConfig: (config: { component: React.ComponentType }) => {
+      return {
+        options: { component: config.component }
+      };
+    },
     mockSearchStore: searchStore,
-    mockRouteConfig: (config: { component: React.ComponentType }) => ({
-      options: { component: config.component }
-    })
+    mockSignIn: signInMock
+  };
+});
+
+vi.mock("../models/auth.ts", () => {
+  return {
+    getAuthState: mockGetAuthState,
+    signIn: mockSignIn
   };
 });
 
@@ -21,6 +58,9 @@ vi.mock("@tanstack/react-router", () => {
   return {
     createFileRoute: () => {
       return mockRouteConfig;
+    },
+    redirect: () => {
+      return {};
     },
     useNavigate: () => {
       return mockNavigate;
@@ -34,30 +74,49 @@ vi.mock("@tanstack/react-router", () => {
 vi.mock("@astryxdesign/core", () => {
   return {
     Button: ({
-      label,
-      type,
+      isDisabled,
       isLoading,
-      isDisabled
+      label,
+      type
     }: {
-      label: string;
-      type?: "button" | "submit" | "reset";
-      isLoading?: boolean;
       isDisabled?: boolean;
+      isLoading?: boolean;
+      label: string;
+      type?: "button" | "reset" | "submit";
     }) => {
+      const isDisabledButton = (isDisabled ?? false) || (isLoading ?? false);
       return (
-        <button data-testid="login-button" disabled={isDisabled || isLoading} type={type}>
+        <button
+          type={type}
+          disabled={isDisabledButton}
+          data-testid={SUBMIT_BUTTON_TEST_ID}
+        >
           {label}
         </button>
       );
     },
-    Card: ({ children, maxWidth }: { children: React.ReactNode; maxWidth?: number }) => {
+    Card: ({
+      children,
+      maxWidth
+    }: {
+      children: React.ReactNode;
+      maxWidth?: number;
+    }) => {
       return (
-        <div data-testid="login-card" style={{ maxWidth }}>
+        <div style={{ maxWidth }} data-testid="login-card">
           {children}
         </div>
       );
     },
-    Field: ({ label, inputID, children }: { label: string; inputID: string; children: React.ReactNode }) => {
+    Field: ({
+      children,
+      inputID,
+      label
+    }: {
+      children: React.ReactNode;
+      inputID: string;
+      label: string;
+    }) => {
       return (
         <div data-testid={`field-${inputID}`}>
           <label htmlFor={inputID}>{label}</label>
@@ -65,36 +124,46 @@ vi.mock("@astryxdesign/core", () => {
         </div>
       );
     },
-    Heading: ({ level, align, children }: { level?: number; align?: string; children: React.ReactNode }) => {
+    Heading: ({
+      align,
+      children,
+      level
+    }: {
+      align?: string;
+      children: React.ReactNode;
+      level?: number;
+    }) => {
       const Tag = `h${level ?? 1}` as React.ElementType;
       return <Tag style={{ textAlign: align }}>{children}</Tag>;
     },
+    Text: ({ children }: { children?: React.ReactNode }) => {
+      return <span data-testid="text-error">{children}</span>;
+    },
     TextInput: ({
       id,
-      type,
-      value,
+      onChange,
       placeholder,
-      onChange
+      type,
+      value
     }: {
       id: string;
+      onChange?: (value: string) => void;
+      placeholder?: string;
       type?: string;
       value: string;
-      placeholder?: string;
-      onChange?: (value: string) => void;
     }) => {
       return (
         <input
-          data-testid={`input-${id}`}
           id={id}
           type={type}
           value={value}
           placeholder={placeholder}
-          onChange={(e) => onChange?.(e.target.value)}
+          data-testid={`input-${id}`}
+          onChange={(event) => {
+            return onChange?.(event.target.value);
+          }}
         />
       );
-    },
-    Text: ({ children }: { children?: React.ReactNode }) => {
-      return <span data-testid="text-error">{children}</span>;
     },
     VStack: ({ children }: { children: React.ReactNode }) => {
       return <div data-testid="vstack">{children}</div>;
@@ -120,75 +189,70 @@ describe("Login Route", () => {
     const Component = Route.options.component;
     // @ts-expect-error for test
     render(<Component />);
-    expect(screen.getByTestId("input-email")).toBeDefined();
-    expect(screen.getByTestId("input-password")).toBeDefined();
+    expect(screen.getByTestId(EMAIL_INPUT_TEST_ID)).toBeDefined();
+    expect(screen.getByTestId(PASSWORD_INPUT_TEST_ID)).toBeDefined();
   });
 
   it("renders a submit button", async () => {
     const Component = Route.options.component;
     // @ts-expect-error for test
     render(<Component />);
-    expect(screen.getByTestId("login-button")).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: /sign in$/iu })
-    ).toBeDefined();
+    expect(screen.getByTestId(SUBMIT_BUTTON_TEST_ID)).toBeDefined();
+    expect(screen.getByRole("button", { name: /sign in$/iu })).toBeDefined();
   });
 
   it("shows error text when login fails", async () => {
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new Error("Failed to sign in"));
+    mockSignIn.mockResolvedValue({ failure: new Error(FAILED_MESSAGE) });
 
     const Component = Route.options.component;
     // @ts-expect-error for test
     render(<Component />);
 
-    const emailInput = screen.getByTestId("input-email");
-    const passwordInput = screen.getByTestId("input-password");
-    const submitButton = screen.getByTestId("login-button");
+    const emailInput = screen.getByTestId(EMAIL_INPUT_TEST_ID);
+    const passwordInput = screen.getByTestId(PASSWORD_INPUT_TEST_ID);
+    const submitButton = screen.getByTestId(SUBMIT_BUTTON_TEST_ID);
 
-    await userEvent.type(emailInput, "test@ethang.email");
-    await userEvent.type(passwordInput, "password123");
+    await userEvent.type(emailInput, TEST_EMAIL);
+    await userEvent.type(passwordInput, TEST_PASSWORD);
     await userEvent.click(submitButton);
 
     expect(screen.getByText(/failed to sign in/iu)).toBeDefined();
   });
 
   it("does not submit when email or password is empty", async () => {
-    const fetchSpy = vi.spyOn(globalThis, "fetch");
-
     const Component = Route.options.component;
     // @ts-expect-error for test
     render(<Component />);
 
-    const submitButton = screen.getByTestId("login-button");
+    const submitButton = screen.getByTestId(SUBMIT_BUTTON_TEST_ID);
     await userEvent.click(submitButton);
 
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(mockSignIn).not.toHaveBeenCalled();
   });
 
   it("shows loading state while submitting", async () => {
-    let resolveFetch: (() => void) | null = null;
-    vi.spyOn(globalThis, "fetch").mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolveFetch = resolve;
-        })
-    );
+    const { promise, resolve } = Promise.withResolvers<{
+      success: { email: string; sessionToken: string; username: string };
+    }>();
+    mockSignIn.mockReturnValue(promise);
 
     const Component = Route.options.component;
     // @ts-expect-error for test
     render(<Component />);
 
-    const emailInput = screen.getByTestId("input-email");
-    const passwordInput = screen.getByTestId("input-password");
-    const submitButton = screen.getByTestId("login-button");
+    const emailInput = screen.getByTestId(EMAIL_INPUT_TEST_ID);
+    const passwordInput = screen.getByTestId(PASSWORD_INPUT_TEST_ID);
+    const submitButton = screen.getByTestId(SUBMIT_BUTTON_TEST_ID);
 
-    await userEvent.type(emailInput, "test@ethang.email");
-    await userEvent.type(passwordInput, "password123");
+    await userEvent.type(emailInput, TEST_EMAIL);
+    await userEvent.type(passwordInput, TEST_PASSWORD);
     await userEvent.click(submitButton);
 
-    expect(screen.getByText(/signing in\.\.\./iu)).toBeDefined();
+    expect(screen.getByRole("button", { name: /signing in/iu })).toBeDefined();
     expect(submitButton).toHaveProperty("disabled", true);
 
-    resolveFetch?.();
+    resolve({
+      success: { email: TEST_EMAIL, sessionToken: "tok", username: "u" }
+    });
   });
 });

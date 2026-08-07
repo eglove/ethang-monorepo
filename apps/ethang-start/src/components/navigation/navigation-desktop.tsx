@@ -11,7 +11,7 @@ export const NavigationDesktop = () => {
         heading={<TopNavHeading heading="EthanG" />}
         endContent={
           <div>
-            <Button label="Login" variant="primary" />
+            <Button as="a" href="/login" label="Login" variant="primary" />
           </div>
         }
       />

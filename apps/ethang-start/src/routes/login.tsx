@@ -7,18 +7,22 @@ import {
   TextInput,
   VStack
 } from "@astryxdesign/core";
+import { useStore } from "@ethang/store/use-store.ts";
 import {
   createFileRoute,
+  redirect,
   useNavigate,
   useSearch
 } from "@tanstack/react-router";
+import { Effect } from "effect";
+import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
-import noop from "lodash/noop.js";
 import trim from "lodash/trim.js";
-import { type FormEvent, useEffect, useState } from "react";
+import { type SyntheticEvent, useEffect, useState } from "react";
 
-import { getSessionToken } from "../utils/auth.ts";
+import { getAuthState } from "../models/auth.ts";
+import { authStore, authStoreActions } from "../store/auth-store.ts";
 
 const forms = {
   EMAIL_ADDRESS: "Email Address",
@@ -30,8 +34,6 @@ const forms = {
   SIGNING_IN: "Signing in..."
 } as const;
 
-const SIGN_IN_ENDPOINT = "https://auth.ethang.dev/sign-in";
-
 export const Route = createFileRoute("/login")({
   component: Login,
   validateSearch: (search: Record<string, unknown>) => {
@@ -40,55 +42,49 @@ export const Route = createFileRoute("/login")({
     };
   },
   // loader
-  loader: async ({ request, search }) => {
-    const cookieHeader = request.headers.get("Cookie") ?? "";
-    const token = getSessionToken(cookieHeader);
-    if (token) {
-      return { redirect: isString(search.redirect) ? search.redirect : "/" };
+  loader: async ({ search }: { search: { redirect: string } }) => {
+    const { isAuthenticated } = await getAuthState();
+    if (isAuthenticated) {
+      const target = isString(search.redirect) ? search.redirect : "/";
+      return redirect({ to: target });
     }
     return {};
   }
 });
 
 function Login() {
+  const { error, isPending, user } = useStore(authStore, (state) => {
+    return {
+      error: state.error,
+      isPending: state.isPending,
+      user: state.user
+    };
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<null | string>(null);
-  const [isPending, setIsPending] = useState(false);
   const navigate = useNavigate();
 
-  const search = useSearch({ from: Route.id });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@ethang/validate-unknown
+  const search = useSearch({ from: "/login" });
 
   useEffect(() => {
-    if (!isNil(search.redirect)) {
-      navigate({ to: search.redirect }).catch(noop);
+    if (!isNil(user)) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      navigate({ to: search.redirect ?? "/" }).catch(Effect.logError);
     }
-  }, [navigate, search.redirect]);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  }, [user, navigate, search.redirect]);
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = (event: SyntheticEvent) => {
     event.preventDefault();
     const trimmedEmail = trim(email);
     const trimmedPassword = trim(password);
-    if (!trimmedEmail.length || !trimmedPassword.length) {
+    if (isEmpty(trimmedEmail) || isEmpty(trimmedPassword)) {
       return;
     }
-    setIsPending(true);
-    setError(null);
-
-    try {
-      await fetch(SIGN_IN_ENDPOINT, {
-        body: JSON.stringify({
-          email: trimmedEmail,
-          password: trimmedPassword
-        }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST"
-      });
-      navigate({ to: search.redirect ?? "/" }).catch(noop);
-    } catch (error_) {
-      setError(Error.isError(error_) ? error_.message : "Failed to sign in");
-      setIsPending(false);
-    }
+    authStoreActions
+      .signIn(trimmedEmail, trimmedPassword)
+      .catch(Effect.logError);
   };
 
   return (
