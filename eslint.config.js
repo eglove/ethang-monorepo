@@ -17,6 +17,7 @@ export default defineConfig(
     "**/coverage/**",
     "**/coverage",
     "**/vitest.config.*",
+    ".pi",
   ]),
   ...config,
   {
