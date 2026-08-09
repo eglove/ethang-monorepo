@@ -868,6 +868,12 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "page.getByRole('img').last();"
     },
     {
+      // Playwright Locator `.filter({ has })` on unconfirmed chain — non-array
+      // builder method with a native Array.prototype alias; should not be
+      // auto-rewritten to lodash `filter`
+      code: "page.getByRole('region').filter({ has: page.getByRole('img') });"
+    },
+    {
       // Array.prototype.join — should not flag
       code: "['a', 'b'].join(', ');"
     },

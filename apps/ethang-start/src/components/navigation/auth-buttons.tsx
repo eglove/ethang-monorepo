@@ -1,5 +1,6 @@
 import { Button, Text } from "@astryxdesign/core";
 import { useStore } from "@ethang/store/use-store";
+import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 import { authStore, authStoreActions } from "../../store/auth-store.ts";
@@ -9,7 +10,6 @@ export const AuthButtons = () => {
     return state.user;
   });
 
-  console.log(user);
   if (!isNil(user)) {
     return (
       <div className="flex items-center gap-4">
@@ -20,7 +20,7 @@ export const AuthButtons = () => {
           label="Logout"
           variant="destructive"
           onClick={() => {
-            authStoreActions.signOut();
+            authStoreActions.signOut().catch(Effect.logError);
           }}
         >
           Logout

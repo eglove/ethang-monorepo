@@ -4,6 +4,7 @@ import { expect, test } from "./fixtures.ts";
 
 const BASE_URL = "http://localhost:3000";
 const SECTION_HEADING_TEST_NAME = "renders the section heading";
+const STACK_AND_TOOLS_ID = "stack-and-tools";
 
 test.describe("Homepage — navigation", () => {
   test.beforeEach(async ({ page }) => {
@@ -11,7 +12,9 @@ test.describe("Homepage — navigation", () => {
   });
 
   test("displays the site heading", async ({ page }) => {
-    const heading = page.getByRole("heading", { name: "EthanG" });
+    const heading = page
+      .getByRole("navigation")
+      .getByText("EthanG", { exact: true });
     await expect(heading).toBeVisible();
   });
 
@@ -40,9 +43,18 @@ test.describe("Homepage — navigation", () => {
 
   forEach(
     [
-      { name: "LinkedIn", url: "https://www.linkedin.com/in/ethan-glover/" },
-      { name: "GitHub", url: "https://github.com/eglove" },
-      { name: "Email", url: "mailto:hello@ethang.email" },
+      {
+        name: "LinkedIn",
+        url: "https://www.linkedin.com/in/ethan-glover/"
+      },
+      {
+        name: "GitHub",
+        url: "https://github.com/eglove"
+      },
+      {
+        name: "Email",
+        url: "mailto:hello@ethang.email"
+      },
       {
         name: "Frontend Masters",
         url: "https://frontendmasters.com/u/ethang/"
@@ -54,7 +66,7 @@ test.describe("Homepage — navigation", () => {
     ] as const,
     ({ name, url }) => {
       test(`shows the '${name}' social link`, async ({ page }) => {
-        const link = page.getByRole("link", { name });
+        const link = page.locator(`a[href="${url}"]`);
         await expect(link).toBeVisible();
         await expect(link).toHaveAttribute("href", url);
       });
@@ -109,7 +121,9 @@ test.describe("Homepage — 'How I work' section", () => {
       test(`shows a principle description matching '${regex.source}'`, async ({
         page
       }) => {
-        await expect(page.locator(`text=${regex.source}`)).toBeVisible();
+        await expect(
+          page.getByTestId("how-i-work").getByText(regex).first()
+        ).toBeVisible();
       });
     }
   );
@@ -130,7 +144,7 @@ test.describe("Homepage — 'Stack & tools' section", () => {
   });
 
   test('has a "stack-and-tools" data-testid on the card', async ({ page }) => {
-    await expect(page.getByTestId("stack-and-tools")).toBeVisible();
+    await expect(page.getByTestId(STACK_AND_TOOLS_ID)).toBeVisible();
   });
 
   forEach(
@@ -144,7 +158,13 @@ test.describe("Homepage — 'Stack & tools' section", () => {
 
   forEach(["TypeScript", "React", "Solid", "Node.js"] as const, (name) => {
     test(`lists '${name}' in the languages column`, async ({ page }) => {
-      await expect(page.getByText(name)).toBeVisible();
+      await expect(
+        page
+          .getByTestId(STACK_AND_TOOLS_ID)
+          .getByText("Languages & frameworks")
+          .locator("..")
+          .getByText(name)
+      ).toBeVisible();
     });
   });
 
@@ -157,7 +177,13 @@ test.describe("Homepage — 'Stack & tools' section", () => {
     ] as const,
     (name) => {
       test(`lists '${name}' in the stack column`, async ({ page }) => {
-        await expect(page.getByText(name)).toBeVisible();
+        await expect(
+          page
+            .getByTestId(STACK_AND_TOOLS_ID)
+            .getByText("Stack & infrastructure")
+            .locator("..")
+            .getByText(name)
+        ).toBeVisible();
       });
     }
   );
@@ -228,7 +254,10 @@ test.describe("Homepage — profile card", () => {
   });
 
   test("displays the full name", async ({ page }) => {
-    await expect(page.getByText("Ethan Glover")).toBeVisible();
+    const ethanGlover = page.getByText("Ethan Glover");
+    // First match is sr-only avatar text; second is the visible profile card span
+    // eslint-disable-next-line @ethang/prefer-lodash -- Playwright Locator.nth() not Array.prototype.nth
+    await expect(ethanGlover.nth(1)).toBeVisible();
   });
 
   test("renders a profile image", async ({ page }) => {
@@ -243,7 +272,7 @@ test.describe("Homepage — page structure", () => {
   });
 
   test("has the expected document title", async ({ page }) => {
-    await expect(page.locator("title")).toContainText("ethang-start");
+    await expect(page.title()).resolves.toBe("EthanG");
   });
 
   test("renders a main landmark", async ({ page }) => {

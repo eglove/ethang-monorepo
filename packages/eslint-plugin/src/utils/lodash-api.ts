@@ -1679,8 +1679,28 @@ const COMMON_USER_METHOD_NAMES = new Set([
   "valuesIn"
 ]);
 
+// Playwright Locator methods that have native Array.prototype equivalents but
+// operate on non-array receivers. These should not be auto-rewritten to lodash
+// when the inner call in a chain does not resolve to a confirmed array receiver.
+export const PLAYWRIGHT_LOCATOR_METHODS = new Set([
+  "every",
+  "filter",
+  "find",
+  "flatMap",
+  "forEach",
+  "includes",
+  "map",
+  "reduce",
+  "slice",
+  "some"
+]);
+
 export const isCommonUserMethodName = (name: string) => {
   return COMMON_USER_METHOD_NAMES.has(name);
+};
+
+export const isPlaywrightLocatorMethod = (name: string) => {
+  return PLAYWRIGHT_LOCATOR_METHODS.has(name);
 };
 
 /**

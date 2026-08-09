@@ -15,7 +15,8 @@ export default defineConfig(
     "worker-configuration.d.ts",
     "src/themes/nightowl.css",
     "src/themes/nightowl.js",
-    "src/themes/nightowl.d.ts"
+    "src/themes/nightowl.d.ts",
+    "playwright-report"
   ]),
   ...config,
   ...reactConfig,
