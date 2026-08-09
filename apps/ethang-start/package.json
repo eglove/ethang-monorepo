@@ -89,7 +89,8 @@
     "generate-routes": "tsr generate",
     "lint": "eslint . --fix",
     "preview": "pnpm run build && vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "playwright test coverage"
   },
   "type": "module"
 }
