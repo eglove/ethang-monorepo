@@ -2,7 +2,6 @@
 packages:
   - apps/*
   - packages/*
-  - templates/*
 allowBuilds:
   "@apollo/protobufjs": true
   "@apollo/rover": true

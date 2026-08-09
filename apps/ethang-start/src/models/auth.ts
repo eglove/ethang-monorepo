@@ -1,5 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
-import { deleteCookie, getCookie, setCookie } from "@tanstack/react-start/server";
+import {
+  deleteCookie,
+  getCookie,
+  setCookie
+} from "@tanstack/react-start/server";
 import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
@@ -24,10 +28,12 @@ export type User = {
   username: string;
 };
 
-export const signOut = createServerFn({ method: "POST", strict: false })
-  .handler(() => {
-    deleteCookie(AUTH_COOKIE_NAME);
-  });
+export const signOut = createServerFn({
+  method: "POST",
+  strict: false
+}).handler(() => {
+  deleteCookie(AUTH_COOKIE_NAME);
+});
 
 export const getAuthState = createServerFn().handler(() => {
   const token = getCookie(AUTH_COOKIE_NAME);
