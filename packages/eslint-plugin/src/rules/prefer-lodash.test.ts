@@ -859,6 +859,15 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "database.select().from(table).where(condition).groupBy(table.id).as('sub');"
     },
     {
+      // Playwright Locator `.first()` — common non-array method; should not
+      // be auto-rewritten to lodash `first`/`head` (regression guard)
+      code: "page.getByRole('img').first();"
+    },
+    {
+      // Playwright Locator `.last()` — same family; should not flag
+      code: "page.getByRole('img').last();"
+    },
+    {
       // Array.prototype.join — should not flag
       code: "['a', 'b'].join(', ');"
     },

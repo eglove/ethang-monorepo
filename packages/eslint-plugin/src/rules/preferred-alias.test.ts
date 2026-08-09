@@ -47,13 +47,9 @@ ruleTester.run("preferred-alias", preferredAliasRule as never, {
       code: "_.valueOf(x)",
       errors: [{ messageId: "preferAlias" }]
     },
-    // Direct import style
+    // Direct import style with member expression receiver (receiver is non-null)
     {
-      code: "each(xs, fn)",
-      errors: [{ messageId: "preferAlias" }]
-    },
-    {
-      code: "import each from 'lodash/each.js'; each(xs, fn)",
+      code: "import each from 'lodash/each.js'; _.each(xs, fn)",
       errors: [{ messageId: "preferAlias" }]
     },
     // Ignore methods option (only reports if not ignored)

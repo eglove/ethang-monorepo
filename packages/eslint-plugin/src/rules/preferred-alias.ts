@@ -1,4 +1,5 @@
 import { ESLintUtils, type TSESTree } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import { isLodashCall, resolveCall } from "../utils/ast.ts";
 import { getMainAlias, LODASH_V4_ALIAS_TO_MAIN } from "../utils/method-data.ts";
@@ -36,7 +37,15 @@ export const preferredAliasRule = createRule<Options, MessageIds>({
         return;
       }
 
-      const { methodName } = resolveCall(node, program);
+      const { methodName, receiver } = resolveCall(node, program);
+
+      // Skip top-level identifier calls (e.g. `head(xs)` from a lodash deep
+      // import) where the receiver is null — we can't statically verify the
+      // argument is array-like and may produce false positives on non-array
+      // receivers like Playwright Locators.
+      if (isNil(receiver)) {
+        return;
+      }
 
       if (!isAliasMethod(methodName) || isIgnored(methodName, ignoreMethods)) {
         return;

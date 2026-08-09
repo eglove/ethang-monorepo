@@ -1,73 +1,25 @@
 import { defineConfig, devices } from "@playwright/test";
 import isNil from "lodash/isNil.js";
 
-/**
-Read environment variables from file.
-https://github.com/motdotla/dotenv
-*/
-
-/**
-See https://playwright.dev/docs/test-configuration.
-*/
-// @ts-expect-error ignore this
 export default defineConfig({
-  testDir: "./tests",
-  /* Run tests in files in parallel */
+  forbidOnly: !isNil(process.env["CI"]),
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: Boolean(process.env["CI"]),
-  /* Retry on CI only */
-  retries: isNil(process.env["CI"]) ? 0 : 2,
-  /* Opt out of parallel tests on CI. */
-  // eslint-disable-next-line no-undefined
-  workers: isNil(process.env["CI"]) ? undefined : 1,
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [["html", { open: "never" }]],
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    // baseURL: 'http://localhost:3000',
-
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry"
-  },
-
-  /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: "chromium",
-    //   use: { ...devices["Desktop Chrome"] }
-    // },
-    //
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] }
-    // },
-    //
-    // {
-    //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] }
-    // },
-
-    /* Coverage — Chromium-only; see https://playwright.dev/docs/api/class-coverage */
     {
-      name: "coverage",
-      testMatch: "**/tests/coverage.spec.ts",
+      name: "chromium",
       use: { ...devices["Desktop Chrome"] }
     }
   ],
-
-  /* Run your local dev server before starting the tests */
+  reporter: [["html", { open: "never" }]],
+  retries: isNil(process.env["CI"]) ? 0 : 2,
+  testDir: "./tests",
+  use: {
+    baseURL: "http://localhost:3000"
+  },
   webServer: {
-    command: "pnpm run dev",
-    reuseExistingServer: !isNil(process.env["CI"]),
-    url: "http://localhost:3000"
-  }
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
+    command: "vite dev --port 3000",
+    port: 3000,
+    reuseExistingServer: isNil(process.env["CI"])
+  },
+  workers: isNil(process.env["CI"]) ? 2 : 1
 });
