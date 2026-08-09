@@ -1,342 +1,468 @@
-import type { ExtensionAPI, ToolResultEvent } from "@earendil-works/pi-coding-agent";
-import { join, relative } from "node:path";
-import { existsSync } from "node:fs";
-import { execSync } from "node:child_process";
+import isError from "lodash/isError.js";
+import isEmpty from "lodash/isEmpty.js";
+import map from "lodash/map.js";
+import reduce from "lodash/reduce.js";
+import trim from "lodash/trim.js";
+import path from "node:path";
 
-// MCP configuration for WebStorm
-const MCP_BASE_URL = "http://127.0.0.1:64506";
-const MCP_SSE_ENDPOINT = `${MCP_BASE_URL}/sse`;
+const MCP_ENDPOINT = "http://127.0.0.1:64506/stream";
+const MCP_PROTOCOL_VERSION = "2025-03-26";
+const ESLINT_TIMEOUT_MS = 120_000;
+const WEBSTORM_TIMEOUT_MS = 10_000;
+const MAX_FEEDBACK_CHARS = 12_000;
 
-/**
- * WebStorm MCP Client using SSE for session establishment.
- * Connects to the SSE stream, receives endpoint URL and session ID,
- * then makes HTTP POST requests to that endpoint.
- */
-class WebStormMCPClient {
-  private sseUrl = `${MCP_BASE_URL}/sse`;
-  private sessionUrl?: string;
-  private sessionId?: string;
-  private eventSource?: EventSource;
+export type AnalysisDependencies = {
+  exec: ExtensionApi["exec"];
+  fetch: typeof fetch;
+  log: (message: string) => void;
+};
 
-  /**
-   * Connect to the WebStorm MCP SSE endpoint and receive endpoint URL & session ID.
-   */
-  async connect(): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-      try {
-        // Create a new EventSource connection with proper headers
-        this.eventSource = new EventSource(this.sseUrl, {
-          headers: {
-            "IJ_MCP_SERVER_PROJECT_PATH": "C:/Users/glove/projects/ethang-monorepo",
-            "Accept": "application/json,text/event-stream",
-          },
-        });
+export type AnalysisToolResultEvent = {
+  content: ({ [key: string]: unknown; type: string } | TextContent)[];
+  input: Record<string, unknown>;
+  isError: boolean;
+  toolName: string;
+};
 
-        let setupTimeout: ReturnType<typeof setTimeout> | undefined;
+type AnalysisContext = {
+  cwd: string;
+  signal?: AbortSignal | undefined;
+};
 
-        this.eventSource.onmessage = (event: MessageEvent) => {
-          console.log("MCP SSE received:", event.data);
-          try {
-            const data = JSON.parse(event.data) as any;
-            
-            // First message should contain endpoint and session ID
-            if (!this.sessionUrl || !this.sessionId) {
-              this.sessionUrl = data.endpoint?.url || data.url || data.endpointUrl || "";
-              this.sessionId = data.sessionId || data.session_id || "";
+type EslintFeedback = {
+  exitCode: number;
+  results?: EslintFileResult[];
+  stderr: string;
+};
 
-              if (this.sessionUrl && this.sessionId) {
-                console.log(`✓ MCP session established: sessionId=${this.sessionId}, endpoint=${this.sessionUrl}`);
-                
-                // Clear the timeout since we got a response
-                if (setupTimeout) clearTimeout(setupTimeout);
-                resolve(true);
-              } else {
-                console.warn("MCP SSE incomplete data:", data);
-              }
-            }
-          } catch (parseError) {
-            console.error("Failed to parse MCP SSE message:", event.data, parseError);
-          }
-        };
+type EslintFileResult = {
+  errorCount?: number;
+  filePath?: string;
+  messages?: EslintMessage[];
+  warningCount?: number;
+};
 
-        this.eventSource.onerror = async (error: any) => {
-          console.error("MCP SSE connection error:", error);
-          // Clean up and reject if still not established after timeout
-          await this.disconnect();
-          if (!this.sessionUrl || !this.sessionId) {
-            reject(new Error("Failed to establish MCP session"));
-          }
-        };
+type EslintMessage = {
+  column?: number;
+  line?: number;
+  message?: string;
+  ruleId?: null | string;
+  severity?: number;
+};
 
-        this.eventSource.onopen = () => {
-          console.log("MCP SSE connection opened (waiting for endpoint message)");
-        };
+type ExecOptions = {
+  cwd?: string;
+  signal?: AbortSignal | undefined;
+  timeout?: number;
+};
 
-        // Set a timeout - if we don't get an endpoint within 10 seconds, give up
-        setupTimeout = setTimeout(() => {
-          if (!this.sessionUrl || !this.sessionId) {
-            this.disconnect().finally();
-            reject(new Error("MCP connection timed out: no session established"));
-          }
-        }, 10000);
+type ExecResult = {
+  code: number;
+  killed: boolean;
+  stderr: string;
+  stdout: string;
+};
 
-      } catch (error: any) {
-        console.error("Failed to create MCP SSE connection:", error.message);
-        reject(error);
-      }
-    });
+type ExtensionApi = {
+  exec: (
+    command: string,
+    arguments_: string[],
+    options?: ExecOptions
+  ) => Promise<ExecResult>;
+  on: (
+    event: "tool_result",
+    handler: (
+      event: AnalysisToolResultEvent,
+      context: ToolResultContext
+    ) => Promise<ToolResultPatch | undefined>
+  ) => void;
+};
+
+type JsonRpcError = {
+  code: number;
+  message: string;
+};
+
+type JsonRpcResponse<TResult> = {
+  error?: JsonRpcError;
+  id?: number;
+  jsonrpc: "2.0";
+  result?: TResult;
+};
+
+type McpToolResult = {
+  content?: TextContent[];
+  isError?: boolean;
+  structuredContent?: WebStormProblems;
+};
+
+type TextContent = {
+  text: string;
+  type: "text";
+};
+
+type ToolResultContext = {
+  signal?: AbortSignal;
+} & AnalysisContext;
+
+type ToolResultPatch = {
+  content?: AnalysisToolResultEvent["content"];
+};
+
+type WebStormFeedback = {
+  error?: string;
+  problems?: WebStormProblems;
+};
+
+type WebStormProblem = {
+  column: number;
+  description: string;
+  line: number;
+  lineContent: string;
+  severity: string;
+};
+
+type WebStormProblems = {
+  errors: WebStormProblem[];
+  filePath: string;
+  timedOut?: boolean | null;
+};
+
+const asErrorMessage = (error: unknown) => {
+  return isError(error) ? error.message : String(error);
+};
+
+const toSlashPath = (path: string) => {
+  return path.replaceAll("\\", "/");
+};
+
+const getRelativeProjectPath = (
+  cwd: string,
+  input: unknown
+): string | undefined => {
+  if ("string" !== typeof input || 0 === trim(input).length) return undefined;
+
+  const absolutePath = path.resolve(cwd, input);
+  const relativePath = path.relative(cwd, absolutePath);
+  const isEscapesProject =
+    ".." === relativePath ||
+    relativePath.startsWith(`..${path.sep}`) ||
+    path.isAbsolute(relativePath);
+
+  return isEscapesProject ? undefined : toSlashPath(relativePath);
+};
+
+const parseJson = <T>(value: string): T | undefined => {
+  if (0 === trim(value).length) return undefined;
+
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return undefined;
+  }
+};
+
+const postMcp = async <TResult>(
+  dependencies: AnalysisDependencies,
+  projectPath: string,
+  payload: object,
+  signal: AbortSignal | undefined,
+  sessionId?: string
+) => {
+  const headers = new Headers({
+    Accept: "application/json, text/event-stream",
+    "Content-Type": "application/json",
+    IJ_MCP_SERVER_PROJECT_PATH: toSlashPath(projectPath)
+  });
+  if (sessionId) headers.set("Mcp-Session-Id", sessionId);
+
+  const response = await dependencies.fetch(MCP_ENDPOINT, {
+    body: JSON.stringify(payload),
+    headers,
+    method: "POST",
+    signal: signal ?? null
+  });
+  if (!response.ok) {
+    throw new Error(
+      `WebStorm MCP request failed (${response.status} ${response.statusText}): ${await response.text()}`
+    );
   }
 
-  /**
-   * Send an MCP request via HTTP POST to the endpoint URL.
-   */
-  async sendRequest(request: any): Promise<any> {
-    if (!this.sessionUrl || !this.sessionId) {
-      throw new Error("Not connected to MCP server. Call connect() first.");
-    }
-
-    try {
-      const response = await fetch(this.sessionUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json,text/event-stream",
-          "IJ_MCP_SERVER_PROJECT_PATH": "C:/Users/glove/projects/ethang-monorepo",
-          // Include session ID if needed
-          ...(this.sessionId ? { "x-session-id": this.sessionId } : {}),
-        },
-        body: JSON.stringify(request),
-      });
-
-      if (!response.ok) {
-        throw new Error(`MCP request failed with status ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error: any) {
-      console.error("MCP request error:", error.message);
-      throw error;
-    }
+  const text = await response.text();
+  const isEmptyAcknowledgement = "null" === trim(text);
+  const message = isEmptyAcknowledgement
+    ? undefined
+    : parseJson<JsonRpcResponse<TResult>>(text);
+  if (0 < text.length && !isEmptyAcknowledgement && !message) {
+    throw new Error(`WebStorm MCP returned invalid JSON: ${text}`);
+  }
+  if (message?.error) {
+    throw new Error(
+      `WebStorm MCP error ${message.error.code}: ${message.error.message}`
+    );
   }
 
-  /**
-   * Close the SSE connection.
-   */
-  async disconnect(): Promise<void> {
-    return new Promise((resolve) => {
-      if (this.eventSource) {
-        this.eventSource.close();
-        this.eventSource = undefined;
-        console.log("MCP SSE connection closed");
-      }
-      this.sessionUrl = undefined;
-      this.sessionId = undefined;
-      resolve();
-    });
-  }
+  return { response, result: message?.result };
+};
 
-  /**
-   * Check if currently connected and session established.
-   */
-  isConnected(): boolean {
-    return !!this.eventSource && 
-           this.eventSource.readyState === EventSource.OPEN &&
-           !!this.sessionUrl && 
-           !!this.sessionId;
-  }
+const getWebStormProblems = async (
+  dependencies: AnalysisDependencies,
+  cwd: string,
+  filePath: string,
+  signal: AbortSignal | undefined
+) => {
+  let sessionId: string | undefined;
 
-  /**
-   * Get the current endpoint URL (for debugging).
-   */
-  getEndpointURL(): string | undefined {
-    return this.sessionUrl;
-  }
-}
-
-// Singleton instance for reuse across calls
-const webstormMCPClient = new WebStormMCPClient();
-
-export default function (pi: ExtensionAPI) {
-  /**
-   * Execute a shell command in the project root.
-   */
-  async function runCommand(command: string, cwd?: string): Promise<{ output: string; exitCode: number }> {
-    const targetCwd = cwd || pi.cwd;
-    try {
-      const output = execSync(command, { cwd: targetCwd, encoding: "utf8", stdio: ["pipe", "pipe", "ignore"] });
-      return { output, exitCode: 0 };
-    } catch (error: any) {
-      const { stderr = "", stdout = "" } = error;
-      return {
-        output: String(stderr) + "\n" + String(stdout),
-        exitCode: error.status ?? 1,
-      };
-    }
-  }
-
-
-
-  /**
-   * Call WebStorm MCP tool to get file problems.
-   */
-  async function getWebStormProblems(filePath: string): Promise<string> {
-    try {
-      // Connect if not already connected
-      if (!webstormMCPClient.isConnected()) {
-        await webstormMCPClient.connect();
-      }
-
-      // Prepare the MCP request (JSON-RPC format)
-      const request = {
+  try {
+    const initialized = await postMcp<{ protocolVersion: string }>(
+      dependencies,
+      cwd,
+      {
+        id: 1,
         jsonrpc: "2.0",
-        method: "get_file_problems",
-        params: { filePath },
-        id: Date.now(),
-      };
-
-      console.log("Sending MCP request to:", webstormMCPClient.getEndpointURL());
-
-      // Send and wait for response
-      const result = await webstormMCPClient.sendRequest(request);
-
-      if (!result || Object.keys(result).length === 0) {
-        return "WebStorm MCP analysis returned empty results.";
-      }
-
-      return JSON.stringify(result, null, 2);
-    } catch (error: any) {
-      // Provide helpful error messages based on the error type
-      if (error.message?.includes("timed out") || error.message?.includes("no session established")) {
-        return "WebStorm MCP server not available. Please ensure WebStorm is running with MCP enabled.";
-      } else if (error.message?.includes("Failed to establish MCP session")) {
-        return "Connection to WebStorm MCP timed out. Check that port 64506 is open and accessible.";
-      } else if (error.message?.includes("Authentication required")) {
-        return `WebStorm MCP authentication failed: ${error.message}`;
-      } else {
-        return `WebStorm analysis failed: ${error.message}`;
-      }
-    }
-  }
-
-  /**
-   * Format combined analysis results for display.
-   */
-  function formatAnalysisResult(
-    filePath: string,
-    eslintOutput: string,
-    webstormOutput: string,
-  ): string {
-    const lines = [];
-    lines.push(`**File:** ${filePath}`);
-
-    if (eslintOutput) {
-      lines.push(`\n**ESLint Issues:**`);
-      // Truncate for readability, but keep full output in a separate property if needed
-      const displayEslint = eslintOutput.length > 2000 ? `${eslintOutput.substring(0, 2000)}... (truncated)` : eslintOutput;
-      lines.push(displayEslint);
+        method: "initialize",
+        params: {
+          capabilities: {},
+          clientInfo: {
+            name: "pi-analyze-after-edit",
+            version: "1.0.0"
+          },
+          protocolVersion: MCP_PROTOCOL_VERSION
+        }
+      },
+      signal
+    );
+    sessionId = initialized.response.headers.get("Mcp-Session-Id") ?? undefined;
+    if (!sessionId) {
+      return {
+        error: "WebStorm MCP initialize response omitted Mcp-Session-Id"
+      } satisfies WebStormFeedback;
     }
 
-    if (webstormOutput) {
-      lines.push(`\n**WebStorm Problems:**`);
-      const displayWebstorm = webstormOutput.length > 2000 ? `${webstormOutput.substring(0, 2000)}... (truncated)` : webstormOutput;
-      lines.push(displayWebstorm);
+    await postMcp(
+      dependencies,
+      cwd,
+      {
+        jsonrpc: "2.0",
+        method: "notifications/initialized",
+        params: {}
+      },
+      signal,
+      sessionId
+    );
+
+    const call = await postMcp<McpToolResult>(
+      dependencies,
+      cwd,
+      {
+        id: 2,
+        jsonrpc: "2.0",
+        method: "tools/call",
+        params: {
+          arguments: {
+            errorsOnly: false,
+            filePath,
+            timeout: WEBSTORM_TIMEOUT_MS
+          },
+          name: "get_file_problems"
+        }
+      },
+      signal,
+      sessionId
+    );
+    if (call.result?.isError) {
+      return {
+        error:
+          map(call.result.content, ({ text }) => {
+            return text;
+          }).join("\n") || "WebStorm get_file_problems failed"
+      } satisfies WebStormFeedback;
     }
 
-    if (!eslintOutput && !webstormOutput) {
-      lines.push("\nNo issues found.");
+    const textResult = call.result?.content?.find(
+      (content): content is TextContent => {
+        return "text" === content.type;
+      }
+    );
+    const problems =
+      call.result?.structuredContent ??
+      (textResult ? parseJson<WebStormProblems>(textResult.text) : undefined);
+    if (!problems) {
+      return {
+        error: "WebStorm get_file_problems returned no structured result"
+      } satisfies WebStormFeedback;
     }
 
-    return lines.join("\n");
-  }
-
-  /**
-   * Extract modified file paths from tool_result event structure.
-   */
-  function extractModifiedFiles(event: ToolResultEvent): string[] {
-    const files: string[] = [];
-
-    // Helper to process details recursively
-    const processDetails = (details: any) => {
-      if (!details) return;
-      
-      // Check for modifiedFiles array directly
-      if (Array.isArray(details.modifiedFiles)) {
-        files.push(...details.modifiedFiles);
-        return;
-      }
-      
-      // Check nested structure: details.files?.modifiedFiles
-      if (details.files && Array.isArray(details.files.modifiedFiles)) {
-        files.push(...details.files.modifiedFiles);
-        return;
-      }
-      
-      // Recurse into other fields that might contain file paths
-      for (const key of Object.keys(details)) {
-        processDetails(details[key]);
-      }
-    };
-
-    try {
-      // First check event.details
-      if (event.details) {
-        processDetails(event.details);
-      }
-      
-      // Also check event.result for modifiedFiles (in case details is empty)
-      if (files.length === 0 && event.result) {
-        processDetails(event.result);
-      }
-    } catch (e) {
-      console.error("Failed to extract file paths:", e);
-    }
-
-    return files;
-  }
-
-  /**
-   * Main handler for tool_result events after edit/write operations.
-   */
-  pi.on("tool_result", async (event, ctx) => {
-    // Only process edit or write tools with successful execution
-    if (!event.toolName || !["edit", "write"].includes(event.toolName)) return;
-    if (event.result?.isError === true) return;
-
-    // Extract modified file paths from the event structure
-    const filesToAnalyze = new Set<string>();
-    let baseDir = ctx.cwd;
-
-    const extracted = extractModifiedFiles(event);
-    for (const filePath of extracted) {
-      const absolutePath = filePath.startsWith("/") ? filePath : join(baseDir, filePath);
-      // Only add if the file exists in the project
-      if (existsSync(absolutePath)) {
-        filesToAnalyze.add(absolutePath);
-      }
-    }
-
-    // If no paths found, skip analysis
-    if (filesToAnalyze.size === 0) return;
-
-    // Analyze each modified file in parallel with error handling for individual files
-    await Promise.allSettled(Array.from(filesToAnalyze).map(async (filePath) => {
+    return { problems } satisfies WebStormFeedback;
+  } catch (error) {
+    return { error: asErrorMessage(error) } satisfies WebStormFeedback;
+  } finally {
+    if (sessionId) {
       try {
-        const [eslintRes, webstormRes] = await Promise.allSettled([
-          runCommand(`pnpm eslint "${filePath}" --format json`, baseDir),
-          getWebStormProblems(filePath),
-        ]);
-
-        const eslintOutput = eslintRes.status === "fulfilled" ? eslintRes.value.output : "";
-        const webstormOutput = webstormRes.status === "fulfilled" ? (webstormRes.value as string) : "";
-
-        // Format and display the analysis result
-        const displayText = formatAnalysisResult(filePath, eslintOutput, webstormOutput);
-        
-        // Send notification to TUI - don't wait for response
-        ctx.ui.notify(`Code Analysis: ${relative(baseDir, filePath)}`, displayText, { type: "info" });
-      } catch (error: any) {
-        console.error(`Failed to analyze ${filePath}:`, error.message);
+        await dependencies.fetch(MCP_ENDPOINT, {
+          headers: {
+            Accept: "application/json, text/event-stream",
+            IJ_MCP_SERVER_PROJECT_PATH: toSlashPath(cwd),
+            "Mcp-Session-Id": sessionId
+          },
+          method: "DELETE",
+          signal: signal ?? null
+        });
+      } catch {
+        // Session cleanup must not hide analysis feedback.
       }
-    }));
+    }
+  }
+};
+
+const runEslintFix = async (
+  dependencies: AnalysisDependencies,
+  cwd: string,
+  filePath: string,
+  signal: AbortSignal | undefined
+) => {
+  try {
+    const result = await dependencies.exec(
+      "pnpm",
+      [
+        "exec",
+        "eslint",
+        "--no-ignore",
+        "--fix",
+        "--format",
+        "json",
+        filePath
+      ],
+      { cwd, signal, timeout: ESLINT_TIMEOUT_MS }
+    );
+
+    return {
+      exitCode: result.code,
+      results: parseJson<EslintFileResult[]>(result.stdout) ?? [],
+      stderr: trim(result.stderr)
+    } satisfies EslintFeedback;
+  } catch (error) {
+    return {
+      exitCode: 1,
+      results: [],
+      stderr: asErrorMessage(error)
+    } satisfies EslintFeedback;
+  }
+};
+
+const formatEslintFeedback = (feedback: EslintFeedback) => {
+  const messages = feedback.results?.flatMap((result) => {
+    return map(result.messages ?? [], (message) => {
+      const severity = 2 === message.severity ? "error" : "warning";
+      const location = `${message.line ?? "?"}:${message.column ?? "?"}`;
+      const rule = message.ruleId ? ` [${message.ruleId}]` : "";
+      return `- ${severity} ${location} ${message.message ?? "Unknown ESLint problem"}${rule}`;
+    });
+  });
+  const totals = reduce(
+    feedback.results,
+    (accumulator, result) => {
+      return {
+        errors: accumulator.errors + (result.errorCount ?? 0),
+        warnings: accumulator.warnings + (result.warningCount ?? 0)
+      };
+    },
+    { errors: 0, warnings: 0 }
+  );
+
+  if (feedback.stderr) {
+    return `ESLint --fix failed (exit ${feedback.exitCode}):\n${feedback.stderr}`;
+  }
+  if (messages && 0 < messages.length) {
+    return `ESLint --fix completed with ${totals?.errors ?? 0} error(s) and ${totals?.warnings ?? 0} warning(s):\n${messages.join("\n")}`;
+  }
+  if (0 !== feedback.exitCode) {
+    return `ESLint --fix exited with code ${feedback.exitCode} without diagnostic output.`;
+  }
+
+  return "ESLint --fix completed with no remaining reported problems.";
+};
+
+const formatWebStormFeedback = (feedback: WebStormFeedback) => {
+  if (feedback.error) return `WebStorm analysis failed: ${feedback.error}`;
+
+  const problems = feedback.problems?.errors ?? [];
+  if (isEmpty(problems)) {
+    return "WebStorm get_file_problems (errorsOnly: false) found no problems.";
+  }
+
+  const lines = map(problems, (problem) => {
+    return `- ${problem.severity.toLowerCase()} ${problem.line}:${problem.column} ${problem.description}\n  ${problem.lineContent}`;
+  });
+  const timeout = feedback.problems?.timedOut
+    ? "\nThe WebStorm inspection timed out; results may be partial."
+    : "";
+
+  return `WebStorm get_file_problems (errorsOnly: false) found ${problems.length} problem(s):\n${lines.join("\n")}${timeout}`;
+};
+
+const truncateFeedback = (feedback: string) => {
+  return feedback.length <= MAX_FEEDBACK_CHARS
+    ? feedback
+    : `${feedback.slice(0, MAX_FEEDBACK_CHARS)}\n[Analysis feedback truncated]`;
+};
+
+export const createAnalyzeAfterEditHandler = (
+  dependencies: AnalysisDependencies
+) => {
+  return async (event: AnalysisToolResultEvent, context: AnalysisContext) => {
+    if (
+      event.isError ||
+      ("edit" !== event.toolName && "write" !== event.toolName)
+    ) {
+      return;
+    }
+
+    const filePath = getRelativeProjectPath(context.cwd, event.input["path"]);
+    if (!filePath) return;
+
+    const eslint = await runEslintFix(
+      dependencies,
+      context.cwd,
+      filePath,
+      context.signal
+    );
+    const webStorm = await getWebStormProblems(
+      dependencies,
+      context.cwd,
+      filePath,
+      context.signal
+    );
+    const feedback = truncateFeedback(
+      [
+        `Post-edit analysis for ${filePath}:`,
+        formatEslintFeedback(eslint),
+        formatWebStormFeedback(webStorm)
+      ].join("\n\n")
+    );
+    dependencies.log(
+      `[analyze-after-edit] Post-edit feedback returned to the LLM:\n${feedback}`
+    );
+
+    return {
+      content: [...event.content, { text: feedback, type: "text" }]
+    };
+  };
+};
+
+export default function analyzeAfterEdit(pi: ExtensionApi) {
+  const handler = createAnalyzeAfterEditHandler({
+    exec: async (command, arguments_, options) => {
+      return pi.exec(command, arguments_, options);
+    },
+    fetch: globalThis.fetch,
+    log: console.log
+  });
+
+  pi.on("tool_result", async (event, context) => {
+    return handler(event, {
+      cwd: context.cwd,
+      signal: context.signal
+    });
   });
 }
