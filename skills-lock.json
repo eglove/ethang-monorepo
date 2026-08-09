@@ -839,7 +839,7 @@
       "source": "effect-ts/skills",
       "sourceType": "github",
       "skillPath": "skills/effect-ts/SKILL.md",
-      "computedHash": "16dc62c9087d4b74035d4071fe931ff43c4218acb414407a17066045a80762fa"
+      "computedHash": "9a425920916902a856c16dd9bd16f61e7276e18b2aaffdc45d55ca84cdd84b3e"
     },
     "effect-v3-to-v4": {
       "source": "effect-ts/skills",
@@ -1379,7 +1379,7 @@
       "source": "chromedevtools/chrome-devtools-mcp",
       "sourceType": "github",
       "skillPath": "skills/memory-leak-debugging/SKILL.md",
-      "computedHash": "f904c3b87b6be0b2dc4a5d0eed2f362df6884dac41ce34b7a3c5bb7a8225df8c"
+      "computedHash": "aac98828bf9a2a07da1756277447a2ce95e04254ffeca2f5d12443ffad3ef5c6"
     },
     "memory-merger": {
       "source": "github/awesome-copilot",
@@ -2017,6 +2017,18 @@
       "skillPath": "skills/salesforce-flow-design/SKILL.md",
       "computedHash": "d8123acaa4f0f0285c26fce74f04728ffc510f31391ba919671d3fed8d1e6fe9"
     },
+    "sandbox-migrate-to-next": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/sandbox-migrate-to-next/SKILL.md",
+      "computedHash": "0e2925a737ddb1e2f61c2992bf6173e9761592bbe16d7422d44202fb27f10f24"
+    },
+    "sandbox-next": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/sandbox-next/SKILL.md",
+      "computedHash": "ab94d96f3bbcab3ef5ec0ee80b1a253174ce149cff3b98043b3b83a24dfa927f"
+    },
     "sandbox-npm-install": {
       "source": "github/awesome-copilot",
       "sourceType": "github",
@@ -2028,6 +2040,12 @@
       "sourceType": "github",
       "skillPath": "skills/sandbox-sdk/SKILL.md",
       "computedHash": "e44cceebe7e47d815034027c303315139d35c1d92a3ee287dc6d3e9a02f0667b"
+    },
+    "sandbox-stable": {
+      "source": "cloudflare/skills",
+      "sourceType": "github",
+      "skillPath": "skills/sandbox-stable/SKILL.md",
+      "computedHash": "34bee002919f65a346b115ce9bca8a0dbf7e7c728274092f5e869947b8ba8b68"
     },
     "scaffolding-oracle-to-postgres-migration-test-project": {
       "source": "github/awesome-copilot",
