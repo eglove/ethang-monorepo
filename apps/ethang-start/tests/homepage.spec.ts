@@ -256,7 +256,7 @@ test.describe("Homepage — profile card", () => {
   test("displays the full name", async ({ page }) => {
     const ethanGlover = page.getByText("Ethan Glover");
     // First match is sr-only avatar text; second is the visible profile card span
-    // eslint-disable-next-line @ethang/prefer-lodash -- Playwright Locator.nth() not Array.prototype.nth
+
     await expect(ethanGlover.nth(1)).toBeVisible();
   });
 
