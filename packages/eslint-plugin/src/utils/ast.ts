@@ -375,6 +375,7 @@ const NON_ARRAY_NATIVE_METHOD_NAMES = new Set([
   "keys",
   "make",
   "max",
+  "method",
   "min",
   "orderBy",
   "set",

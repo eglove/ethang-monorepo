@@ -1,0 +1,12 @@
+{
+  "name": "<WORKER_NAME>",
+  "main": "./dist/server/server.mjs",
+  "compatibility_date": "<COMPATIBILITY_DATE>",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/browser"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

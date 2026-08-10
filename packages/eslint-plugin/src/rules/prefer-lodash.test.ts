@@ -697,6 +697,20 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "xs.fromIterable(other);"
     },
     {
+      // Playwright locator `.fill()` must not be rewritten to lodash `fill`
+      code: 'page.getByLabel("Email Address").fill("test@example.com");'
+    },
+    {
+      // Identifier-receiver `.fill()` on a locator is ambiguous with
+      // Array.prototype.fill — never auto-rewrite it.
+      code: 'emailInput.fill("test@example.com");'
+    },
+    {
+      // Playwright `Request.method()` must not be rewritten to lodash
+      // `method(request)` — it is a HTTP-method accessor, not lodash util.
+      code: 'page.route("**/_serverFn*", (route) => { if (route.request().method() === "POST") route.continue(); });'
+    },
+    {
       code: 'import map from "lodash/map.js"; map([1, 2, 3], (x) => x * 2);'
     },
     {

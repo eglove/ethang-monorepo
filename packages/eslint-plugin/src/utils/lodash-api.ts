@@ -1684,6 +1684,7 @@ const COMMON_USER_METHOD_NAMES = new Set([
 // when the inner call in a chain does not resolve to a confirmed array receiver.
 export const PLAYWRIGHT_LOCATOR_METHODS = new Set([
   "every",
+  "fill",
   "filter",
   "find",
   "flatMap",
