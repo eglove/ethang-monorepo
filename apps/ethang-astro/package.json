@@ -1,27 +1,28 @@
 {
-	"name": "ethang-astro",
-	"type": "module",
-	"version": "0.0.1",
-	"engines": {
-		"node": ">=22.12.0"
-	},
-	"scripts": {
-		"dev": "astro dev",
-		"build": "astro build",
-		"preview": "astro build && astro preview",
-		"astro": "astro",
-		"generate-types": "wrangler types",
-		"deploy": "astro build && wrangler deploy",
-		"cf-typegen": "wrangler types"
-	},
-	"dependencies": {
-		"@astrojs/cloudflare": "^14.2.0",
-		"@astrojs/sitemap": "^3.7.3",
-		"@tailwindcss/vite": "^4.3.3",
-		"astro": "^7.2.0",
-		"tailwindcss": "^4.3.3"
-	},
-	"devDependencies": {
-		"wrangler": "^4.120.1"
-	}
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.2.0",
+    "@astrojs/sitemap": "^3.7.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.2.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "wrangler": "^4.120.1"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "name": "ethang-astro",
+  "scripts": {
+    "astro": "astro",
+    "build": "astro build",
+    "cf-typegen": "wrangler types",
+    "deploy": "astro build && wrangler deploy",
+    "dev": "astro dev",
+    "generate-types": "wrangler types",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "preview": "astro build && astro preview"
+  },
+  "type": "module",
+  "version": "0.0.1"
 }
