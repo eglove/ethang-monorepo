@@ -1,0 +1,166 @@
+---
+import { DateTime, Option } from "effect";
+import constant from "lodash/constant.js";
+import filter from "lodash/filter.js";
+import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
+import orderBy from "lodash/orderBy.js";
+import { env } from "cloudflare:workers";
+import {unwrapRpc} from "../lib/rpc.ts"
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+export const prerender = false;
+
+interface CourseData {
+    author: string;
+    courseId: string;
+    courseIndex: number;
+    learningPathId: string;
+    learningPathName: null | string;
+    learningPathOrder: number;
+    learningPathUrl: null | string;
+    name: string;
+    swebokFocus: null | string;
+    updatedAt: string;
+    url: string;
+}
+
+type SwebokFocusMapEntry = [string, string];
+
+const swebokFocusMap: Map<string, string> = new Map([
+    ["architecture", "Software Architecture"],
+    ["certification", "Certification"],
+    ["computing", "Computing Foundations"],
+    ["construction", "Software Construction"],
+    ["design", "Software Design"],
+    ["economics", "Software Engineering Economics"],
+    ["engineering-operations", "Software Engineering Operations"],
+    ["engineering", "Engineering Foundations"],
+    ["maintenance", "Software Maintenance"],
+    ["management", "Software Engineering Management"],
+    ["mathematical", "Mathematical Foundations"],
+    ["models-methods", "Software Engineering Models and Methods"],
+    ["process", "Software Engineering Process"],
+    ["professional-practice", "Software Engineering Professional Practice"],
+    ["quality", "Software Quality"],
+    ["requirements", "Software Requirements"],
+    ["scm", "Software Configuration Management"],
+    ["security", "Software Security"],
+    ["testing", "Software Testing"],
+] as const satisfies readonly SwebokFocusMapEntry[]);
+
+const courses = await unwrapRpc(env.ethang_courses.coursesAll());
+
+// Find the most recently updated course
+const withDate = filter(
+    courses,
+    (item): item is CourseData & { updatedAt: string } =>
+        !isNil(item.updatedAt),
+);
+const latestUpdatedAt =
+    orderBy(withDate, ["updatedAt"], ["desc"])[0]?.updatedAt ?? "";
+
+const dateString = Option.match(DateTime.make(latestUpdatedAt), {
+    onNone: constant(""),
+    onSome: (dt) =>
+        DateTime.format(dt, { dateStyle: "full", timeStyle: "full" }),
+});
+
+// Group courses by learning path
+const learningPathsData = new Map<string, CourseData[]>();
+for (const course of courses) {
+    const existing = learningPathsData.get(course.learningPathId);
+    if (existing) {
+        existing.push(course);
+    } else {
+        learningPathsData.set(course.learningPathId, [course]);
+    }
+}
+---
+
+<BaseLayout title="Courses">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <h1 class="text-4xl font-semibold text-night-owl-fg mb-2">Courses</h1>
+        {
+            dateString ? (
+                <p class="mb-4 text-base text-night-owl-muted">{dateString}</p>
+            ) : null
+        }
+
+        <div class="my-6 flex flex-col gap-4">
+            {
+                map(learningPathsData.keys().toArray(), (learningPathId) => {
+                    const pathCourses =
+                        learningPathsData.get(learningPathId) ?? [];
+                    const firstCourse = pathCourses[0];
+                    const name = firstCourse?.learningPathName;
+                    const swebokFocus = firstCourse?.swebokFocus;
+                    const url = firstCourse?.learningPathUrl;
+
+                    return (
+                        <div
+                            key={learningPathId}
+                            class="border border-night-owl-border rounded-xl bg-night-owl-surface p-5"
+                        >
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <h2 class="text-lg font-semibold text-night-owl-fg">
+                                    {url ? (
+                                        <a
+                                            href={url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="hover:text-primary hover:underline transition-colors"
+                                        >
+                                            {name}
+                                        </a>
+                                    ) : (
+                                        name
+                                    )}
+                                </h2>
+                                {swebokFocus !== null ? (
+                                    <span class="px-2 py-0.5 rounded-md bg-night-owl-bg border border-night-owl-border text-xs text-night-owl-muted">
+                                        {swebokFocusMap.get(swebokFocus) ??
+                                            swebokFocus}
+                                    </span>
+                                ) : null}
+                            </div>
+                            <p class="text-sm text-night-owl-muted mt-1">
+                                {pathCourses.length} course
+                                {pathCourses.length !== 1 ? "s" : ""}
+                            </p>
+                            <ul class="mt-3 flex flex-col gap-1">
+                                {map(
+                                    pathCourses.toSorted(
+                                        (a, b) => a.courseIndex - b.courseIndex,
+                                    ),
+                                    (course) => (
+                                        <li
+                                            key={course.courseId}
+                                            class="text-sm text-night-owl-fg"
+                                        >
+                                            <span class="text-night-owl-muted">
+                                                {course.courseIndex}.{" "}
+                                            </span>
+                                            <a
+                                                href={course.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="hover:text-primary hover:underline transition-colors"
+                                            >
+                                                {course.name}
+                                            </a>{" "}
+                                            <span class="text-night-owl-muted">
+                                                by {course.author}
+                                            </span>
+                                        </li>
+                                    ),
+                                )}
+                            </ul>
+                        </div>
+                    );
+                })
+            }
+        </div>
+    </div>
+</BaseLayout>

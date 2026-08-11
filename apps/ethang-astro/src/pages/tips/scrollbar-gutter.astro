@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const scrollbarGutter = `html {
+  scrollbar-gutter: stable both-edges;
+}`;
+---
+
+<BaseLayout title="scrollbar-gutter">
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-4xl font-semibold text-night-owl-fg mb-4">scrollbar-gutter</h1>
+    <p class="my-3 text-base leading-relaxed text-night-owl-muted">
+      Avoid content layout shifts when moving from content without a scroll to content with a scroll.{" "}
+      <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">MDN</a>{" "}
+      <a href="https://drafts.csswg.org/css-overflow/#scrollbar-gutter-property" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Spec</a>
+    </p>
+
+    <h2 class="text-2xl font-semibold text-night-owl-fg my-4">CSS</h2>
+    <pre class="bg-night-owl-surface rounded-lg p-4 overflow-x-auto text-sm font-mono text-night-owl-green"><code>{scrollbarGutter}</code></pre>
+
+    <h2 class="text-2xl font-semibold text-night-owl-fg my-4">Demo</h2>
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="rounded-md border border-night-owl-border p-4">
+        <div class="mb-2 font-semibold text-night-owl-fg">With scrollbar-gutter</div>
+        <section tabIndex={0} style={{ scrollbarGutter: "stable" }} aria-label="With scrollbar-gutter demo" class="h-64 overflow-auto rounded-md border border-night-owl-border p-4">
+          <p class="text-sm text-night-owl-fg leading-relaxed">This container has <code>scrollbar-gutter: stable</code> applied.</p>
+          <p class="text-sm text-night-owl-fg leading-relaxed mt-2">When content exceeds the container height, a scrollbar appears without shifting the content.</p>
+        </section>
+      </div>
+      <div class="rounded-md border border-night-owl-border p-4">
+        <div class="mb-2 font-semibold text-night-owl-fg">Without scrollbar-gutter</div>
+        <section tabIndex={0} style={{ scrollbarGutter: "auto" }} aria-label="Without scrollbar-gutter demo" class="h-64 overflow-auto rounded-md border border-night-owl-border p-4">
+          <p class="text-sm text-night-owl-fg leading-relaxed">This container does not have scrollbar-gutter applied.</p>
+          <p class="text-sm text-night-owl-fg leading-relaxed mt-2">When content exceeds the container height, a scrollbar appears and shifts the content.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

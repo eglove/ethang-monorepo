@@ -1,0 +1,124 @@
+---
+import { actions } from "astro:actions";
+import { Effect, Schema } from "effect";
+import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
+
+import { navigation } from "../../constants/navigation.ts";
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+}
+
+const { title = "Ethan Glover" } = Astro.props;
+
+const links = [
+  { href: "/", label: navigation.HOME },
+  { href: "/blog", label: navigation.BLOG },
+  { href: "/tips", label: navigation.TIPS },
+  { href: "/courses", label: navigation.COURSES },
+  { href: "/rss", label: navigation.RSS }
+] as const;
+
+const SessionSchema = Schema.Struct({
+  email: Schema.String,
+  sessionToken: Schema.String,
+  username: Schema.String
+});
+
+const SessionJsonSchema = Schema.parseJson(SessionSchema);
+
+const sessionCookie = Astro.cookies.get("session");
+
+/*
+ * Decode the cookie so only the username is rendered. The cookie payload also
+ * holds the session token, which must never be written into the HTML.
+ */
+const session = await Effect.runPromise(
+  isNil(sessionCookie)
+    ? Effect.succeed(null)
+    : Effect.try({
+        catch: () => {
+          return new Error("Invalid session");
+        },
+        try: () => {
+          return Schema.decodeUnknownSync(SessionJsonSchema)(
+            sessionCookie.value
+          );
+        }
+      }).pipe(
+        Effect.catchAll(() => {
+          return Effect.succeed(null);
+        })
+      )
+);
+
+const isLoggedIn = !isNil(session);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-night-owl-bg text-night-owl-fg">
+    <header
+      class="mx-auto max-w-7xl px-4 pt-4 pb-4 border-b border-night-owl-border"
+    >
+      <nav class="flex items-center justify-between gap-4 flex-wrap">
+        <ul class="flex gap-4 flex-wrap">
+          {
+            map(links, (link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-night-owl-fg hover:text-primary transition-colors"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        {
+          isLoggedIn ? (
+            <div class="flex items-center gap-4">
+              <span class="text-sm font-medium text-night-owl-muted">
+                {navigation.LOGGED_IN_AS}{" "}
+                <span class="font-bold text-night-owl-fg">
+                  {session.username}
+                </span>
+              </span>
+              <form method="POST" action={actions.signOut}>
+                <button
+                  type="submit"
+                  class="px-3 py-1.5 rounded-md bg-danger/20 hover:bg-danger/30 text-danger transition-colors text-sm font-semibold cursor-pointer"
+                >
+                  {navigation.LOGOUT}
+                </button>
+              </form>
+            </div>
+          ) : (
+            <a
+              href="/login"
+              class="text-night-owl-fg hover:text-primary transition-colors"
+            >
+              {navigation.LOGIN}
+            </a>
+          )
+        }
+      </nav>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-4 py-6">
+      <slot />
+    </main>
+  </body>
+</html>

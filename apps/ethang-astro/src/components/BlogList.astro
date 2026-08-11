@@ -1,0 +1,116 @@
+---
+import { DateTime } from "effect";
+import isEmpty from "lodash/isEmpty.js";
+import map from "lodash/map.js";
+
+import { toPageHref, type BlogListPost } from "../lib/blog.ts";
+
+interface Props {
+  maxPages: number;
+  page: number;
+  posts: BlogListPost[];
+}
+
+const { maxPages, page, posts } = Astro.props;
+
+const formattedDate = (dateTime: string) => {
+  return DateTime.format(DateTime.unsafeMake(dateTime), {
+    dateStyle: "medium",
+    timeStyle: "short"
+  });
+};
+
+const pageNumbers = map(Array.from({ length: maxPages }), (_value, index) => {
+  return index + 1;
+});
+---
+
+<div class="my-6 w-full grid gap-4">
+  {
+    isEmpty(posts) ? (
+      <div class="flex justify-center p-8 border border-night-owl-border rounded-xl bg-night-owl-surface">
+        <span class="text-night-owl-muted">No blog posts found.</span>
+      </div>
+    ) : (
+      map(posts, (blog) => (
+        <article
+          class="border border-night-owl-border rounded-xl bg-night-owl-surface p-5 hover:border-primary/30 transition-colors"
+          data-blog-post=""
+        >
+          {blog.blogCategory?.title ? (
+            <p class="uppercase text-xs font-medium text-primary mb-2">
+              {blog.blogCategory.title}
+            </p>
+          ) : null}
+          <h2 class="text-xl font-semibold text-night-owl-fg mb-1">
+            <a
+              href={`/blog/${blog.slug.current}`}
+              class="hover:text-primary hover:underline transition-colors"
+            >
+              {blog.title}
+            </a>
+          </h2>
+          <p class="text-sm italic text-night-owl-muted">
+            Updated: {formattedDate(blog._updatedAt)}
+          </p>
+        </article>
+      ))
+    )
+  }
+</div>
+
+{
+  1 < maxPages ? (
+    <nav class="flex gap-2 justify-center" aria-label="Blog pagination">
+      {1 < page ? (
+        <a
+          href={toPageHref(page - 1)}
+          rel="prev"
+          aria-label="Previous page"
+          class="px-3 py-1.5 rounded-md border border-night-owl-border text-night-owl-fg hover:text-primary hover:border-primary transition-colors text-sm"
+        >
+          &lsaquo;
+        </a>
+      ) : (
+        <span
+          aria-hidden="true"
+          class="px-3 py-1.5 rounded-md border border-night-owl-border text-night-owl-muted text-sm cursor-not-allowed opacity-50"
+        >
+          &lsaquo;
+        </span>
+      )}
+
+      {map(pageNumbers, (pageNumber) => (
+        <a
+          href={toPageHref(pageNumber)}
+          aria-current={pageNumber === page ? "page" : undefined}
+          class={
+            pageNumber === page
+              ? "px-3 py-1.5 rounded-md border transition-colors text-sm bg-primary/20 border-primary text-primary font-semibold"
+              : "px-3 py-1.5 rounded-md border transition-colors text-sm border-night-owl-border text-night-owl-fg hover:text-primary hover:border-primary"
+          }
+        >
+          {pageNumber}
+        </a>
+      ))}
+
+      {page < maxPages ? (
+        <a
+          href={toPageHref(page + 1)}
+          rel="next"
+          aria-label="Next page"
+          class="px-3 py-1.5 rounded-md border border-night-owl-border text-night-owl-fg hover:text-primary hover:border-primary transition-colors text-sm"
+        >
+          &rsaquo;
+        </a>
+      ) : (
+        <span
+          aria-hidden="true"
+          class="px-3 py-1.5 rounded-md border border-night-owl-border text-night-owl-muted text-sm cursor-not-allowed opacity-50"
+        >
+          &rsaquo;
+        </span>
+      )}
+    </nav>
+  ) : null
+}

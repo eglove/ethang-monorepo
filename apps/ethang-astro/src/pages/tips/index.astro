@@ -1,0 +1,25 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const allTips = [
+  { href: "/tips/scroll-containers", title: "Easy Sticky Header/Footer" },
+  { href: "/tips/scrollbar-gutter", title: "scrollbar-gutter" }
+] as const;
+---
+
+<BaseLayout title="Tips">
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-4xl font-semibold text-night-owl-fg mb-6">Tips</h1>
+    <ul class="flex flex-col gap-4 mt-6">
+      {allTips.map((tip) => (
+        <li key={tip.href}>
+          <h2 class="text-xl font-semibold">
+            <a href={tip.href} class="hover:text-primary hover:underline transition-colors text-night-owl-fg">
+              {tip.title}
+            </a>
+          </h2>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>

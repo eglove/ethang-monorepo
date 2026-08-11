@@ -1,0 +1,33 @@
+---
+import map from "lodash/map.js";
+
+import BlogList from "../../../components/BlogList.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { fetchBlogMaxPages, fetchBlogPage } from "../../../lib/blog.ts";
+
+export const prerender = true;
+
+export const getStaticPaths = async () => {
+  const maxPages = await fetchBlogMaxPages();
+
+  const pageNumbers = map(Array.from({ length: maxPages }), (_value, index) => {
+    return index + 1;
+  });
+
+  return map(pageNumbers, (pageNumber) => {
+    return { params: { page: String(pageNumber) } };
+  });
+};
+
+const pageParameter = Number(Astro.params.page ?? "1");
+const currentPage = Number.isNaN(pageParameter) ? 1 : pageParameter;
+
+const { maxPages, posts } = await fetchBlogPage(currentPage);
+---
+
+<BaseLayout title={`Blog - Page ${currentPage}`}>
+  <div class="flex flex-col items-center gap-2 max-w-7xl mx-auto px-4 py-6">
+    <h1 class="text-4xl font-semibold text-night-owl-fg">Blog</h1>
+    <BlogList maxPages={maxPages} page={currentPage} posts={posts} />
+  </div>
+</BaseLayout>

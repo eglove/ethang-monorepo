@@ -1,0 +1,159 @@
+---
+import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
+import map from "lodash/map.js";
+
+import CodeSlot from "./portabletext/code.astro";
+import ImageSlot from "./portabletext/image.astro";
+import QuoteSlot from "./portabletext/quote.astro";
+import Spans, {
+  type MarkDef,
+  type PortableSpan
+} from "./portabletext/Spans.astro";
+import VideoSlot from "./portabletext/video.astro";
+
+interface Props {
+  readonly value: unknown;
+}
+
+type PortableBlock = {
+  _key?: string;
+  _type?: string;
+  children?: PortableSpan[];
+  level?: number;
+  listItem?: string;
+  markDefs?: MarkDef[];
+  style?: string;
+};
+
+type BlockGroup = {
+  blocks: PortableBlock[];
+  listItem: null | string;
+};
+
+const { value } = Astro.props;
+
+const blocks: PortableBlock[] = Array.isArray(value)
+  ? (value as PortableBlock[])
+  : [];
+
+const hasText = (block: PortableBlock) => {
+  const parts = map(block.children ?? [], (child) => {
+    return isString(child.text) ? child.text : "";
+  });
+
+  return !isEmpty(parts.join(""));
+};
+
+/*
+ * Group consecutive list items so they render inside a single <ul>/<ol>,
+ * preserving list semantics that a flat map would lose.
+ */
+const groups: BlockGroup[] = [];
+
+for (const block of blocks) {
+  const listItem = isString(block.listItem) ? block.listItem : null;
+  const last = groups.at(-1);
+
+  if (!isNil(listItem) && !isNil(last) && last.listItem === listItem) {
+    last.blocks.push(block);
+  } else {
+    groups.push({ blocks: [block], listItem });
+  }
+}
+---
+
+{
+  map(groups, (group) => {
+    if (!isNil(group.listItem)) {
+      const items = map(group.blocks, (block) => (
+        <li class="my-1">
+          <Spans children={block.children} markDefs={block.markDefs} />
+        </li>
+      ));
+
+      return "number" === group.listItem ? (
+        <ol class="my-3 list-decimal pl-6 text-night-owl-fg">{items}</ol>
+      ) : (
+        <ul class="my-3 list-disc pl-6 text-night-owl-fg">{items}</ul>
+      );
+    }
+
+    const block = group.blocks[0];
+
+    if (isNil(block)) {
+      return null;
+    }
+
+    if ("block" === block._type) {
+      if (!hasText(block)) {
+        return null;
+      }
+
+      const inner = (
+        <Spans children={block.children} markDefs={block.markDefs} />
+      );
+
+      if ("h1" === block.style) {
+        return (
+          <h1 class="text-3xl font-semibold text-night-owl-fg mt-6 mb-3">
+            {inner}
+          </h1>
+        );
+      }
+
+      if ("h2" === block.style) {
+        return (
+          <h2 class="text-2xl font-semibold text-night-owl-fg mt-6 mb-3">
+            {inner}
+          </h2>
+        );
+      }
+
+      if ("h3" === block.style) {
+        return (
+          <h3 class="text-xl font-semibold text-night-owl-fg mt-4 mb-2">
+            {inner}
+          </h3>
+        );
+      }
+
+      if ("h4" === block.style) {
+        return (
+          <h4 class="text-lg font-semibold text-night-owl-fg mt-4 mb-2">
+            {inner}
+          </h4>
+        );
+      }
+
+      if ("blockquote" === block.style) {
+        return (
+          <blockquote class="border-l-4 border-primary pl-4 my-4 italic text-night-owl-fg">
+            {inner}
+          </blockquote>
+        );
+      }
+
+      return <p class="text-night-owl-fg my-3 leading-relaxed">{inner}</p>;
+    }
+
+    if ("image" === block._type) {
+      return <ImageSlot node={block} />;
+    }
+
+    if ("code" === block._type) {
+      return <CodeSlot node={block} />;
+    }
+
+    if ("video" === block._type || "videoEmbed" === block._type) {
+      return <VideoSlot node={block} />;
+    }
+
+    if ("quote" === block._type || "blockquote" === block._type) {
+      return <QuoteSlot node={block} />;
+    }
+
+    return null;
+  })
+}

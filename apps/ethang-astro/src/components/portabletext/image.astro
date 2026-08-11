@@ -1,0 +1,48 @@
+---
+import type { Props } from "astro-portabletext";
+
+const sanityImage = (await import("../../lib/sanity.ts")).sanityImage;
+const IMAGE_MAX_WIDTH = 1200;
+
+const props = Astro.props as Props & { node?: Record<string, unknown> };
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const node = (props.node ?? {}) as { alt?: string; asset?: { metadata?: { dimensions?: { aspectRatio?: number; height?: number; width?: number }; url?: string }; caption?: string } };
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const assetUrl = node.asset?.url as string | undefined;
+
+const hasAsset = typeof assetUrl === "string" && assetUrl.length > 0;
+
+let displayWidth = IMAGE_MAX_WIDTH;
+let height = Math.round(IMAGE_MAX_WIDTH / (node.asset?.metadata?.dimensions?.aspectRatio ?? 16 / 9));
+
+if (hasAsset) {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const width = node.asset?.metadata?.dimensions?.width;
+  if (typeof width === "number") {
+    displayWidth = Math.min(width, IMAGE_MAX_WIDTH);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  const h = node.asset?.metadata?.dimensions?.height;
+  if (typeof h === "number") {
+    height = h;
+  } else if (typeof width === "number") {
+    height = Math.round(displayWidth / (node.asset?.metadata?.dimensions?.aspectRatio ?? 16 / 9));
+  }
+}
+---
+
+{hasAsset ? (
+  <figure class="my-4">
+    <img
+      src={sanityImage.image(assetUrl!).width(IMAGE_MAX_WIDTH).fit("max").auto("format").url()}
+      alt={node.alt ?? ""}
+      width={displayWidth}
+      height={height}
+      loading="lazy"
+      class="w-full rounded-lg object-cover"
+    />
+    {typeof node.asset?.caption === "string" && node.asset.caption.length > 0 ? (
+      <figcaption class="text-xs text-night-owl-muted text-center mt-1">{node.asset.caption}</figcaption>
+    ) : null}
+  </figure>
+) : null}

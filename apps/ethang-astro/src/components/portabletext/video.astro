@@ -1,0 +1,72 @@
+---
+import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
+
+interface Props {
+  node?: Record<string, unknown>;
+}
+
+const { node = {} } = Astro.props;
+
+const rawVideoId = node["videoId"];
+const rawUrl = node["url"];
+const rawTitle = node["title"];
+
+const title = isString(rawTitle) ? rawTitle : "YouTube video";
+
+/*
+ * Sanity supplies `videoId` for YouTube embeds. A raw watch URL cannot be
+ * framed (YouTube refuses to render /watch in an iframe), so derive the id
+ * and build the /embed/ URL instead.
+ */
+const idFromUrl = (url: string) => {
+  const watchMatch = /[?&]v=([\w-]{11})/u.exec(url);
+
+  if (!isNil(watchMatch)) {
+    return watchMatch[1];
+  }
+
+  const shortMatch = /youtu\.be\/([\w-]{11})/u.exec(url);
+
+  if (!isNil(shortMatch)) {
+    return shortMatch[1];
+  }
+
+  const embedMatch = /\/embed\/([\w-]{11})/u.exec(url);
+
+  if (!isNil(embedMatch)) {
+    return embedMatch[1];
+  }
+
+  return null;
+};
+
+const videoId = isString(rawVideoId) && !isEmpty(rawVideoId)
+  ? rawVideoId
+  : isString(rawUrl)
+    ? idFromUrl(rawUrl)
+    : null;
+
+const embedUrl = isNil(videoId)
+  ? null
+  : `https://www.youtube-nocookie.com/embed/${videoId}`;
+---
+
+{
+  isNil(embedUrl) ? null : (
+    <figure class="my-4">
+      <div class="relative w-full overflow-hidden rounded-lg aspect-video">
+        <iframe
+          src={embedUrl}
+          title={title}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+          class="absolute inset-0 h-full w-full border-0"
+        ></iframe>
+      </div>
+    </figure>
+  )
+}
