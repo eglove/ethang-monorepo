@@ -6,5 +6,5 @@ export const forms = {
   SCHEDULE_MEETING: "Schedule a Meeting",
   SIGN_IN: "Sign In",
   SIGN_IN_TO_ACCOUNT: "Sign In to Your Account",
-  SIGNING_IN: "Signing In...",
+  SIGNING_IN: "Signing In..."
 } as const;
