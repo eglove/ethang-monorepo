@@ -1,22 +1,189 @@
 ---
-import { Font } from "astro:assets";
+import { Image } from "astro:assets";
+import { Mail } from "lucide-astro";
 
-import "../styles/global.css";
+import frontendMastersIcon from "../assets/frontend-masters-icon.png";
+import pluralsightIcon from "../assets/pluralsight-icon.png";
+import profileImage from "../assets/profile.jpeg";
+import { forms } from "../../constants/forms.ts";
+import { home } from "../../constants/home.ts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const languages = [
+  "TypeScript",
+  "JavaScript",
+  "React",
+  "Next.js",
+  "React Native",
+  "Solid",
+  "Node.js",
+  "C#/.NET",
+  "Python",
+  "SQL"
+] as const;
+
+const stack = [
+  "TanStack Router",
+  "TanStack Query",
+  "Radix Themes",
+  "Tailwind",
+  "Sanity (CMS)",
+  "Cloudflare Workers",
+  "Hono",
+  "Drizzle ORM",
+  "D1 (SQLite)",
+  "React Query",
+  "Redux",
+  "GraphQL",
+  "REST",
+  "WebSockets",
+  "Spring Boot",
+  "Microservices"
+] as const;
+
+const practices = [
+  "TDD (vitest, Playwright)",
+  "DDD",
+  "Monorepo",
+  "Effect-TS",
+  "Lodash",
+  "Dependency injection",
+  "Composable design",
+  "Accessibility",
+  "SEO",
+  "Performance budgeting",
+  "Container-driven development",
+  "Legacy migrations"
+] as const;
+
+const clientProjects = [
+  { detail: home.CLIENT_PROJECTS.TELECOM.DETAIL, name: home.CLIENT_PROJECTS.TELECOM.NAME },
+  { detail: home.CLIENT_PROJECTS.NEXT_JS_MIGRATION.DETAIL, name: home.CLIENT_PROJECTS.NEXT_JS_MIGRATION.NAME, unstick: home.CLIENT_PROJECTS.NEXT_JS_MIGRATION.UNSTICK },
+  { detail: home.CLIENT_PROJECTS.AUTOMATED_TESTING.DETAIL, name: home.CLIENT_PROJECTS.AUTOMATED_TESTING.NAME, unstick: home.CLIENT_PROJECTS.AUTOMATED_TESTING.UNSTICK },
+  { detail: home.CLIENT_PROJECTS.FARMING_DASHBOARD.DETAIL, name: home.CLIENT_PROJECTS.FARMING_DASHBOARD.NAME },
+  { detail: home.CLIENT_PROJECTS.FEDERAL_EMISSIONS.DETAIL, name: home.CLIENT_PROJECTS.FEDERAL_EMISSIONS.NAME, unstick: home.CLIENT_PROJECTS.FEDERAL_EMISSIONS.UNSTICK },
+  { detail: home.CLIENT_PROJECTS.LOW_CODE_GRAPHQL.DETAIL, name: home.CLIENT_PROJECTS.LOW_CODE_GRAPHQL.NAME },
+  { detail: home.CLIENT_PROJECTS.COLLABORATION_APP.DETAIL, name: home.CLIENT_PROJECTS.COLLABORATION_APP.NAME },
+  { detail: home.CLIENT_PROJECTS.SHIPPING_QUOTES.DETAIL, name: home.CLIENT_PROJECTS.SHIPPING_QUOTES.NAME },
+  { detail: home.CLIENT_PROJECTS.IE11_DASHBOARD.DETAIL, name: home.CLIENT_PROJECTS.IE11_DASHBOARD.NAME },
+  { detail: home.CLIENT_PROJECTS.NONPROFIT_SEO.DETAIL, name: home.CLIENT_PROJECTS.NONPROFIT_SEO.NAME },
+  { detail: home.CLIENT_PROJECTS.REACT_NATIVE_ERP.DETAIL, name: home.CLIENT_PROJECTS.REACT_NATIVE_ERP.NAME },
+  { detail: home.CLIENT_PROJECTS.CRYPTO_DASHBOARD.DETAIL, name: home.CLIENT_PROJECTS.CRYPTO_DASHBOARD.NAME },
+  { detail: home.CLIENT_PROJECTS.VILLAGE_TRUSTEE.DETAIL, name: home.CLIENT_PROJECTS.VILLAGE_TRUSTEE.NAME }
+] as const;
+
+const monorepoProjects = [
+  { detail: home.MONOREPO_PROJECTS.HOME_PAGE.DETAIL, name: home.MONOREPO_PROJECTS.HOME_PAGE.NAME },
+  { detail: home.MONOREPO_PROJECTS.AUTH_SERVICE.DETAIL, name: home.MONOREPO_PROJECTS.AUTH_SERVICE.NAME },
+  { detail: home.MONOREPO_PROJECTS.COURSE_TRACKING.DETAIL, name: home.MONOREPO_PROJECTS.COURSE_TRACKING.NAME },
+  { detail: home.MONOREPO_PROJECTS.RSS_PIPELINE.DETAIL, name: home.MONOREPO_PROJECTS.RSS_PIPELINE.NAME },
+  { detail: home.MONOREPO_PROJECTS.AGENTS_BUILD.DETAIL, name: home.MONOREPO_PROJECTS.AGENTS_BUILD.NAME }
+] as const;
 ---
 
-<html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <link rel="icon" href="/favicon.ico" />
-        <meta name="viewport" content="width=device-width" />
-        <meta name="generator" content={Astro.generator} />
-        <Font cssVariable="--font-inter" />
-        <Font cssVariable="--font-jetbrains-mono" />
-        <title>Astro</title>
-    </head>
-    <body>
-        <h1>Astro</h1>
-        <code>Test Paragraph</code>
-    </body>
-</html>
+<BaseLayout title="Ethan Glover">
+  <div class="flex flex-col gap-4 max-w-7xl mx-auto px-4 py-6">
+    <!-- Profile Card -->
+    <div class="border border-night-owl-border rounded-xl bg-night-owl-surface p-6">
+      <div class="flex items-center gap-4 flex-wrap">
+        <Image
+          src={profileImage}
+          alt="Ethan Glover"
+          width={112}
+          height={112}
+          loading="eager"
+          class="size-28 rounded-full object-cover bg-night-owl-bg"
+        />
+        <div>
+          <h1 class="text-2xl font-bold text-night-owl-fg">Ethan Glover</h1>
+          <p class="text-sm text-night-owl-muted mt-1">Software Engineer</p>
+          <div class="flex gap-3 mt-3 items-center flex-wrap">
+            <a href="https://www.linkedin.com/in/ethan-glover/" target="_blank" rel="noopener noreferrer" class="text-night-owl-fg hover:text-primary transition-colors" aria-label="LinkedIn">
+              <svg width="20" height="20" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M2 1C1.44772 1 1 1.44772 1 2V13C1 13.5523 1.44772 14 2 14H13C13.5523 14 14 13.5523 14 13V2C14 1.44772 13.5523 1 13 1H2ZM3.05 6H4.95V12H3.05V6ZM5.075 4.005C5.075 4.59871 4.59371 5.08 4 5.08C3.4063 5.08 2.925 4.59871 2.925 4.005C2.925 3.41129 3.4063 2.93 4 2.93C4.59371 2.93 5.075 3.41129 5.075 4.005ZM12 8.35713C12 6.55208 10.8334 5.85033 9.67449 5.85033C9.29502 5.83163 8.91721 5.91119 8.57874 6.08107C8.32172 6.21007 8.05265 6.50523 7.84516 7.01853H7.79179V6.00044H6V12.0047H7.90616V8.8112C7.8786 8.48413 7.98327 8.06142 8.19741 7.80987C8.41156 7.55832 8.71789 7.49825 8.95015 7.46774H9.02258C9.62874 7.46774 10.0786 7.84301 10.0786 8.78868V12.0047H11.9847L12 8.35713Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+            </a>
+            <a href="https://github.com/eglove" target="_blank" rel="noopener noreferrer" class="text-night-owl-fg hover:text-primary transition-colors" aria-label="GitHub">
+              <svg width="20" height="20" viewBox="0 0 15 15" fill="none" aria-hidden="true"><path d="M7.49933 0.25C3.49635 0.25 0.25 3.49593 0.25 7.50024C0.25 10.703 2.32715 13.4206 5.2081 14.3797C5.57084 14.446 5.70302 14.2222 5.70302 14.0299C5.70302 13.8576 5.69679 13.4019 5.69323 12.797C3.67661 13.235 3.25112 11.825 3.25112 11.825C2.92132 10.9874 2.44599 10.7644 2.44599 10.7644C1.78773 10.3149 2.49584 10.3238 2.49584 10.3238C3.22353 10.375 3.60629 11.0711 3.60629 11.0711C4.25298 12.1788 5.30335 11.8588 5.71638 11.6732C5.78225 11.205 5.96962 10.8854 6.17658 10.7043C4.56675 10.5209 2.87415 9.89918 2.87415 7.12104C2.87415 6.32925 3.15677 5.68257 3.62053 5.17563C3.54576 4.99226 3.29697 4.25521 3.69174 3.25691C3.69174 3.25691 4.30015 3.06196 5.68522 3.99973C6.26337 3.83906 6.8838 3.75895 7.50022 3.75583C8.1162 3.75895 8.73619 3.83906 9.31523 3.99973C10.6994 3.06196 11.3069 3.25691 11.3069 3.25691C11.7026 4.25521 11.4538 4.99226 11.3795 5.17563C11.8441 5.68257 12.1245 6.32925 12.1245 7.12104C12.1245 9.9063 10.4292 10.5192 8.81452 10.6985C9.07444 10.9224 9.30633 11.3648 9.30633 12.0413C9.30633 13.0102 9.29742 13.7922 9.29742 14.0299C9.29742 14.2239 9.42828 14.4496 9.79591 14.3788C12.6746 13.4179 14.75 10.7025 14.75 7.50024C14.75 3.49593 11.5036 0.25 7.49933 0.25Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+            </a>
+            <a href="mailto:hello@ethang.email" class="text-night-owl-fg hover:text-primary transition-colors" aria-label="Email">
+              <Mail size={20} aria-hidden={true} />
+            </a>
+            <a href="https://frontendmasters.com/u/ethang/" target="_blank" rel="noopener noreferrer" aria-label="Frontend Masters">
+              <Image src={frontendMastersIcon} alt="Frontend Masters" width={32} height={32} loading="lazy" class="size-8" />
+            </a>
+            <a href="https://app.pluralsight.com/profile/ethan-glover-e9" target="_blank" rel="noopener noreferrer" aria-label="Pluralsight">
+              <Image src={pluralsightIcon} alt="Pluralsight" width={32} height={32} loading="lazy" class="size-8" />
+            </a>
+            <a
+              href="https://calendar.proton.me/u/2/bookings#10S2zo5jm_rTCXVDnyi55vEBS9HN8Cam4w3HxHr5Omg="
+              target="_blank"
+              rel="noopener noreferrer"
+              class="rounded-lg border border-night-owl-border px-4 py-2 text-sm font-semibold text-night-owl-fg transition-colors hover:border-primary hover:text-primary"
+            >
+              {forms.SCHEDULE_MEETING}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How I Work -->
+    <div class="border border-night-owl-border rounded-xl bg-night-owl-surface p-6">
+      <h2 class="text-xl font-semibold text-night-owl-fg mb-4">How I work</h2>
+      <div class="flex flex-col gap-3">
+        <div data-principle="">
+          <p class="font-bold text-base text-night-owl-fg">Hypothesis-first.</p>
+          <p class="text-sm text-night-owl-muted">I write the failing test before the implementation. Red, green, refactor — every PR, every feature, every bug fix.</p>
+        </div>
+        <div data-principle="">
+          <p class="font-bold text-base text-night-owl-fg">Grounded in SWEBOK.</p>
+          <p class="text-sm text-night-owl-muted">Estimates and tradeoffs grounded in the SWEBOK software engineering body of knowledge.</p>
+        </div>
+        <div data-principle="">
+          <p class="font-bold text-base text-night-owl-fg">Domain-Driven Design as the bridge.</p>
+          <p class="text-sm text-night-owl-muted">I often promote Domain-Driven Design as the bridge between development and business understanding. The model is the conversation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stack & Tools -->
+    <div class="border border-night-owl-border rounded-xl bg-night-owl-surface p-6">
+      <h2 class="text-xl font-semibold text-night-owl-fg mb-4">Stack & tools</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div data-column="">
+          <span class="text-xs font-bold text-night-owl-muted uppercase">Languages & frameworks</span>
+          <p class="text-sm text-night-owl-fg mt-1">{languages.join(", ")}</p>
+        </div>
+        <div data-column="">
+          <span class="text-xs font-bold text-night-owl-muted uppercase">Stack & infrastructure</span>
+          <p class="text-sm text-night-owl-fg mt-1">{stack.join(", ")}</p>
+        </div>
+        <div data-column="">
+          <span class="text-xs font-bold text-night-owl-muted uppercase">Practices</span>
+          <p class="text-sm text-night-owl-fg mt-1">{practices.join(", ")}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- What I've Shipped -->
+    <div class="border border-night-owl-border rounded-xl bg-night-owl-surface p-6">
+      <h2 class="text-xl font-semibold text-night-owl-fg mb-4">{home.WHAT_IVE_SHIPPED_HEADING}</h2>
+      <div class="flex flex-col gap-3">
+        {clientProjects.map((project) => (
+          <div data-project="">
+            <p class="font-bold text-sm text-night-owl-fg" data-name="">{project.name}</p>
+            <p class="text-sm text-night-owl-muted">{project.detail}</p>
+            {"unstick" in project && project.unstick !== null ? (
+              <p class="text-xs text-night-owl-muted mt-1" data-unstick="">→ {project.unstick}</p>
+            ) : null}
+          </div>
+        ))}
+        {monorepoProjects.map((project) => (
+          <div data-project="">
+            <p class="font-bold text-sm text-night-owl-fg" data-name="">{project.name}</p>
+            <p class="text-sm text-night-owl-muted">{project.detail}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

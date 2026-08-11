@@ -2,49 +2,56 @@
 
 @theme inline {
   /* ── Night Owl palette ─────────────────────────────────────────────── */
-  --color-night-owl-bg:        #011627;   /* base background                             */
-  --color-night-owl-surface:   #0b3d61;   /* elevated surface (cards, panels)            */
-  --color-night-owl-border:    rgba(255, 255, 255, 0.08);
+  --color-night-owl-bg: #011627; /* base background                             */
+  --color-night-owl-surface: #0b3d61; /* elevated surface (cards, panels)            */
+  --color-night-owl-border: rgba(255, 255, 255, 0.08);
 
-  --color-night-owl-fg:        #d6deeb;   /* primary foreground / body text              */
-  --color-night-owl-muted:     #637777;   /* muted text, comments                        */
+  --color-night-owl-fg: #d6deeb; /* primary foreground / body text              */
+  --color-night-owl-muted: #637777; /* muted text, comments                        */
 
   /* syntax-highlighting palette — also usable as semantic tokens */
-  --color-night-owl-purple:    #c792ea;   /* keywords, emphasis                          */
-  --color-night-owl-green:     #addb67;   /* built-ins, variables, strong                */
-  --color-night-owl-blue:      #82aaff;   /* types, functions, meta                      */
-  --color-night-owl-cyan:      #7fdbca;   /* attributes, tags, params                    */
-  --color-night-owl-red:       #ff5874;   /* literals                                    */
-  --color-night-owl-orange:    #f78c6c;   /* numbers                                     */
-  --color-night-owl-yellow:    #ecc48d;   /* strings                                     */
-  --color-night-owl-peach:     #ffcb8b;   /* classes                                     */
-  --color-night-owl-mint:      #d9f5dd;   /* punctuation, bullets                        */
+  --color-night-owl-purple: #c792ea; /* keywords, emphasis                          */
+  --color-night-owl-green: #addb67; /* built-ins, variables, strong                */
+  --color-night-owl-blue: #82aaff; /* types, functions, meta                      */
+  --color-night-owl-cyan: #7fdbca; /* attributes, tags, params                    */
+  --color-night-owl-red: #ff5874; /* literals                                    */
+  --color-night-owl-orange: #f78c6c; /* numbers                                     */
+  --color-night-owl-yellow: #ecc48d; /* strings                                     */
+  --color-night-owl-peach: #ffcb8b; /* classes                                     */
+  --color-night-owl-mint: #d9f5dd; /* punctuation, bullets                        */
 
   /* ── Semantic UI tokens (derived from Night Owl) ───────────────────── */
-  --color-primary:    var(--color-night-owl-blue);
-  --color-secondary:  var(--color-night-owl-cyan);
-  --color-accent:     var(--color-night-owl-purple);
-  --color-success:    var(--color-night-owl-green);
-  --color-warning:    var(--color-night-owl-yellow);
-  --color-danger:     var(--color-night-owl-red);
+  --color-primary: var(--color-night-owl-blue);
+  --color-secondary: var(--color-night-owl-cyan);
+  --color-accent: var(--color-night-owl-purple);
+  --color-success: var(--color-night-owl-green);
+  --color-warning: var(--color-night-owl-yellow);
+  --color-danger: var(--color-night-owl-red);
 
   /* ── Typography families ───────────────────────────────────────────── */
-  --font-sans:  var(--font-inter);
-  --font-mono:  var(--font-jetbrains-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 
   /* ── Type scale (size / line-height) ───────────────────────────────── */
-  --text-xs:   0.75rem / 1rem;
-  --text-sm:   0.875rem / 1.25rem;
-  --text-base: 1rem   / 1.5rem;
-  --text-lg:   1.125rem / 1.75rem;
-  --text-xl:   1.25rem / 1.75rem;
-  --text-2xl:  1.5rem  / 2rem;
-  --text-3xl:  1.875rem/ 2.25rem;
-  --text-4xl:  2.25rem / 2.5rem;
+  --text-xs: 0.75rem / 1rem;
+  --text-sm: 0.875rem / 1.25rem;
+  --text-base: 1rem / 1.5rem;
+  --text-lg: 1.125rem / 1.75rem;
+  --text-xl: 1.25rem / 1.75rem;
+  --text-2xl: 1.5rem / 2rem;
+  --text-3xl: 1.875rem/2.25rem;
+  --text-4xl: 2.25rem / 2.5rem;
 
   /* ── Extended spacing tokens ───────────────────────────────────────── */
-  --spacing-88:  22rem;   /* wide layout breakpoint                    */
-  --spacing-100: 25rem;   /* full-width content max                    */
+  --spacing-88: 22rem; /* wide layout breakpoint                    */
+  --spacing-100: 25rem; /* full-width content max                    */
+
+  /* ── Named panel/section sizes (avoid arbitrary numeric utilities) ─── */
+  --spacing-panel: 18.75rem; /* min height for content panels (300px)     */
+  --spacing-form-viewport: 60vh; /* centred form viewport band            */
+
+  /* on-primary foreground, so buttons never hardcode a raw colour */
+  --color-on-primary: var(--color-night-owl-bg);
 }
 
 html {
@@ -58,7 +65,12 @@ body {
   font-family: var(--font-sans), sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.25;
   color: var(--color-night-owl-fg);

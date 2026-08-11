@@ -4,6 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 
+const SITE = "https://ethang.dev";
+
 // https://astro.build/config
 export default defineConfig({
   adapter: cloudflare(),
@@ -20,6 +22,7 @@ export default defineConfig({
     }
   ],
   integrations: [sitemap()],
+  site: SITE,
 
   vite: {
     plugins: [tailwindcss()]
