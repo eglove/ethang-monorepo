@@ -16,14 +16,7 @@ corepack install -g npm@latest yarn@latest pnpm@latest
 pnpm store prune
 npm i -g -y wrangler @google/gemini-cli @angular/cli sanity chrome-devtools-mcp@latest @playwright/cli@latest @earendil-works/pi-coding-agent
 
-Set-Location ~/projects/ethang-monorepo/
-Remove-Item -Recurse -Force ./.agents/skills
-npx skills add effect-ts/skills -y
-npx skills add cloudflare/skills -y
-npx skills add https://github.com/github/awesome-copilot --skill git-commit -y
-npx skills add microsoft/playwright-cli -y
-npx skills add tanstack-skills/tanstack-skills -y
-npx skills add chromedevtools/chrome-devtools-mcp -y
-npx skills add https://github.com/vercel-labs/skills --skill find-skills -y
-npx skills add https://github.com/harshanandak/forge --skill sonarcloud-analysis -y
-npx skills add https://github.com/mattpocock/skills --skill grill-me -y
+Set-Location ~/
+npx skills update --project
+Set-Location ~\.pi\agent\skills\avoid-ai-writing
+git pull
