@@ -34,7 +34,7 @@ If you are using [**@ethang/eslint-config**](https://github.com/eglove/ethang-mo
 
 To use it, simply include htmlConfig in your eslint.config.js file:
 
-`typescript
+```typescript
 import config from "@ethang/eslint-config/config.main.js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import htmlConfig from "@ethang/eslint-config/config.html.js"; // Import the HTML subconfig
@@ -53,7 +53,7 @@ export default defineConfig(
   },
 );
 
-`
+```
 
 ## Correct vs. Incorrect Implementation
 
@@ -61,7 +61,7 @@ The linter enforces the specification by ensuring the \<summary\> is present and
 
 ### ❌ Incorrect
 
-`html
+```html
 <!-- Missing the summary element entirely -->
 <details>
   <p>Hidden content</p>
@@ -72,16 +72,16 @@ The linter enforces the specification by ensuring the \<summary\> is present and
   <p>Content before summary</p>
   <summary>Toggle</summary>
 </details>
-`
+```
 
 ### ✅ Correct
 
-`html
+```html
 <details>
   <summary>Show more</summary>
   <p>Hidden content</p>
 </details>
-`
+```
 
 By enforcing this rule, you guarantee that your disclosure widgets are always labeled correctly, following the HTML spec and providing a better experience for all users.
 

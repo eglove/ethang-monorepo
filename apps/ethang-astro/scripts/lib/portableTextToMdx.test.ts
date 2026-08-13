@@ -15,9 +15,7 @@ const block = (
 	_type: "block",
 	...(opts.listItem ? { listItem: opts.listItem } : {}),
 	...(opts.style ? { style: opts.style } : {}),
-	children: [
-		{ text, ...(opts.marks?.length ? { marks: opts.marks } : {}) },
-	],
+	children: [{ text, ...(opts.marks?.length ? { marks: opts.marks } : {}) }],
 	...(opts.markDefs ? { markDefs: opts.markDefs } : {}),
 });
 
@@ -77,7 +75,10 @@ describe("portableTextToMdx", () => {
 			["bullet", "bullet"],
 			["number", "number"],
 		])("%s single item", (listItem) => {
-			const { body } = portableTextToMdx([block("one", { listItem })], resolveImage);
+			const { body } = portableTextToMdx(
+				[block("one", { listItem })],
+				resolveImage,
+			);
 			expect(body).toBe(listItem === "number" ? "1. one\n" : "- one\n");
 		});
 
@@ -106,10 +107,7 @@ describe("portableTextToMdx", () => {
 
 		it("keeps empty list items but renders non-empty groups", () => {
 			const { body } = portableTextToMdx(
-				[
-					block("a", { listItem: "bullet" }),
-					block("", { listItem: "bullet" }),
-				],
+				[block("a", { listItem: "bullet" }), block("", { listItem: "bullet" })],
 				resolveImage,
 			);
 			expect(body).toBe("- a\n- \n");
@@ -124,7 +122,10 @@ describe("portableTextToMdx", () => {
 			["underline", ["underline"], "<u>text</u>"],
 			["strike-through", ["strike-through"], "~~text~~"],
 		])("%s wraps text", (_, marks, expected) => {
-			const { body } = portableTextToMdx([block("text", { marks })], resolveImage);
+			const { body } = portableTextToMdx(
+				[block("text", { marks })],
+				resolveImage,
+			);
 			expect(body).toBe(`${expected}\n`);
 		});
 
@@ -133,10 +134,7 @@ describe("portableTextToMdx", () => {
 			["em inside strong", ["em", "strong"], "***x***"],
 			["underline+em", ["underline", "em"], "*<u>x</u>*"],
 		])("%s nests", (_, marks, expected) => {
-			const { body } = portableTextToMdx(
-				[block("x", { marks })],
-				resolveImage,
-			);
+			const { body } = portableTextToMdx([block("x", { marks })], resolveImage);
 			expect(body).toBe(`${expected}\n`);
 		});
 
@@ -187,9 +185,7 @@ describe("portableTextToMdx", () => {
 					{
 						_type: "block",
 						children: [{ text: "x", marks: ["k1"] }],
-						markDefs: [
-							{ _key: "k1", _type: "annotation", href: "/about" },
-						],
+						markDefs: [{ _key: "k1", _type: "annotation", href: "/about" }],
 					},
 				],
 				resolveImage,
@@ -238,20 +234,20 @@ describe("portableTextToMdx", () => {
 	});
 
 	describe("code", () => {
-		it("renders code without a language", () => {
+		it("renders code without a language with a 3-backtick fence", () => {
 			const { body } = portableTextToMdx(
 				[{ _type: "code", code: "const x = 1;" }],
 				resolveImage,
 			);
-			expect(body).toBe("`\nconst x = 1;\n`\n");
+			expect(body).toBe("```\nconst x = 1;\n```\n");
 		});
 
-		it("renders code with a language", () => {
+		it("renders code with a language with a 3-backtick fence", () => {
 			const { body } = portableTextToMdx(
 				[{ _type: "code", code: "let x", language: "ts" }],
 				resolveImage,
 			);
-			expect(body).toBe("`ts\nlet x\n`\n");
+			expect(body).toBe("```ts\nlet x\n```\n");
 		});
 
 		it("skips a code block without a code field", () => {
@@ -276,15 +272,19 @@ describe("portableTextToMdx", () => {
 		});
 	});
 
-		describe("image", () => {
+	describe("image", () => {
 		const imageNode = (asset: unknown, alt?: string) =>
-			({ _type: "image", ...(alt !== undefined ? { alt } : {}), asset }) as const;
+			({
+				_type: "image",
+				...(alt !== undefined ? { alt } : {}),
+				asset,
+			}) as const;
 
 		it.each([
 			[
 				"with caption",
 				imageNode({ url: "img", caption: "c" }, "a"),
-				"<PostImage src={img0} alt=\"a\" caption=\"c\" />\n",
+				'<PostImage src={img0} alt="a" caption="c" />\n',
 				[{ variable: "img0", src: "./images/x.png", alt: "a", caption: "c" }],
 			],
 			[
@@ -296,7 +296,7 @@ describe("portableTextToMdx", () => {
 			[
 				"missing alt",
 				imageNode({ url: "img", caption: "c" }),
-				"<PostImage src={img0} alt=\"\" caption=\"c\" />\n",
+				'<PostImage src={img0} alt="" caption="c" />\n',
 				[{ variable: "img0", src: "./images/x.png", alt: "", caption: "c" }],
 			],
 		])("%s", (_, node, expectedBody, expectedImages) => {
@@ -311,7 +311,7 @@ describe("portableTextToMdx", () => {
 				resolveImage,
 			);
 			expect(body).toBe(
-				"<PostImage src={img0} alt=\"a&quot;b\" caption=\"c&quot;d\" />\n",
+				'<PostImage src={img0} alt="a&quot;b" caption="c&quot;d" />\n',
 			);
 		});
 
@@ -332,19 +332,13 @@ describe("portableTextToMdx", () => {
 		});
 
 		it("skips an image when the resolver returns null", () => {
-			const { body, images } = portableTextToMdx(
-				[imageNode({})],
-				resolveImage,
-			);
+			const { body, images } = portableTextToMdx([imageNode({})], resolveImage);
 			expect(body).toBe("");
 			expect(images).toEqual([]);
 		});
 
 		it("skips an image without a resolvable url", () => {
-			const { body, images } = portableTextToMdx(
-				[imageNode({})],
-				() => null,
-			);
+			const { body, images } = portableTextToMdx([imageNode({})], () => null);
 			expect(body).toBe("");
 			expect(images).toEqual([]);
 		});
@@ -366,7 +360,9 @@ describe("portableTextToMdx", () => {
 				],
 				resolveImage,
 			);
-			expect(body).toBe('<VideoEmbed videoId="v" url="https://x" title="t" />\n');
+			expect(body).toBe(
+				'<VideoEmbed videoId="v" url="https://x" title="t" />\n',
+			);
 		});
 
 		it("renders only the present attrs and escapes quotes", () => {
@@ -393,11 +389,7 @@ describe("portableTextToMdx", () => {
 				{ quote: "q", author: "a", source: "s", sourceUrl: "u" },
 				'<Blockquote author="a" source="s" sourceUrl="u">q</Blockquote>\n',
 			],
-			[
-				"without attrs",
-				{ quote: "q" },
-				"<Blockquote>q</Blockquote>\n",
-			],
+			["without attrs", { quote: "q" }, "<Blockquote>q</Blockquote>\n"],
 		])("%s", (_, node, expected) => {
 			const { body } = portableTextToMdx(
 				[{ _type: "quote", ...node }],
@@ -419,7 +411,9 @@ describe("portableTextToMdx", () => {
 				[{ _type: "quote", quote: 'q"a *b*', author: 'a"1' }],
 				resolveImage,
 			);
-			expect(body).toBe('<Blockquote author="a&quot;1">q"a \\*b\\*</Blockquote>\n');
+			expect(body).toBe(
+				'<Blockquote author="a&quot;1">q"a \\*b\\*</Blockquote>\n',
+			);
 		});
 
 		it("skips an empty quote", () => {
@@ -444,7 +438,10 @@ describe("portableTextToMdx", () => {
 		});
 
 		it("handles null blocks", () => {
-			const { body } = portableTextToMdx(null as unknown as unknown[], resolveImage);
+			const { body } = portableTextToMdx(
+				null as unknown as unknown[],
+				resolveImage,
+			);
 			expect(body).toBe("");
 		});
 

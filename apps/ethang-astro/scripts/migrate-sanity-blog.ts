@@ -117,9 +117,7 @@ async function main() {
 			...(asString(doc["_updatedAt"])
 				? [`updatedDate: "${asString(doc["_updatedAt"])}"`]
 				: []),
-			...(asString(
-				(doc["blogCategory"] as { title?: unknown } | null)?.title,
-			)
+			...(asString((doc["blogCategory"] as { title?: unknown } | null)?.title)
 				? [
 						`blogCategory: "${esc(asString((doc["blogCategory"] as { title: string }).title) ?? "")}"`,
 					]

@@ -115,8 +115,10 @@ export const portableTextToMdx = (
 			const lang = isString(block["language"])
 				? (block["language"] as string)
 				: null;
-			const fences =
-				Math.max(...(code.match(/`+/g)?.map((f) => f.length) ?? [0])) + 1;
+			const longestBacktickRun = Math.max(
+				...(code.match(/`+/g)?.map((f) => f.length) ?? [0]),
+			);
+			const fences = Math.max(3, longestBacktickRun + 1);
 			const fence = "`".repeat(fences);
 			body.push(`${fence}${lang ?? ""}\n${code}\n${fence}`);
 			body.push("");

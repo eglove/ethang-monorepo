@@ -26,7 +26,7 @@ A `computed\(\)` signal is a derivation. If you are using it but not returning a
 
 These patterns will now trigger an ESLint error:
 
-`typescript
+```typescript
 // Empty body returns undefined
 const total = computed(() => {
   doSomething();
@@ -38,13 +38,13 @@ const name = computed(() => {
   return user().name;
 });
 
-`
+```
 
 ### ✅ Correct Usage
 
 Ensure every path returns a value or uses an implicit return:
 
-`typescript
+```typescript
 // Clean implicit return
 const total = computed(() => price() * quantity());
 
@@ -54,7 +54,7 @@ const name = computed(() => {
   return data ? data.name : 'Guest';
 });
 
-`
+```
 
 ## 2. `@angular-eslint/template/no-non-null-assertion`
 
@@ -70,7 +70,7 @@ It is almost always better to use **Optional Chaining** \(`?.`\) or **Nullish Co
 
 Avoid forcing values in templates:
 
-`html
+```html
 <!-- Property access -->
 <p>{{ user!.name }}</p>
 
@@ -82,7 +82,7 @@ Avoid forcing values in templates:
 
 <!-- Inside @let declarations -->
 @let config = getConfig()!;
-`
+```
 
 ## Integration with @ethang/eslint-config
 
@@ -90,7 +90,7 @@ If you are using the **Relentless. Unapologetic.** [@ethang/eslint-config](https
 
 To include these rules along with the other 85+ Angular-specific checks, simply import the configuration in your `eslint.config.js`:
 
-`typescript
+```typescript
 import config from "@ethang/eslint-config/config.main.js";
 import angularConfig from "@ethang/eslint-config/config.angular.js";
 import { defineConfig } from "eslint/config";
@@ -110,7 +110,7 @@ export default defineConfig(
     },
   },
 );
-`
+```
 
 ## Conclusion
 

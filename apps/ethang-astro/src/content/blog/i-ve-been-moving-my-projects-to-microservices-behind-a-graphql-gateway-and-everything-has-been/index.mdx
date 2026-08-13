@@ -28,7 +28,7 @@ But maybe more importantly for a solo developer, they work seamlessly in a local
 
 <Blockquote author=" Kabir Sikand" source="Cloudflare" sourceUrl="https://blog.cloudflare.com/service-bindings-ga/">When using Service Bindings, you no longer have to pay for those “idle resources”. With the Workers model, customers can execute work on a single shared compute thread across multiple individual Services, for each and every request. Cloudflare will charge for the amount of time that thread is allocated to your Workers and the time your Workers are awaiting external dependencies. Cloudflare won’t double charge for any overlap.</Blockquote>
 
-`typescript
+```typescript
 import isNil from "lodash/isNil.js";
 
 export const ethangCoursesFetcher = async (
@@ -43,7 +43,7 @@ export const ethangCoursesFetcher = async (
 
   return fetch(request);
 }
-`
+```
 
 ## Apollo Gateway
 
@@ -51,7 +51,7 @@ When we talk about setting up [Apollo Gateway](https://www.apollographql.com/doc
 
 Before:
 
-`typescript
+```typescript
 const { ApolloGateway, IntrospectAndCompose } = require('@apollo/gateway');
 
 const gateway = new ApolloGateway({
@@ -63,11 +63,11 @@ const gateway = new ApolloGateway({
     ],
   }),
 });
-`
+```
 
 After:
 
-``typescript
+```typescript
 const gateway = new ApolloGateway({
   buildService: buildService(environment),
   supergraphSdl
@@ -95,11 +95,11 @@ export const subgraphs: Record<
   "ethang-courses": ethangCoursesFetcher,
   "ethang-rss": ethangRssFetcher
 };
-``
+```
 
 Each service is just a normal [Apollo Server](https://www.apollographql.com/docs/apollo-server). As long as I can point the gateway to a schema file, they get composed into the graph automatically. All of this combines together seamlessly into one unified API.
 
-`yaml
+```yaml
 federation_version: =2.0.0
 subgraphs:
   ethang-courses:
@@ -109,7 +109,7 @@ subgraphs:
     schema:
       file: ../ethang-rss/src/graphql/schema.graphql
 
-`
+```
 
 ![Apollo Graph visualization showing queries on the graph](./images/image-0.png)
 
@@ -121,11 +121,11 @@ Eventually, they moved away from this. They finally adopted ESM and dropped the 
 
 Drizzle, on the other hand, works flawlessly with both Cloudflare D1 and Service Bindings right out of the box.
 
-`typescript
+```typescript
 const database = drizzle(environment.ethang_rss, {
   schema: databaseSchema
 });
-`
+```
 
 Sometimes when you look at these examples, it starts to seem like these “bindings” are just environment strings that point to a URL. But the reality is likely just a hidden `.toString\(\)` method. These bindings are usable to access the services themselves:
 
@@ -137,7 +137,7 @@ Cloudflare has always offered a superior experience when it comes to working wit
 
 With nothing more than a database id and a "remote" boolean flag, you’re either working with a generated mock service on your own file system, or securely connected to a remote one.
 
-`json
+```json
 "d1_databases": [
   {
     "binding": "ethang_courses",
@@ -146,7 +146,7 @@ With nothing more than a database id and a "remote" boolean flag, you’re eithe
     "remote": true
   }
 ],
-`
+```
 
 ![Connected to a D1 database via a local service binding](./images/image-2.png)
 
@@ -166,7 +166,7 @@ Did I mention it creates local services for you to help simulate a true producti
 
 One of the biggest surprises to me while setting this up has been just how good [GraphQL Codegen](https://the-guild.dev/graphql/codegen/docs/getting-started) has become. Previously, it would generate TypeScript types from a GraphQL schema, which was nice—but when you made *specific* queries, you still had to write custom types if you wanted them to be strictly accurate.
 
-``typescript
+```typescript
 const badQuery = gql(`
   query Bad {
     learningPaths {
@@ -182,11 +182,11 @@ const { data } = useApolloQuery<{ learningPaths: LearningPath[] }>(badQuery);
 
 // TypeScript says this is fine.
 const woops = data?.learningPaths[0].courses[0].url;
-``
+```
 
 If you wanted to solve this problem in the past, you'd end up writing these horrid, heavily-nested types. With any level of complexity, they became real mind-benders and were incredibly difficult to maintain.
 
-``typescript
+```typescript
 const badQuery = gql(`
   query Bad {
     learningPaths {
@@ -208,20 +208,20 @@ const { data } = useApolloQuery<BadQuery>(badQuery);
 
 // Now url doesn't exist.
 const woops = data?.learningPaths[0].courses[0].url;
-``
+```
 
 Instead, Codegen came up with something much better: the [documents](https://the-guild.dev/graphql/codegen/docs/config-reference/documents-field)[** **](https://the-guild.dev/graphql/codegen/docs/config-reference/documents-field)[field](https://the-guild.dev/graphql/codegen/docs/config-reference/documents-field). It's an underwhelming name for an incredible power. Instead of making you define unique types for every single query, Codegen scans your frontend files and generates type overloads for the `gql` function automatically.
 
 This in `codegen.yml`:
 
-`yaml
+```yaml
 documents:
   - "../../apps/ethang-react/src/**/*.{ts,tsx}"
-`
+```
 
 Finds this query:
 
-``typescript
+```typescript
 const { data: result, loading } = useApolloQuery(
   gql(`
     query GetCourses {
@@ -241,7 +241,7 @@ const { data: result, loading } = useApolloQuery(
     }
   `)
 );
-``
+```
 
 And creates a type overload for the gql function:
 
