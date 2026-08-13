@@ -1,0 +1,23 @@
+---
+import { headingBase, mergeClass } from "../../lib/ui.ts";
+
+interface Props {
+    as?: "h1" | "h2" | "h3" | "h4";
+    class?: string;
+}
+
+const { as = "h2", class: className = "" } = Astro.props;
+const classes = mergeClass(headingBase, className);
+---
+
+{
+    as === "h1" ? (
+        <h1 class={classes}><slot /></h1>
+    ) : as === "h3" ? (
+        <h3 class={classes}><slot /></h3>
+    ) : as === "h4" ? (
+        <h4 class={classes}><slot /></h4>
+    ) : (
+        <h2 class={classes}><slot /></h2>
+    )
+}

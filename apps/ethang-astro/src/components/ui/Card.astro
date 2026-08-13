@@ -1,0 +1,14 @@
+---
+import { cardBase, cardTintBase, mergeClass } from "../../lib/ui.ts";
+
+interface Props {
+    class?: string;
+    tint?: boolean;
+}
+
+const { class: className = "", tint = false } = Astro.props;
+---
+
+<div class={mergeClass(tint ? cardTintBase : cardBase, className)}>
+    <slot />
+</div>

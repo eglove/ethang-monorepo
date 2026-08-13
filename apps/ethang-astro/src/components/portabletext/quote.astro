@@ -1,30 +1,22 @@
 ---
 import type { Props } from "astro-portabletext";
 
+import Blockquote from "../ui/Blockquote.astro";
+
 const props = Astro.props as Props & { node?: Record<string, unknown> };
 const node = props.node ?? {};
 const quote = node.quote as string | undefined;
 const author = node.author as string | undefined;
 const source = node.source as string | undefined;
 const sourceUrl = node.sourceUrl as string | undefined;
-
-const hasAuthor = typeof author === "string" && author.length > 0;
-const hasSource = typeof source === "string" && source.length > 0;
 ---
 
 <div class="my-3">
-  {typeof quote === "string" && quote.length > 0 ? (
-    <blockquote class="border-l-4 border-primary pl-4 italic text-night-owl-fg">{quote}</blockquote>
-  ) : null}
-  {hasAuthor || hasSource ? (
-    <footer class="text-xs text-night-owl-muted mt-2">
-      {"\u{2014}"} {author ?? ""}
-      {hasAuthor && hasSource && ", "}
-      {hasSource && typeof sourceUrl === "string" ? (
-        <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="hover:underline">{source}</a>
-      ) : (
-        <cite>{source}</cite>
-      )}
-    </footer>
-  ) : null}
+    {
+        typeof quote === "string" && quote.length > 0 ? (
+            <Blockquote author={author} source={source} sourceUrl={sourceUrl}>
+                {quote}
+            </Blockquote>
+        ) : null
+    }
 </div>

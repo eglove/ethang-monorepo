@@ -4,6 +4,8 @@ import map from "lodash/map.js";
 
 import SanityText from "../../components/SanityText.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Heading from "../../components/ui/Heading.astro";
+import Page from "../../components/ui/Page.astro";
 import { fetchBlogPost, fetchBlogSlugs } from "../../lib/blog.ts";
 
 export const prerender = true;
@@ -22,10 +24,10 @@ const post = isNil(slug) ? null : await fetchBlogPost(slug);
 ---
 
 <BaseLayout title={post?.title ?? "Blog Post"}>
-  <div class="max-w-7xl mx-auto px-4 py-6">
-    <h1 class="text-4xl font-semibold text-night-owl-fg mb-6">
+  <Page>
+    <Heading as="h1" class="text-4xl mb-6">
       {post?.title ?? "Blog Post"}
-    </h1>
+    </Heading>
     {
       isNil(post?.body) ? (
         <p class="text-night-owl-muted">No content available.</p>
@@ -33,5 +35,5 @@ const post = isNil(slug) ? null : await fetchBlogPost(slug);
         <SanityText value={post.body} />
       )
     }
-  </div>
+  </Page>
 </BaseLayout>

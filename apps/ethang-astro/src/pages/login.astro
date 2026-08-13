@@ -1,5 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/ui/Button.astro";
+import FieldLabel from "../components/ui/FieldLabel.astro";
+import Heading from "../components/ui/Heading.astro";
+import TextInput from "../components/ui/TextInput.astro";
 import { actions } from "astro:actions";
 import { forms } from "../../constants/forms.ts";
 import { resolveLoginOutcome } from "../lib/login.ts";
@@ -25,11 +29,12 @@ const error = outcome.error;
         >
             <form method="POST" action={actions.signIn}>
                 <div class="flex flex-col gap-4">
-                    <h1
-                        class="text-xl font-semibold tracking-tight text-center text-night-owl-fg mb-2"
+                    <Heading
+                        as="h1"
+                        class="text-xl tracking-tight text-center mb-2"
                     >
                         {forms.SIGN_IN_TO_ACCOUNT}
-                    </h1>
+                    </Heading>
 
                     {
                         error ? (
@@ -42,43 +47,35 @@ const error = outcome.error;
                     }
 
                     <div class="flex flex-col gap-1">
-                        <label
-                            for="email"
-                            class="text-xs font-bold text-night-owl-muted uppercase"
-                            >{forms.EMAIL_ADDRESS}</label
-                        >
-                        <input
+                        <FieldLabel for="email">{forms.EMAIL_ADDRESS}</FieldLabel>
+                        <TextInput
                             type="email"
                             id="email"
                             name="email"
                             required
                             placeholder={forms.ENTER_YOUR_EMAIL}
-                            class="rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none"
                         />
                     </div>
 
                     <div class="flex flex-col gap-1">
-                        <label
-                            for="password"
-                            class="text-xs font-bold text-night-owl-muted uppercase"
-                            >{forms.PASSWORD}</label
-                        >
-                        <input
+                        <FieldLabel for="password">{forms.PASSWORD}</FieldLabel>
+                        <TextInput
                             type="password"
                             id="password"
                             name="password"
                             required
                             placeholder={forms.ENTER_YOUR_PASSWORD}
-                            class="rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none"
                         />
                     </div>
 
-                    <button
+                    <Button
                         type="submit"
-                        class="mt-4 cursor-pointer bg-gradient-to-r from-primary to-accent font-semibold shadow-lg transition-all hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 px-4 py-2 rounded-lg text-on-primary"
+                        variant="gradient"
+                        size="md"
+                        class="mt-4 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                         {forms.SIGN_IN}
-                    </button>
+                    </Button>
                 </div>
             </form>
         </div>

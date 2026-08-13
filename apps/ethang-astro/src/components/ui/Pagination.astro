@@ -1,0 +1,69 @@
+---
+import map from "lodash/map.js";
+
+import { paginationEdgeClass, paginationNumberClass } from "../../lib/ui.ts";
+
+interface Props {
+    linkFor: (page: number) => string;
+    maxPages: number;
+    page: number;
+}
+
+const { linkFor, maxPages, page } = Astro.props;
+---
+
+{
+    1 < maxPages ? (
+        <nav class="flex gap-2 justify-center" aria-label="Blog pagination">
+            {
+                1 < page ? (
+                    <a
+                        href={linkFor(page - 1)}
+                        rel="prev"
+                        aria-label="Previous page"
+                        class={paginationEdgeClass(false)}
+                    >
+                        &lsaquo;
+                    </a>
+                ) : (
+                    <span aria-hidden="true" class={paginationEdgeClass(true)}>
+                        &lsaquo;
+                    </span>
+                )
+            }
+
+            {
+                map(Array.from({ length: maxPages }), (_value, index) => {
+                    const pageNumber = index + 1;
+
+                    return (
+                        <a
+                            href={linkFor(pageNumber)}
+                            aria-current={pageNumber === page ? "page" : undefined}
+                            class={paginationNumberClass(pageNumber === page)}
+                        >
+                            {pageNumber}
+                        </a>
+                    );
+                })
+            }
+
+            {
+                page < maxPages ? (
+                    <a
+                        href={linkFor(page + 1)}
+                        rel="next"
+                        aria-label="Next page"
+                        class={paginationEdgeClass(false)}
+                    >
+                        &rsaquo;
+                    </a>
+                ) : (
+                    <span aria-hidden="true" class={paginationEdgeClass(true)}>
+                        &rsaquo;
+                    </span>
+                )
+            }
+        </nav>
+    ) : null
+}

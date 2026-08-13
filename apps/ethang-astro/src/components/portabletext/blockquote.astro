@@ -1,27 +1,15 @@
 ---
 import type { BlockProps } from "astro-portabletext";
 
+import Blockquote from "../ui/Blockquote.astro";
+
 const props = Astro.props as BlockProps;
 const node = (props.node ?? {}) as Record<string, unknown>;
 const author = node.author as string | undefined;
 const source = node.source as string | undefined;
 const sourceUrl = node.sourceUrl as string | undefined;
-
-const hasAuthor = typeof author === "string" && author.length > 0;
-const hasSource = typeof source === "string" && source.length > 0;
 ---
 
-<blockquote class="border-l-4 border-primary pl-4 my-4 italic text-night-owl-fg">
-  <slot />
-  {hasAuthor || hasSource ? (
-    <footer class="text-xs text-night-owl-muted mt-2">
-      {"\u{2014}"} {author ?? ""}
-      {hasAuthor && hasSource && ", "}
-      {hasSource && typeof sourceUrl === "string" ? (
-        <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="hover:underline">{source}</a>
-      ) : (
-        <cite>{source}</cite>
-      )}
-    </footer>
-  ) : null}
-</blockquote>
+<Blockquote author={author} source={source} sourceUrl={sourceUrl}>
+    <slot />
+</Blockquote>

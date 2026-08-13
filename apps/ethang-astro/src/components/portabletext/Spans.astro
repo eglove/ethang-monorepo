@@ -6,6 +6,8 @@ import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 import map from "lodash/map.js";
 
+import InlineLink from "../ui/InlineLink.astro";
+
 export type MarkDef = {
   _key?: string;
   _type?: string;
@@ -88,18 +90,18 @@ const isExternal = (href: string) => {
     }
 
     return isExternal(span.href) ? (
-      <a
+      <InlineLink
         href={span.href}
         target="_blank"
         rel="noopener noreferrer"
-        class="text-primary hover:underline"
+        variant="primary"
       >
         {strongNode}
-      </a>
+      </InlineLink>
     ) : (
-      <a href={span.href} class="text-primary hover:underline">
+      <InlineLink href={span.href} variant="primary">
         {strongNode}
-      </a>
+      </InlineLink>
     );
   })
 }

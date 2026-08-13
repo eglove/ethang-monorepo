@@ -3,6 +3,10 @@ import { actions } from "astro:actions";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { env } from "cloudflare:workers";
 import isNil from "lodash/isNil.js";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import Page from "../components/ui/Page.astro";
+import TextInput from "../components/ui/TextInput.astro";
 
 import {
   ARTICLES_PAGE_PARAM,
@@ -50,40 +54,35 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
 ---
 
 <BaseLayout title="RSS">
-  <div class="max-w-7xl mx-auto px-4 py-6 w-full">
+  <Page class="w-full">
     <div class="flex flex-col gap-4 w-full">
       {/* Add Feed Form */}
       {
         isAuthenticated ? (
-          <div class="border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 backdrop-blur-md">
+          <Card tint class="p-4">
             <form
               method="POST"
               action={actions.addFeed}
               class="flex gap-3 items-center"
             >
-              <input
+              <TextInput
                 type="url"
                 name="xmlUrl"
                 required
                 placeholder="Feed XML URL"
-                class="flex-1 rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none"
+                class="flex-1"
               />
-              <button
-                type="submit"
-                class="cursor-pointer bg-primary/20 hover:bg-primary/30 text-primary font-semibold px-4 py-2 rounded-lg transition-colors"
-              >
+              <Button variant="primary" size="md">
                 Add Feed
-              </button>
+              </Button>
             </form>
-          </div>
+          </Card>
         ) : null
       }
 
       <div class="grid gap-4 grid-cols-1 md:grid-cols-4">
         {/* Feeds Sidebar */}
-        <div
-          class="md:col-span-1 border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 min-h-panel backdrop-blur-md"
-        >
+        <Card tint class="md:col-span-1 p-4 min-h-panel">
           <h2 class="text-lg text-night-owl-muted mb-3">Feeds</h2>
           {
             isAuthenticated && subscriptions.edges.length > 0 ? (
@@ -103,13 +102,13 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
                           name="feedId"
                           value={edge.node.id}
                         />
-                        <button
-                          type="submit"
-                          aria-label={`Remove ${edge.node.title}`}
-                          class="cursor-pointer rounded-md px-2 py-1 text-xs text-night-owl-muted hover:text-red-400 transition-colors"
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          ariaLabel={`Remove ${edge.node.title}`}
                         >
                           Remove
-                        </button>
+                        </Button>
                       </form>
                     </li>
                   ))}
@@ -133,12 +132,10 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
               </p>
             )
           }
-        </div>
+        </Card>
 
         {/* Articles Container */}
-        <div
-          class="md:col-span-3 border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 min-h-panel backdrop-blur-md"
-        >
+        <Card tint class="md:col-span-3 p-4 min-h-panel">
           <h2 class="text-lg text-night-owl-muted mb-3">Articles</h2>
           {
             isAuthenticated && articles.edges.length > 0 ? (
@@ -181,12 +178,13 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
                           name="articleId"
                           value={edge.node.id}
                         />
-                        <button
-                          type="submit"
-                          class="cursor-pointer mt-1 rounded-lg border border-night-owl-border px-2 py-1 text-xs text-night-owl-muted hover:text-primary transition-colors"
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          class="mt-1"
                         >
                           Mark as read
-                        </button>
+                        </Button>
                       </form>
                     </li>
                   ))}
@@ -210,8 +208,8 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
               </p>
             )
           }
-        </div>
+        </Card>
       </div>
     </div>
-  </div>
+  </Page>
 </BaseLayout>

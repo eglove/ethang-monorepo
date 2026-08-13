@@ -1,0 +1,13 @@
+---
+import { codeBlockBase } from "../../lib/ui.ts";
+
+interface Props {
+    code: string;
+}
+
+const { code } = Astro.props;
+---
+
+<pre class={codeBlockBase}>
+    <code>{code}</code>
+</pre>

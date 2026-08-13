@@ -5,6 +5,8 @@ import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
 import { navigation } from "../../constants/navigation.ts";
+import Button from "../components/ui/Button.astro";
+import InlineLink from "../components/ui/InlineLink.astro";
 import "../styles/global.css";
 
 export interface Props {
@@ -76,12 +78,9 @@ const isLoggedIn = !isNil(session);
           {
             map(links, (link) => (
               <li>
-                <a
-                  href={link.href}
-                  class="text-night-owl-fg hover:text-primary transition-colors"
-                >
+                <InlineLink variant="nav" href={link.href}>
                   {link.label}
-                </a>
+                </InlineLink>
               </li>
             ))
           }
@@ -97,21 +96,15 @@ const isLoggedIn = !isNil(session);
                 </span>
               </span>
               <form method="POST" action={actions.signOut}>
-                <button
-                  type="submit"
-                  class="px-3 py-1.5 rounded-md bg-danger/20 hover:bg-danger/30 text-danger transition-colors text-sm font-semibold cursor-pointer"
-                >
+                <Button type="submit" variant="danger" size="sm">
                   {navigation.LOGOUT}
-                </button>
+                </Button>
               </form>
             </div>
           ) : (
-            <a
-              href="/login"
-              class="text-night-owl-fg hover:text-primary transition-colors"
-            >
+            <InlineLink variant="nav" href="/login">
               {navigation.LOGIN}
-            </a>
+            </InlineLink>
           )
         }
       </nav>

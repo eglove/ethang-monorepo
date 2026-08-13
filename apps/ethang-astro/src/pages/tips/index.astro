@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Heading from "../../components/ui/Heading.astro";
+import InlineLink from "../../components/ui/InlineLink.astro";
+import Page from "../../components/ui/Page.astro";
 
 const allTips = [
   { href: "/tips/scroll-containers", title: "Easy Sticky Header/Footer" },
@@ -8,18 +11,18 @@ const allTips = [
 ---
 
 <BaseLayout title="Tips">
-  <div class="max-w-7xl mx-auto px-4 py-6">
-    <h1 class="text-4xl font-semibold text-night-owl-fg mb-6">Tips</h1>
+  <Page>
+    <Heading as="h1" class="text-4xl mb-6">Tips</Heading>
     <ul class="flex flex-col gap-4 mt-6">
       {allTips.map((tip) => (
         <li key={tip.href}>
-          <h2 class="text-xl font-semibold">
-            <a href={tip.href} class="hover:text-primary hover:underline transition-colors text-night-owl-fg">
+          <Heading as="h2" class="text-xl">
+            <InlineLink variant="underline" href={tip.href} class="text-night-owl-fg">
               {tip.title}
-            </a>
-          </h2>
+            </InlineLink>
+          </Heading>
         </li>
       ))}
     </ul>
-  </div>
+  </Page>
 </BaseLayout>

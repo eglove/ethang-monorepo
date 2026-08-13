@@ -3,7 +3,12 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      include: ["src/lib/login.ts", "src/lib/rss.ts", "src/lib/session.ts"],
+      include: [
+        "src/lib/login.ts",
+        "src/lib/rss.ts",
+        "src/lib/session.ts",
+        "src/lib/ui.ts"
+      ],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {

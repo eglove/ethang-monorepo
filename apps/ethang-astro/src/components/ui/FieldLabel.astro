@@ -1,0 +1,13 @@
+---
+import { labelBase } from "../../lib/ui.ts";
+
+interface Props {
+    for?: string;
+}
+
+const { for: htmlFor } = Astro.props;
+---
+
+<label for={htmlFor} class={labelBase}>
+    <slot />
+</label>

@@ -6,9 +6,12 @@ import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import orderBy from "lodash/orderBy.js";
 import { env } from "cloudflare:workers";
-import {unwrapRpc} from "../lib/rpc.ts"
-
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/ui/Card.astro";
+import Heading from "../components/ui/Heading.astro";
+import InlineLink from "../components/ui/InlineLink.astro";
+import Page from "../components/ui/Page.astro";
+import {unwrapRpc} from "../lib/rpc.ts"
 
 export const prerender = false;
 
@@ -80,8 +83,8 @@ for (const course of courses) {
 ---
 
 <BaseLayout title="Courses">
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        <h1 class="text-4xl font-semibold text-night-owl-fg mb-2">Courses</h1>
+    <Page>
+        <Heading as="h1" class="text-4xl mb-2">Courses</Heading>
         {
             dateString ? (
                 <p class="mb-4 text-base text-night-owl-muted">{dateString}</p>
@@ -99,25 +102,22 @@ for (const course of courses) {
                     const url = firstCourse?.learningPathUrl;
 
                     return (
-                        <div
-                            key={learningPathId}
-                            class="border border-night-owl-border rounded-xl bg-night-owl-surface p-5"
-                        >
+                        <Card key={learningPathId} class="p-5">
                             <div class="flex items-center gap-3 flex-wrap">
-                                <h2 class="text-lg font-semibold text-night-owl-fg">
+                                <Heading as="h2" class="text-lg">
                                     {url ? (
-                                        <a
+                                        <InlineLink
                                             href={url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            class="hover:text-primary hover:underline transition-colors"
+                                            variant="underline"
                                         >
                                             {name}
-                                        </a>
+                                        </InlineLink>
                                     ) : (
                                         name
                                     )}
-                                </h2>
+                                </Heading>
                                 {swebokFocus !== null ? (
                                     <span class="px-2 py-0.5 rounded-md bg-night-owl-bg border border-night-owl-border text-xs text-night-owl-muted">
                                         {swebokFocusMap.get(swebokFocus) ??
@@ -142,14 +142,14 @@ for (const course of courses) {
                                             <span class="text-night-owl-muted">
                                                 {course.courseIndex}.{" "}
                                             </span>
-                                            <a
+                                            <InlineLink
                                                 href={course.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                class="hover:text-primary hover:underline transition-colors"
+                                                variant="underline"
                                             >
                                                 {course.name}
-                                            </a>{" "}
+                                            </InlineLink>{" "}
                                             <span class="text-night-owl-muted">
                                                 by {course.author}
                                             </span>
@@ -157,10 +157,10 @@ for (const course of courses) {
                                     ),
                                 )}
                             </ul>
-                        </div>
+                        </Card>
                     );
                 })
             }
         </div>
-    </div>
+    </Page>
 </BaseLayout>

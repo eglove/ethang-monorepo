@@ -1,5 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Heading from "../../components/ui/Heading.astro";
+import InlineLink from "../../components/ui/InlineLink.astro";
+import Page from "../../components/ui/Page.astro";
 
 const scrollbarGutter = `html {
   scrollbar-gutter: stable both-edges;
@@ -7,18 +11,18 @@ const scrollbarGutter = `html {
 ---
 
 <BaseLayout title="scrollbar-gutter">
-  <div class="max-w-7xl mx-auto px-4 py-6">
-    <h1 class="text-4xl font-semibold text-night-owl-fg mb-4">scrollbar-gutter</h1>
+  <Page>
+    <Heading as="h1" class="text-4xl mb-4">scrollbar-gutter</Heading>
     <p class="my-3 text-base leading-relaxed text-night-owl-muted">
       Avoid content layout shifts when moving from content without a scroll to content with a scroll.{" "}
-      <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">MDN</a>{" "}
-      <a href="https://drafts.csswg.org/css-overflow/#scrollbar-gutter-property" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">Spec</a>
+      <InlineLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter" target="_blank" rel="noopener noreferrer">MDN</InlineLink>{" "}
+      <InlineLink href="https://drafts.csswg.org/css-overflow/#scrollbar-gutter-property" target="_blank" rel="noopener noreferrer">Spec</InlineLink>
     </p>
 
-    <h2 class="text-2xl font-semibold text-night-owl-fg my-4">CSS</h2>
-    <pre class="bg-night-owl-surface rounded-lg p-4 overflow-x-auto text-sm font-mono text-night-owl-green"><code>{scrollbarGutter}</code></pre>
+    <Heading as="h2" class="text-2xl my-4">CSS</Heading>
+    <CodeBlock code={scrollbarGutter} />
 
-    <h2 class="text-2xl font-semibold text-night-owl-fg my-4">Demo</h2>
+    <Heading as="h2" class="text-2xl my-4">Demo</Heading>
     <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="rounded-md border border-night-owl-border p-4">
         <div class="mb-2 font-semibold text-night-owl-fg">With scrollbar-gutter</div>
@@ -35,5 +39,5 @@ const scrollbarGutter = `html {
         </section>
       </div>
     </div>
-  </div>
+  </Page>
 </BaseLayout>
