@@ -2,15 +2,21 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { env } from "cloudflare:workers";
 import { Effect, Schema } from "effect";
+import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
+
+import {
+  addFeed as addFeedProgram,
+  markArticleRead as markArticleReadProgram,
+  removeFeed as removeFeedProgram
+} from "../lib/rss.ts";
+import { decodeSessionCookie } from "../lib/session.ts";
 
 const UserSchema = Schema.Struct({
   email: Schema.String,
   sessionToken: Schema.String,
   username: Schema.String
 });
-
-const SessionJsonSchema = Schema.parseJson(UserSchema);
 
 type SignInResult =
   | { failure: Error; success?: never }
@@ -19,69 +25,68 @@ type SignInResult =
       success: { email: string; sessionToken: string; username: string };
     };
 
+const getSessionUser = (context: {
+  cookies: { get: (name: string) => { value?: string } | undefined };
+}) => {
+  return decodeSessionCookie(context.cookies.get("session")?.value);
+};
+
 export const server = {
   addFeed: defineAction({
     accept: "form",
     handler: async (input, context) => {
-      const sessionCookie = context.cookies.get("session");
+      const userSession = getSessionUser(context);
 
-      if (!sessionCookie) {
+      if (isNil(userSession)) {
         return { error: "Unauthorized" };
       }
 
-      const userSessionResult = await Effect.runPromise(
-        Effect.try({
-          catch: (_error: unknown) => {
-            return new Error("Invalid session");
-          },
-          try: () => {
-            return Schema.decodeUnknownSync(SessionJsonSchema)(
-              sessionCookie.value
-            );
-          }
-        }).pipe(
-          Effect.catchAll(() => {
-            return Effect.succeed({ error: "Unauthorized" });
-          })
-        )
-      );
-
-      if ("error" in userSessionResult) {
-        return { error: userSessionResult.error };
-      }
-
-      const subscribeResult = await Effect.runPromise(
-        Effect.tryPromise({
-          catch: (error: unknown) => {
-            return Error.isError(error) ? error : new Error(String(error));
-          },
-          try: async () => {
-            return env.ethang_rss.addSubscription({
-              sessionToken: userSessionResult.sessionToken,
-              xmlAddress: input.xmlUrl
-            });
-          }
-        }).pipe(
-          Effect.map(() => {
-            return { success: true as const };
-          }),
-          Effect.catchAll((error) => {
-            const message = Error.isError(error)
-              ? error.message
-              : String(error);
-            return Effect.succeed({ error: message });
-          })
-        )
-      );
-
-      if ("error" in subscribeResult) {
-        return { error: subscribeResult.error };
-      }
-
-      return { success: true };
+      return addFeedProgram(env.ethang_rss, {
+        sessionToken: userSession.sessionToken,
+        xmlAddress: input.xmlUrl
+      });
     },
     input: z.object({
       xmlUrl: z.url("Please enter a valid URL")
+    })
+  }),
+
+  markArticleRead: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return { error: "Unauthorized" };
+      }
+
+      return markArticleReadProgram(env.ethang_rss, {
+        articleId: input.articleId,
+        isRead: true,
+        sessionToken: userSession.sessionToken
+      });
+    },
+    input: z.object({
+      articleId: z.string().min(1, "Article is required")
+    })
+  }),
+
+  removeFeed: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return { error: "Unauthorized" };
+      }
+
+      return removeFeedProgram(env.ethang_rss, {
+        feedId: input.feedId,
+        sessionToken: userSession.sessionToken
+      });
+    },
+    input: z.object({
+      feedId: z.string().min(1, "Feed is required")
     })
   }),
 

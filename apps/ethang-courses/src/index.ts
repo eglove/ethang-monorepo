@@ -30,7 +30,6 @@ const runQuery = async <A>(effect: Effect.Effect<A, unknown>) => {
   return Effect.runPromise(effect);
 };
 
-// eslint-disable-next-line unicorn/no-anonymous-default-export
 export class CoursesService extends WorkerEntrypoint<Env> {
   public async course(parameters: { id: string }) {
     return runQuery(courseQuery(this.getDb(), parameters.id));
@@ -83,6 +82,10 @@ export class CoursesService extends WorkerEntrypoint<Env> {
     userId: string;
   }) {
     return cycleCourseTrackingStatusMutation(this.getDb(), parameters);
+  }
+
+  public override fetch(_request: Request) {
+    return new Response("OK", { status: 200 });
   }
 
   public async learningPath(parameters: { id: string }) {

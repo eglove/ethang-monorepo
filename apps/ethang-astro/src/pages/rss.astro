@@ -2,167 +2,214 @@
 import { actions } from "astro:actions";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { env } from "cloudflare:workers";
-import { Effect, Schema } from "effect";
+import isNil from "lodash/isNil.js";
+
+import {
+  ARTICLES_PAGE_PARAM,
+  buildFormHref,
+  buildLoadMoreHref,
+  EMPTY_ARTICLES,
+  EMPTY_SUBSCRIPTIONS,
+  FEEDS_PAGE_PARAM,
+  getArticles,
+  getPageNumber,
+  getSubscriptions
+} from "../lib/rss.ts";
+import { decodeSessionCookie } from "../lib/session.ts";
 
 export const prerender = false;
 
-const UserSchema = Schema.Struct({
-  email: Schema.String,
-  sessionToken: Schema.String,
-  username: Schema.String
-});
+const userSession = decodeSessionCookie(Astro.cookies.get("session")?.value);
+const isAuthenticated = userSession !== null;
 
-const SessionJsonSchema = Schema.parseJson(UserSchema);
+const feedsPage = getPageNumber(Astro.url.searchParams, FEEDS_PAGE_PARAM);
+const articlesPage = getPageNumber(Astro.url.searchParams, ARTICLES_PAGE_PARAM);
 
-const sessionCookie = Astro.cookies.get("session");
-const userSessionResult = await Effect.runPromise(
-  sessionCookie
-    ? Effect.try({
-        catch: (_error: unknown) => {
-          return new Error("Invalid session");
-        },
-        try: () => {
-          return Schema.decodeUnknownSync(SessionJsonSchema)(
-            sessionCookie.value
-          );
-        }
-      })
-    : Effect.succeed(null)
-);
-
-const isAuthenticated = userSessionResult !== null;
-
-let subscriptions = {
-  edges: [] as Array<{
-    cursor: string;
-    node: {
-      id: string;
-      title: string;
-      iconUrl: null | string;
-      website: null | string;
-    };
-  }>
-};
-let articles = {
-  edges: [] as Array<{
-    cursor: string;
-    node: {
-      content: null | string;
-      feed: null | {
-        iconUrl: null | string;
-        id: string;
-        title: string;
-      };
-      guid: string;
-      id: string;
-      isRead: boolean;
-      link: string;
-      publishedAt: null | string;
-      title: string;
-    };
-  }>
-};
+let subscriptions = EMPTY_SUBSCRIPTIONS;
+let articles = EMPTY_ARTICLES;
 
 if (isAuthenticated) {
-  try {
-    const subResult = await env.ethang_rss.subscriptions({
-      first: 20,
-      sessionToken: userSessionResult.sessionToken
-    });
-    subscriptions = subResult;
-  } catch {
-    // Feed loading handled gracefully
-  }
-
-  try {
-    const artResult = await env.ethang_rss.allArticles({
-      first: 20,
-      sessionToken: userSessionResult.sessionToken
-    });
-    articles = artResult;
-  } catch {
-    // Article loading handled gracefully
-  }
+  subscriptions = await getSubscriptions(
+    env.ethang_rss,
+    userSession.sessionToken,
+    feedsPage
+  );
+  articles = await getArticles(
+    env.ethang_rss,
+    userSession.sessionToken,
+    articlesPage
+  );
 }
+
+const removeFeedHref = buildFormHref(Astro.url, "removeFeed");
+const markArticleReadHref = buildFormHref(Astro.url, "markArticleRead");
+const nextFeedsHref = buildLoadMoreHref(Astro.url, FEEDS_PAGE_PARAM);
+const nextArticlesHref = buildLoadMoreHref(Astro.url, ARTICLES_PAGE_PARAM);
+const hasNextFeedsPage = subscriptions.pageInfo.hasNextPage;
+const hasNextArticlesPage = articles.pageInfo.hasNextPage;
 ---
 
 <BaseLayout title="RSS">
   <div class="max-w-7xl mx-auto px-4 py-6 w-full">
     <div class="flex flex-col gap-4 w-full">
       {/* Add Feed Form */}
-      {isAuthenticated ? (
-        <div class="border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 backdrop-blur-md">
-          <form method="POST" action={actions.addFeed} class="flex gap-3 items-center">
-            <input
-              type="url"
-              name="xmlUrl"
-              required
-              placeholder="Feed XML URL"
-              class="flex-1 rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none"
-            />
-            <button
-              type="submit"
-              class="cursor-pointer bg-primary/20 hover:bg-primary/30 text-primary font-semibold px-4 py-2 rounded-lg transition-colors"
+      {
+        isAuthenticated ? (
+          <div class="border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 backdrop-blur-md">
+            <form
+              method="POST"
+              action={actions.addFeed}
+              class="flex gap-3 items-center"
             >
-              Add Feed
-            </button>
-          </form>
-        </div>
-      ) : null}
+              <input
+                type="url"
+                name="xmlUrl"
+                required
+                placeholder="Feed XML URL"
+                class="flex-1 rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none"
+              />
+              <button
+                type="submit"
+                class="cursor-pointer bg-primary/20 hover:bg-primary/30 text-primary font-semibold px-4 py-2 rounded-lg transition-colors"
+              >
+                Add Feed
+              </button>
+            </form>
+          </div>
+        ) : null
+      }
 
       <div class="grid gap-4 grid-cols-1 md:grid-cols-4">
         {/* Feeds Sidebar */}
-        <div class="md:col-span-1 border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 min-h-panel backdrop-blur-md">
+        <div
+          class="md:col-span-1 border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 min-h-panel backdrop-blur-md"
+        >
           <h2 class="text-lg text-night-owl-muted mb-3">Feeds</h2>
-          {isAuthenticated && subscriptions.edges.length > 0 ? (
-            <ul class="flex flex-col gap-2">
-              {subscriptions.edges.map((edge) => (
-                <li
-                  key={edge.cursor}
-                  class="text-sm text-night-owl-fg hover:text-primary transition-colors cursor-pointer"
-                >
-                  {edge.node.title}
-                </li>
-              ))}
-            </ul>
-          ) : isAuthenticated ? (
-            <p class="text-sm text-night-owl-muted">No feeds subscribed.</p>
-          ) : (
-            <p class="text-sm text-night-owl-muted">Sign in to manage RSS feeds.</p>
-          )}
+          {
+            isAuthenticated && subscriptions.edges.length > 0 ? (
+              <div class="flex flex-col gap-2">
+                <ul class="flex flex-col gap-2">
+                  {subscriptions.edges.map((edge) => (
+                    <li
+                      key={edge.cursor}
+                      class="flex items-center justify-between gap-2 text-sm text-night-owl-fg"
+                    >
+                      <span class="truncate hover:text-primary transition-colors cursor-pointer">
+                        {edge.node.title}
+                      </span>
+                      <form method="POST" action={removeFeedHref} class="shrink-0">
+                        <input
+                          type="hidden"
+                          name="feedId"
+                          value={edge.node.id}
+                        />
+                        <button
+                          type="submit"
+                          aria-label={`Remove ${edge.node.title}`}
+                          class="cursor-pointer rounded-md px-2 py-1 text-xs text-night-owl-muted hover:text-red-400 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+                {hasNextFeedsPage ? (
+                  <a
+                    href={nextFeedsHref}
+                    class="mt-1 block text-center text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Show more feeds
+                  </a>
+                ) : null}
+              </div>
+            ) : isAuthenticated ? (
+              <p class="text-sm text-night-owl-muted">
+                No feeds subscribed.
+              </p>
+            ) : (
+              <p class="text-sm text-night-owl-muted">
+                Sign in to manage RSS feeds.
+              </p>
+            )
+          }
         </div>
 
         {/* Articles Container */}
-        <div class="md:col-span-3 border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 min-h-panel backdrop-blur-md">
+        <div
+          class="md:col-span-3 border border-night-owl-border rounded-xl bg-night-owl-surface/50 p-4 min-h-panel backdrop-blur-md"
+        >
           <h2 class="text-lg text-night-owl-muted mb-3">Articles</h2>
-          {isAuthenticated && articles.edges.length > 0 ? (
-            <ul class="flex flex-col gap-3">
-              {articles.edges.map((edge) => (
-                <li key={edge.cursor} class="border-b border-night-owl-border pb-3 last:border-none">
+          {
+            isAuthenticated && articles.edges.length > 0 ? (
+              <div class="flex flex-col gap-3">
+                <ul class="flex flex-col gap-3">
+                  {articles.edges.map((edge) => (
+                    <li
+                      key={edge.cursor}
+                      class="flex items-start justify-between gap-3 border-b border-night-owl-border pb-3 last:border-none"
+                    >
+                      <a
+                        href={edge.node.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="block hover:text-primary transition-colors min-w-0 flex-1"
+                      >
+                        <p class="font-medium text-night-owl-fg">
+                          {edge.node.title}
+                        </p>
+                        {edge.node.feed ? (
+                          <p class="text-xs text-night-owl-muted mt-1">
+                            {edge.node.feed.title}
+                          </p>
+                        ) : null}
+                        {edge.node.publishedAt ? (
+                          <p class="text-xs text-night-owl-muted">
+                            {new Date(
+                              edge.node.publishedAt
+                            ).toLocaleDateString()}
+                          </p>
+                        ) : null}
+                      </a>
+                      <form
+                        method="POST"
+                        action={markArticleReadHref}
+                        class="shrink-0"
+                      >
+                        <input
+                          type="hidden"
+                          name="articleId"
+                          value={edge.node.id}
+                        />
+                        <button
+                          type="submit"
+                          class="cursor-pointer mt-1 rounded-lg border border-night-owl-border px-2 py-1 text-xs text-night-owl-muted hover:text-primary transition-colors"
+                        >
+                          Mark as read
+                        </button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+                {hasNextArticlesPage ? (
                   <a
-                    href={edge.node.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="block hover:text-primary transition-colors"
+                    href={nextArticlesHref}
+                    class="mt-1 block text-center text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
                   >
-                    <p class="font-medium text-night-owl-fg">{edge.node.title}</p>
-                    {edge.node.feed ? (
-                      <p class="text-xs text-night-owl-muted mt-1">{edge.node.feed.title}</p>
-                    ) : null}
-                    {edge.node.publishedAt ? (
-                      <p class="text-xs text-night-owl-muted">
-                        {new Date(edge.node.publishedAt).toLocaleDateString()}
-                      </p>
-                    ) : null}
+                    Show more articles
                   </a>
-                </li>
-              ))}
-            </ul>
-          ) : isAuthenticated ? (
-            <p class="text-sm text-night-owl-muted">No articles yet.</p>
-          ) : (
-            <p class="text-sm text-night-owl-muted">Sign in to view RSS articles.</p>
-          )}
+                ) : null}
+              </div>
+            ) : isAuthenticated ? (
+              <p class="text-sm text-night-owl-muted">
+                No unread articles.
+              </p>
+            ) : (
+              <p class="text-sm text-night-owl-muted">
+                Sign in to view RSS articles.
+              </p>
+            )
+          }
         </div>
       </div>
     </div>

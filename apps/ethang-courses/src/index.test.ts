@@ -115,7 +115,7 @@ describe("ethang-courses WorkerEntrypoint", () => {
   describe("fetch", () => {
     it("should respond OK on fetch", async () => {
       const instance = createInstance({ ethang_courses: {} });
-      const response = await instance.fetch(new Request(`${EXAMPLE_URL}/`));
+      const response = instance.fetch(new Request(`${EXAMPLE_URL}/`));
       expect(response.status).toBe(200);
       const body = await response.text();
       expect(body).toBe("OK");
