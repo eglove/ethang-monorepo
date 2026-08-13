@@ -5,6 +5,7 @@
   ],
   "dependencies": {
     "@astrojs/cloudflare": "^14.2.0",
+    "@astrojs/mdx": "^7.0.5",
     "@astrojs/sitemap": "^3.7.3",
     "@cloudflare/vite-plugin": "^1.51.2",
     "@portabletext/react": "^7.0.1",

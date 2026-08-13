@@ -1,3 +1,4 @@
+import mdx from "@astrojs/mdx";
 import cloudflare from "@astrojs/cloudflare";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
@@ -21,18 +22,12 @@ export default defineConfig({
       provider: fontProviders.fontsource()
     }
   ],
-  image: {
-    remotePatterns: [
-      {
-        hostname: "cdn.sanity.io",
-        protocol: "https"
-      }
-    ]
-  },
-  integrations: [sitemap()],
+  image: {},
+  integrations: [mdx(), sitemap()],
   site: SITE,
 
   vite: {
     plugins: [tailwindcss()]
-  }
+  },
+  markdown: { shikiConfig: { theme: "night-owl" } }
 });
