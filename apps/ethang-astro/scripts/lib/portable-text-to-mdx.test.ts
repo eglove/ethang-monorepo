@@ -1,10 +1,14 @@
+import constant from "lodash/constant.js";
+import isEmpty from "lodash/isEmpty.js";
+import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 import { describe, expect, it } from "vitest";
 
-import { portableTextToMdx } from "./portableTextToMdx.ts";
+import { portableTextToMdx } from "./portable-text-to-mdx.ts";
 
-const resolveImage = (url: string | undefined) => {
-  return url ? "./images/x.png" : null;
+const IMG_SRC = "./images/x.png";
+const resolveImage = (url?: string) => {
+  return "" === url || isNil(url) ? null : IMG_SRC;
 };
 const block = (
   text: string,
@@ -17,15 +21,16 @@ const block = (
 ) => {
   return {
     _type: "block",
-    ...(options.listItem && { listItem: options.listItem }),
-    ...(options.style && { style: options.style }),
+    ...(!isNil(options.listItem) && { listItem: options.listItem }),
+    ...(!isNil(options.style) && { style: options.style }),
     children: [
-      { text, ...(options.marks?.length && { marks: options.marks }) }
+      { text, ...(!isEmpty(options.marks) && { marks: options.marks }) }
     ],
-    ...(options.markDefs && { markDefs: options.markDefs })
+    ...(!isNil(options.markDefs) && { markDefs: options.markDefs })
   };
 };
 
+// eslint-disable-next-line sonar/max-lines-per-function
 describe("portableTextToMdx", () => {
   describe("block styles", () => {
     it.each([
@@ -285,7 +290,7 @@ describe("portableTextToMdx", () => {
     const imageNode = (asset: unknown, alt?: string) => {
       return {
         _type: "image",
-        ...(alt !== undefined && { alt }),
+        ...(!isNil(alt) && { alt }),
         asset
       } as const;
     };
@@ -295,19 +300,19 @@ describe("portableTextToMdx", () => {
         "with caption",
         imageNode({ caption: "c", url: "img" }, "a"),
         '<PostImage src={img0} alt="a" caption="c" />\n',
-        [{ alt: "a", caption: "c", src: "./images/x.png", variable: "img0" }]
+        [{ alt: "a", caption: "c", src: IMG_SRC, variable: "img0" }]
       ],
       [
         "without caption",
         imageNode({ url: "img" }, "a"),
-        "![a](./images/x.png)\n",
+        `![a](${IMG_SRC})\n`,
         []
       ],
       [
         "missing alt",
         imageNode({ caption: "c", url: "img" }),
         '<PostImage src={img0} alt="" caption="c" />\n',
-        [{ alt: "", caption: "c", src: "./images/x.png", variable: "img0" }]
+        [{ alt: "", caption: "c", src: IMG_SRC, variable: "img0" }]
       ]
     ])("%s", (_, node, expectedBody, expectedImages) => {
       const { body, images } = portableTextToMdx([node], resolveImage);
@@ -330,7 +335,7 @@ describe("portableTextToMdx", () => {
         [imageNode({ url: "img" }, "a]b")],
         resolveImage
       );
-      expect(body).toBe("![a\\]b](./images/x.png)\n");
+      expect(body).toBe(`![a\\]b](${IMG_SRC})\n`);
     });
 
     it("uses an empty caption when asset caption is not a string", () => {
@@ -338,7 +343,7 @@ describe("portableTextToMdx", () => {
         [imageNode({ caption: null, url: "img" }, "a")],
         resolveImage
       );
-      expect(body).toBe("![a](./images/x.png)\n");
+      expect(body).toBe(`![a](${IMG_SRC})\n`);
     });
 
     it("skips an image when the resolver returns null", () => {
@@ -348,9 +353,10 @@ describe("portableTextToMdx", () => {
     });
 
     it("skips an image without a resolvable url", () => {
-      const { body, images } = portableTextToMdx([imageNode({})], () => {
-        return null;
-      });
+      const { body, images } = portableTextToMdx(
+        [imageNode({})],
+        constant(null)
+      );
       expect(body).toBe("");
       expect(images).toEqual([]);
     });
@@ -450,10 +456,7 @@ describe("portableTextToMdx", () => {
     });
 
     it("handles null blocks", () => {
-      const { body } = portableTextToMdx(
-        null as unknown as unknown[],
-        resolveImage
-      );
+      const { body } = portableTextToMdx(null, resolveImage);
       expect(body).toBe("");
     });
 

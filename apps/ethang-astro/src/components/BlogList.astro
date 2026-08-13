@@ -18,12 +18,12 @@ interface Props {
 
 const { maxPages, page, posts } = Astro.props;
 
-const formattedDate = (date?: Date) => {
+const formattedDate = (date?: DateTime.Utc) => {
   if (isNil(date)) {
     return "";
   }
 
-  return DateTime.format(DateTime.unsafeMake(date), {
+  return DateTime.format(date, {
     dateStyle: "medium",
     timeStyle: "short"
   });

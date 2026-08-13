@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       include: [
-        "scripts/lib/portableTextToMdx.ts",
+        "scripts/lib/portable-text-to-mdx.ts",
         "src/lib/blog-pagination.ts",
         "src/lib/login.ts",
         "src/lib/rss.ts",

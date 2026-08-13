@@ -19,6 +19,7 @@ repo-plan.md
 .hermes/plans
 docs/.obsidian
 .pi
+.superpowers
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,jetbrains+all,visualstudiocode,storybookjs
