@@ -1,8 +1,6 @@
 ---
 import isNil from "lodash/isNil.js";
-import map from "lodash/map.js";
-
-import SanityText from "../../components/SanityText.astro";
+import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Heading from "../../components/ui/Heading.astro";
 import Page from "../../components/ui/Page.astro";
@@ -12,28 +10,22 @@ export const prerender = true;
 
 export const getStaticPaths = async () => {
   const slugs = await fetchBlogSlugs();
-
-  return map(slugs, (slug) => {
-    return { params: { slug } };
-  });
+  return slugs.map((slug) => ({ params: { slug } }));
 };
 
 const { slug } = Astro.params;
-
 const post = isNil(slug) ? null : await fetchBlogPost(slug);
+const rendered = isNil(post) ? null : await render(post);
+const { Content } = rendered ?? { Content: () => null };
 ---
 
-<BaseLayout title={post?.title ?? "Blog Post"}>
+<BaseLayout title={post?.data.title ?? "Blog Post"}>
   <Page>
-    <Heading as="h1" class="text-4xl mb-6">
-      {post?.title ?? "Blog Post"}
-    </Heading>
-    {
-      isNil(post?.body) ? (
-        <p class="text-night-owl-muted">No content available.</p>
-      ) : (
-        <SanityText value={post.body} />
-      )
-    }
+    <Heading as="h1" class="text-4xl mb-6">{post?.data.title ?? "Blog Post"}</Heading>
+    {isNil(rendered) ? (
+      <p class="text-night-owl-muted">No content available.</p>
+    ) : (
+      <article class="blog-prose"><Content /></article>
+    )}
   </Page>
 </BaseLayout>

@@ -1,5 +1,6 @@
 ---
 import { DateTime } from "effect";
+import isNil from "lodash/isNil.js";
 import isEmpty from "lodash/isEmpty.js";
 import map from "lodash/map.js";
 
@@ -17,8 +18,12 @@ interface Props {
 
 const { maxPages, page, posts } = Astro.props;
 
-const formattedDate = (dateTime: string) => {
-  return DateTime.format(DateTime.unsafeMake(dateTime), {
+const formattedDate = (date?: Date) => {
+  if (isNil(date)) {
+    return "";
+  }
+
+  return DateTime.format(DateTime.unsafeMake(date), {
     dateStyle: "medium",
     timeStyle: "short"
   });
@@ -37,19 +42,21 @@ const formattedDate = (dateTime: string) => {
           class="border border-night-owl-border rounded-xl bg-night-owl-surface p-5 hover:border-primary/30 transition-colors"
           data-blog-post=""
         >
-          {blog.blogCategory?.title ? (
+          {blog.data.blogCategory ? (
             <p class="uppercase text-xs font-medium text-primary mb-2">
-              {blog.blogCategory.title}
+              {blog.data.blogCategory}
             </p>
           ) : null}
           <Heading as="h2" class="text-xl mb-1">
-            <InlineLink variant="underline" href={`/blog/${blog.slug.current}`}>
-              {blog.title}
+            <InlineLink variant="underline" href={`/blog/${blog.data.slug}`}>
+              {blog.data.title}
             </InlineLink>
           </Heading>
-          <p class="text-sm italic text-night-owl-muted">
-            Updated: {formattedDate(blog._updatedAt)}
-          </p>
+          {blog.data.updatedDate ? (
+            <p class="text-sm italic text-night-owl-muted">
+              Updated: {formattedDate(blog.data.updatedDate)}
+            </p>
+          ) : null}
         </article>
       ))
     )
