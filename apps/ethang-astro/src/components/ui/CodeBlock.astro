@@ -1,13 +1,19 @@
 ---
-import { codeBlockBase } from "../../lib/ui.ts";
+import { Code } from "astro/components";
+
+import { sanitizeCodeLanguage } from "../../lib/ui.ts";
 
 interface Props {
     code: string;
+    lang?: string;
 }
 
-const { code } = Astro.props;
+const { code, lang } = Astro.props;
 ---
 
-<pre class={codeBlockBase}>
-    <code>{code}</code>
-</pre>
+<Code
+    code={code}
+    lang={sanitizeCodeLanguage(lang)}
+    theme="night-owl"
+    class="rounded-lg p-4 overflow-x-auto text-sm font-mono border"
+/>

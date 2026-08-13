@@ -7,7 +7,6 @@ import {
   type ButtonVariant,
   cardBase,
   cardTintBase,
-  codeBlockBase,
   headingBase,
   inlineLinkBase,
   inputBase,
@@ -17,6 +16,7 @@ import {
   pageClasses,
   paginationEdgeClass,
   paginationNumberClass,
+  sanitizeCodeLanguage,
   underlineLinkBase
 } from "./ui.ts";
 
@@ -54,12 +54,6 @@ describe("class constants", () => {
       expected: "text-xs font-bold text-night-owl-muted uppercase",
       name: "field label",
       value: labelBase
-    },
-    {
-      expected:
-        "bg-night-owl-surface rounded-lg p-4 overflow-x-auto text-sm font-mono text-night-owl-green",
-      name: "code block",
-      value: codeBlockBase
     },
     {
       expected: "text-primary hover:underline",
@@ -165,5 +159,28 @@ describe("pagination classes", () => {
     expect(paginationNumberClass(false)).toBe(
       "px-3 py-1.5 rounded-md border transition-colors text-sm border-night-owl-border text-night-owl-fg hover:text-primary hover:border-primary"
     );
+  });
+});
+
+describe("sanitizeCodeLanguage", () => {
+  it.each([
+    { expected: "ts", input: "ts", name: "keeps a bundled alias" },
+    { expected: "typescript", input: "typescript", name: "keeps a bundled id" },
+    { expected: "html", input: "html", name: "keeps html" },
+    {
+      expected: "plaintext",
+      input: "plaintext",
+      name: "falls back to plaintext for a non-bundled key"
+    },
+    {
+      expected: "plaintext",
+      input: "klingon",
+      name: "falls back for an unknown language"
+    },
+
+    { expected: "plaintext", input: null, name: "falls back when null" },
+    { expected: "plaintext", input: "", name: "falls back when empty" }
+  ])("$name", ({ expected, input }) => {
+    expect(sanitizeCodeLanguage(input)).toBe(expected);
   });
 });

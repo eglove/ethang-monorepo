@@ -6,6 +6,63 @@
  * Consumers compose via mergeClass and never duplicate the base tokens.
  */
 
+const CODE_LANGUAGES = new Set([
+  "astro",
+  "bash",
+  "c",
+  "css",
+  "diff",
+  "dockerfile",
+  "go",
+  "graphql",
+  "haskell",
+  "html",
+  "ini",
+  "java",
+  "javascript",
+  "js",
+  "json",
+  "jsonc",
+  "jsx",
+  "kotlin",
+  "kt",
+  "lua",
+  "markdown",
+  "md",
+  "mdx",
+  "php",
+  "plaintext",
+  "ps1",
+  "py",
+  "python",
+  "rs",
+  "ruby",
+  "rust",
+  "sass",
+  "scss",
+  "sh",
+  "shell",
+  "solidity",
+  "sql",
+  "swift",
+  "toml",
+  "ts",
+  "tsx",
+  "typescript",
+  "vue",
+  "xml",
+  "yaml",
+  "yml"
+]);
+
+export const sanitizeCodeLanguage = (language?: null | string) => {
+  return !isNil(language) && CODE_LANGUAGES.has(language)
+    ? language
+    : "plaintext";
+};
+
+import isNil from "lodash/isNil.js";
+
 export const pageClasses = "mx-auto max-w-7xl px-4 py-6";
 
 export const cardBase =
@@ -20,9 +77,6 @@ export const inputBase =
   "rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none";
 
 export const labelBase = "text-xs font-bold text-night-owl-muted uppercase";
-
-export const codeBlockBase =
-  "bg-night-owl-surface rounded-lg p-4 overflow-x-auto text-sm font-mono text-night-owl-green";
 
 export const inlineLinkBase = "text-primary hover:underline";
 

@@ -12,7 +12,7 @@ const hasCode = typeof node.code === "string" && node.code.length > 0;
 {
     hasCode ? (
         <div class="my-3">
-            <CodeBlock code={node.code} />
+            <CodeBlock code={node.code} lang={node.language} />
         </div>
     ) : null
 }
