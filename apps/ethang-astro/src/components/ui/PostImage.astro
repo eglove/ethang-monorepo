@@ -1,0 +1,18 @@
+---
+import { Image } from "astro:assets";
+import isString from "lodash/isString.js";
+
+interface Props {
+  src: ImageMetadata;
+  alt?: string;
+  caption?: string;
+}
+
+const { src, alt, caption } = Astro.props;
+const hasCaption = isString(caption) && caption.length > 0;
+---
+
+<figure class="my-4">
+  <Image src={src} alt={alt ?? ""} loading="lazy" class="w-full rounded-lg object-cover" />
+  {hasCaption ? <figcaption class="text-xs text-night-owl-muted text-center mt-1">{caption}</figcaption> : null}
+</figure>

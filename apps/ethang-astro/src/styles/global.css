@@ -75,3 +75,61 @@ h6 {
   line-height: 1.25;
   color: var(--color-night-owl-fg);
 }
+
+/* ── Blog prose (MDX article content) ─────────────────────────────────────── */
+.blog-prose {
+  line-height: 1.7;
+}
+.blog-prose h1 {
+  font-size: 1.875rem;
+  margin: 1.5rem 0 0.75rem;
+}
+.blog-prose h2 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 0.75rem;
+}
+.blog-prose h3 {
+  font-size: 1.25rem;
+  margin: 1.25rem 0 0.5rem;
+}
+.blog-prose h4 {
+  font-size: 1.125rem;
+  margin: 1rem 0 0.5rem;
+}
+.blog-prose p {
+  color: var(--color-night-owl-fg);
+  margin: 0.75rem 0;
+  line-height: 1.7;
+}
+.blog-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.blog-prose a:hover {
+  text-decoration: none;
+}
+.blog-prose code {
+  color: var(--color-night-owl-green);
+  background: var(--color-night-owl-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+}
+.blog-prose pre {
+  background: var(--color-night-owl-bg);
+  border: 1px solid var(--color-night-owl-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-inline: auto;
+}
+.blog-prose pre code {
+  background: transparent;
+  padding: 0;
+}
+.blog-prose blockquote {
+  border-color: var(--color-primary);
+}
+
+/* Astro fenced-code blocks (shiki night-owl) fill the palette too. */
+.blog-prose .astro-code {
+  background-color: var(--color-night-owl-bg);
+}
