@@ -50,7 +50,6 @@ export const portableTextToMdx = (
 
 	const flushList = () => {
 		for (const g of groups) {
-			if (g.items.length === 0) continue;
 			g.items.forEach((item, i) =>
 				body.push(g.listItem === "number" ? `${i + 1}. ${item}` : `- ${item}`),
 			);
