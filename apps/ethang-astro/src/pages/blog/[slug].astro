@@ -5,6 +5,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import Heading from "../../components/ui/Heading.astro";
 import Page from "../../components/ui/Page.astro";
 import { fetchBlogPost, fetchBlogSlugs } from "../../lib/blog.ts";
+import { excerptFromMarkdown } from "../../lib/seo.ts";
 
 export const prerender = true;
 
@@ -17,9 +18,21 @@ const { slug } = Astro.params;
 const post = isNil(slug) ? null : await fetchBlogPost(slug);
 const rendered = isNil(post) ? null : await render(post);
 const { Content } = rendered ?? { Content: () => null };
+const description =
+  post === null
+    ? undefined
+    : post.data.description ?? excerptFromMarkdown(post.body ?? "");
 ---
 
-<BaseLayout title={post?.data.title ?? "Blog Post"}>
+<BaseLayout
+  title={post?.data.title ?? "Blog Post"}
+  description={description}
+  image={post?.data.featuredImage}
+  imageAlt={post?.data.featuredImageAlt}
+  publishedTime={post?.data.pubDate}
+  updatedTime={post?.data.updatedDate}
+  isArticle={!isNil(post)}
+>
   <Page>
     <Heading as="h1" class="text-4xl mb-6">{post?.data.title ?? "Blog Post"}</Heading>
     {isNil(rendered) ? (
