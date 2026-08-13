@@ -21,6 +21,14 @@ export default defineConfig({
       provider: fontProviders.fontsource()
     }
   ],
+  image: {
+    remotePatterns: [
+      {
+        hostname: "cdn.sanity.io",
+        protocol: "https"
+      }
+    ]
+  },
   integrations: [sitemap()],
   site: SITE,
 

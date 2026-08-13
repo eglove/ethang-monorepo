@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       include: [
+        "src/lib/image.ts",
         "src/lib/login.ts",
         "src/lib/rss.ts",
         "src/lib/session.ts",
