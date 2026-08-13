@@ -1,0 +1,239 @@
+---
+title: "One Prompt, Many Safeguards: The Architecture of a Pi Agent"
+slug: "one-prompt-many-safeguards-the-architecture-of-a-pi-agent"
+pubDate: "2026-08-12T18:06:06Z"
+updatedDate: "2026-08-12T19:37:44Z"
+blogCategory: "Blog"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+
+You sit before a quiet terminal at midnight. A hundred tokens a second stream across the dark window. The build passes cleanly. The terminal turns green. You open the diff, expecting precision, and find silent degradation: an unrequested abstraction, an erased return type, and a crucial edge case hand-waved into a generic comment.
+
+Capability without structure is non-deterministic debt. An AI coding agent equipped with file access, shell execution, and browser automation will not fail for lack of intelligence. It will fail for lack of governance. Left to its own discretion, an agent improvises. In production engineering, improvisation is failure.
+
+You do not build a reliable workflow by prompting for perfection. You build it by constructing a fortress of operational rules, deterministic skills, and real-time infrastructure boundaries before the first prompt ever reaches the model.
+
+Behind that single prompt, the user experience is deceptively simple. You type what you need in plain language. You do not select a skill, choose an execution model, or orchestrate tools by hand. Superpowers interprets the engineering sequence, Fabric routes the execution, and the required safeguards emerge automatically. The machinery absorbs internal complexity, yet its approval gates pause for your authority whenever design, trust, protected files, or live infrastructure require consent.
+
+## 1. Context comes before action
+
+A prompt enters a repository carrying less information than it appears to. It names a change, a symptom, or a desired result, but it rarely carries the local rules that decide where code belongs or what constitutes completion.
+
+The first movement is therefore backward into context.
+
+`README.md` maps the terrain: active applications, shared packages, build engines, deployment targets, and workspace configurations across pnpm, Cloudflare Workers, React, Astro, Sanity, Effect, and Vitest. `AGENTS.md` establishes the operating law. It requires reading the README first, forcing tests to lead production changes, keeping domain boundaries explicit, and verifying symbols, registrations, configuration, and side effects before claiming success.
+
+The distinction is quiet but absolute. The README declares what exists; `AGENTS.md` dictates what the agent may do with it. Without both, a familiar framework invites a generic answer. With both, every change is forced to fit the ground.
+
+Hermes memory extends this context across sessions, retaining project conventions, failed approaches, corrections, and procedures that would otherwise vanish when the terminal closes. Over time, it can distill recurring friction into reusable procedures. Skills such as `project-discovery`, which maps repository structure and test patterns, or `scaffold-test`, which scaffolds Playwright browser specs, are examples of what that system may generate from repeated work. They are not built-in Hermes features. They show the larger feedback loop: yesterday's manual preparation can become tomorrow's automatic foundation.
+
+## 2. The prompt finds its own shape
+
+You do not need to diagnose the scope of a task before you begin. A brief request may conceal a repeated migration, an architectural disagreement, a high-risk file mutation, or a problem too vast for a single context window. The workflow discovers that shape dynamically while it works.
+
+`fabric-exec` is the default path. It grants the agent a single type-checked `fabric_exec` program for discovery, tool calls, composition, and evidence. Small tasks remain small. When the task expands, `fabric-guide` automatically routes the request through the minimal sufficient branch:
+
+- Repeated, bounded items become a dynamic workflow \(`fabric-workflow`\).
+- Architectural decisions with meaningful trade-offs become a council \(`fabric-council`\).
+- High-stakes choices benefiting from distinct model families become a fusion panel \(`fabric-fusion`\).
+- Repositories too large for one context window become recursive decompositions \(`fabric-rlm`\).
+- Protected workspace edits become evidence-gated schema transactions \(`fabric-schema`\).
+- Long-running goals or spec compliance become persistent observers \(`fabric-advisor`, `fabric-supervisor`, `fabric-spec`\).
+- Multi-actor collaboration becomes a durable swarm \(`fabric-swarm`\).
+
+You do not manually select among these branches. The request and the emerging evidence guide the internal route. The workflow widens only when a simple path leaves unacceptable risk exposed, then brings verified results back to the main conversation. If a branch reaches a security or design boundary, it stops for your explicit consent.
+
+## 3. Superpowers turns intent into a working sequence
+
+Superpowers dictates the engineering sequence; Fabric provides the execution surface. From the outside, both respond seamlessly to your initial prompt.
+
+The Superpowers package loads its procedural skills into Pi and uses a lightweight extension to reinsert the `using-superpowers` bootstrap after session start and compaction. This keeps governing rules active throughout long multi-hour tasks without requiring manual re-invocations.
+
+Behind a single prompt, your request moves through an unsparing sequence:
+
+**`brainstorming`** explores intent, constraints, scope, and trade-offs before code is touched. Architectural changes halt at an explicit design approval gate.
+
+**`using-git-worktrees`** isolates feature work in an independent workspace.
+
+**`writing-plans`** transforms approved designs into exact file paths, interfaces, test cases, and atomic, verifiable tasks.
+
+**`executing-plans`** or **`subagent-driven-development`** executes tasks in structured sequences with two-stage review checkpoints.
+
+**`test-driven-development`** enforces the Red-Green-Refactor cycle. The agent writes a failing test, verifies it fails for the expected reason, writes minimal implementation code, and verifies it passes.
+
+**`systematic-debugging`** prohibits speculative fixes until the defect is reproduced, data flow is traced, and a root cause hypothesis is proven.
+
+**`requesting-code-review`** evaluates the diff against the plan and codebase standards before declaring progress.
+
+**`verification-before-completion`** demands concrete execution evidence and behavioral probes before claiming success.
+
+**`finishing-a-development-branch`** converts verified state into a structured merge, pull request, retention, or cleanup decision.
+
+Superpowers enforces the stopping points. It ensures the system asks when intent is vague, plans when scope is broad, tests before implementation, debugs before patching, and verifies before declaring completion.
+
+## 4. Fabric is the execution boundary
+
+Your agent's capability is bounded by its tooling infrastructure. In `settings.json`, you configure a precise package matrix that transforms Pi into an integrated platform:
+
+`json
+{
+  "packages": [
+    "npm:pi-lmstudio",
+    "npm:@4fu/pi-pwsh",
+    "npm:pi-mcp-adapter",
+    "npm:@4fu/pi-bin-hints",
+    "npm:pi-hermes-memory",
+    "npm:pi-lens",
+    "npm:pi-windows-nul-fix",
+    "npm:pi-web-access",
+    "git:github.com/obra/superpowers",
+    "npm:pi-fabric"
+  ]
+}
+`
+
+Fabric is the core runtime in this matrix. It gives Pi a programmable, type-checked execution layer for core tools, extensions, MCP servers, agents, workflows, actors, and durable coordination.
+
+In full-code mode, `fabric_exec` is the exclusive path to Pi core tools. Programs execute inside an isolated QuickJS sandbox by default, while an explicit Node process escape hatch handles heavy workloads. High-privilege execution remains visible at the exact moment authority expands.
+
+The model writes the orchestration program. Intermediate data remains inside the sandbox; only final verified outcomes return to the conversation. Independent tool calls execute in parallel. Loops, branches, and data pipelines become type-checked TypeScript rather than loose, unmonitored shell chains.
+
+Fabric governs every boundary:
+
+- **Ownership:** `pi.\*` handles core tools, `extensions.\*` handles captured extension tools, `mcp.\*` handles external protocol servers, and provider namespaces handle Fabric runtime state.
+- **Discovery:** `tools.search`, `tools.catalog`, and `tools.describe` expose current registry schemas. The agent never guesses function signatures.
+- **Validation:** Type checks reject malformed payloads and unknown keys. Supported aliases normalize to canonical fields; invented parameters fail immediately.
+- **Envelope Stability:** File and shell operations return stable `{ ok, output, details }` envelopes. Command failures can reject normally or be captured as diagnostic evidence using `settle: true`.
+- **Authority:** Approval, audit, timeout, cancellation, security, and host validation remain enforced at every step.
+
+Discovery metadata describes how an action may be called; it does not prove execution succeeded. Actual results, exit codes, postconditions, and behavioral checks provide the proof.
+
+## 5. Pi Lens: real-time code intelligence and edit feedback
+
+Where Fabric executes and Superpowers orders, `pi-lens` provides real-time vision. It acts as an autonomous observer operating directly on file writes, tool calls, and session turns.
+
+### The Discovery Funnel
+
+Before modifying code, the agent must navigate the codebase without reading entire files blindly. `pi-lens` enforces a disciplined discovery funnel:
+
+**`symbol_search`**: Locates candidate identifiers across a warm word index \(BM25 + priors\).
+
+**`module_report`**: Generates a navigable outline, type signatures, imports, and callback maps for a file without loading verbatim bodies.
+
+**`read_symbol`** **/** **`read_enclosing`**: Reads the exact symbol or enclosing function body needed for the edit.
+
+This funnel minimizes context window bloat while ensuring precision.
+
+### The Read-Guard Boundary
+
+`pi-lens` enforces a strict **read-before-edit** contract \(`read-guard`\). Edits are warned or rejected if:
+
+- The agent attempts a zero-read edit on an unseen file.
+- The file content changed on disk since it was last read \(`stale`\).
+- The edit range falls outside any previous read coverage.
+
+This prevents the agent from making blind assumptions about file contents.
+
+### Automatic Post-Edit Diagnostics \& Pipeline Fixers
+
+On every file write or edit, `pi-lens` executes automatically in the background:
+
+- **LSP Diagnostics:** Warm language servers report real-time type errors and warnings on edited files and their reverse-dependency neighbors \(impact cascade\).
+- **Structural Analysis:** `ast-grep` \(NAPI engine\) and `tree-sitter` WASM rules scan for correctness and security smells.
+- **Automated Pipeline Fixers:** Formatters \(Biome/Prettier/Ruff\) and linter autofixes \(ESLint/Clippy/Ruff `--fix`\) mutate the file on disk after the write.
+
+Findings are injected directly into the model's context at turn end. If an autofix reformats or modifies a file, `pi-lens` nudges the agent to re-read the updated bytes before proceeding.
+
+### The Honesty Contract \& Commit Guard
+
+`pi-lens` classifies diagnostics into informational advisories and **🔴 blocking issues** \(secrets, critical CVEs, type errors\). Under `--lens-guard`, `git commit` and `git push` are physically intercepted and blocked until unresolved blockers are resolved.
+
+Furthermore, `pi-lens` enforces an absolute **honesty contract**: partial scans, cold LSP instances, or capped walks are explicitly labeled \(`degraded`, `cold`, `partial`, `stale`\). The agent is prohibited from reading a `0` diagnostic count under a degraded label as a clean bill of health.
+
+## 6. One workflow, several Fabric branches
+
+Fabric's advanced branches are specialized responses to operational risk within the same unified loop.
+
+### `fabric-workflow`: repeated work
+
+When a prompt touches bounded sets of files, schemas, APIs, or configurations, Fabric discovers work items, analyzes them concurrently, executes sequential pipelines, tracks dashboard progress, and respects token budgets within a single type-checked program. Partial failures stay visible rather than hiding behind false success claims.
+
+### `fabric-council`: productive disagreement
+
+When architecture choices require multi-angle scrutiny, a council dispatches three to five independent reviewer roles, such as correctness, security, operability, maintainability, and requirements skepticism. Reviewers evaluate the design in isolation before synthesis occurs, forcing hidden trade-offs into the open.
+
+### `fabric-fusion`: model diversity
+
+When the cost of error is severe, fusion invokes multi-model panels. In compare mode, two to eight distinct models respond in parallel while a judge analyzes consensus, contradictions, coverage gaps, and blind spots. In act mode, an actor reconciles read-only reference evaluations before executing changes.
+
+### `fabric-rlm`: work larger than one context
+
+When source material exceeds context limits, recursive decomposition holds context externally. The workflow orients the project, partitions non-overlapping file paths into context-sized groups, delegates each group, and synthesizes compact findings. Strict path ownership prevents concurrent subagents from editing overlapping files.
+
+### `fabric-schema`: guarded mutation
+
+When file edits require transactional guarantees, `fabric-schema` enforces a same-call `schema.hypothesize -\> schema.verify -\> schema.commit` sequence. Mutations require pre-observed state hashes, verified evidence, short-lived certificates, and postcondition checks before file writes commit.
+
+### `fabric-advisor`, `fabric-supervisor`, and `fabric-spec`: persistent oversight
+
+Persistent actors monitor execution gaps without hijacking main session control:
+
+- **`fabric-advisor`** \(`triggerTurn: false`\) quietly audits decision points and tool errors with read-only tools, surfacing concise, high-impact advice only when material defects threaten progress.
+- **`fabric-supervisor`** \(`triggerTurn: true`\) tracks goal progress, intervening only when work stalls or drifts, and terminating when validation is complete.
+- **`fabric-spec`** maintains an acceptance ledger against feature specifications, keeping requirements unverified until mechanical proof appears.
+
+### `fabric-ambient` and `fabric-swarm`: routing and durable coordination
+
+`fabric-ambient` routes between advisor and supervisor profiles automatically. For multi-turn, cross-session initiatives, `fabric-swarm` coordinates persistent actors using mailboxes, durable `mesh` topics, versioned task records, and atomic compare-and-swap \(`ifVersion`\) writes, all while respecting trust and approval boundaries.
+
+## 7. The Windows execution layer
+
+A flawless plan fails if shell execution is fragile. On Windows, raw Bash strings introduce silent failure modes: quoting errors, orphaned background processes, and unhandled timeouts. Bash can reach the Windows machine, but it does so through an extra translation layer: POSIX paths, text streams, and Unix process assumptions meeting a Windows process model.
+
+PowerShell is the stronger default for this environment because it speaks to Windows directly. Its object pipeline carries structured processes, files, registry values, and command results instead of forcing every step through text parsing. Its access to .NET and Windows APIs gives scripts a larger surface for process control, filesystem work, networking, concurrency, and system inspection. The language is more expressive for the machine it is operating, and the runtime can expose more of that machine without a procession of secondary utilities.
+
+That does not make PowerShell universally faster than Bash. It makes the comparison more useful: for Windows-native automation, fewer translation layers mean fewer quoting repairs, fewer subprocess handoffs, and less work converting structured results back into text before the next command can use them. The gain is often control and reliability first, performance second.
+
+`@4fu/pi-pwsh` provides a persistent PowerShell 7 execution surface. Commands spawn background tasks returning unique task IDs. Subsequent calls inspect status, wait for literal readiness markers \(`notifyOn`\) or completion, or terminate complete process trees. ConPTY-backed interactive sessions handle complex terminal interactions cleanly. The task remains a task rather than a shell string thrown over a wall.
+
+`@4fu/pi-bin-hints` complements execution by detecting installed Unix replacement binaries \(`rg`, `fd`, `sd`\) once per session and injecting a stable hint line into the system prompt. The agent selects optimized search tools because the environment explicitly advertised them.
+
+Together, they form a robust execution loop:
+
+`pi-bin-hints` advertises verified system binaries.
+
+`pi-pwsh` executes scripts within a persistent PowerShell 7 runtime.
+
+Task state is polled, inspected, or stopped without spawning nested background layers.
+
+Verification reads bounded output and distinguishes command errors from wait timeouts.
+
+## 8. Live documentation before current code
+
+An agent relying solely on pre-trained knowledge for evolving web standards and cloud APIs will inevitably write deprecated code. You eliminate hallucinated syntax by connecting the agent directly to live MCP documentation servers via `pi-mcp-adapter`:
+
+- **Astro \(****`mcp.docs.astro.build`****\)**: Delivers current framework specifications, content collections syntax, and SSR patterns.
+- **MDN \(****`mcp.mdn.mozilla.net`****\)**: Provides real-time Web API specs, CSS properties, HTML standards, and browser compatibility data.
+- **Effect \(****`effect-mcp`****\)**: Supplies live API signatures and package documentation across `@effect/cli`, `@effect/platform`, `@effect/rpc`, and `@effect/sql`.
+- **Cloudflare \(****`mcp.cloudflare.com`****\)**: Connects the agent to live Worker specs, D1 database schemas, KV bindings, R2 patterns, and Wrangler operational workflows.
+
+### The Operations Boundary
+
+The Cloudflare MCP server bridges documentation and infrastructure operations under an absolute boundary: **Documentation lookup is automatic; infrastructure mutation is explicit.** The agent uses live knowledge to design Worker topologies, but executes deployments and database operations through verified scripts with explicit audit trails and approval checks.
+
+## 9. Verification becomes memory
+
+Engineering completion is not an assertion of confidence; it is a body of falsifiable claims backed by concrete evidence:
+
+- **Red-Green-Refactor \& State Machines:** `AGENTS.md` mandates failing tests first and exhaustive state machine coverage across valid, boundary, Unicode, null, error, and recovery inputs. Workspace quality targets **100% line, branch, function, and statement coverage** \(80% CI gate\).
+- **Type System Invariants:** Effect schemas, layers, and typed errors enforce domain invariants declaratively in the type system.
+- **Real-Time Diagnostics \& Code Intelligence:** `pi-lens` delivers immediate edit feedback, AST pattern matching, LSP navigation, and proactive diagnostics \(`lsp_diagnostics`\) before builds execute.
+- **Context Hygiene:** A 75,000 token compaction reserve ensures objective summarization before context degrades. Session analysis and hook executors audit tool output and run automatic lint autofixes on edit.
+- **Security Boundaries:** `trust.json` records explicit path trust for project workspaces. A "high" default thinking level biases the model toward deep, step-by-step reasoning.
+
+When verification passes, Hermes memory captures durable learnings, failure recoveries, and team conventions. The loop completes, and the workspace grows permanently smarter for the next task.
+
+You do not achieve software reliability by hoping the model remembers what matters. You achieve it when every rule is procedural, every boundary is typed, every tool call is validated, and every claim is backed by evidence. You do not ask the agent for excellence. You build an environment where anything less is impossible.
