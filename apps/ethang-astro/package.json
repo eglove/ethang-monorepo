@@ -8,12 +8,8 @@
     "@astrojs/mdx": "^7.0.5",
     "@astrojs/sitemap": "^3.7.3",
     "@cloudflare/vite-plugin": "^1.51.2",
-    "@portabletext/react": "^7.0.1",
-    "@sanity/client": "^7.26.2",
-    "@sanity/image-url": "^2.1.1",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.2.0",
-    "astro-portabletext": "^0.13.0",
     "effect": "^3.22.1",
     "lucide-astro": "^0.556.0",
     "tailwindcss": "^4.3.3"

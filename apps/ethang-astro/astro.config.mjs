@@ -1,5 +1,5 @@
-import mdx from "@astrojs/mdx";
 import cloudflare from "@astrojs/cloudflare";
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 // @ts-check
@@ -24,10 +24,10 @@ export default defineConfig({
   ],
   image: {},
   integrations: [mdx(), sitemap()],
-  site: SITE,
+  markdown: { shikiConfig: { theme: "night-owl" } },
 
+  site: SITE,
   vite: {
     plugins: [tailwindcss()]
-  },
-  markdown: { shikiConfig: { theme: "night-owl" } }
+  }
 });
