@@ -1,7 +1,6 @@
-import { Effect, Encoding, Option, Schema } from "effect";
+import { Effect, Either, Encoding, Option, Schema } from "effect";
 import constant from "lodash/constant.js";
 import isFunction from "lodash/isFunction.js";
-import { Buffer } from "node:buffer";
 
 type Uint8ArrayConstructorWithBase64 = {
   fromBase64?: (base64: string) => Uint8Array;
@@ -36,8 +35,7 @@ const decodeBase64ToBytes = (cursor: string) => {
   if (isFunction(ctor.fromBase64)) {
     return ctor.fromBase64(cursor);
   }
-  // eslint-disable-next-line unicorn/prefer-uint8array-base64
-  return new Uint8Array(Buffer.from(cursor, "base64"));
+  return Either.getOrThrow(Encoding.decodeBase64(cursor));
 };
 
 const safeDecode = (cursor: string): Effect.Effect<string, unknown> => {

@@ -9,22 +9,22 @@
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "effect": "3.22.1",
-    "hono": "^4.12.33",
-    "jose": "^6.2.5",
+    "hono": "^4.13.2",
+    "jose": "^6.2.8",
     "lodash": "4.18.1",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "^2.19.1",
+    "@dotenvx/dotenvx": "^2.21.0",
     "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "browserslist-config-baseline": "^0.5.0",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^10.8.0",
+    "eslint": "^10.8.1",
     "rimraf": "^6.1.3",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.65.0",
-    "wrangler": "^4.118.0"
+    "typescript-eslint": "^8.67.0",
+    "wrangler": "^4.123.0"
   },
   "engines": {
     "node": ">=24"

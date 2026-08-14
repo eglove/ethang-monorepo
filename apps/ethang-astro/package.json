@@ -4,12 +4,12 @@
     "current node"
   ],
   "dependencies": {
-    "@astrojs/cloudflare": "^14.2.0",
+    "@astrojs/cloudflare": "^14.2.1",
     "@astrojs/mdx": "^7.0.5",
     "@astrojs/sitemap": "^3.7.3",
-    "@cloudflare/vite-plugin": "^1.51.2",
+    "@cloudflare/vite-plugin": "^1.52.1",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.0",
+    "astro": "^7.2.2",
     "effect": "^3.22.1",
     "lucide-astro": "^0.556.0",
     "tailwindcss": "^4.3.3"
@@ -17,9 +17,9 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.10",
     "browserslist-config-baseline": "^0.5.0",
-    "sharp": "0.33.5",
+    "sharp": "0.35.3",
     "vitest": "^4.1.10",
-    "wrangler": "^4.120.1"
+    "wrangler": "^4.123.0"
   },
   "engines": {
     "node": ">=24"

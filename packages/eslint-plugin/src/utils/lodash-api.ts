@@ -25,7 +25,9 @@ export type LodashApiEntry = {
   readonly category: LodashApiCategory;
   readonly description: string;
   readonly nativeAliases: readonly string[];
-  /** Runtime-only methods mutate lodash itself or return a chain wrapper. */
+  /**
+  Runtime-only methods mutate lodash itself or return a chain wrapper.
+  */
   readonly runtimeOnly?: boolean;
 };
 

@@ -1,3 +1,4 @@
+$currentPath = C:\Users\glove\projects\ethang-monorepo
 Write-Output "Updating Windows..."
 Update-Module PSWindowsUpdate
 Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install
@@ -20,3 +21,4 @@ Set-Location ~/
 npx skills update --project
 Set-Location ~\.pi\agent\skills\avoid-ai-writing
 git pull
+Set-Location $currentPath

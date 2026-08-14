@@ -72,18 +72,21 @@ describe("newsUpdate schema", () => {
       };
 
       // @ts-expect-error mock rule
-      return expireDateField.validation(mockRule);
+      return expireDateField.validation(mockRule) as unknown as (
+        value: unknown,
+        context: Record<string, unknown>
+      ) => string | true;
     };
 
     it("returns error if expireDate is null", async () => {
       const validator = getValidator();
-      const result = await validator(null, { document: {} });
+      const result = validator(null, { document: {} });
       expect(result).toBe("Value is required");
     });
 
     it("returns true if document context is null", async () => {
       const validator = getValidator();
-      const result = await validator("2026-06-16", { document: null });
+      const result = validator("2026-06-16", { document: null });
       expect(result).toBe(true);
     });
 
@@ -94,7 +97,7 @@ describe("newsUpdate schema", () => {
           date: DATE
         }
       };
-      const result = await validator(DATE, context);
+      const result = validator(DATE, context);
       expect(result).toBe(
         "Expiration date must be at least one day after the date"
       );
@@ -107,7 +110,7 @@ describe("newsUpdate schema", () => {
           date: DATE
         }
       };
-      const result = await validator("2026-06-16", context);
+      const result = validator("2026-06-16", context);
       expect(result).toBe(true);
     });
   });

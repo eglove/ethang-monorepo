@@ -1,4 +1,6 @@
-/** Test utility that stands in for `@apollo/server` `ApolloServer` in tests. */
+/**
+Test utility that stands in for `@apollo/server` `ApolloServer` in tests.
+*/
 export class MockApolloServer {
   public schema: unknown;
 

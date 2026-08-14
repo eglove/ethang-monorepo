@@ -49,7 +49,8 @@ const customRules = [
   { name: "default-export-style", rule: "off" },
   { name: "prefer-temporal", rule: "off" },
   { name: "no-exports-in-scripts", rule: "off" },
-  { name: "prefer-explicit-viewport-units", rule: "off" }
+  { name: "prefer-explicit-viewport-units", rule: "off" },
+  { name: "consistent-arrow-return-style", rule: "off" }
 ];
 
 export const unicornRules = genRules(ruleNames, customRules, "unicorn");
