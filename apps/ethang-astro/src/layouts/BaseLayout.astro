@@ -8,6 +8,11 @@ import map from "lodash/map.js";
 import { canonicalUrl, imageUrl } from "../lib/seo.ts";
 
 import { navigation } from "../../constants/navigation.ts";
+import {
+  PWA_APPLE_TOUCH_ICON_PATH,
+  PWA_MANIFEST_PATH,
+  pwaManifest
+} from "../../constants/pwa.ts";
 import Button from "../components/ui/Button.astro";
 import InlineLink from "../components/ui/InlineLink.astro";
 import { navLinkClass } from "../lib/ui.ts";
@@ -97,6 +102,10 @@ const currentPath = Astro.url.pathname;
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
+    <meta name="theme-color" content={pwaManifest.theme_color} />
+    <link rel="manifest" href={PWA_MANIFEST_PATH} />
+    <link rel="apple-touch-icon" href={PWA_APPLE_TOUCH_ICON_PATH} />
+    <script src="/src/pwa.ts"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>

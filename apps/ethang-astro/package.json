@@ -12,11 +12,16 @@
     "astro": "^7.2.0",
     "effect": "^3.22.1",
     "lucide-astro": "^0.556.0",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "workbox-window": "^7.4.1"
   },
   "devDependencies": {
+    "@vite-pwa/assets-generator": "^1.0.2",
+    "@vite-pwa/astro": "^1.2.0",
     "@vitest/coverage-v8": "^4.1.10",
     "browserslist-config-baseline": "^0.5.0",
+    "sharp": "0.33.5",
+    "vite-plugin-pwa": "^1.3.0",
     "vitest": "^4.1.10",
     "wrangler": "^4.120.1"
   },
@@ -31,6 +36,7 @@
     "deploy": "astro build && wrangler deploy",
     "dev": "astro dev",
     "generate-types": "wrangler types",
+    "generate:pwa-assets": "pwa-assets-generator",
     "lint": "eslint . --fix",
     "preview": "astro build && astro preview",
     "test": "pnpm test:vitest",

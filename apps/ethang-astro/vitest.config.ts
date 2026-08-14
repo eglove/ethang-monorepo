@@ -12,9 +12,10 @@ export default getViteConfig({
         "**/*.test.ts",
         "**/*.d.ts",
         "src/env.d.ts",
-        "scripts/fetch-featured-images.ts"
+        // Browser-only client bootstrap; exercised by `astro build`, not vitest.
+        "src/pwa.ts"
       ],
-      include: ["src/**/*.{ts,astro}", "constants/**/*.ts", "scripts/**/*.ts"],
+      include: ["src/**/*.{ts,astro}", "constants/**/*.ts"],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
@@ -25,11 +26,7 @@ export default getViteConfig({
       }
     },
     environment: "node",
-    include: [
-      "src/**/*.test.ts",
-      "constants/**/*.test.ts",
-      "scripts/**/*.test.ts"
-    ],
+    include: ["src/**/*.test.ts", "constants/**/*.test.ts"],
     server: {
       deps: {
         inline: ["lucide-astro"]

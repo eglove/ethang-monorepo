@@ -5,7 +5,14 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import path from "node:path";
 
 export default defineConfig(
-  globalIgnores(["node_modules", ".wrangler", "dist", "**/*.d.ts", ".astro"]),
+  globalIgnores([
+    "node_modules",
+    "dev-dist",
+    "dist",
+    ".wrangler",
+    "**/*.d.ts",
+    ".astro"
+  ]),
   ...config,
   ...astroConfig,
   ...tailwindConfig(

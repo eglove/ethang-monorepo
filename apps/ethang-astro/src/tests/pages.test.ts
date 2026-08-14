@@ -61,6 +61,17 @@ describe("index (home) page", () => {
     const html = await render(Index);
     expect(html).toContain("Ethan Glover");
   });
+
+  it("wires the PWA manifest, theme color, and icons", async () => {
+    const html = await render(Index);
+    expect(html).toContain('rel="manifest"');
+    expect(html).toContain('href="/manifest.webmanifest"');
+    expect(html).toContain('name="theme-color"');
+    expect(html).toContain('content="#011627"');
+    expect(html).toContain('rel="apple-touch-icon"');
+    // Astro bundles <script src="/src/pwa.ts"> into a module script for the layout.
+    expect(html).toContain('<script type="module"');
+  });
 });
 
 describe("blog index page", () => {
