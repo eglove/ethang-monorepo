@@ -15,26 +15,26 @@ const isTest = "1" === process.env.ASTRO_TEST;
 
 // https://astro.build/config
 export default defineConfig({
-  // eslint-disable-next-line no-undefined
-  adapter: isTest ? undefined : cloudflare(),
-  fonts: [
-    {
-      cssVariable: "--font-inter",
-      name: "Inter",
-      provider: fontProviders.fontsource()
-    },
-    {
-      cssVariable: "--font-jetbrains-mono",
-      name: "JetBrains Mono",
-      provider: fontProviders.fontsource()
-    }
-  ],
-  image: {},
-  integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
-  markdown: { shikiConfig: { theme: "night-owl" } },
+	// eslint-disable-next-line no-undefined
+	adapter: isTest ? undefined : cloudflare(),
+	fonts: [
+		{
+			cssVariable: "--font-inter",
+			name: "Inter",
+			provider: fontProviders.fontsource(),
+		},
+		{
+			cssVariable: "--font-jetbrains-mono",
+			name: "JetBrains Mono",
+			provider: fontProviders.fontsource(),
+		},
+	],
+	image: {},
+	integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
+	markdown: { shikiConfig: { theme: "night-owl" } },
 
-  site: SITE,
-  vite: {
-    plugins: [tailwindcss()]
-  }
+	site: SITE,
+	vite: {
+		plugins: [tailwindcss()],
+	},
 });
