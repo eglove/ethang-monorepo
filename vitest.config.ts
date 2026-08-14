@@ -10,7 +10,7 @@ export default defineConfig({
 				"*.d.ts",
 				"*.bench.ts",
 				"*.gen.ts",
-				"*.config.ts",
+				"*.config.{mjs,ts,js}",
 				"*.fixture.ts",
 				"**/.wrangler/**",
 				"**/build.ts",

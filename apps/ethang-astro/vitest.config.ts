@@ -10,7 +10,6 @@ export default getViteConfig({
         "*.config.{mjs,js,ts}",
         "**/*.test.ts",
         "**/*.d.ts",
-        "src/content.config.ts",
         "src/env.d.ts",
         "scripts/fetch-featured-images.ts"
       ],
