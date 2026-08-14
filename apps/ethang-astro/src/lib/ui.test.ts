@@ -13,6 +13,7 @@ import {
   labelBase,
   mergeClass,
   navLinkBase,
+  navLinkClass,
   pageClasses,
   paginationEdgeClass,
   paginationNumberClass,
@@ -23,40 +24,42 @@ import {
 describe("class constants", () => {
   it.each([
     {
-      expected: "mx-auto max-w-7xl px-4 py-6",
+      expected: "mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8",
       name: "page container",
       value: pageClasses
     },
     {
       expected:
-        "border border-night-owl-border rounded-xl bg-night-owl-surface",
+        "surface-card border border-night-owl-border bg-night-owl-surface",
       name: "card surface",
       value: cardBase
     },
     {
       expected:
-        "border border-night-owl-border rounded-xl bg-night-owl-surface/50 backdrop-blur-md",
+        "surface-card surface-card-tint border border-night-owl-border bg-night-owl-surface/80 backdrop-blur-md",
       name: "tinted card",
       value: cardTintBase
     },
     {
-      expected: "font-semibold text-night-owl-fg",
+      expected: "font-semibold tracking-tight text-night-owl-fg",
       name: "heading base",
       value: headingBase
     },
     {
       expected:
-        "rounded-lg border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg focus:border-primary transition-colors outline-none",
+        "w-full rounded-md border border-night-owl-border bg-night-owl-bg/80 px-3 py-2 text-night-owl-fg placeholder:text-night-owl-muted focus:border-primary focus:ring-2 focus:ring-primary/30 transition-colors outline-none",
       name: "text input",
       value: inputBase
     },
     {
-      expected: "text-xs font-bold text-night-owl-muted uppercase",
+      expected:
+        "text-xs font-bold tracking-[0.16em] text-night-owl-muted uppercase",
       name: "field label",
       value: labelBase
     },
     {
-      expected: "text-primary hover:underline",
+      expected:
+        "font-medium text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary",
       name: "inline link",
       value: inlineLinkBase
     },
@@ -66,17 +69,36 @@ describe("class constants", () => {
       value: blockquoteBase
     },
     {
-      expected: "text-night-owl-fg hover:text-primary transition-colors",
+      expected:
+        "relative font-medium text-night-owl-fg transition-colors hover:text-primary",
       name: "nav link",
       value: navLinkBase
     },
     {
-      expected: "hover:text-primary hover:underline transition-colors",
+      expected:
+        "font-medium text-night-owl-fg underline decoration-night-owl-border underline-offset-4 transition-colors hover:text-primary hover:decoration-primary",
       name: "underline link",
       value: underlineLinkBase
     }
   ])("$name carries the shared Tailwind tokens", ({ expected, value }) => {
     expect(value).toBe(expected);
+  });
+});
+
+describe("navLinkClass", () => {
+  it.each([
+    {
+      active: true,
+      expected:
+        "relative font-medium text-primary transition-colors after:absolute after:-bottom-2 after:left-0 after:h-0.5 after:w-full after:bg-primary"
+    },
+    {
+      active: false,
+      expected:
+        "relative font-medium text-night-owl-fg transition-colors hover:text-primary"
+    }
+  ])("returns the correct visual state", ({ active, expected }) => {
+    expect(navLinkClass(active)).toBe(expected);
   });
 });
 
@@ -87,7 +109,7 @@ describe("mergeClass", () => {
 
   it("appends an extra class to the base", () => {
     expect(mergeClass(cardBase, "p-5")).toBe(
-      "border border-night-owl-border rounded-xl bg-night-owl-surface p-5"
+      "surface-card border border-night-owl-border bg-night-owl-surface p-5"
     );
   });
 });
@@ -96,35 +118,35 @@ describe("buttonClasses", () => {
   it.each([
     {
       expected:
-        "cursor-pointer bg-primary/20 hover:bg-primary/30 text-primary font-semibold transition-colors px-4 py-2 rounded-lg",
+        "cursor-pointer bg-primary text-on-primary font-semibold shadow-sm transition-all hover:bg-secondary active:scale-[0.98] px-4 py-2 rounded-md",
       name: "primary",
       size: "md",
       variant: "primary"
     },
     {
       expected:
-        "cursor-pointer bg-danger/20 hover:bg-danger/30 text-danger font-semibold transition-colors px-3 py-1.5 rounded-md text-sm",
+        "cursor-pointer bg-danger text-on-primary font-semibold transition-colors hover:bg-danger/80 px-3 py-1.5 rounded-md text-sm",
       name: "danger",
       size: "sm",
       variant: "danger"
     },
     {
       expected:
-        "cursor-pointer border border-night-owl-border text-night-owl-muted hover:text-primary transition-colors px-2 py-1 rounded-md text-xs",
+        "cursor-pointer border border-night-owl-border bg-night-owl-surface/50 text-night-owl-fg hover:border-primary hover:text-primary transition-colors px-2 py-1 rounded-md text-xs",
       name: "outline",
       size: "xs",
       variant: "outline"
     },
     {
       expected:
-        "cursor-pointer bg-gradient-to-r from-primary to-accent text-on-primary font-semibold shadow-lg transition-all hover:opacity-90 active:scale-95 px-4 py-2 rounded-lg",
+        "cursor-pointer bg-gradient-to-r from-primary to-accent text-on-primary font-semibold shadow-lg transition-all hover:brightness-110 active:scale-[0.98] px-4 py-2 rounded-md",
       name: "gradient",
       size: "md",
       variant: "gradient"
     },
     {
       expected:
-        "cursor-pointer text-night-owl-muted hover:text-red-400 transition-colors px-2 py-1 rounded-md text-xs",
+        "cursor-pointer text-night-owl-muted hover:text-danger transition-colors px-2 py-1 rounded-md text-xs",
       name: "ghost",
       size: "xs",
       variant: "ghost"

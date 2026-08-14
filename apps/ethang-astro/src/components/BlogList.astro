@@ -30,7 +30,7 @@ const formattedDate = (date?: DateTime.Utc) => {
 };
 ---
 
-<div class="my-6 w-full grid gap-4">
+<div class="my-8 grid w-full gap-4">
   {
     isEmpty(posts) ? (
       <Card class="flex justify-center p-8">
@@ -39,11 +39,11 @@ const formattedDate = (date?: DateTime.Utc) => {
     ) : (
       map(posts, (blog) => (
         <article
-          class="border border-night-owl-border rounded-xl bg-night-owl-surface p-5 hover:border-primary/30 transition-colors"
+          class="surface-card border border-night-owl-border bg-night-owl-surface p-5 transition-colors hover:border-primary/60 hover:bg-night-owl-surface/90 sm:p-6"
           data-blog-post=""
         >
           {blog.data.blogCategory ? (
-            <p class="uppercase text-xs font-medium text-primary mb-2">
+            <p class="section-kicker mb-3">
               {blog.data.blogCategory}
             </p>
           ) : null}
@@ -53,8 +53,8 @@ const formattedDate = (date?: DateTime.Utc) => {
             </InlineLink>
           </Heading>
           {blog.data.updatedDate ? (
-            <p class="text-sm italic text-night-owl-muted">
-              Updated: {formattedDate(blog.data.updatedDate)}
+            <p class="mt-3 font-mono text-xs text-night-owl-muted">
+              <span class="text-night-owl-cyan">Updated</span> / {formattedDate(blog.data.updatedDate)}
             </p>
           ) : null}
         </article>

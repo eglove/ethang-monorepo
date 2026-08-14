@@ -55,15 +55,20 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
 
 <BaseLayout title="RSS">
   <Page class="w-full">
-    <div class="flex flex-col gap-4 w-full">
+    <div class="flex w-full flex-col gap-5">
+      <div>
+        <p class="section-kicker mb-2">personal feed reader</p>
+        <h1 class="text-3xl font-bold tracking-tight">RSS</h1>
+        <div class="section-rule mt-4"></div>
+      </div>
       {/* Add Feed Form */}
       {
         isAuthenticated ? (
-          <Card tint class="p-4">
+          <Card tint class="surface-card p-5">
             <form
               method="POST"
               action={actions.addFeed}
-              class="flex gap-3 items-center"
+              class="flex flex-col gap-3 sm:flex-row sm:items-center"
             >
               <TextInput
                 type="url"
@@ -82,8 +87,8 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
 
       <div class="grid gap-4 grid-cols-1 md:grid-cols-4">
         {/* Feeds Sidebar */}
-        <Card tint class="md:col-span-1 p-4 min-h-panel">
-          <h2 class="text-lg text-night-owl-muted mb-3">Feeds</h2>
+        <Card tint class="surface-card md:col-span-1 min-h-panel p-5">
+          <h2 class="section-kicker mb-4">Feeds</h2>
           {
             isAuthenticated && subscriptions.edges.length > 0 ? (
               <div class="flex flex-col gap-2">
@@ -135,8 +140,8 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
         </Card>
 
         {/* Articles Container */}
-        <Card tint class="md:col-span-3 p-4 min-h-panel">
-          <h2 class="text-lg text-night-owl-muted mb-3">Articles</h2>
+        <Card tint class="surface-card md:col-span-3 min-h-panel p-5">
+          <h2 class="section-kicker mb-4">Articles</h2>
           {
             isAuthenticated && articles.edges.length > 0 ? (
               <div class="flex flex-col gap-3">

@@ -12,10 +12,12 @@ const allTips = [
 
 <BaseLayout title="Tips">
   <Page>
-    <Heading as="h1" class="text-4xl mb-6">Tips</Heading>
-    <ul class="flex flex-col gap-4 mt-6">
+    <p class="section-kicker mb-2">small solutions / sharp edges</p>
+    <Heading as="h1" class="text-4xl">Tips</Heading>
+    <div class="section-rule mt-4"></div>
+    <ul class="mt-8 flex flex-col gap-4">
       {allTips.map((tip) => (
-        <li key={tip.href}>
+        <li key={tip.href} class="surface-card border border-night-owl-border bg-night-owl-surface p-5 transition-colors hover:border-primary/60">
           <Heading as="h2" class="text-xl">
             <InlineLink variant="underline" href={tip.href} class="text-night-owl-fg">
               {tip.title}

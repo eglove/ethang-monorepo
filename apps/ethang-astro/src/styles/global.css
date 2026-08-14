@@ -3,11 +3,11 @@
 @theme inline {
   /* ── Night Owl palette ─────────────────────────────────────────────── */
   --color-night-owl-bg: #011627; /* base background                             */
-  --color-night-owl-surface: #0b3d61; /* elevated surface (cards, panels)            */
-  --color-night-owl-border: rgba(255, 255, 255, 0.08);
+  --color-night-owl-surface: #0b3553; /* elevated surface (cards, panels)            */
+  --color-night-owl-border: rgba(127, 219, 202, 0.2);
 
   --color-night-owl-fg: #d6deeb; /* primary foreground / body text              */
-  --color-night-owl-muted: #637777; /* muted text, comments                        */
+  --color-night-owl-muted: #9aaebc; /* secondary text with readable contrast          */
 
   /* syntax-highlighting palette — also usable as semantic tokens */
   --color-night-owl-purple: #c792ea; /* keywords, emphasis                          */
@@ -33,14 +33,22 @@
   --font-mono: var(--font-jetbrains-mono);
 
   /* ── Type scale (size / line-height) ───────────────────────────────── */
-  --text-xs: 0.75rem / 1rem;
-  --text-sm: 0.875rem / 1.25rem;
-  --text-base: 1rem / 1.5rem;
-  --text-lg: 1.125rem / 1.75rem;
-  --text-xl: 1.25rem / 1.75rem;
-  --text-2xl: 1.5rem / 2rem;
-  --text-3xl: 1.875rem/2.25rem;
-  --text-4xl: 2.25rem / 2.5rem;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
 
   /* ── Extended spacing tokens ───────────────────────────────────────── */
   --spacing-88: 22rem; /* wide layout breakpoint                    */
@@ -54,15 +62,46 @@
   --color-on-primary: var(--color-night-owl-bg);
 }
 
+:root {
+  color-scheme: dark;
+}
+
 html {
   background-color: var(--color-night-owl-bg);
   color: var(--color-night-owl-fg);
   overflow-block: scroll;
+  scroll-behavior: smooth;
 }
 
 body {
   min-block-size: 100vb;
   font-family: var(--font-sans), sans-serif;
+  background-color: var(--color-night-owl-bg);
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(130, 170, 255, 0.05) 0 1px,
+      transparent 1px 100%
+    ),
+    radial-gradient(
+      circle at 85% -10%,
+      rgba(199, 146, 234, 0.12),
+      transparent 32rem
+    ),
+    radial-gradient(
+      circle at 5% 20%,
+      rgba(127, 219, 202, 0.06),
+      transparent 28rem
+    );
+  background-size:
+    4rem 4rem,
+    auto,
+    auto;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-night-owl-cyan);
+  outline-offset: 3px;
 }
 
 h1,
@@ -74,6 +113,66 @@ h6 {
   font-weight: 600;
   line-height: 1.25;
   color: var(--color-night-owl-fg);
+}
+
+.surface-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.16);
+}
+
+.surface-card::before {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: -1;
+  inline-size: 5rem;
+  block-size: 2px;
+  background: linear-gradient(90deg, var(--color-night-owl-cyan), transparent);
+  content: "";
+}
+
+.surface-card::after {
+  position: absolute;
+  inset: 0 0 auto auto;
+  z-index: -1;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-block-start: 1px solid rgba(127, 219, 202, 0.32);
+  border-inline-end: 1px solid rgba(127, 219, 202, 0.32);
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+  content: "";
+}
+
+.surface-card-tint {
+  background-image: linear-gradient(
+    135deg,
+    rgba(130, 170, 255, 0.08),
+    transparent 42%
+  );
+}
+
+.prose-muted {
+  color: var(--color-night-owl-muted);
+}
+
+.section-kicker {
+  color: var(--color-night-owl-cyan);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.section-rule {
+  block-size: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--color-night-owl-border),
+    transparent
+  );
 }
 
 /* ── Blog prose (MDX article content) ─────────────────────────────────────── */

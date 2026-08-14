@@ -10,6 +10,7 @@ import { canonicalUrl, imageUrl } from "../lib/seo.ts";
 import { navigation } from "../../constants/navigation.ts";
 import Button from "../components/ui/Button.astro";
 import InlineLink from "../components/ui/InlineLink.astro";
+import { navLinkClass } from "../lib/ui.ts";
 import "../styles/global.css";
 
 export interface Props {
@@ -87,6 +88,7 @@ const session = await Effect.runPromise(
 );
 
 const isLoggedIn = !isNil(session);
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -128,48 +130,51 @@ const isLoggedIn = !isNil(session);
     {isNil(ogImageHref) ? <meta name="twitter:card" content="summary" /> : null}
     {canonical ? <meta name="twitter:url" content={canonical} /> : null}
   </head>
-  <body class="bg-night-owl-bg text-night-owl-fg">
-    <header
-      class="mx-auto max-w-7xl px-4 pt-4 pb-4 border-b border-night-owl-border"
-    >
-      <nav class="flex items-center justify-between gap-4 flex-wrap">
-        <ul class="flex gap-4 flex-wrap">
+  <body class="text-night-owl-fg">
+    <header class="mx-auto w-full max-w-6xl px-4 pt-5 sm:px-6 lg:px-8">
+      <nav class="flex flex-wrap items-center justify-between gap-x-5 gap-y-4 border-b border-night-owl-border pb-4">
+        <a href="/" class="font-mono text-sm font-bold tracking-tight text-night-owl-fg transition-colors hover:text-secondary">
+          <span class="text-night-owl-cyan">~/</span>ethang.dev
+        </a>
+        <div class="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
+          <ul class="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-5">
+            {
+              map(links, (link) => (
+                <li>
+                  <InlineLink
+                    variant="nav"
+                    href={link.href}
+                    class={navLinkClass(currentPath === link.href)}
+                  >
+                    {link.label}
+                  </InlineLink>
+                </li>
+              ))
+            }
+          </ul>
+          <span class="hidden h-5 w-px bg-night-owl-border sm:block" aria-hidden="true"></span>
           {
-            map(links, (link) => (
-              <li>
-                <InlineLink variant="nav" href={link.href}>
-                  {link.label}
-                </InlineLink>
-              </li>
-            ))
-          }
-        </ul>
-
-        {
-          isLoggedIn ? (
-            <div class="flex items-center gap-4">
-              <span class="text-sm font-medium text-night-owl-muted">
-                {navigation.LOGGED_IN_AS}{" "}
-                <span class="font-bold text-night-owl-fg">
-                  {session.username}
+            isLoggedIn ? (
+              <div class="flex items-center gap-3">
+                <span class="hidden text-sm text-night-owl-muted lg:inline">
+                  {navigation.LOGGED_IN_AS}{" "}
+                  <span class="font-semibold text-night-owl-fg">{session.username}</span>
                 </span>
-              </span>
-              <form method="POST" action={actions.signOut}>
-                <Button type="submit" variant="danger" size="sm">
-                  {navigation.LOGOUT}
-                </Button>
-              </form>
-            </div>
-          ) : (
-            <InlineLink variant="nav" href="/login">
-              {navigation.LOGIN}
-            </InlineLink>
-          )
-        }
+                <form method="POST" action={actions.signOut}>
+                  <Button type="submit" variant="danger" size="sm">{navigation.LOGOUT}</Button>
+                </form>
+              </div>
+            ) : (
+              <InlineLink variant="nav" href="/login" class={navLinkClass(currentPath === "/login")}>
+                {navigation.LOGIN}
+              </InlineLink>
+            )
+          }
+        </div>
       </nav>
     </header>
 
-    <main class="mx-auto max-w-7xl px-4 py-6">
+    <main>
       <slot />
     </main>
   </body>
