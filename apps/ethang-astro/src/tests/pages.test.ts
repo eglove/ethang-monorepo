@@ -7,10 +7,10 @@ vi.mock("cloudflare:workers", () => {
       ethang_courses: {
         coursesAll: async () => {
           return [];
-        },
+        }
       },
-      ethang_rss: {},
-    },
+      ethang_rss: {}
+    }
   };
 });
 
@@ -26,12 +26,12 @@ import ScrollbarGutter from "../pages/tips/scrollbar-gutter.astro";
 
 const render = async <T>(
   component: T,
-  properties?: Record<string, unknown>,
+  properties?: Record<string, unknown>
 ) => {
   const container = await AstroContainer.create();
   return container.renderToString(
     component as never,
-    { props: properties } as never,
+    { props: properties } as never
   );
 };
 

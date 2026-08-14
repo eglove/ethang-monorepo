@@ -21,19 +21,19 @@ export default defineConfig({
     {
       cssVariable: "--font-inter",
       name: "Inter",
-      provider: fontProviders.fontsource(),
+      provider: fontProviders.fontsource()
     },
     {
       cssVariable: "--font-jetbrains-mono",
       name: "JetBrains Mono",
-      provider: fontProviders.fontsource(),
-    },
+      provider: fontProviders.fontsource()
+    }
   ],
   image: {},
   integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
   markdown: { shikiConfig: { theme: "night-owl" } },
   site: SITE,
   vite: {
-    plugins: [tailwindcss()],
-  },
+    plugins: [tailwindcss()]
+  }
 });

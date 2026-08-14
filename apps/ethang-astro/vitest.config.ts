@@ -11,7 +11,7 @@ export default getViteConfig({
         "*.config.mjs",
         "**/*.test.ts",
         "**/*.d.ts",
-        "src/env.d.ts",
+        "src/env.d.ts"
       ],
       include: ["src/**/*.{ts,astro}", "constants/**/*.ts"],
       provider: "v8",
@@ -20,15 +20,15 @@ export default getViteConfig({
         branches: 80,
         functions: 80,
         lines: 80,
-        statements: 80,
-      },
+        statements: 80
+      }
     },
     environment: "node",
     include: ["src/**/*.test.ts", "constants/**/*.test.ts"],
     server: {
       deps: {
-        inline: ["lucide-astro"],
-      },
-    },
-  },
+        inline: ["lucide-astro"]
+      }
+    }
+  }
 });
