@@ -11,7 +11,8 @@
 
   /* syntax-highlighting palette — also usable as semantic tokens */
   --color-night-owl-purple: #c792ea; /* keywords, emphasis                          */
-  --color-night-owl-green: #addb67; /* built-ins, variables, strong                */
+  --color-night-owl-comment: #637777; /* comments                                    */
+  --color-night-owl-green: #c5e478; /* variables, constants, built-ins             */
   --color-night-owl-blue: #82aaff; /* types, functions, meta                      */
   --color-night-owl-cyan: #7fdbca; /* attributes, tags, params                    */
   --color-night-owl-red: #ff5874; /* literals                                    */
