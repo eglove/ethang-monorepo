@@ -22,9 +22,7 @@ This monorepo contains a collection of web applications, libraries, and tools us
 ### Applications
 
 - **[auth](apps/auth)**: Authentication service built on Cloudflare Workers with Hono, Drizzle ORM on D1, and `jose`/`bcryptjs` for JWT and password hashing.
-- **[ethang-admin](apps/ethang-admin)**: Sanity Studio v6 administrative interface for the personal site content (React 19, Sanity Vision, code input, styled-components).
 - **[ethang-courses](apps/ethang-courses)**: Course tracking service implemented as a Cloudflare Workers RPC `WorkerEntrypoint` backed by Drizzle ORM on D1, reading content from the Sanity client.
-- **[ethang-react](apps/ethang-react)**: The main personal site front-end — React 19, TanStack Router, TanStack Query, Radix UI Themes, Radix Icons, lucide-react, Tailwind CSS v4, PortableText rendering, and Sanity.
 - **[ethang-rss](apps/ethang-rss)**: RSS aggregator implemented as a Cloudflare Workers RPC `WorkerEntrypoint` that parses feeds with `fast-xml-parser` and persists data via Drizzle ORM on D1.
 - **[modlist](apps/modlist)**: Cloudflare Workers RPC `WorkerEntrypoint` that manages game modification lists, mods, conflicts, patches, and requirements using Drizzle ORM on D1.
 - **[sanity-calendar-sync](apps/sanity-calendar-sync)**: Cloudflare Worker that synchronizes Sanity CMS calendar entries into ICS via `ts-ics` and PortableText.

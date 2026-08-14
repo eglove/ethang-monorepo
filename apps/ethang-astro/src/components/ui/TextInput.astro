@@ -1,0 +1,33 @@
+---
+import { inputBase, mergeClass } from "../../lib/ui.ts";
+
+interface Props {
+    class?: string;
+    id?: string;
+    name?: string;
+    placeholder?: string;
+    required?: boolean;
+    type?: string;
+    value?: string;
+}
+
+const {
+    class: className = "",
+    id,
+    name,
+    placeholder,
+    required,
+    type = "text",
+    value
+} = Astro.props;
+---
+
+<input
+    id={id}
+    name={name}
+    placeholder={placeholder}
+    required={required}
+    type={type}
+    value={value}
+    class={mergeClass(inputBase, className)}
+/>

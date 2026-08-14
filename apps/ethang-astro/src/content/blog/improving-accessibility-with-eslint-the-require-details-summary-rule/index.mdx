@@ -1,0 +1,95 @@
+---
+blogCategory: "Blog"
+description: "Ensure your disclosure widgets are accessible and spec-compliant with the ESLint require-details-summary rule. Learn why the HTML Standard requires a <summary> element and how to enforce it automatically using @ethang/eslint-config."
+featuredImage: ./images/featured.png
+featuredImageAlt: "A conceptual 3D illustration of a code-auditing process for HTML disclosure widgets. The image features a glowing toggle switch connected to a security shield and magnifying glass, analyzing two code structures. One path shows a red, accessibility-error warning for a missing summary, while the other shows a green, successful implementation, emphasizing clean code standards and inclusive web design."
+pubDate: "2026-03-05T00:47:52Z"
+slug: "improving-accessibility-with-eslint-the-require-details-summary-rule"
+title: "Improving Accessibility with ESLint: The require-details-summary Rule"
+updatedDate: "2026-03-05T00:58:49Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+
+When building interactive disclosure widgets in HTML, the \<details\> element is a powerful, native tool. However, it is often misused or left incomplete. To ensure a consistent and accessible user experience, the @html-eslint/require-details-summary rule is a must-have in your linting configuration.
+
+## Why This Rule Matters
+
+The HTML Standard is explicit about the structure of a disclosure widget. According to the specification:
+
+<Blockquote source="HTML Standard, Section 4.1" sourceUrl="https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element">The first summary element child of the element, if any, represents the summary or legend of the details. If there is no child summary element, the user agent should provide its own legend \(e.g. "Details"\).</Blockquote>
+
+Furthermore, the **Content Model** for the \<details\> element is defined as:
+
+<Blockquote source="HTML Standard, Section 4.11.1" sourceUrl="https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element">One summary element followed by flow content.</Blockquote>
+
+Violating this rule by omitting the summary is problematic for two main reasons:
+
+**UX:** A generic "Details" label rarely describes the specific content contained within the widget, leading to a confusing interface.
+
+**Accessibility:** Screen reader users rely on the summary text to understand the purpose of the interactive element before toggling it. Without a specific summary, the user loses context.
+
+## Zero-Config with @ethang/eslint-config
+
+If you are using [**@ethang/eslint-config**](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src), you don't need to manually define this rule. It is **enabled by default** within the HTML subconfig.
+
+To use it, simply include htmlConfig in your eslint.config.js file:
+
+```typescript
+import config from "@ethang/eslint-config/config.main.js";
+import { defineConfig, globalIgnores } from "eslint/config";
+import htmlConfig from "@ethang/eslint-config/config.html.js"; // Import the HTML subconfig
+
+export default defineConfig(
+  globalIgnores(["dist", "node_modules"]),
+  ...config,
+  ...htmlConfig, // The rule is now active for all .html files
+  {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+  },
+);
+
+```
+
+## Correct vs. Incorrect Implementation
+
+The linter enforces the specification by ensuring the \<summary\> is present and positioned correctly as the **first child**.
+
+### ❌ Incorrect
+
+```html
+<!-- Missing the summary element entirely -->
+<details>
+  <p>Hidden content</p>
+</details>
+
+<!-- The summary is not the first child -->
+<details>
+  <p>Content before summary</p>
+  <summary>Toggle</summary>
+</details>
+```
+
+### ✅ Correct
+
+```html
+<details>
+  <summary>Show more</summary>
+  <p>Hidden content</p>
+</details>
+```
+
+By enforcing this rule, you guarantee that your disclosure widgets are always labeled correctly, following the HTML spec and providing a better experience for all users.
+
+**Further Reading:**
+
+- [HTML Standard: The details element](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-details-element)
+- [HTML Standard: The summary element](https://html.spec.whatwg.org/multipage/interactive-elements.html#the-summary-element)
+- [@ethang/eslint-config Source](https://github.com/eglove/ethang-monorepo/tree/master/packages/eslint-config/src)

@@ -1,0 +1,189 @@
+import { defineAction } from "astro:actions";
+import { z } from "astro/zod";
+import { env } from "cloudflare:workers";
+import { Effect, Schema } from "effect";
+import isNil from "lodash/isNil.js";
+import isString from "lodash/isString.js";
+
+import {
+  addFeed as addFeedProgram,
+  markArticleRead as markArticleReadProgram,
+  removeFeed as removeFeedProgram
+} from "../lib/rss.ts";
+import { decodeSessionCookie } from "../lib/session.ts";
+
+const UserSchema = Schema.Struct({
+  email: Schema.String,
+  sessionToken: Schema.String,
+  username: Schema.String
+});
+
+type SignInResult =
+  | { failure: Error; success?: never }
+  | {
+      failure?: never;
+      success: { email: string; sessionToken: string; username: string };
+    };
+
+const getSessionUser = (context: {
+  cookies: { get: (name: string) => { value?: string } | undefined };
+}) => {
+  return decodeSessionCookie(context.cookies.get("session")?.value);
+};
+
+export const server = {
+  addFeed: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return { error: "Unauthorized" };
+      }
+
+      return addFeedProgram(env.ethang_rss, {
+        sessionToken: userSession.sessionToken,
+        xmlAddress: input.xmlUrl
+      });
+    },
+    input: z.object({
+      xmlUrl: z.url("Please enter a valid URL")
+    })
+  }),
+
+  markArticleRead: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return { error: "Unauthorized" };
+      }
+
+      return markArticleReadProgram(env.ethang_rss, {
+        articleId: input.articleId,
+        isRead: true,
+        sessionToken: userSession.sessionToken
+      });
+    },
+    input: z.object({
+      articleId: z.string().min(1, "Article is required")
+    })
+  }),
+
+  removeFeed: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return { error: "Unauthorized" };
+      }
+
+      return removeFeedProgram(env.ethang_rss, {
+        feedId: input.feedId,
+        sessionToken: userSession.sessionToken
+      });
+    },
+    input: z.object({
+      feedId: z.string().min(1, "Feed is required")
+    })
+  }),
+
+  signIn: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const signInResult: SignInResult = await Effect.runPromise(
+        Effect.gen(function* () {
+          const response = yield* Effect.tryPromise({
+            catch: (_error: unknown) => {
+              return new Error("An unexpected error occurred");
+            },
+            try: async () => {
+              return fetch("https://auth.ethang.dev/sign-in", {
+                body: JSON.stringify({
+                  email: input.email,
+                  password: input.password
+                }),
+                headers: { "Content-Type": "application/json" },
+                method: "POST"
+              });
+            }
+          });
+
+          if (!response.ok) {
+            return yield* Effect.succeed({
+              failure: new Error("Invalid Credentials")
+            });
+          }
+
+          const rawJson = yield* Effect.tryPromise({
+            catch: (_error: unknown) => {
+              return new Error("An unexpected error occurred");
+            },
+            try: async () => {
+              return response.json();
+            }
+          });
+
+          // Validate the auth response using Effect Schema
+          const decoded = yield* Effect.try({
+            catch: (_error: unknown) => {
+              return new Error("Invalid response from server");
+            },
+            try: () => {
+              return Schema.decodeUnknownSync(UserSchema)(rawJson);
+            }
+          });
+
+          if (
+            !isString(decoded.email) ||
+            !isString(decoded.sessionToken) ||
+            !isString(decoded.username)
+          ) {
+            return yield* Effect.succeed({
+              failure: new Error("Invalid response from server")
+            });
+          }
+
+          // Set httpOnly session cookie server-side via context.cookies
+          context.cookies.set("session", JSON.stringify(decoded), {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 7,
+            path: "/",
+            sameSite: "lax"
+          });
+
+          return yield* Effect.succeed({ success: decoded });
+        }).pipe(
+          Effect.catchAll((error: unknown) => {
+            return Effect.succeed({
+              failure: Error.isError(error) ? error : new Error(String(error))
+            });
+          })
+        )
+      );
+
+      if ("failure" in signInResult && Error.isError(signInResult.failure)) {
+        return { error: signInResult.failure.message };
+      }
+
+      const decodedUser = signInResult.success;
+      return { data: { username: decodedUser?.username ?? "" } };
+    },
+    input: z.object({
+      email: z.email({ message: "Invalid email address" }),
+      password: z.string().min(1, "Password is required")
+    })
+  }),
+
+  signOut: defineAction({
+    accept: "form",
+    handler: (_input, context) => {
+      // httpOnly cookies cannot be cleared client-side; must delete server-side.
+      context.cookies.delete("session", { path: "/" });
+
+      return { success: true };
+    }
+  })
+};

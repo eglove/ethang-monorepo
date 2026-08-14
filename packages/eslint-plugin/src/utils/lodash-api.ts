@@ -1639,6 +1639,10 @@ const COMMON_USER_METHOD_NAMES = new Set([
   "extend",
   "findKey",
   "findLastKey",
+  // Cursor/index methods (mapped to `Array.prototype.at`) are common on
+  // non-array objects (e.g. Playwright Locator `.first()` / `.last()`) and
+  // should not be auto-rewritten to their lodash equivalents on chains.
+  "first",
   "forIn",
   "forInRight",
   "forOwn",
@@ -1646,15 +1650,19 @@ const COMMON_USER_METHOD_NAMES = new Set([
   "fromPairs",
   "functions",
   "functionsIn",
+  "head",
+  "initial",
   "invert",
   "invoke",
   "keys",
   "keysIn",
+  "last",
   "mapKeys",
   "mapValues",
   "merge",
   "mergeWith",
   "mixin",
+  "nth",
   "omit",
   "omitBy",
   "pick",
@@ -1662,6 +1670,7 @@ const COMMON_USER_METHOD_NAMES = new Set([
   "result",
   "set",
   "setWith",
+  "tail",
   "transform",
   "unset",
   "update",
@@ -1670,8 +1679,29 @@ const COMMON_USER_METHOD_NAMES = new Set([
   "valuesIn"
 ]);
 
+// Playwright Locator methods that have native Array.prototype equivalents but
+// operate on non-array receivers. These should not be auto-rewritten to lodash
+// when the inner call in a chain does not resolve to a confirmed array receiver.
+export const PLAYWRIGHT_LOCATOR_METHODS = new Set([
+  "every",
+  "fill",
+  "filter",
+  "find",
+  "flatMap",
+  "forEach",
+  "includes",
+  "map",
+  "reduce",
+  "slice",
+  "some"
+]);
+
 export const isCommonUserMethodName = (name: string) => {
   return COMMON_USER_METHOD_NAMES.has(name);
+};
+
+export const isPlaywrightLocatorMethod = (name: string) => {
+  return PLAYWRIGHT_LOCATOR_METHODS.has(name);
 };
 
 /**

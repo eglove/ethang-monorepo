@@ -1,0 +1,220 @@
+---
+import { actions } from "astro:actions";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { env } from "cloudflare:workers";
+import isNil from "lodash/isNil.js";
+import Button from "../components/ui/Button.astro";
+import Card from "../components/ui/Card.astro";
+import Page from "../components/ui/Page.astro";
+import TextInput from "../components/ui/TextInput.astro";
+
+import {
+  ARTICLES_PAGE_PARAM,
+  buildFormHref,
+  buildLoadMoreHref,
+  EMPTY_ARTICLES,
+  EMPTY_SUBSCRIPTIONS,
+  FEEDS_PAGE_PARAM,
+  getArticles,
+  getPageNumber,
+  getSubscriptions
+} from "../lib/rss.ts";
+import { decodeSessionCookie } from "../lib/session.ts";
+
+export const prerender = false;
+
+const userSession = decodeSessionCookie(Astro.cookies.get("session")?.value);
+const isAuthenticated = userSession !== null;
+
+const feedsPage = getPageNumber(Astro.url.searchParams, FEEDS_PAGE_PARAM);
+const articlesPage = getPageNumber(Astro.url.searchParams, ARTICLES_PAGE_PARAM);
+
+let subscriptions = EMPTY_SUBSCRIPTIONS;
+let articles = EMPTY_ARTICLES;
+
+if (isAuthenticated) {
+  subscriptions = await getSubscriptions(
+    env.ethang_rss,
+    userSession.sessionToken,
+    feedsPage
+  );
+  articles = await getArticles(
+    env.ethang_rss,
+    userSession.sessionToken,
+    articlesPage
+  );
+}
+
+const removeFeedHref = buildFormHref(Astro.url, "removeFeed");
+const markArticleReadHref = buildFormHref(Astro.url, "markArticleRead");
+const nextFeedsHref = buildLoadMoreHref(Astro.url, FEEDS_PAGE_PARAM);
+const nextArticlesHref = buildLoadMoreHref(Astro.url, ARTICLES_PAGE_PARAM);
+const hasNextFeedsPage = subscriptions.pageInfo.hasNextPage;
+const hasNextArticlesPage = articles.pageInfo.hasNextPage;
+---
+
+<BaseLayout title="RSS">
+  <Page class="w-full">
+    <div class="flex w-full flex-col gap-5">
+      <div>
+        <p class="section-kicker mb-2">personal feed reader</p>
+        <h1 class="text-3xl font-bold tracking-tight">RSS</h1>
+        <div class="section-rule mt-4"></div>
+      </div>
+      {/* Add Feed Form */}
+      {
+        isAuthenticated ? (
+          <Card tint class="surface-card p-5">
+            <form
+              method="POST"
+              action={actions.addFeed}
+              class="flex flex-col gap-3 sm:flex-row sm:items-center"
+            >
+              <TextInput
+                type="url"
+                name="xmlUrl"
+                required
+                placeholder="Feed XML URL"
+                class="flex-1"
+              />
+              <Button variant="primary" size="md">
+                Add Feed
+              </Button>
+            </form>
+          </Card>
+        ) : null
+      }
+
+      <div class="grid gap-4 grid-cols-1 md:grid-cols-4">
+        {/* Feeds Sidebar */}
+        <Card tint class="surface-card md:col-span-1 min-h-panel p-5">
+          <h2 class="section-kicker mb-4">Feeds</h2>
+          {
+            isAuthenticated && subscriptions.edges.length > 0 ? (
+              <div class="flex flex-col gap-2">
+                <ul class="flex flex-col gap-2">
+                  {subscriptions.edges.map((edge) => (
+                    <li
+                      key={edge.cursor}
+                      class="flex items-center justify-between gap-2 text-sm text-night-owl-fg"
+                    >
+                      <span class="truncate hover:text-primary transition-colors cursor-pointer">
+                        {edge.node.title}
+                      </span>
+                      <form method="POST" action={removeFeedHref} class="shrink-0">
+                        <input
+                          type="hidden"
+                          name="feedId"
+                          value={edge.node.id}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="xs"
+                          ariaLabel={`Remove ${edge.node.title}`}
+                        >
+                          Remove
+                        </Button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+                {hasNextFeedsPage ? (
+                  <a
+                    href={nextFeedsHref}
+                    class="mt-1 block text-center text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Show more feeds
+                  </a>
+                ) : null}
+              </div>
+            ) : isAuthenticated ? (
+              <p class="text-sm text-night-owl-muted">
+                No feeds subscribed.
+              </p>
+            ) : (
+              <p class="text-sm text-night-owl-muted">
+                Sign in to manage RSS feeds.
+              </p>
+            )
+          }
+        </Card>
+
+        {/* Articles Container */}
+        <Card tint class="surface-card md:col-span-3 min-h-panel p-5">
+          <h2 class="section-kicker mb-4">Articles</h2>
+          {
+            isAuthenticated && articles.edges.length > 0 ? (
+              <div class="flex flex-col gap-3">
+                <ul class="flex flex-col gap-3">
+                  {articles.edges.map((edge) => (
+                    <li
+                      key={edge.cursor}
+                      class="flex items-start justify-between gap-3 border-b border-night-owl-border pb-3 last:border-none"
+                    >
+                      <a
+                        href={edge.node.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="block hover:text-primary transition-colors min-w-0 flex-1"
+                      >
+                        <p class="font-medium text-night-owl-fg">
+                          {edge.node.title}
+                        </p>
+                        {edge.node.feed ? (
+                          <p class="text-xs text-night-owl-muted mt-1">
+                            {edge.node.feed.title}
+                          </p>
+                        ) : null}
+                        {edge.node.publishedAt ? (
+                          <p class="text-xs text-night-owl-muted">
+                            {new Date(
+                              edge.node.publishedAt
+                            ).toLocaleDateString()}
+                          </p>
+                        ) : null}
+                      </a>
+                      <form
+                        method="POST"
+                        action={markArticleReadHref}
+                        class="shrink-0"
+                      >
+                        <input
+                          type="hidden"
+                          name="articleId"
+                          value={edge.node.id}
+                        />
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          class="mt-1"
+                        >
+                          Mark as read
+                        </Button>
+                      </form>
+                    </li>
+                  ))}
+                </ul>
+                {hasNextArticlesPage ? (
+                  <a
+                    href={nextArticlesHref}
+                    class="mt-1 block text-center text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
+                  >
+                    Show more articles
+                  </a>
+                ) : null}
+              </div>
+            ) : isAuthenticated ? (
+              <p class="text-sm text-night-owl-muted">
+                No unread articles.
+              </p>
+            ) : (
+              <p class="text-sm text-night-owl-muted">
+                Sign in to view RSS articles.
+              </p>
+            )
+          }
+        </Card>
+      </div>
+    </div>
+  </Page>
+</BaseLayout>

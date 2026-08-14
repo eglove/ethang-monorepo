@@ -286,9 +286,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
               return Error.isError(error) ? error : new Error(String(error));
             },
             try: async () => {
-              return database.transaction(async (tx) => {
-                return fetchSingleFeed(tx, feed);
-              });
+              return fetchSingleFeed(database, feed);
             }
           }).pipe(
             Effect.matchEffect({
@@ -319,9 +317,7 @@ export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {
     }
 
     await step.do("cleanup-old-articles", async () => {
-      await database.transaction(async (tx) => {
-        return cleanupOldArticles(tx);
-      });
+      await cleanupOldArticles(database);
       return null;
     });
   }

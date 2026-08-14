@@ -1,0 +1,182 @@
+---
+import { actions } from "astro:actions";
+import { getImage } from "astro:assets";
+import { Effect, Schema } from "effect";
+import isNil from "lodash/isNil.js";
+import map from "lodash/map.js";
+
+import { canonicalUrl, imageUrl } from "../lib/seo.ts";
+
+import { navigation } from "../../constants/navigation.ts";
+import Button from "../components/ui/Button.astro";
+import InlineLink from "../components/ui/InlineLink.astro";
+import { navLinkClass } from "../lib/ui.ts";
+import "../styles/global.css";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: ImageMetadata;
+  imageAlt?: string;
+  publishedTime?: Date;
+  updatedTime?: Date;
+  isArticle?: boolean;
+  canonicalPath?: string;
+}
+
+const {
+  title = "Ethan Glover",
+  description,
+  image,
+  imageAlt,
+  publishedTime,
+  updatedTime,
+  isArticle = false,
+  canonicalPath,
+} = Astro.props;
+
+const site = Astro.site;
+const canonical = isNil(site)
+  ? undefined
+  : canonicalUrl(canonicalPath ?? Astro.url.pathname, site);
+const ogImage =
+  isNil(image) || isNil(site)
+    ? null
+    : await getImage({ src: image, width: 1200, format: "jpeg", quality: 80 });
+const ogImageHref = isNil(ogImage) ? null : imageUrl(ogImage.src, site);
+const hasDescription = typeof description === "string" && description.length > 0;
+
+const links = [
+  { href: "/", label: navigation.HOME },
+  { href: "/blog", label: navigation.BLOG },
+  { href: "/tips", label: navigation.TIPS },
+  { href: "/courses", label: navigation.COURSES },
+  { href: "/rss", label: navigation.RSS }
+] as const;
+
+const SessionSchema = Schema.Struct({
+  email: Schema.String,
+  sessionToken: Schema.String,
+  username: Schema.String
+});
+
+const SessionJsonSchema = Schema.parseJson(SessionSchema);
+
+const sessionCookie = Astro.cookies.get("session");
+
+/*
+ * Decode the cookie so only the username is rendered. The cookie payload also
+ * holds the session token, which must never be written into the HTML.
+ */
+const session = await Effect.runPromise(
+  isNil(sessionCookie)
+    ? Effect.succeed(null)
+    : Effect.try({
+        catch: () => {
+          return new Error("Invalid session");
+        },
+        try: () => {
+          return Schema.decodeUnknownSync(SessionJsonSchema)(
+            sessionCookie.value
+          );
+        }
+      }).pipe(
+        Effect.catchAll(() => {
+          return Effect.succeed(null);
+        })
+      )
+);
+
+const isLoggedIn = !isNil(session);
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="theme-color" content="#011627" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {canonical ? <link rel="canonical" href={canonical} /> : null}
+    <meta property="og:title" content={title} />
+    <meta property="og:type" content={isArticle ? "article" : "website"} />
+    {canonical ? <meta property="og:url" content={canonical} /> : null}
+    {hasDescription ? <meta name="description" content={description} /> : null}
+    {hasDescription ? <meta property="og:description" content={description} /> : null}
+    {hasDescription ? <meta name="twitter:description" content={description} /> : null}
+    {!isNil(publishedTime) ? (
+      <meta property="article:published_time" content={publishedTime.toISOString()} />
+    ) : null}
+    {!isNil(updatedTime) ? (
+      <meta property="article:modified_time" content={updatedTime.toISOString()} />
+    ) : null}
+    {!isNil(ogImageHref) ? (
+      <>
+        <meta property="og:image" content={ogImageHref} />
+        {imageAlt ? <meta property="og:image:alt" content={imageAlt} /> : null}
+        {typeof ogImage?.width === "number" ? (
+          <meta property="og:image:width" content={String(ogImage.width)} />
+        ) : null}
+        {typeof ogImage?.height === "number" ? (
+          <meta property="og:image:height" content={String(ogImage.height)} />
+        ) : null}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content={ogImageHref} />
+      </>
+    ) : null}
+    {isNil(ogImageHref) ? <meta name="twitter:card" content="summary" /> : null}
+    {canonical ? <meta name="twitter:url" content={canonical} /> : null}
+  </head>
+  <body class="text-night-owl-fg">
+    <header class="mx-auto w-full max-w-6xl px-4 pt-5 sm:px-6 lg:px-8">
+      <nav class="flex flex-wrap items-center justify-between gap-x-5 gap-y-4 border-b border-night-owl-border pb-4">
+        <a href="/" class="font-mono text-sm font-bold tracking-tight text-night-owl-fg transition-colors hover:text-secondary">
+          <span class="text-night-owl-cyan">~/</span>ethang.dev
+        </a>
+        <div class="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-3">
+          <ul class="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-5">
+            {
+              map(links, (link) => (
+                <li>
+                  <InlineLink
+                    variant="nav"
+                    href={link.href}
+                    class={navLinkClass(currentPath === link.href)}
+                  >
+                    {link.label}
+                  </InlineLink>
+                </li>
+              ))
+            }
+          </ul>
+          <span class="hidden h-5 w-px bg-night-owl-border sm:block" aria-hidden="true"></span>
+          {
+            isLoggedIn ? (
+              <div class="flex items-center gap-3">
+                <span class="hidden text-sm text-night-owl-muted lg:inline">
+                  {navigation.LOGGED_IN_AS}{" "}
+                  <span class="font-semibold text-night-owl-fg">{session.username}</span>
+                </span>
+                <form method="POST" action={actions.signOut}>
+                  <Button type="submit" variant="danger" size="sm">{navigation.LOGOUT}</Button>
+                </form>
+              </div>
+            ) : (
+              <InlineLink variant="nav" href="/login" class={navLinkClass(currentPath === "/login")}>
+                {navigation.LOGIN}
+              </InlineLink>
+            )
+          }
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

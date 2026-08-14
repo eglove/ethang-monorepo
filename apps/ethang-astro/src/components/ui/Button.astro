@@ -1,0 +1,30 @@
+---
+import { buttonClasses, mergeClass, type ButtonSize, type ButtonVariant } from "../../lib/ui.ts";
+
+interface Props {
+    ariaLabel?: string;
+    class?: string;
+    disabled?: boolean;
+    size?: ButtonSize;
+    type?: "button" | "reset" | "submit";
+    variant?: ButtonVariant;
+}
+
+const {
+    ariaLabel,
+    class: className = "",
+    disabled,
+    size = "md",
+    type = "submit",
+    variant = "primary"
+} = Astro.props;
+---
+
+<button
+    type={type}
+    disabled={disabled}
+    aria-label={ariaLabel}
+    class={mergeClass(buttonClasses(variant, size), className)}
+>
+    <slot />
+</button>

@@ -1,0 +1,22 @@
+---
+import BlogList from "../../components/BlogList.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Heading from "../../components/ui/Heading.astro";
+import Page from "../../components/ui/Page.astro";
+import { fetchBlogPage } from "../../lib/blog.ts";
+
+export const prerender = true;
+
+const { maxPages, posts } = await fetchBlogPage(1);
+---
+
+<BaseLayout title="Blog">
+  <Page class="flex flex-col items-center gap-2">
+    <div class="w-full max-w-3xl">
+      <p class="section-kicker mb-2">writing / notes / field reports</p>
+      <Heading as="h1" class="text-4xl">Blog</Heading>
+      <div class="section-rule mt-4"></div>
+    </div>
+    <BlogList maxPages={maxPages} page={1} posts={posts} />
+  </Page>
+</BaseLayout>

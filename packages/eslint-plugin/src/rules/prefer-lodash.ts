@@ -102,6 +102,13 @@ const defaultOptions = {
 // reportCallExpression must skip these to avoid double-reporting.
 const PATTERN_HANDLED_METHODS = new Set(["findIndex", "indexOf"]);
 
+// Methods that also exist on non-array objects like Playwright Locators
+// (.nth(), .at(), .fill()) with completely different semantics. These should
+// not be auto-rewritten because the receiver may not actually be an array —
+// e.g. `locator.fill(value)` fills a form input and must never become
+// lodash's `fill(locator, value)`, which mutates an array in place.
+const NON_ARRAY_CURSOR_METHODS = new Set(["at", "fill", "nth"]);
+
 // Methods that exist on non-array native objects (Map, Set, Headers, etc.)
 // and should not trigger chain detection even when chained.
 const NON_ARRAY_NATIVE_METHODS = new Set([
@@ -111,6 +118,7 @@ const NON_ARRAY_NATIVE_METHODS = new Set([
   "has",
   "keys",
   "max",
+  "method",
   "min",
   "set",
   "update",
@@ -189,6 +197,12 @@ const reportCallExpression = (
       return;
     }
     if (NATIVE_EQUIVALENT_METHODS.has(resolvedCall.methodName)) {
+      return;
+    }
+    // Skip cursor/index methods on potentially non-array receivers
+    // (e.g. Playwright Locator.nth(), .at()) — we cannot confirm at lint time
+    // that the receiver is actually an array.
+    if (NON_ARRAY_CURSOR_METHODS.has(resolvedCall.methodName)) {
       return;
     }
     reportArray(context, node, resolvedCall.methodName, importStyle);

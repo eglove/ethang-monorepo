@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/ui/Button.astro";
+import FieldLabel from "../components/ui/FieldLabel.astro";
+import Heading from "../components/ui/Heading.astro";
+import TextInput from "../components/ui/TextInput.astro";
+import { actions } from "astro:actions";
+import { forms } from "../../constants/forms.ts";
+import { resolveLoginOutcome } from "../lib/login.ts";
+
+export const prerender = false;
+
+const result = Astro.getActionResult(actions.signIn);
+const outcome = resolveLoginOutcome(result, Astro.url.searchParams.get("error"));
+
+if (outcome.kind === "redirect") {
+  return Astro.redirect(outcome.path);
+}
+
+const error = outcome.error;
+---
+
+<BaseLayout title="Login">
+    <div
+        class="flex min-h-form-viewport items-center justify-center px-4 py-12"
+    >
+        <div
+            class="surface-card w-full max-w-md border border-night-owl-border bg-night-owl-surface/80 p-7 shadow-xl backdrop-blur-lg sm:p-8"
+        >
+            <form method="POST" action={actions.signIn}>
+                <div class="flex flex-col gap-4">
+                    <Heading
+                        as="h1"
+                        class="text-xl tracking-tight text-center mb-2"
+                    >
+                        {forms.SIGN_IN_TO_ACCOUNT}
+                    </Heading>
+
+                    {
+                        error ? (
+                            <div class="rounded-md border border-danger/60 bg-danger/10 p-3">
+                                <p class="text-sm font-medium text-center text-danger">
+                                    {error}
+                                </p>
+                            </div>
+                        ) : null
+                    }
+
+                    <div class="flex flex-col gap-1">
+                        <FieldLabel for="email">{forms.EMAIL_ADDRESS}</FieldLabel>
+                        <TextInput
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            placeholder={forms.ENTER_YOUR_EMAIL}
+                        />
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <FieldLabel for="password">{forms.PASSWORD}</FieldLabel>
+                        <TextInput
+                            type="password"
+                            id="password"
+                            name="password"
+                            required
+                            placeholder={forms.ENTER_YOUR_PASSWORD}
+                        />
+                    </div>
+
+                    <Button
+                        type="submit"
+                        variant="gradient"
+                        size="md"
+                        class="mt-4 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        {forms.SIGN_IN}
+                    </Button>
+                </div>
+            </form>
+        </div>
+    </div>
+</BaseLayout>

@@ -1,0 +1,30 @@
+---
+import { blockquoteBase } from "../../lib/ui.ts";
+
+interface Props {
+    author?: string;
+    source?: string;
+    sourceUrl?: string;
+}
+
+const { author, source, sourceUrl } = Astro.props;
+const hasAuthor = typeof author === "string" && author.length > 0;
+const hasSource = typeof source === "string" && source.length > 0;
+---
+
+<blockquote class={blockquoteBase}>
+    <slot />
+    {
+        hasAuthor || hasSource ? (
+            <footer class="text-xs text-night-owl-muted mt-2">
+                {"—"} {author ?? ""}
+                {hasAuthor && hasSource && ", "}
+                {hasSource && typeof sourceUrl === "string" ? (
+                    <a href={sourceUrl} target="_blank" rel="noopener noreferrer" class="hover:underline">{source}</a>
+                ) : (
+                    <cite>{source}</cite>
+                )}
+            </footer>
+        ) : null
+    }
+</blockquote>

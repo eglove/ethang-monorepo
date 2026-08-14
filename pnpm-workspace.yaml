@@ -2,11 +2,13 @@
 packages:
   - apps/*
   - packages/*
-  - templates/*
 allowBuilds:
   "@apollo/protobufjs": true
   "@apollo/rover": true
+  "@astryxdesign/cli": true
+  "@astryxdesign/core": true
   "@parcel/watcher": true
+  better-sqlite3: true
   bun: true
   esbuild: true
   msgpackr-extract: true
@@ -15,3 +17,5 @@ allowBuilds:
   sharp: true
   workerd: true
 minimumReleaseAge: 0
+overrides:
+  "sharp-ico>sharp": 0.33.5

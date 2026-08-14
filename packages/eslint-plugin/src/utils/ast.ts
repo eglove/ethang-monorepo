@@ -17,6 +17,7 @@ import {
   isCommonUserMethodName,
   isLodashArrayFunction,
   isLodashFunction,
+  isPlaywrightLocatorMethod,
   lodashApi
 } from "./lodash-api.ts";
 import { isCallExpression } from "./type-guards.ts";
@@ -281,6 +282,7 @@ const resolveMemberMethod = (node: TSESTree.MemberExpression) => {
 const EFFECT_ARRAY_IDENTIFIERS = ["Array", "Effects", "Array$"];
 const EFFECT_ARRAY_IMPORT = "Array";
 const KIND_EFFECT_ARRAY = "effect-array";
+const UNKNOWN_MEMBER_KIND = "unknown-member";
 
 const resolveEffectArray = (
   node: TSESTree.CallExpression,
@@ -373,6 +375,7 @@ const NON_ARRAY_NATIVE_METHOD_NAMES = new Set([
   "keys",
   "make",
   "max",
+  "method",
   "min",
   "orderBy",
   "set",
@@ -417,15 +420,27 @@ const isChainedArrayLike = (
   if ("array" === innerResolved.kind) {
     return true;
   }
-  // For non-array chains, only flag methods that have a native
-  // Array.prototype equivalent (like `map`, `filter`). Collection-only
-  // lodash methods like `groupBy` have no Array.prototype equivalent and
-  // should not be flagged on unknown builder chains.
-  return (
-    isLodashOrEffectMethod &&
-    hasNativeArrayAlias(methodName) &&
-    !isCommonUserMethodName(methodName)
-  );
+  // For non-array chains (inner call did not resolve to an array receiver),
+  // only flag methods that have a native Array.prototype equivalent and are
+  // not common user-method names. Collection-only lodash methods like `groupBy`
+  // have no Array.prototype equivalent and should not be flagged on unknown
+  // builder chains.
+  if (isCommonUserMethodName(methodName)) {
+    return false;
+  }
+  // Playwright Locator collection methods (`.filter()`, `.map()`, etc.) share
+  // native aliases but operate on non-array receivers. Skip them when the inner
+  // call resolves to "unknown-member" — i.e. we cannot confirm this is a
+  // legitimate chain like `xs.map(fn).filter(fn)`.
+  const isUnknownReceiver = UNKNOWN_MEMBER_KIND === innerResolved.kind;
+  const hasNativeAlias = hasNativeArrayAlias(methodName);
+  if (!hasNativeAlias) {
+    return false;
+  }
+  if (isUnknownReceiver && isPlaywrightLocatorMethod(methodName)) {
+    return false;
+  }
+  return isLodashOrEffectMethod;
 };
 
 const isReceiverArrayLike = (
@@ -517,7 +532,7 @@ const resolveArrayCall = (
     BUILTIN_NAMESPACES.has(callee.object.name)
   ) {
     const result: ResolvedCall = {
-      kind: "unknown-member",
+      kind: UNKNOWN_MEMBER_KIND,
       methodName,
       node,
       receiver: callee.object
@@ -535,7 +550,7 @@ const resolveArrayCall = (
     return result;
   }
   const result: ResolvedCall = {
-    kind: "unknown-member",
+    kind: UNKNOWN_MEMBER_KIND,
     methodName,
     node,
     receiver: callee.object

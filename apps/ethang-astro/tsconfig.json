@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "types": ["./worker-configuration.d.ts"]
+  },
+  "exclude": ["dist"],
+  "extends": [
+    "../../packages/tsconfig/tsconfig.base.json",
+    "astro/tsconfigs/strict"
+  ],
+  "include": [".astro/types.d.ts", "**/*", "./worker-configuration.d.ts"]
+}

@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* ── Night Owl palette ─────────────────────────────────────────────── */
+  --color-night-owl-bg: #011627; /* base background                             */
+  --color-night-owl-surface: #0b3553; /* elevated surface (cards, panels)            */
+  --color-night-owl-border: rgba(127, 219, 202, 0.2);
+
+  --color-night-owl-fg: #d6deeb; /* primary foreground / body text              */
+  --color-night-owl-muted: #9aaebc; /* secondary text with readable contrast          */
+
+  /* syntax-highlighting palette — also usable as semantic tokens */
+  --color-night-owl-purple: #c792ea; /* keywords, emphasis                          */
+  --color-night-owl-comment: #637777; /* comments                                    */
+  --color-night-owl-green: #c5e478; /* variables, constants, built-ins             */
+  --color-night-owl-blue: #82aaff; /* types, functions, meta                      */
+  --color-night-owl-cyan: #7fdbca; /* attributes, tags, params                    */
+  --color-night-owl-red: #ff5874; /* literals                                    */
+  --color-night-owl-orange: #f78c6c; /* numbers                                     */
+  --color-night-owl-yellow: #ecc48d; /* strings                                     */
+  --color-night-owl-peach: #ffcb8b; /* classes                                     */
+  --color-night-owl-mint: #d9f5dd; /* punctuation, bullets                        */
+
+  /* ── Semantic UI tokens (derived from Night Owl) ───────────────────── */
+  --color-primary: var(--color-night-owl-blue);
+  --color-secondary: var(--color-night-owl-cyan);
+  --color-accent: var(--color-night-owl-purple);
+  --color-success: var(--color-night-owl-green);
+  --color-warning: var(--color-night-owl-yellow);
+  --color-danger: var(--color-night-owl-red);
+
+  /* ── Typography families ───────────────────────────────────────────── */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* ── Type scale (size / line-height) ───────────────────────────────── */
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+
+  /* ── Extended spacing tokens ───────────────────────────────────────── */
+  --spacing-88: 22rem; /* wide layout breakpoint                    */
+  --spacing-100: 25rem; /* full-width content max                    */
+
+  /* ── Named panel/section sizes (avoid arbitrary numeric utilities) ─── */
+  --spacing-panel: 18.75rem; /* min height for content panels (300px)     */
+  --spacing-form-viewport: 60vh; /* centred form viewport band            */
+
+  /* on-primary foreground, so buttons never hardcode a raw colour */
+  --color-on-primary: var(--color-night-owl-bg);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background-color: var(--color-night-owl-bg);
+  color: var(--color-night-owl-fg);
+  overflow-block: scroll;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-block-size: 100vb;
+  font-family: var(--font-sans), sans-serif;
+  background-color: var(--color-night-owl-bg);
+  background-image:
+    linear-gradient(
+      135deg,
+      rgba(130, 170, 255, 0.05) 0 1px,
+      transparent 1px 100%
+    ),
+    radial-gradient(
+      circle at 85% -10%,
+      rgba(199, 146, 234, 0.12),
+      transparent 32rem
+    ),
+    radial-gradient(
+      circle at 5% 20%,
+      rgba(127, 219, 202, 0.06),
+      transparent 28rem
+    );
+  background-size:
+    4rem 4rem,
+    auto,
+    auto;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-night-owl-cyan);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-night-owl-fg);
+}
+
+.surface-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 1.25rem 3rem rgba(0, 0, 0, 0.16);
+}
+
+.surface-card::before {
+  position: absolute;
+  inset: 0 auto auto 0;
+  z-index: -1;
+  inline-size: 5rem;
+  block-size: 2px;
+  background: linear-gradient(90deg, var(--color-night-owl-cyan), transparent);
+  content: "";
+}
+
+.surface-card::after {
+  position: absolute;
+  inset: 0 0 auto auto;
+  z-index: -1;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  border-block-start: 1px solid rgba(127, 219, 202, 0.32);
+  border-inline-end: 1px solid rgba(127, 219, 202, 0.32);
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+  content: "";
+}
+
+.surface-card-tint {
+  background-image: linear-gradient(
+    135deg,
+    rgba(130, 170, 255, 0.08),
+    transparent 42%
+  );
+}
+
+.prose-muted {
+  color: var(--color-night-owl-muted);
+}
+
+.section-kicker {
+  color: var(--color-night-owl-cyan);
+  font-family: var(--font-jetbrains-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.section-rule {
+  block-size: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--color-night-owl-border),
+    transparent
+  );
+}
+
+/* ── Blog prose (MDX article content) ─────────────────────────────────────── */
+.blog-prose {
+  line-height: 1.7;
+}
+.blog-prose h1 {
+  font-size: 1.875rem;
+  margin: 1.5rem 0 0.75rem;
+}
+.blog-prose h2 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 0.75rem;
+}
+.blog-prose h3 {
+  font-size: 1.25rem;
+  margin: 1.25rem 0 0.5rem;
+}
+.blog-prose h4 {
+  font-size: 1.125rem;
+  margin: 1rem 0 0.5rem;
+}
+.blog-prose p {
+  color: var(--color-night-owl-fg);
+  margin: 0.75rem 0;
+  line-height: 1.7;
+}
+.blog-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+.blog-prose a:hover {
+  text-decoration: none;
+}
+.blog-prose code {
+  color: var(--color-night-owl-green);
+  background: var(--color-night-owl-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+}
+.blog-prose pre {
+  background: var(--color-night-owl-bg);
+  border: 1px solid var(--color-night-owl-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-inline: auto;
+}
+.blog-prose pre code {
+  background: transparent;
+  padding: 0;
+}
+.blog-prose blockquote {
+  border-color: var(--color-primary);
+}
+
+/* Astro fenced-code blocks (shiki night-owl) fill the palette too. */
+.blog-prose .astro-code {
+  background-color: var(--color-night-owl-bg);
+}

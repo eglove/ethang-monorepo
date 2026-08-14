@@ -1,0 +1,31 @@
+---
+import { inlineLinkBase, mergeClass, navLinkBase, underlineLinkBase } from "../../lib/ui.ts";
+
+interface Props {
+    ariaLabel?: string;
+    class?: string;
+    href?: string;
+    rel?: string;
+    target?: string;
+    variant?: "nav" | "primary" | "underline";
+}
+
+const {
+    ariaLabel,
+    class: className = "",
+    href,
+    rel,
+    target,
+    variant = "primary"
+} = Astro.props;
+const variantClass =
+    variant === "nav"
+        ? navLinkBase
+        : variant === "underline"
+          ? underlineLinkBase
+          : inlineLinkBase;
+---
+
+<a href={href} target={target} rel={rel} aria-label={ariaLabel} class={mergeClass(variantClass, className)}>
+    <slot />
+</a>

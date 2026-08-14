@@ -1,0 +1,13 @@
+---
+import { mergeClass, pageClasses } from "../../lib/ui.ts";
+
+interface Props {
+    class?: string;
+}
+
+const { class: className = "" } = Astro.props;
+---
+
+<div class={mergeClass(pageClasses, className)}>
+    <slot />
+</div>

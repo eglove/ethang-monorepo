@@ -30,7 +30,7 @@ workspaces, frameworks, or scripts are current.
 
 4. **SWEBOK Principles**: Follow the principles of `/swebok` and reference them for everything.
 
-5. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) for everything. **Use `/effect-ts` as the vehicle to build DDD patterns** — model aggregates, value objects, domain services, and repositories as `Effect`s, `Layer`s, `Ref`s, and `Schema`s so that bounded contexts, invariants, and side effects are expressed declaratively in the type system. Prefer Effect primitives (e.g. `Effect.gen` for domain workflows, `Layer` for dependency injection of repositories and infrastructure ports, `Ref` for aggregate state, `Schema` for value object and command/query validation, `Schedule` for retry/policy on repository calls, `Stream` for domain event publishing) over hand-rolled classes, factories, and promises. This keeps the ubiquitous language, aggregates, and anti-corruption layers composable, testable, and resource-safe by construction.
+5. **DDD Principles**: Follow the principles of Domain-Driven Design (DDD) for everything. **Use the `effect` MCP server as the vehicle to build DDD patterns** — model aggregates, value objects, domain services, and repositories as `Effect`s, `Layer`s, `Ref`s, and `Schema`s so that bounded contexts, invariants, and side effects are expressed declaratively in the type system. Prefer Effect primitives (e.g. `Effect.gen` for domain workflows, `Layer` for dependency injection of repositories and infrastructure ports, `Ref` for aggregate state, `Schema` for value object and command/query validation, `Schedule` for retry/policy on repository calls, `Stream` for domain event publishing) over hand-rolled classes, factories, and promises. This keeps the ubiquitous language, aggregates, and anti-corruption layers composable, testable, and resource-safe by construction.
 
 6. **Tests as Finite State Machines**: Treat every unit under test as a finite state machine and exhaustively enumerate every reachable state, transition, and edge in the test suite. Use `vitest it.each` (or equivalent parameterized tests) to table-drive inputs across the full input domain — valid, invalid, boundary, empty, max-length, unicode, null/undefined, concurrent, error, and recovery states — so that "all states covered" is a structural property of the test, not an aspiration. When a function's behavior branches on a discriminated union, exhaust the union; when it loops, cover the zero-iteration, single-iteration, and N-iteration cases; when it composes side effects, assert both happy-path state and rollback/failure state. A test suite is incomplete until every state is either explicitly asserted or proven unreachable from every legal input via reasoning about the producer of that state. Do not leave a state untested because it is "obvious" — the rule's job is to catch regressions, not to be obvious.
 
@@ -48,17 +48,47 @@ workspaces, frameworks, or scripts are current.
 
 ---
 
-## CRITICAL: Tool Usage
+## MCP Servers
 
-AI agents must follow this tool priority order:
+The following MCP servers are available. Use them when the task matches their purpose rather than relying on pre-trained knowledge — they provide accurate, up-to-date documentation.
 
-1. **PowerShell (pwsh)** — use for ALL terminal commands. Never use bash. Use `rg`, `jq`, `es` (Everything Search), `gh`. Invoke with `powershell -Command "..."` or `pwsh -Command "..."`.
-2. **Specialized CLIs** (fallback) — when PowerShell is unavailable, use the appropriate CLI directly.
+| Server | Tools | When to Use |
+| -------- | ------- | ------------- |
+| **effect** | 7 | Effect-ts library questions: search docs, read guides/READMEs for `@effect/cli`, `@effect/platform`, `@effect/rpc`, `@effect/sql` |
+| **mdn** | 3 | JavaScript, CSS, HTML, Web API documentation — use instead of general knowledge for web platform features |
+| **astro** | 1 | Astro framework questions — search official Astro docs |
+| **chrome-devtools** | 29 | Browser debugging: inspect elements, network analysis, performance profiling, LCP/INP/CLS audits, accessibility debugging |
+| **playwright** | 23 | Browser automation and testing — interact with web pages programmatically |
+
+Usage:
+
+```typescript
+// List tools from a server
+mcp({ server: "effect" })
+
+// Search for documentation
+mcp({ search: "query" })
+
+// Call a specific tool
+mcp({ tool: "tool_name", args: { key: "value" } })
+```
+
+---
+
+## TanStack CLI Documentation
+
+When working with TanStack libraries, use the CLI to access documentation directly rather than relying on pre-trained knowledge:
+
+```bash
+# List available libraries and their docs
+pnpx @tanstack/cli libraries
+
+# Search documentation for a specific topic
+pnpx @tanstack/cli@latest search-docs --help
+```
 
 ---
 
 ## Package Dependency Conventions
 
 When installing and using packages in this repository, **do not assume the `workspace:*` convention**. Many packages are published and installed via the registry. Always look at how other apps/packages use them before adding a new dependency.
-
-

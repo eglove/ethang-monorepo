@@ -1,0 +1,122 @@
+---
+blogCategory: "Blog"
+description: "Learn about the new @angular-eslint rules for computed() signals and template non-null assertions to prevent runtime errors and improve type safety in Angular."
+featuredImage: ./images/featured.png
+featuredImageAlt: "A glowing blue shield with the Angular logo on a dark technical background, representing ESLint code safety and robust software architecture."
+pubDate: "2026-03-06T00:28:22Z"
+slug: "improving-code-safety-new-eslint-rules-for-angular-signals-and-templates"
+title: "Improving Code Safety: New ESLint Rules for Angular Signals and Templates"
+updatedDate: "2026-03-06T00:51:54Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+
+As the Angular ecosystem evolves—especially with the introduction of Signals and the new Control Flow syntax—tooling must keep pace to prevent common developer mistakes. Recently, `@angular-eslint` introduced two key rules designed to improve type safety and functional correctness in your applications.
+
+In this post, we’ll dive into `@angular-eslint/computed-must-return` and `@angular-eslint/template/no-non-null-assertion`.
+
+## 1. `@angular-eslint/computed-must-return`
+
+Angular Signals brought us the `computed\(\)` function, a powerful way to derive state. However, because `computed` is designed to transform values, forgetting to return a value renders the signal useless \(returning `undefined` by default\).
+
+### The Rationale
+
+A `computed\(\)` signal is a derivation. If you are using it but not returning a value, you likely intended to use an `effect\(\)` instead. `effect\(\)` is for side effects; `computed\(\)` is for data transformation. [View official documentation here](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/docs/rules/computed-must-return.md).
+
+### ❌ Incorrect Usage
+
+These patterns will now trigger an ESLint error:
+
+```typescript
+// Empty body returns undefined
+const total = computed(() => {
+  doSomething();
+});
+
+// Explicit empty return
+const name = computed(() => {
+  if (!user()) return; // Error: Must return a value in all code paths
+  return user().name;
+});
+
+```
+
+### ✅ Correct Usage
+
+Ensure every path returns a value or uses an implicit return:
+
+```typescript
+// Clean implicit return
+const total = computed(() => price() * quantity());
+
+// Explicit return with proper handling
+const name = computed(() => {
+  const data = user();
+  return data ? data.name : 'Guest';
+});
+
+```
+
+## 2. `@angular-eslint/template/no-non-null-assertion`
+
+This rule brings a beloved \(or feared\) TypeScript check directly into your Angular HTML templates. It disallows the use of the `!` operator \(non-null assertion\).
+
+### The Rationale
+
+The `!` operator tells the TypeScript compiler: "I know more than you do; this value is definitely not null." While tempting, this often leads to runtime "Cannot read property of undefined" errors when our assumptions about data \(like API responses\) prove wrong.
+
+It is almost always better to use **Optional Chaining** \(`?.`\) or **Nullish Coalescing** \(`??`\) to handle potentially missing data gracefully. [View official documentation here](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin-template/docs/rules/no-non-null-assertion.md).
+
+### ❌ Incorrect Usage
+
+Avoid forcing values in templates:
+
+```html
+<!-- Property access -->
+<p>{{ user!.name }}</p>
+
+<!-- Inside Control Flow -->
+@if (items!.length > 0) { ... }
+
+<!-- Inside Event Bindings -->
+<button (click)="save(data!)">Save</button>
+
+<!-- Inside @let declarations -->
+@let config = getConfig()!;
+```
+
+## Integration with @ethang/eslint-config
+
+If you are using the **Relentless. Unapologetic.** [@ethang/eslint-config](https://github.com/eglove/ethang-monorepo/blob/master/packages/eslint-config/src/README.md), these rules are **enabled by default** as part of the specialized Angular configuration. This ensures your project adheres to the highest standards of signal safety and template reliability from the moment you set it up.
+
+To include these rules along with the other 85+ Angular-specific checks, simply import the configuration in your `eslint.config.js`:
+
+```typescript
+import config from "@ethang/eslint-config/config.main.js";
+import angularConfig from "@ethang/eslint-config/config.angular.js";
+import { defineConfig } from "eslint/config";
+
+export default defineConfig(
+  ...config,
+  ...angularConfig, // These rules are ON by default here
+  {
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      // You only need this section if you want to OVERRIDE the defaults
+    },
+  },
+);
+```
+
+## Conclusion
+
+By enforcing `computed` returns and discouraging non-null assertions in templates, you eliminate a significant category of runtime "undefined" bugs. These rules ensure your reactive data graph remains robust and your UI remains stable.
+
+Happy coding!

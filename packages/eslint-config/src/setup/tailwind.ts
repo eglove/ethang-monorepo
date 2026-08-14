@@ -13,7 +13,7 @@ const customRules = [
 export const tailwindRules = genRules(ruleNames, customRules, "tailwind");
 
 export const tailwindPlugin = new Plugin({
-  extraOptions: "settings: { tailwindcss: { config: pathToConfig } },",
+  extraOptions: "settings: { tailwindcss: { cssConfigPath: pathToConfig } },",
   files: "**/*.{js,ts,jsx,tsx,cjs,cts,mjs,mts}",
   importString:
     'import { fixupPluginRules } from "@eslint/compat";\nimport tailwind from "eslint-plugin-tailwindcss";',

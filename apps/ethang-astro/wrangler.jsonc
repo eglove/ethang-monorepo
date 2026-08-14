@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist"
+  },
+  "compatibility_date": "2026-08-10",
+  "compatibility_flags": ["global_fetch_strictly_public"],
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "name": "ethang-astro",
+  "observability": {
+    "enabled": true
+  },
+  "placement": {
+    "mode": "smart"
+  },
+  "routes": [
+    {
+      "custom_domain": true,
+      "pattern": "ethang.dev"
+    },
+    {
+      "custom_domain": true,
+      "pattern": "www.ethang.dev"
+    }
+  ],
+  "services": [
+    {
+      "binding": "ethang_courses",
+      "remote": true,
+      "service": "ethang-courses"
+    },
+    {
+      "binding": "ethang_rss",
+      "remote": true,
+      "service": "ethang-rss"
+    }
+  ]
+}

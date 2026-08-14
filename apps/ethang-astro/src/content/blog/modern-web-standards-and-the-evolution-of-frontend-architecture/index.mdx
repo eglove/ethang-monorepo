@@ -1,0 +1,62 @@
+---
+blogCategory: "Dev Reads"
+description: "Gemini said Explore the latest shifts in frontend development, featuring the widespread browser support of WebGPU, Navigation API, and URLPattern. This edition dives into why React's controversial design choices matter, the rise of the TanStack ecosystem, and strategies for event-driven frontend architecture. Plus, essential insights on web performance audits, inclusive design for anxiety, and destigmatizing ADHD in tech."
+featuredImage: ./images/featured.png
+featuredImageAlt: "Gemini said A futuristic and futuristic interface design with data visualization and icons related to digital technology and inclusion, against a deep blue background with a gradient. The central display shows charts, graphs, and a navigation map, with icons indicating functions such as settings and analysis. At the top left, a hexagonal honeycomb pattern fades into the blue background. Along the bottom, there is a set of distinct inclusion and accessibility symbols: three stylized figures for \"Inclusive Design (Anxiety)\"; a single profile icon; and a rainbow-colored spectrum with a bell curve. These elements are set on floating hexagonal and rectangular panels with clean lines and colorful accents."
+pubDate: "2026-03-21T01:43:08Z"
+slug: "modern-web-standards-and-the-evolution-of-frontend-architecture"
+title: "Modern Web Standards and the Evolution of Frontend Architecture"
+updatedDate: "2026-03-21T01:54:20Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+
+## Two React Design Choices Developers Don’t Like—But Can’t Avoid
+
+<Blockquote author="Ryan Carniato" source="Playful Programming" sourceUrl="https://dev.to/playfulprogramming/two-react-design-choices-developers-dont-like-but-cant-avoid-d6g">And somewhere along the way, I realized something uncomfortable. React was right about those design decisions that people absolutely cannot stand. Not React’s model — I’m not here to defend that. But React did correctly identify two invariants that the rest of the ecosystem, including Solid 1.x, glossed over.</Blockquote>
+
+## Navigation API - a better way to navigate, is now Baseline Newly Available
+
+<Blockquote author="Jay Rungta" source="web.dev" sourceUrl="https://web.dev/blog/baseline-navigation-api">As seen with the preceding examples, the Navigation API fixes deep architectural issues with navigating SPAs, a long-standing pain point among many web developers. It is built-in, safe, and handles edge cases robustly.</Blockquote>
+
+## URLPattern is now Baseline Newly available
+
+<Blockquote author="Jay Rungta" source="web.dev" sourceUrl="https://web.dev/blog/baseline-urlpattern">If you've ever built a feature that needs to react to URL changes, you've likely found yourself writing complex regular expressions or pulling in a third-party library for routing. The URL Pattern API, now Baseline Newly available, provides a standardized, powerful, and interoperable solution for this common challenge.</Blockquote>
+
+## Same-document view transitions have become Baseline Newly available
+
+<Blockquote author="Bramus" source="web.dev" sourceUrl="https://web.dev/blog/same-document-view-transitions-are-now-baseline-newly-available">As a reminder, with view transitions you have rich visual transitions between various states of your website. In the following demo you can explore which view transitions-related features are supported by a browser. The demo itself also uses view transitions.</Blockquote>
+
+## LCP and INP are now Baseline Newly available
+
+<Blockquote author="Barry Pollard, Michal Mocny" source="web.dev" sourceUrl="https://web.dev/blog/lcp-and-inp-are-now-baseline-newly-available">With the release of Safari 26.2 on December 12th, web performance got a fantastic end of year gift with Largest Contentful Paint \(LCP\) and Interaction to Next Paint \(INP\) becoming Baseline Newly available as the latest version of all major browsers now include the Largest Contentful Paint API and Event Timing API needed to measure these metrics. This was part of the Interop 2025 project, and it's great to see these delivered this year!</Blockquote>
+
+## WebGPU is now supported in major browsers
+
+<Blockquote author="François Beaufort" source="web.dev" sourceUrl="https://web.dev/blog/webgpu-supported-major-browsers">Big news for web developers and users. WebGPU—the powerful API for running high-performance 3D graphics and general-purpose GPU computations—is officially supported across Chrome, Edge, Firefox, and Safari. This means the future of high-end, in-browser experiences like AAA gaming, complex 3D modeling, and advanced AI applications is now!</Blockquote>
+
+## The 49MB Web Page
+
+<Blockquote author="Shubham Bose" sourceUrl="https://thatshubham.com/blog/news-audit">I went to the New York Times to glimpse at four headlines and was greeted with 422 network requests and 49 megabytes of data. It took two minutes before the page settled. And then you wonder why every sane tech person has an adblocker installed on systems of all their loved ones.</Blockquote>
+
+## Breaking Free from the Render Cycle: Event-Driven Frontend Architecture
+
+<Blockquote author="Ishan Bagchi" source="dev.to" sourceUrl="https://dev.to/ishanbagchi/breaking-free-from-the-render-cycle-event-driven-frontend-architecture-2a8e">Independent widgets need to communicate with each other without necessarily sharing a direct parent-child relationship. When the "React way" forces you to lift state near the root just so two distant components can talk, the render cycle can quickly become expensive.</Blockquote>
+
+## TanStack Is Eating React's Ecosystem — And Nobody Is Talking About It
+
+<Blockquote author="Harsh" source="dev.to" sourceUrl="https://dev.to/harsh2644/tanstack-is-eating-reacts-ecosystem-and-nobody-is-talking-about-it-10n0">Not because I had planned it. Because one library at a time, over months, TanStack had simply become the better choice. And I had followed the better choice — without ever stopping to realize where I was going.</Blockquote>
+
+## Designing for people with anxiety
+
+<Blockquote author="Demelza Feltham" source="Tetra Logical" sourceUrl="https://tetralogical.com/blog/2026/03/10/designing-for-people-with-anxiety/?">Most of us will experience anxiety at some point, sometimes triggered by a stressful moment, other times as a chronic condition. By taking thoughtful, intentional steps, we can ensure our designs at the most reduce stress, and the very least, do not contribute to or amplify it further.</Blockquote>
+
+## Yikes.
+
+<VideoEmbed videoId="_Ux13UEqIYo" url="https://www.youtube.com/watch?v=_Ux13UEqIYo" title="Yikes." />
+
+## 7 Reasons I Talk About My ADHD, Even When It Makes Me Cringe
+
+<Blockquote author="Lynda Breakwell" source="Additude" sourceUrl="https://www.additudemag.com/explaining-adhd-destigmatizes/">Public perception of ADHD is still negative and narrow: we’re chaotic, annoying and devoid of common sense. We bash things with sticks all day long and talk over each other non-stop. The stereotype overlooks inattentive attributes completely and defines us largely by what we lack and by our most conspicuous traits.</Blockquote>

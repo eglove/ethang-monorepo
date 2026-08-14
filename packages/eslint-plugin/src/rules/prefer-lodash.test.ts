@@ -697,6 +697,20 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
       code: "xs.fromIterable(other);"
     },
     {
+      // Playwright locator `.fill()` must not be rewritten to lodash `fill`
+      code: 'page.getByLabel("Email Address").fill("test@example.com");'
+    },
+    {
+      // Identifier-receiver `.fill()` on a locator is ambiguous with
+      // Array.prototype.fill — never auto-rewrite it.
+      code: 'emailInput.fill("test@example.com");'
+    },
+    {
+      // Playwright `Request.method()` must not be rewritten to lodash
+      // `method(request)` — it is a HTTP-method accessor, not lodash util.
+      code: 'page.route("**/_serverFn*", (route) => { if (route.request().method() === "POST") route.continue(); });'
+    },
+    {
       code: 'import map from "lodash/map.js"; map([1, 2, 3], (x) => x * 2);'
     },
     {
@@ -857,6 +871,21 @@ ruleTester.run("prefer-lodash", preferLodashRule as never, {
     {
       // drizzle ORM .groupBy on a query builder chain — should not flag
       code: "database.select().from(table).where(condition).groupBy(table.id).as('sub');"
+    },
+    {
+      // Playwright Locator `.first()` — common non-array method; should not
+      // be auto-rewritten to lodash `first`/`head` (regression guard)
+      code: "page.getByRole('img').first();"
+    },
+    {
+      // Playwright Locator `.last()` — same family; should not flag
+      code: "page.getByRole('img').last();"
+    },
+    {
+      // Playwright Locator `.filter({ has })` on unconfirmed chain — non-array
+      // builder method with a native Array.prototype alias; should not be
+      // auto-rewritten to lodash `filter`
+      code: "page.getByRole('region').filter({ has: page.getByRole('img') });"
     },
     {
       // Array.prototype.join — should not flag

@@ -63,14 +63,22 @@ const getDefaultSubscriptions = async (
       databaseSchema.feedsTable,
       eq(databaseSchema.subscriptionsTable.feedId, databaseSchema.feedsTable.id)
     )
-    .where(
-      and(
-        eq(databaseSchema.subscriptionsTable.userId, userId),
-        isNil(after) ? sql`` : lt(databaseSchema.subscriptionsTable.id, after)
-      )
-    )
+    .where(and(...buildDefaultSubscriptionsConditions(userId, after)))
     .orderBy(desc(databaseSchema.subscriptionsTable.id))
     .limit(limit);
+};
+
+const buildDefaultSubscriptionsConditions = (
+  userId: string,
+  after: null | string
+) => {
+  const conditions = [eq(databaseSchema.subscriptionsTable.userId, userId)];
+
+  if (!isNil(after)) {
+    conditions.push(lt(databaseSchema.subscriptionsTable.id, after));
+  }
+
+  return conditions;
 };
 
 const getTitleSortedSubscriptions = async (

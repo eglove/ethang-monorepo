@@ -30,8 +30,7 @@ const runQuery = async <A>(effect: Effect.Effect<A, unknown>) => {
   return Effect.runPromise(effect);
 };
 
-// eslint-disable-next-line unicorn/no-anonymous-default-export
-export default class extends WorkerEntrypoint<Env> {
+export class CoursesService extends WorkerEntrypoint<Env> {
   public async course(parameters: { id: string }) {
     return runQuery(courseQuery(this.getDb(), parameters.id));
   }
@@ -85,8 +84,7 @@ export default class extends WorkerEntrypoint<Env> {
     return cycleCourseTrackingStatusMutation(this.getDb(), parameters);
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  public override async fetch(_request: Request) {
+  public override fetch(_request: Request) {
     return new Response("OK", { status: 200 });
   }
 
@@ -111,3 +109,5 @@ export default class extends WorkerEntrypoint<Env> {
     });
   }
 }
+
+export default CoursesService;

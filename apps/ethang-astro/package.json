@@ -1,0 +1,42 @@
+{
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
+  "dependencies": {
+    "@astrojs/cloudflare": "^14.2.0",
+    "@astrojs/mdx": "^7.0.5",
+    "@astrojs/sitemap": "^3.7.3",
+    "@cloudflare/vite-plugin": "^1.51.2",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.2.0",
+    "effect": "^3.22.1",
+    "lucide-astro": "^0.556.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.10",
+    "browserslist-config-baseline": "^0.5.0",
+    "sharp": "0.33.5",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.120.1"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "name": "ethang-astro",
+  "scripts": {
+    "astro": "astro",
+    "build": "astro build",
+    "cf-typegen": "wrangler types --config wrangler.jsonc --config ../ethang-courses/wrangler.jsonc --config ../ethang-rss/wrangler.jsonc",
+    "deploy": "astro build && wrangler deploy",
+    "dev": "astro dev",
+    "generate-types": "wrangler types",
+    "lint": "eslint . --fix",
+    "preview": "astro build && astro preview",
+    "test": "pnpm test:vitest",
+    "test:vitest": "vitest run --coverage"
+  },
+  "type": "module",
+  "version": "0.0.1"
+}

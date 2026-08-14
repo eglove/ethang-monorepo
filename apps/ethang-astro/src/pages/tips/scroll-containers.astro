@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import CodeBlock from "../../components/ui/CodeBlock.astro";
+import Heading from "../../components/ui/Heading.astro";
+import Page from "../../components/ui/Page.astro";
+
+const cssExample = `.container {
+  display: grid;
+  height: 100vb;
+  grid-template-rows: auto 1fr auto;
+}
+
+.content {
+  overflow: auto;
+}`;
+
+const htmlExample = `<div class="container">
+  <header>Header</header>
+  <main class="content">Content</main>
+  <footer>Footer</footer>
+</div>`;
+
+const tailwindExample = `<div class="grid h-[100vb] grid-rows-[auto_1fr_auto]">
+  <header>Header</header>
+  <main class="overflow-auto">Content</main>
+  <footer>Footer</footer>
+</div>`;
+---
+
+<BaseLayout title="Easy Sticky Header/Footer">
+  <Page>
+    <Heading as="h1" class="text-4xl mb-4">Easy Sticky Header/Footer</Heading>
+    <p class="my-3 text-base leading-relaxed text-night-owl-muted">A very simple approach to creating both a "sticky header" and "sticky footer" using grid.</p>
+
+    <Heading as="h2" class="text-2xl my-4">CSS</Heading>
+    <CodeBlock code={cssExample} lang="css" />
+
+    <Heading as="h2" class="text-2xl my-4">HTML</Heading>
+    <CodeBlock code={htmlExample} lang="html" />
+
+    <Heading as="h2" class="text-2xl my-4">Tailwind</Heading>
+    <CodeBlock code={tailwindExample} lang="html" />
+
+    <Heading as="h2" class="text-2xl my-4">Demo</Heading>
+    <div class="my-4 grid grid-rows-[auto_1fr_auto] gap-4 border border-night-owl-border px-2 py-4">
+      <h3 class="border-b border-night-owl-border pb-4 text-lg font-semibold text-night-owl-fg">Header</h3>
+      <section tabIndex={0} class="h-64 overflow-auto" aria-label="Scroll container demo">
+        {Array.from({ length: 5 }, (_, index) => (
+          <div key={index}>
+            <p class="leading-7 text-sm text-night-owl-fg">Peter Piper picked a peck of pickled peppers.</p>
+            <p class="leading-7 text-sm text-night-owl-fg">A peck of pickled peppers Peter Piper picked.</p>
+            <p class="leading-7 text-sm text-night-owl-fg">If Peter Piper picked a peck of pickled peppers,</p>
+            <p class="leading-7 text-sm text-night-owl-fg">Where&apos;s the peck of pickled peppers Peter Piper picked?</p>
+          </div>
+        ))}
+      </section>
+      <div class="my-4 border-t border-night-owl-border pt-4">
+        <p class="text-sm text-night-owl-fg">Footer</p>
+      </div>
+    </div>
+  </Page>
+</BaseLayout>

@@ -1,0 +1,34 @@
+---
+blogCategory: "Dev Reads"
+description: "Test IDs, comprehension debt, React spaghetti, TypeScript 6.0, and JetBrains Central: what looks clean in your codebase right now and what it's hiding."
+featuredImage: ./images/featured.png
+featuredImageAlt: "A dark digital landscape divided diagonally. On the right, a precise grid of cyan hexagons glows with structured order. Moving left, the grid fragments    — edges break apart, vertices scatter — dissolving into a field of drifting particles and tangled connections. A fractured amber line cuts across the    diagonal divide, marked by three bright amber nodes where the structure breaks down most visibly."
+pubDate: "2026-03-28T00:08:15Z"
+slug: "surface-tension"
+title: "Surface Tension"
+updatedDate: "2026-03-28T00:14:53Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+
+## Test IDs are an a11y smell
+
+<Blockquote author="Dominik Dorfmeister" source="TkDodo's blog" sourceUrl="https://tkdodo.eu/blog/test-ids-are-an-a11y-smell">I haven’t used a data-testid attribute in over a decade, so I’m surprised these takes are still around. I used to think that it comes from a time when our only alternatives were either using hardcoded ids, or classNames, or xpath selectors. If that are your only options \(e.g. because you test with something like selenium\(opens in a new window\)\), then data-testid might look promising because everything else is so much worse. In the land of the blind, the one-eyed man is king.</Blockquote>
+
+## Comprehension Debt - the hidden cost of AI generated code.
+
+<Blockquote author="Addy Osmani" sourceUrl="https://addyosmani.com/blog/comprehension-debt/">Unlike technical debt, which announces itself through mounting friction - slow builds, tangled dependencies, the creeping dread every time you touch that one module - comprehension debt breeds false confidence. The codebase looks clean. The tests are green. The reckoning arrives quietly, usually at the worst possible moment.</Blockquote>
+
+## React Components vs Spaghetti: 5 Signs Your UI Is Becoming Unmaintainable
+
+<Blockquote author="Gavin Cettolo" source="Dev.to" sourceUrl="https://dev.to/gavincettolo/react-components-vs-spaghetti-5-signs-your-ui-is-becoming-unmaintainable-120m">You know that feeling: the file keeps scrolling, props are flying around, and every small change feels like it might break something completely unrelated.</Blockquote>
+
+## Announcing TypeScript 6.0
+
+<Blockquote author="Daniel Rosenwasser" source="Microsoft" sourceUrl="https://devblogs.microsoft.com/typescript/announcing-typescript-6-0/">TypeScript 6.0 acts as the bridge between TypeScript 5.9 and 7.0. As such, most changes in TypeScript 6.0 are meant to help align and prepare for adopting TypeScript 7.0. It may seem surprising to say, but TypeScript 7.0 is actually extremely close to completion. You can try it out in Visual Studio Code or install it from npm. In fact, if you’re able to adopt TypeScript 6.0, we encourage you to try out the native previews of TypeScript 7.0.</Blockquote>
+
+## Introducing JetBrains Central: An Open System for Agentic Software Development
+
+<Blockquote author="Oleg Koverznev" source="JetBrains Blog" sourceUrl="https://blog.jetbrains.com/blog/2026/03/24/introducing-jetbrains-central-an-open-system-for-agentic-software-development/">JetBrains Central transforms discrete AI-powered workflows into a unified production system. It connects tools, agents, and infrastructure, allowing automated work to run, be monitored, and be managed across teams – with clear visibility into results, costs, and performance.</Blockquote>

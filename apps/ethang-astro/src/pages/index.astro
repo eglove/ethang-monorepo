@@ -1,0 +1,139 @@
+---
+import { Image } from "astro:assets";
+import { Mail } from "lucide-astro";
+
+import frontendMastersIcon from "../assets/frontend-masters-icon.png";
+import pluralsightIcon from "../assets/pluralsight-icon.png";
+import profileImage from "../assets/profile.jpeg";
+import { forms } from "../../constants/forms.ts";
+import { home } from "../../constants/home.ts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/ui/Card.astro";
+import Heading from "../components/ui/Heading.astro";
+import InlineLink from "../components/ui/InlineLink.astro";
+import Page from "../components/ui/Page.astro";
+
+const languages = [
+  "TypeScript",
+  "JavaScript",
+  "React",
+  "Next.js",
+  "React Native",
+  "Solid",
+  "Node.js",
+  "C#/.NET",
+  "Python",
+  "SQL"
+] as const;
+
+const stack = [
+  "TanStack Router",
+  "TanStack Query",
+  "Radix Themes",
+  "Tailwind",
+  "Cloudflare Workers",
+  "Hono",
+  "Drizzle ORM",
+  "D1 (SQLite)",
+  "React Query",
+  "Redux",
+  "GraphQL",
+  "REST",
+  "WebSockets",
+  "Spring Boot",
+  "Microservices"
+] as const;
+
+const practices = [
+  "TDD (vitest, Playwright)",
+  "DDD",
+  "Monorepo",
+  "Effect-TS",
+  "Lodash",
+  "Dependency injection",
+  "Composable design",
+  "Accessibility",
+  "SEO",
+  "Performance budgeting",
+  "Container-driven development",
+  "Legacy migrations"
+] as const;
+
+const clientProjects = [
+  { detail: home.CLIENT_PROJECTS.TELECOM.DETAIL, name: home.CLIENT_PROJECTS.TELECOM.NAME },
+  { detail: home.CLIENT_PROJECTS.NEXT_JS_MIGRATION.DETAIL, name: home.CLIENT_PROJECTS.NEXT_JS_MIGRATION.NAME, unstick: home.CLIENT_PROJECTS.NEXT_JS_MIGRATION.UNSTICK },
+  { detail: home.CLIENT_PROJECTS.AUTOMATED_TESTING.DETAIL, name: home.CLIENT_PROJECTS.AUTOMATED_TESTING.NAME, unstick: home.CLIENT_PROJECTS.AUTOMATED_TESTING.UNSTICK },
+  { detail: home.CLIENT_PROJECTS.FARMING_DASHBOARD.DETAIL, name: home.CLIENT_PROJECTS.FARMING_DASHBOARD.NAME },
+  { detail: home.CLIENT_PROJECTS.FEDERAL_EMISSIONS.DETAIL, name: home.CLIENT_PROJECTS.FEDERAL_EMISSIONS.NAME, unstick: home.CLIENT_PROJECTS.FEDERAL_EMISSIONS.UNSTICK },
+  { detail: home.CLIENT_PROJECTS.LOW_CODE_GRAPHQL.DETAIL, name: home.CLIENT_PROJECTS.LOW_CODE_GRAPHQL.NAME },
+  { detail: home.CLIENT_PROJECTS.COLLABORATION_APP.DETAIL, name: home.CLIENT_PROJECTS.COLLABORATION_APP.NAME },
+  { detail: home.CLIENT_PROJECTS.SHIPPING_QUOTES.DETAIL, name: home.CLIENT_PROJECTS.SHIPPING_QUOTES.NAME },
+  { detail: home.CLIENT_PROJECTS.IE11_DASHBOARD.DETAIL, name: home.CLIENT_PROJECTS.IE11_DASHBOARD.NAME },
+  { detail: home.CLIENT_PROJECTS.NONPROFIT_SEO.DETAIL, name: home.CLIENT_PROJECTS.NONPROFIT_SEO.NAME },
+  { detail: home.CLIENT_PROJECTS.REACT_NATIVE_ERP.DETAIL, name: home.CLIENT_PROJECTS.REACT_NATIVE_ERP.NAME },
+  { detail: home.CLIENT_PROJECTS.CRYPTO_DASHBOARD.DETAIL, name: home.CLIENT_PROJECTS.CRYPTO_DASHBOARD.NAME },
+  { detail: home.CLIENT_PROJECTS.VILLAGE_TRUSTEE.DETAIL, name: home.CLIENT_PROJECTS.VILLAGE_TRUSTEE.NAME }
+] as const;
+
+const monorepoProjects = [
+  { detail: home.MONOREPO_PROJECTS.HOME_PAGE.DETAIL, name: home.MONOREPO_PROJECTS.HOME_PAGE.NAME },
+  { detail: home.MONOREPO_PROJECTS.AUTH_SERVICE.DETAIL, name: home.MONOREPO_PROJECTS.AUTH_SERVICE.NAME },
+  { detail: home.MONOREPO_PROJECTS.COURSE_TRACKING.DETAIL, name: home.MONOREPO_PROJECTS.COURSE_TRACKING.NAME },
+  { detail: home.MONOREPO_PROJECTS.RSS_PIPELINE.DETAIL, name: home.MONOREPO_PROJECTS.RSS_PIPELINE.NAME },
+  { detail: home.MONOREPO_PROJECTS.AGENTS_BUILD.DETAIL, name: home.MONOREPO_PROJECTS.AGENTS_BUILD.NAME }
+] as const;
+---
+
+<BaseLayout title="Ethan Glover">
+  <Page class="flex flex-col gap-5">
+    <section class="surface-card border border-night-owl-border bg-night-owl-surface p-6 sm:p-8" aria-labelledby="profile-heading">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-5">
+          <Image src={profileImage} alt="Ethan Glover" width={112} height={112} loading="eager" class="size-24 rounded-full border-2 border-night-owl-cyan/60 object-cover bg-night-owl-bg sm:size-28" />
+          <div>
+            <p class="section-kicker mb-2">software engineer / builder</p>
+            <h1 id="profile-heading" class="text-3xl font-bold text-night-owl-fg sm:text-4xl">Ethan Glover</h1>
+            <p class="mt-2 max-w-md text-sm leading-6 text-night-owl-muted">I build resilient software, clarify complex domains, and leave systems easier to change.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 sm:justify-end">
+          <InlineLink href="https://www.linkedin.com/in/ethan-glover/" target="_blank" rel="noopener noreferrer" variant="nav" ariaLabel="LinkedIn"><span aria-hidden="true">in</span></InlineLink>
+          <InlineLink href="https://github.com/eglove" target="_blank" rel="noopener noreferrer" variant="nav" ariaLabel="GitHub"><span aria-hidden="true">GH</span></InlineLink>
+          <InlineLink href="mailto:hello@ethang.email" variant="nav" ariaLabel="Email"><Mail size={20} aria-hidden={true} /></InlineLink>
+          <InlineLink href="https://frontendmasters.com/u/ethang/" target="_blank" rel="noopener noreferrer" ariaLabel="Frontend Masters"><Image src={frontendMastersIcon} alt="Frontend Masters" width={32} height={32} loading="lazy" class="size-8" /></InlineLink>
+          <InlineLink href="https://app.pluralsight.com/profile/ethan-glover-e9" target="_blank" rel="noopener noreferrer" ariaLabel="Pluralsight"><Image src={pluralsightIcon} alt="Pluralsight" width={32} height={32} loading="lazy" class="size-8" /></InlineLink>
+          <a href="https://calendar.proton.me/u/2/bookings#10S2zo5jm_rTCXVDnyi55vEBS9HN8Cam4w3HxHr5Omg=" target="_blank" rel="noopener noreferrer" class="rounded-md border border-primary/60 px-4 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary hover:text-on-primary">{forms.SCHEDULE_MEETING}</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
+      <Card class="p-6 sm:p-7">
+        <p class="section-kicker mb-2">01 / operating principles</p>
+        <Heading as="h2" class="mb-5 text-2xl">How I work</Heading>
+        <div class="grid gap-5 sm:grid-cols-3 lg:grid-cols-1">
+          <div data-principle="" class="border-l-2 border-night-owl-cyan pl-4"><p class="font-bold text-base text-night-owl-fg">Hypothesis-first.</p><p class="mt-1 text-sm leading-6 text-night-owl-muted">I write the failing test before the implementation. Red, green, refactor — every PR, every feature, every bug fix.</p></div>
+          <div data-principle="" class="border-l-2 border-night-owl-purple pl-4"><p class="font-bold text-base text-night-owl-fg">Grounded in SWEBOK.</p><p class="mt-1 text-sm leading-6 text-night-owl-muted">Estimates and tradeoffs grounded in the SWEBOK software engineering body of knowledge.</p></div>
+          <div data-principle="" class="border-l-2 border-night-owl-green pl-4"><p class="font-bold text-base text-night-owl-fg">Domain-Driven Design as the bridge.</p><p class="mt-1 text-sm leading-6 text-night-owl-muted">I often promote Domain-Driven Design as the bridge between development and business understanding. The model is the conversation.</p></div>
+        </div>
+      </Card>
+      <Card class="p-6 sm:p-7">
+        <p class="section-kicker mb-2">02 / current toolkit</p>
+        <Heading as="h2" class="mb-5 text-2xl">Stack & tools</Heading>
+        <div class="flex flex-col gap-5">
+          <div data-column=""><span class="section-kicker">Languages & frameworks</span><p class="mt-2 text-sm leading-6 text-night-owl-fg">{languages.join(", ")}</p></div>
+          <div data-column=""><span class="section-kicker">Stack & infrastructure</span><p class="mt-2 text-sm leading-6 text-night-owl-fg">{stack.join(", ")}</p></div>
+          <div data-column=""><span class="section-kicker">Practices</span><p class="mt-2 text-sm leading-6 text-night-owl-fg">{practices.join(", ")}</p></div>
+        </div>
+      </Card>
+    </div>
+
+    <Card class="p-6 sm:p-7">
+      <div class="mb-5 flex items-end justify-between gap-4"><div><p class="section-kicker mb-2">03 / selected work</p><Heading as="h2" class="text-2xl">{home.WHAT_IVE_SHIPPED_HEADING}</Heading></div><span class="hidden font-mono text-xs text-night-owl-muted sm:inline">13 client projects / 5 internal builds</span></div>
+      <div class="grid gap-x-8 gap-y-5 md:grid-cols-2">
+        {clientProjects.map((project) => (<div data-project="" class="border-t border-night-owl-border pt-3"><p class="font-bold text-sm text-night-owl-fg" data-name="">{project.name}</p><p class="mt-1 text-sm leading-6 text-night-owl-muted">{project.detail}</p>{"unstick" in project && project.unstick !== null ? (<p class="mt-1 text-xs text-night-owl-cyan" data-unstick="">→ {project.unstick}</p>) : null}</div>))}
+        {monorepoProjects.map((project) => (<div data-project="" class="border-t border-night-owl-border pt-3"><p class="font-bold text-sm text-night-owl-fg" data-name="">{project.name}</p><p class="mt-1 text-sm leading-6 text-night-owl-muted">{project.detail}</p></div>))}
+      </div>
+    </Card>
+  </Page>
+</BaseLayout>

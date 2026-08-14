@@ -13,7 +13,7 @@
     "@types/node": "^26.1.2",
     "@typescript-eslint/parser": "^8.65.0",
     "@vitest/coverage-v8": "^4.1.10",
-    "effect": "^3.22.0",
+    "effect": "^3.22.1",
     "eslint": "^10.8.0",
     "lodash": "^4.18.1",
     "typescript-eslint": "^8.65.0",

@@ -1,0 +1,62 @@
+---
+blogCategory: "Dev Reads"
+description: "Discover what native speed means for TypeScript 7, explore the new Vite+ Beta unified stack, and look at the realistic capabilities of OpenAI's GPT-5.6."
+featuredImage: ./images/featured.jpg
+featuredImageAlt: "Digital illustration split into three technical themes. On the left, a Go gopher mascot sits next to a glowing \"TS 7\" shield on a circuit board, labeled \"Go-Native speedup (8x-12x).\" The center shows a \"Vite+\" logo connecting a unified toolkit stack of logos including Vitest, Rolldown, and Oxlint. On the right, a glowing brain wireframe labeled \"crystallized intelligence?\" sits atop a pyramid diagram comparing a human score of over 90% to a GPT-5 score of 7.8% on an ARC-AGI-3 benchmark."
+pubDate: "2026-07-10T12:56:35Z"
+slug: "typescript-7-vite-beta-and-the-reality-of-gpt-5"
+title: "TypeScript 7, Vite+ Beta, and the Reality of GPT-5"
+updatedDate: "2026-07-10T12:59:41Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import VideoEmbed from "../../../components/ui/VideoEmbed.astro";
+
+## Announcing TypeScript 7.0
+
+> The mission was a native port of TypeScript built in Go that could make the most of modern hardware... The key difference is that with this new codebase, TypeScript 7 brings native code speed, shared memory multithreading, and a number of new optimizations that typically yield speedups between 8x and 12x on full builds.
+
+[Original](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
+
+## Announcing Vite+ Beta
+
+> Vite+ is a single entry point to web development. It manages your runtime and package manager and brings Vite, Vitest, Rolldown, tsdown, Oxlint, and Oxfmt together with a built-in task runner — best-in-class tools shipped as one tested stack. It is fully open source under the MIT license and framework-agnostic, working for any kind of web project: from CLIs to libraries to web apps.
+
+[Original](https://voidzero.dev/posts/announcing-vite-plus-beta)
+
+## Introducing Meerkat: an experiment in global consensus
+
+> We chose a different consensus algorithm for Meerkat, called QuePaxa, that aims to avoid the “tyranny of timeouts” imposed by protocols like Raft. QuePaxa is a subtle protocol, but here are the highlights. A client can contact any replica, and that replica can drive consensus for the latest slot. There is a leader, but it is not required — its only advantage is that it can drive consensus with fewer round trips \(one\) than other replicas \(3+\).
+
+[Original](https://blog.cloudflare.com/meerkat-introduction/)
+
+## RFC 10008: The HTTP QUERY Method
+
+> The QUERY method provides a solution that spans the gap between the use of GET and POST... As with POST, the input to the query operation is passed as the content of the request rather than as part of the request URI. Unlike POST, however, the method is explicitly safe and idempotent, allowing functions like caching and automatic retries to operate.
+
+[Original](https://www.rfc-editor.org/info/rfc10008/)
+
+## Meta’s new AI image generator is using your public Instagram photos
+
+> Meta’s Muse Image tool allows anyone to tag your public profile in a prompt and generate AI images using your photos. This can include your face, your likeness, and other people who appear in your photos, including children with no power of consent.
+
+[Original](https://proton.me/blog/meta-ai-image-generator-muse)
+
+## OpenAI GPT-5.6: AI Could Do Anything, Then It Met ARC-AGI-3
+
+> First, because it is not, in fact, scandalous at all. ARC-AGI-3 is a benchmark designed to look easy to the human eye while requiring a type of intelligence—”fluid, not crystallized,” as its creator, François Chollet, likes to put it—that AI struggles with. If you try it yourself, it might take a little while to get the hang of it, but soon enough you start to grasp the idea of each game, the patterns of colors and movements, etc. That’s why 7.8% is terribly low; humans reliably score \>90%.
+
+[Original](https://www.thealgorithmicbridge.com/p/openai-gpt-56-ai-could-do-anything)
+
+## The Human Flaw That's Ruining Your Software Specifications
+
+<VideoEmbed videoId="LectsDkITjI" url="https://www.youtube.com/watch?v=LectsDkITjI" title="The Human Flaw That's Ruining Your Software Specifications" />
+
+## Claude is definitely not conscious…
+
+<VideoEmbed videoId="KGtko3y2RXQ" url="https://www.youtube.com/watch?v=KGtko3y2RXQ" title="Claude is definitely not conscious…" />
+
+## Inside the Dark World of Poker Cheating
+
+<VideoEmbed videoId="EkLmxmUfgBU" url="https://www.youtube.com/watch?v=EkLmxmUfgBU" title="Inside the Dark World of Poker Cheating" />
