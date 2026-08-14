@@ -1,6 +1,13 @@
+import isNil from "lodash/isNil.js";
+import repeat from "lodash/repeat.js";
 import { describe, expect, it } from "vitest";
 
 import { canonicalUrl, excerptFromMarkdown, imageUrl } from "./seo.ts";
+
+const SITE = "https://ethang.dev";
+const BLOG_X = "/blog/x";
+const BLOG_X_URL = `${SITE}${BLOG_X}`;
+const SITE_URL = new URL(SITE);
 
 describe("excerptFromMarkdown", () => {
   it.each([
@@ -24,7 +31,7 @@ describe("excerptFromMarkdown", () => {
     {
       expected:
         "supercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragilisticsupercalifragil…",
-      input: "supercalifragilistic".repeat(8),
+      input: repeat("supercalifragilistic", 8),
       name: "a single over-long word is hard cut"
     },
     {
@@ -69,7 +76,7 @@ describe("excerptFromMarkdown", () => {
     },
     {
       expected: "Real content",
-      input: "import X from \"a.mjs\"\nimport { Y } from \"b.mjs\"\nReal content",
+      input: 'import X from "a.mjs"\nimport { Y } from "b.mjs"\nReal content',
       name: "import lines are dropped"
     },
     {
@@ -89,37 +96,39 @@ describe("excerptFromMarkdown", () => {
       name: "words are not cut mid-word when a boundary exists"
     }
   ])("$name", ({ expected, input, maxLength }) => {
-    expect(maxLength === undefined
-      ? excerptFromMarkdown(input)
-      : excerptFromMarkdown(input, maxLength)).toBe(expected);
+    expect(
+      isNil(maxLength)
+        ? excerptFromMarkdown(input)
+        : excerptFromMarkdown(input, maxLength)
+    ).toBe(expected);
   });
 });
 
 describe("canonicalUrl", () => {
   it.each([
     {
-      expected: "https://ethang.dev/blog/x",
+      expected: BLOG_X_URL,
       name: "joins a pathname onto the site",
-      pathname: "/blog/x",
-      site: "https://ethang.dev"
+      pathname: BLOG_X,
+      site: SITE
     },
     {
       expected: "https://ethang.dev/blog/x?page=2",
       name: "preserves a query string",
       pathname: "/blog/x?page=2",
-      site: "https://ethang.dev"
+      site: SITE
     },
     {
-      expected: "https://ethang.dev/blog/x",
+      expected: BLOG_X_URL,
       name: "accepts a URL object for the site",
-      pathname: "/blog/x",
-      site: new URL("https://ethang.dev")
+      pathname: BLOG_X,
+      site: SITE_URL
     },
     {
-      expected: "https://ethang.dev/blog/x",
+      expected: BLOG_X_URL,
       name: "handles a trailing-slash site",
-      pathname: "/blog/x",
-      site: "https://ethang.dev/"
+      pathname: BLOG_X,
+      site: `${SITE}/`
     }
   ])("$name", ({ expected, pathname, site }) => {
     expect(canonicalUrl(pathname, site)).toBe(expected);
@@ -131,13 +140,13 @@ describe("imageUrl", () => {
     {
       expected: "https://ethang.dev/_astro/a.jpg",
       name: "joins an astro asset url onto the site",
-      site: "https://ethang.dev",
+      site: SITE,
       src: "/_astro/a.jpg"
     },
     {
       expected: "https://ethang.dev/_astro/a.jpg",
       name: "accepts a URL object for the site",
-      site: new URL("https://ethang.dev"),
+      site: SITE_URL,
       src: "/_astro/a.jpg"
     }
   ])("$name", ({ expected, site, src }) => {
