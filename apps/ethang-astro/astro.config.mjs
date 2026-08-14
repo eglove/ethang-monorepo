@@ -2,11 +2,8 @@ import cloudflare from "@astrojs/cloudflare";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
-import AstroPWA from "@vite-pwa/astro";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
-
-import { pwaOptions } from "./constants/pwa.ts";
 
 const SITE = "https://ethang.dev";
 
@@ -24,19 +21,19 @@ export default defineConfig({
     {
       cssVariable: "--font-inter",
       name: "Inter",
-      provider: fontProviders.fontsource()
+      provider: fontProviders.fontsource(),
     },
     {
       cssVariable: "--font-jetbrains-mono",
       name: "JetBrains Mono",
-      provider: fontProviders.fontsource()
-    }
+      provider: fontProviders.fontsource(),
+    },
   ],
   image: {},
-  integrations: [mdx(), ...(isTest ? [] : [sitemap(), AstroPWA(pwaOptions)])],
+  integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
   markdown: { shikiConfig: { theme: "night-owl" } },
   site: SITE,
   vite: {
-    plugins: [tailwindcss()]
-  }
+    plugins: [tailwindcss()],
+  },
 });

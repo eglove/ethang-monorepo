@@ -7,10 +7,10 @@ vi.mock("cloudflare:workers", () => {
       ethang_courses: {
         coursesAll: async () => {
           return [];
-        }
+        },
       },
-      ethang_rss: {}
-    }
+      ethang_rss: {},
+    },
   };
 });
 
@@ -26,12 +26,12 @@ import ScrollbarGutter from "../pages/tips/scrollbar-gutter.astro";
 
 const render = async <T>(
   component: T,
-  properties?: Record<string, unknown>
+  properties?: Record<string, unknown>,
 ) => {
   const container = await AstroContainer.create();
   return container.renderToString(
     component as never,
-    { props: properties } as never
+    { props: properties } as never,
   );
 };
 
@@ -62,15 +62,17 @@ describe("index (home) page", () => {
     expect(html).toContain("Ethan Glover");
   });
 
-  it("wires the PWA manifest, theme color, and icons", async () => {
+  it("wires favicon and theme-color without PWA artifacts", async () => {
     const html = await render(Index);
-    expect(html).toContain('rel="manifest"');
-    expect(html).toContain('href="/manifest.webmanifest"');
+    // PWA artifacts are removed.
+    expect(html).not.toContain('rel="manifest"');
+    expect(html).not.toContain('rel="apple-touch-icon"');
+    // General meta still present.
     expect(html).toContain('name="theme-color"');
     expect(html).toContain('content="#011627"');
-    expect(html).toContain('rel="apple-touch-icon"');
-    // Astro bundles <script src="/src/pwa.ts"> into a module script for the layout.
-    expect(html).toContain('<script type="module"');
+    // Favicons still wired.
+    expect(html).toContain('href="/favicon.svg"');
+    expect(html).toContain('href="/favicon.ico"');
   });
 });
 
