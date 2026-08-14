@@ -4,7 +4,7 @@
     "binding": "ASSETS",
     "directory": "./dist"
   },
-  "compatibility_date": "2026-08-10",
+  "compatibility_date": "2026-08-14",
   "compatibility_flags": ["global_fetch_strictly_public"],
   "main": "@astrojs/cloudflare/entrypoints/server",
   "name": "ethang-astro",
