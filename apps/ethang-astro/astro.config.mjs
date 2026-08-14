@@ -7,9 +7,16 @@ import { defineConfig, fontProviders } from "astro/config";
 
 const SITE = "https://ethang.dev";
 
+// The Cloudflare adapter registers a worker Vite environment that conflicts
+// with Vitest's SSR environment. Tests render components through the Astro
+// container API, which does not need the adapter, so skip it under the test
+// flag set by vitest.config.ts.
+const isTest = "1" === process.env.ASTRO_TEST;
+
 // https://astro.build/config
 export default defineConfig({
-  adapter: cloudflare(),
+  // eslint-disable-next-line no-undefined
+  adapter: isTest ? undefined : cloudflare(),
   fonts: [
     {
       cssVariable: "--font-inter",
@@ -23,7 +30,7 @@ export default defineConfig({
     }
   ],
   image: {},
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
   markdown: { shikiConfig: { theme: "night-owl" } },
 
   site: SITE,

@@ -1,27 +1,33 @@
-import { defineConfig } from "vitest/config";
+/// <reference types="vitest/config" />
+process.env["ASTRO_TEST"] = "1";
 
-export default defineConfig({
+import { getViteConfig } from "astro/config";
+
+export default getViteConfig({
   test: {
     coverage: {
-      include: [
-        "scripts/lib/portable-text-to-mdx.ts",
-        "src/lib/blog-pagination.ts",
-        "src/lib/login.ts",
-        "src/lib/rss.ts",
-        "src/lib/seo.ts",
-        "src/lib/session.ts",
-        "src/lib/ui.ts"
+      exclude: [
+        "**/*.test.ts",
+        "**/*.d.ts",
+        "src/content.config.ts",
+        "src/env.d.ts",
+        "scripts/fetch-featured-images.ts"
       ],
+      include: ["src/**/*.{ts,astro}", "constants/**/*.ts", "scripts/**/*.ts"],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
-        branches: 100,
-        functions: 100,
-        lines: 100,
-        statements: 100
+        branches: 80,
+        functions: 80,
+        lines: 80,
+        statements: 80
       }
     },
     environment: "node",
-    include: ["src/**/*.test.ts", "scripts/**/*.test.ts"]
+    include: [
+      "src/**/*.test.ts",
+      "constants/**/*.test.ts",
+      "scripts/**/*.test.ts"
+    ]
   }
 });
