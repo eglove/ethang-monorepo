@@ -91,8 +91,8 @@ export const home = {
     },
     HOME_PAGE: {
       DETAIL:
-        "TanStack Router, Radix Themes, Vitest. The page you are reading. Component-shaped tests, accessibility, calm typography.",
-      NAME: "This home page (ethang-react)"
+        "Astro, content collections, Tailwind CSS, and Cloudflare Workers. The page you are reading, built from the monorepo's shared content and services.",
+      NAME: "This home page (ethang-astro)"
     },
     RSS_PIPELINE: {
       DETAIL:
