@@ -7,7 +7,8 @@ export default getViteConfig({
   test: {
     coverage: {
       exclude: [
-        "*.config.{mjs,js,ts}",
+        "*.config.ts",
+        "*.config.mjs",
         "**/*.test.ts",
         "**/*.d.ts",
         "src/env.d.ts",
