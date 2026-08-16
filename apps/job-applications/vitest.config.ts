@@ -8,9 +8,9 @@ export default defineConfig({
         compatDate: "2026-08-14",
         compatFlags: ["nodejs_compat"],
         d1Databases: ["jobApplications"],
-        r2Buckets: ["jobResumes"]
-      }
-    })
+        r2Buckets: ["jobResumes"],
+      },
+    }),
   ],
   test: {
     coverage: {
@@ -18,8 +18,8 @@ export default defineConfig({
       include: ["src/**/*.ts"],
       provider: "v8",
       reporter: ["text", "json-summary", "html", "lcov"],
-      thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 }
+      thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 },
     },
-    include: ["src/**/*.test.ts"]
-  }
+    include: ["src/**/*.test.ts"],
+  },
 });
