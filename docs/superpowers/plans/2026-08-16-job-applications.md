@@ -191,9 +191,20 @@ export default defineConfig(
 `vitest.config.ts` (real D1/R2 via `@cloudflare/vitest-pool-workers`):
 
 ```ts
-import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
+import { cloudflareTest } from "@cloudflare/vitest-pool-workers";
+import { defineConfig } from "vitest/config";
 
-export default defineWorkersConfig({
+export default defineConfig({
+  plugins: [
+    cloudflareTest({
+      miniflare: {
+        compatDate: "2026-08-14",
+        compatFlags: ["nodejs_compat"],
+        d1Databases: ["jobApplications"],
+        r2Buckets: ["jobResumes"]
+      }
+    })
+  ],
   test: {
     coverage: {
       exclude: ["src/**/*.d.ts"],
@@ -202,16 +213,7 @@ export default defineWorkersConfig({
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 }
     },
-    include: ["src/**/*.test.ts"],
-    poolOptions: {
-      singleWorker: true,
-      miniflare: {
-        compatDate: "2026-08-14",
-        compatFlags: ["nodejs_compat"],
-        d1Databases: ["jobApplications"],
-        r2Buckets: ["jobResumes"]
-      }
-    }
+    include: ["src/**/*.test.ts"]
   }
 });
 ```
