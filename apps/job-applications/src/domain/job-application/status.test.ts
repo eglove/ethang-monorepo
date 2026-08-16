@@ -9,7 +9,7 @@ describe("status", () => {
     ["interview", "offer"],
     ["offer", null],
     ["rejected", null],
-    ["withdrawn", null]
+    ["withdrawn", null],
   ] as const)("nextStatus(%s) advances to %s", (from, to) => {
     expect(nextStatus(from)).toBe(to);
   });
@@ -22,7 +22,7 @@ describe("status", () => {
     "isStatus rejects %s",
     (value) => {
       expect(isStatus(value)).toBe(false);
-    }
+    },
   );
 
   it("types STATUSES as the complete union", () => {

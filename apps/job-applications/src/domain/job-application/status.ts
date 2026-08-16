@@ -4,7 +4,7 @@ export const STATUSES = [
   "interview",
   "offer",
   "rejected",
-  "withdrawn"
+  "withdrawn",
 ] as const;
 
 export type Status = (typeof STATUSES)[number];
@@ -15,7 +15,7 @@ const NEXT: Readonly<Record<Status, null | Status>> = {
   offer: null,
   rejected: null,
   screening: "interview",
-  withdrawn: null
+  withdrawn: null,
 };
 
 export const isStatus = (value: string): value is Status => {
