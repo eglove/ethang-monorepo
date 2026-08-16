@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "compatibility_date": "2026-08-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "jobApplications",
+      "database_id": "<run: wrangler d1 create job-applications and paste the id>",
+      "database_name": "job-applications",
+      "remote": true
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "jobResumes",
+      "bucket_name": "job-resumes",
+      "preview_bucket_name": "job-resumes-preview"
+    }
+  ],
+  "main": "src/index.ts",
+  "name": "job-applications",
+  "observability": { "enabled": true, "head_sampling_rate": 1 },
+  "placement": { "mode": "smart" },
+  "workers_dev": false
+}

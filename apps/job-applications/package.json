@@ -1,0 +1,41 @@
+{
+  "browserslist": ["extends browserslist-config-baseline", "current node"],
+  "dependencies": {
+    "drizzle-orm": "^0.45.2",
+    "effect": "^3.22.1",
+    "jose": "^6.2.8",
+    "lodash": "^4.18.1",
+    "uuid": "^14.0.1"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.21.3",
+    "@cloudflare/workers-types": "^5.20260814.1",
+    "@ethang/eslint-config": "workspace:*",
+    "@total-typescript/ts-reset": "^0.6.1",
+    "@types/lodash": "^4.17.25",
+    "@types/node": "^26.1.2",
+    "@vitest/coverage-v8": "^4.1.10",
+    "browserslist-config-baseline": "^0.5.0",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^10.8.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.123.0"
+  },
+  "engines": { "node": ">=24" },
+  "name": "job-applications",
+  "private": true,
+  "scripts": {
+    "cf-typegen": "wrangler types",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "drizzle:generate": "drizzle-kit generate",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
+    "start": "wrangler dev",
+    "test": "pnpm test:vitest",
+    "test:vitest": "vitest run --coverage"
+  },
+  "type": "module",
+  "version": "0.0.0"
+}

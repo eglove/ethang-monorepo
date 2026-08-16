@@ -1,0 +1,5 @@
+{
+  "compilerOptions": { "ignoreDeprecations": "6.0", "types": ["node"] },
+  "exclude": ["coverage"],
+  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
+}
