@@ -5,7 +5,7 @@
   "d1_databases": [
     {
       "binding": "jobApplications",
-      "database_id": "<run: wrangler d1 create job-applications and paste the id>",
+      "database_id": "b069cc4a-ee0f-4ced-98f0-922b0e69dc48",
       "database_name": "job-applications",
       "remote": true
     }
