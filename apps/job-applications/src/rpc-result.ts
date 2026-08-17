@@ -55,11 +55,11 @@ export const toResult = <T>(effect: Effect.Effect<T, unknown>) => {
         return failure("INTERNAL", error);
       }
       return failure("INTERNAL", {
-        message: Predicate.isError(error) ? error.message : String(error)
+        message: Predicate.isError(error) ? error.message : String(error),
       });
     },
     onSuccess: (value) => {
       return { ok: true as const, value };
-    }
+    },
   });
 };

@@ -20,8 +20,8 @@ const make = () => {
       appliedDate: "2026-08-01",
       company: "Acme",
       email: EMAIL,
-      title: "Engineer"
-    })
+      title: "Engineer",
+    }),
   );
 };
 
@@ -40,8 +40,8 @@ describe("uploadResume", () => {
         data: PDF,
         email: EMAIL,
         filename: "resume.pdf",
-        id: app.id
-      }).pipe(Effect.provide(layer))
+        id: app.id,
+      }).pipe(Effect.provide(layer)),
     );
     expect(result.resumeKey).toBe(`${EMAIL}/${app.id}`);
     expect(result.resumeFilename).toBe("resume.pdf");
@@ -62,9 +62,9 @@ describe("uploadResume", () => {
           data: big.buffer,
           email: EMAIL,
           filename: "r.pdf",
-          id: app.id
-        }).pipe(Effect.provide(layer))
-      )
+          id: app.id,
+        }).pipe(Effect.provide(layer)),
+      ),
     );
     expect(result).toBeInstanceOf(ResumeError);
   });
@@ -80,8 +80,8 @@ describe("uploadResume", () => {
         data: exact.buffer,
         email: EMAIL,
         filename: "r.pdf",
-        id: app.id
-      }).pipe(Effect.provide(layer))
+        id: app.id,
+      }).pipe(Effect.provide(layer)),
     );
     expect(result.resumeSize).toBe(5 * 1024 * 1024);
   });
@@ -96,9 +96,9 @@ describe("uploadResume", () => {
           data: notPdf,
           email: EMAIL,
           filename: "r.txt",
-          id: app.id
-        }).pipe(Effect.provide(layer))
-      )
+          id: app.id,
+        }).pipe(Effect.provide(layer)),
+      ),
     );
     expect(result).toBeInstanceOf(ResumeError);
   });
@@ -112,16 +112,16 @@ describe("uploadResume", () => {
         data: PDF,
         email: EMAIL,
         filename: "a.pdf",
-        id: app.id
-      }).pipe(Effect.provide(layer))
+        id: app.id,
+      }).pipe(Effect.provide(layer)),
     );
     Effect.runSync(
       uploadResume({
         data: second,
         email: EMAIL,
         filename: "b.pdf",
-        id: app.id
-      }).pipe(Effect.provide(layer))
+        id: app.id,
+      }).pipe(Effect.provide(layer)),
     );
     expect(objects.size).toBe(1);
     expect(objects.get(`${EMAIL}/${app.id}`)?.size).toBe(second.byteLength);
@@ -136,9 +136,9 @@ describe("uploadResume", () => {
           data: PDF,
           email: "other@example.com",
           filename: "r.pdf",
-          id: app.id
-        }).pipe(Effect.provide(layer))
-      )
+          id: app.id,
+        }).pipe(Effect.provide(layer)),
+      ),
     );
     expect(result).toBeInstanceOf(NotFoundError);
   });
