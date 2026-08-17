@@ -27,7 +27,7 @@ export type RpcResult<T> =
   | { readonly ok: true; readonly value: T };
 
 const failure = (code: ErrorCode, error: { readonly message: string }) => {
-  return { error: { code, message: error.message }, ok: false };
+  return { error: { code, message: error.message }, ok: false as const };
 };
 
 export const toResult = <A, E, R>(effect: Effect.Effect<A, E, R>) => {

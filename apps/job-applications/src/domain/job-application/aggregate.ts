@@ -17,7 +17,7 @@ export type CreateApplicationInput = {
   readonly nextInterviewDate?: null | string;
   readonly notes?: null | string;
   readonly salary?: null | string;
-  readonly status?: Status;
+  readonly status?: null | Status;
   readonly title: string;
 };
 
@@ -49,14 +49,14 @@ export type ResumeAttachment = {
 
 /* eslint-disable-next-line unicorn/name-replacements */
 export type UpdateApplicationChanges = {
-  readonly appliedDate?: string;
-  readonly company?: string;
-  readonly location?: null | string;
-  readonly nextInterviewDate?: null | string;
-  readonly notes?: null | string;
-  readonly salary?: null | string;
-  readonly status?: Status;
-  readonly title?: string;
+  readonly appliedDate?: string | undefined;
+  readonly company?: string | undefined;
+  readonly location?: null | string | undefined;
+  readonly nextInterviewDate?: null | string | undefined;
+  readonly notes?: null | string | undefined;
+  readonly salary?: null | string | undefined;
+  readonly status?: null | Status | undefined;
+  readonly title?: string | undefined;
 };
 
 const nowIso = () => {
@@ -167,7 +167,7 @@ const validateChangeStatusField = (
 
 const hasAnyChanges = (changes: UpdateApplicationChanges) => {
   return Object.values(changes).some((v) => {
-    // eslint-disable-next-line @ethang/no-null-undefined-check, no-undefined, @typescript-eslint/no-unnecessary-condition, sonar/different-types-comparison
+    // eslint-disable-next-line @ethang/no-null-undefined-check, no-undefined
     return v !== undefined;
   });
 };
