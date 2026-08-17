@@ -2784,26 +2784,31 @@ import { Effect } from "effect";
 import { SignJWT } from "jose";
 import { describe, expect, it } from "vitest";
 
+import { TokenVerifier } from "../../application/ports.ts";
 import { TokenError } from "../../errors/token-error.ts";
 import { createTokenVerifierLayer } from "./verifier.ts";
 
 const SECRET = "shared-test-secret";
 const layer = createTokenVerifierLayer(SECRET);
 
-const sign = (payload: Record<string, string>, secret = SECRET, expiresIn = "1yr") => {
-  return new SignJWT(payload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(expiresIn)
-    .sign(new TextEncoder().encode(secret));
+const sign = async (payload: Record<string, string>, secret = SECRET, expiresIn = "1yr") => {
+  const encoder = new TextEncoder();
+  const secretKey = encoder.encode(secret);
+  const jwt = new SignJWT(payload);
+  jwt.setProtectedHeader({ alg: "HS256" });
+  jwt.setIssuedAt();
+  jwt.setExpirationTime(expiresIn);
+  return jwt.sign(secretKey);
 };
 
-const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runSync(Effect.provide(effect, layer));
+const run = async <A, E>(effect: Effect.Effect<A, E, TokenVerifier>) => {
+  return Effect.runPromise(Effect.provide(effect, layer));
+};
 
 describe("token verifier", () => {
   it("returns the email claim from a valid token", async () => {
     const token = await sign({ email: "me@example.com" });
-    const result = run(Effect.gen(function* () {
+    const result = await run(Effect.gen(function* () {
       const verifier = yield* TokenVerifier;
       return yield* verifier.verify(token);
     }));
@@ -2812,7 +2817,7 @@ describe("token verifier", () => {
 
   it("fails TokenError for a token signed with the wrong secret", async () => {
     const token = await sign({ email: "me@example.com" }, "wrong-secret");
-    const result = run(Effect.flip(Effect.gen(function* () {
+    const result = await run(Effect.flip(Effect.gen(function* () {
       const verifier = yield* TokenVerifier;
       return yield* verifier.verify(token);
     })));
@@ -2821,7 +2826,7 @@ describe("token verifier", () => {
 
   it("fails TokenError for an expired token", async () => {
     const token = await sign({ email: "me@example.com" }, SECRET, "-1s");
-    const result = run(Effect.flip(Effect.gen(function* () {
+    const result = await run(Effect.flip(Effect.gen(function* () {
       const verifier = yield* TokenVerifier;
       return yield* verifier.verify(token);
     })));
@@ -2838,7 +2843,7 @@ describe("token verifier", () => {
 
   it("fails TokenError when the email claim is missing", async () => {
     const token = await sign({ username: "e" });
-    const result = run(Effect.flip(Effect.gen(function* () {
+    const result = await run(Effect.flip(Effect.gen(function* () {
       const verifier = yield* TokenVerifier;
       return yield* verifier.verify(token);
     })));
