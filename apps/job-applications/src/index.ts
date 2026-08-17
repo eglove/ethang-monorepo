@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/name-replacements */
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { Effect, Layer, Schema } from "effect";
 import clamp from "lodash/clamp.js";

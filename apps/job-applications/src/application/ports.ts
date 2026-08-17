@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file, unicorn/name-replacements */
+/* eslint-disable max-classes-per-file */
 import { Context, type Effect } from "effect";
 
 import type { JobApplication } from "../domain/job-application/aggregate.ts";

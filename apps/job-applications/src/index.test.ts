@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/no-object-as-default-parameter, unicorn/no-unreadable-new-expression, unicorn/name-replacements */
+/* eslint-disable unicorn/no-object-as-default-parameter, unicorn/no-unreadable-new-expression */
 import { applyD1Migrations } from "cloudflare:test";
 import { env } from "cloudflare:workers";
 import { SignJWT } from "jose";

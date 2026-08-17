@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/name-replacements */
 import { and, desc, eq, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect, Layer } from "effect";

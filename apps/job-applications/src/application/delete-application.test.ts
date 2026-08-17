@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/name-replacements, unicorn/consistent-boolean-name, @typescript-eslint/no-non-null-assertion */
+/* eslint-disable unicorn/consistent-boolean-name, @typescript-eslint/no-non-null-assertion */
 import { Effect, Layer } from "effect";
 import { describe, expect, it } from "vitest";
 

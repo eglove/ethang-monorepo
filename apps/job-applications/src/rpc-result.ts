@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/name-replacements */
 import { Effect, Predicate } from "effect";
 
 import { DuplicateApplicationError } from "./errors/duplicate-application-error.ts";

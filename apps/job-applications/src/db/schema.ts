@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/name-replacements */
 import {
   integer,
   sqliteTable,

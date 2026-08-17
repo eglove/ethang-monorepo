@@ -7,7 +7,6 @@ import { InvalidStatusTransitionError } from "../../errors/invalid-status-transi
 import { ValidationError } from "../../errors/validation-error.ts";
 import { isStatus, nextStatus, type Status } from "./status.ts";
 
-/* eslint-disable-next-line unicorn/name-replacements */
 export type CreateApplicationInput = {
   readonly applicationUrl: string;
   readonly appliedDate: string;
@@ -21,7 +20,6 @@ export type CreateApplicationInput = {
   readonly title: string;
 };
 
-/* eslint-disable-next-line unicorn/name-replacements */
 export type JobApplication = {
   readonly applicationUrl: string;
   readonly appliedDate: string;
@@ -47,7 +45,6 @@ export type ResumeAttachment = {
   readonly size: number;
 };
 
-/* eslint-disable-next-line unicorn/name-replacements */
 export type UpdateApplicationChanges = {
   readonly appliedDate?: string | undefined;
   readonly company?: string | undefined;
@@ -98,7 +95,6 @@ const optional = <T>(value: null | T | undefined) => {
   return isNil(value) ? null : value;
 };
 
-/* eslint-disable-next-line unicorn/name-replacements */
 export const createJobApplication = (input: CreateApplicationInput) => {
   return Effect.gen(function* () {
     const company = yield* requireText(input.company, "company");

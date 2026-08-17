@@ -1,4 +1,4 @@
-/* eslint-disable max-classes-per-file, unicorn/name-replacements */
+/* eslint-disable max-classes-per-file */
 import { Effect, ParseResult, Schema } from "effect";
 
 import { STATUSES } from "../domain/job-application/status.ts";

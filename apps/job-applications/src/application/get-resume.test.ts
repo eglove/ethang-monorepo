@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/name-replacements */
 import { Effect, Layer } from "effect";
 import { describe, expect, it } from "vitest";
 

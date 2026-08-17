@@ -1,4 +1,4 @@
-/* eslint-disable unicorn/name-replacements, @ethang/no-null-undefined-check */
+/* eslint-disable @ethang/no-null-undefined-check */
 import { Effect } from "effect";
 
 import { advanceStatus } from "../domain/job-application/aggregate.ts";

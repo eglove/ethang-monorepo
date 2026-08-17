@@ -10,7 +10,6 @@ import { JobApplicationRepository as JobAppRepo } from "../ports.ts";
 
 type Repo = Context.Tag.Service<typeof JobAppRepo>;
 
-// eslint-disable-next-line unicorn/name-replacements -- function name kept for backward compatibility with existing imports
 export const createFakeRepository = (initial: readonly JobApp[] = []) => {
   const rows = new Map<string, JobApp>();
   for (const row of initial) {
