@@ -3,7 +3,7 @@ import {
   integer,
   sqliteTable,
   text,
-  uniqueIndex,
+  uniqueIndex
 } from "drizzle-orm/sqlite-core";
 import { DateTime } from "effect";
 import constant from "lodash/constant.js";
@@ -40,14 +40,14 @@ export const jobApplicationsTable = sqliteTable(
       .notNull()
       .$defaultFn(() => {
         return DateTime.formatIso(DateTime.unsafeNow());
-      }),
+      })
   },
   (table) => {
     return {
       emailApplicationUrlUnique: uniqueIndex("email_application_url_unique").on(
         table.email,
-        table.applicationUrl,
-      ),
+        table.applicationUrl
+      )
     };
-  },
+  }
 );

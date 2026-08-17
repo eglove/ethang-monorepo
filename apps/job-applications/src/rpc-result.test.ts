@@ -22,12 +22,12 @@ describe("toResult", () => {
     [new ResumeError("r"), "RESUME"],
     [new FetchError("f"), "INTERNAL"],
     [new SaveError("s"), "INTERNAL"],
-    [new Error("boom"), "INTERNAL"],
+    [new Error("boom"), "INTERNAL"]
   ] as const)("maps %s to %s", (error, code) => {
     const result = Effect.runSync(toResult(Effect.fail(error)));
     expect(result).toEqual({
       error: { code, message: error.message },
-      ok: false,
+      ok: false
     });
   });
 
