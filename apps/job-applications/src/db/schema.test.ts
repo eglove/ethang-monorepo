@@ -3,12 +3,9 @@ import { describe, expect, it } from "vitest";
 
 import { jobApplicationsTable as jobAppsTable } from "./schema.ts";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const table = jobAppsTable as any;
-
 describe("jobApplicationsTable", () => {
   it("defines the expected columns", () => {
-    const columns = table.columns;
+    const columns = (jobAppsTable as any).columns;
     expect(columns.id.primary).toBe(true);
     expect(columns.email.notNull).toBe(true);
     expect(columns.applicationUrl.notNull).toBe(true);
@@ -22,7 +19,8 @@ describe("jobApplicationsTable", () => {
   });
 
   it("defines the unique (email, applicationUrl) index", () => {
-    const unique = table[Symbol.for("drizzle:UniqueIndex")] ?? [];
+    const unique =
+      (jobAppsTable as any)[Symbol.for("drizzle:UniqueIndex")] ?? [];
     expect(unique.length).toBeGreaterThan(0);
     const first = unique[0] as { columns: { name: string }[] };
     expect(
