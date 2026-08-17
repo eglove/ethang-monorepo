@@ -387,11 +387,13 @@ Expected: PASS (4 tests).
 ```bash
 git add src/domain/job-application/status.ts src/domain/job-application/status.test.ts && git commit -m "feat: add job application status FSM"
 ```
+
 ---
 
 ### Task 3: Typed errors
 
 **Files:**
+
 - Create: `apps/job-applications/src/errors/validation-error.ts`
 - Create: `apps/job-applications/src/errors/token-error.ts`
 - Create: `apps/job-applications/src/errors/resume-error.ts`
@@ -403,6 +405,7 @@ git add src/domain/job-application/status.ts src/domain/job-application/status.t
 - Test: `apps/job-applications/src/errors/errors.test.ts`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: eight error classes, each `{ readonly _tag; readonly message }`, used across domain/application/infrastructure and mapped to `RpcResult` codes in Task 11. Class names and `_tag` values are fixed contract: `ValidationError`, `TokenError`, `ResumeError`, `NotFoundError`, `DuplicateApplicationError`, `InvalidStatusTransitionError`, `FetchError`, `SaveError`.
 
@@ -922,17 +925,20 @@ Expected: PASS.
 ```bash
 git add src/application/ports.ts src/application/ports.test.ts && git commit -m "feat: add application ports as Context.Tags"
 ```
+
 ---
 
 ### Task 6: Create application use case + test fakes
 
 **Files:**
+
 - Create: `apps/job-applications/src/application/test/fake-repository.ts`
 - Create: `apps/job-applications/src/application/test/fake-resume-store.ts`
 - Create: `apps/job-applications/src/application/create-application.ts`
 - Test: `apps/job-applications/src/application/create-application.test.ts`
 
 **Interfaces:**
+
 - Consumes: `JobApplicationRepository` (Task 5), `createJobApplication`/`CreateApplicationInput` (Task 4), errors (Task 3).
 - Produces: `createFakeRepository(initial?) -> { layer, rows }` and `createFakeResumeStore() -> { layer, objects }` — the in-memory `Layer`s all remaining use-case tests provide; `createApplication(input): Effect<JobApplication, DuplicateApplicationError | SaveError | ValidationError>`.
 
@@ -1433,17 +1439,20 @@ Expected: PASS.
 ```bash
 git add src/application/update-application.ts src/application/update-application.test.ts && git commit -m "feat: add updateApplication use case"
 ```
+
 ---
 
 ### Task 9: Cycle status and delete application use cases
 
 **Files:**
+
 - Create: `apps/job-applications/src/application/cycle-status.ts`
 - Create: `apps/job-applications/src/application/delete-application.ts`
 - Test: `apps/job-applications/src/application/cycle-status.test.ts`
 - Test: `apps/job-applications/src/application/delete-application.test.ts`
 
 **Interfaces:**
+
 - Consumes: `JobApplicationRepository`, `ResumeStore` (Task 5), `advanceStatus` (Task 4), fakes (Task 6), `NotFoundError`, `InvalidStatusTransitionError` (Task 3).
 - Produces: `cycleStatus(id, email): Effect<JobApplication, FetchError | NotFoundError | InvalidStatusTransitionError | SaveError>` (advances the FSM; `INVALID_TRANSITION` on terminal); `deleteApplication(id, email): Effect<boolean, FetchError | NotFoundError | ResumeError>` — deletes the R2 object FIRST (fail → row stays), then the D1 row.
 
@@ -2162,16 +2171,19 @@ Expected: PASS.
 ```bash
 git add src/rpc-result.ts src/rpc-result.test.ts && git commit -m "feat: add RpcResult error mapper"
 ```
+
 ---
 
 ### Task 12: Drizzle schema + migration
 
 **Files:**
+
 - Create: `apps/job-applications/src/db/schema.ts`
 - Test: `apps/job-applications/src/db/schema.test.ts`
 - Generate: `apps/job-applications/migrations/0000_initial.sql`
 
 **Interfaces:**
+
 - Consumes: `uuid` (v7), `DateTime` from effect.
 - Produces: `jobApplicationsTable` (drizzle `sqliteTable` named `job_applications`, unique index `email_application_url_unique` on `(email, applicationUrl)`) and `generateId()`. The D1 repository (Task 13) maps rows to the aggregate. Note: the schema lives at `src/db/schema.ts` to match `drizzle.config.ts` (written in Task 1) and the repo convention — this supersedes the one-line tree hint in Task 1.
 
@@ -2734,15 +2746,18 @@ Expected: PASS (real R2 in miniflare).
 ```bash
 git add src/infrastructure/r2/resume-store.ts src/infrastructure/r2/resume-store.test.ts && git commit -m "feat: add R2 resume store adapter"
 ```
+
 ---
 
 ### Task 15: Token verifier adapter
 
 **Files:**
+
 - Create: `apps/job-applications/src/infrastructure/token/verifier.ts`
 - Test: `apps/job-applications/src/infrastructure/token/verifier.test.ts`
 
 **Interfaces:**
+
 - Consumes: `TokenVerifier` port (Task 5), `TokenError` (Task 3), `jose`.
 - Produces: `createTokenVerifierLayer(secret: string): Layer` — verifies HS256 JWTs with the shared `token-auth` secret and returns the `email` claim; any failure (bad signature, expiry, garbage, missing email) is a `TokenError`.
 
