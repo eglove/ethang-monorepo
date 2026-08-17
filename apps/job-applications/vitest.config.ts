@@ -20,6 +20,7 @@ export default defineConfig({
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 }
     },
+    globalSetup: ["./vitest.global-setup.ts"],
     include: ["src/**/*.test.ts"]
   }
 });
