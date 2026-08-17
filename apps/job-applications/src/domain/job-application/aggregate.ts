@@ -1,15 +1,14 @@
 import { DateTime, Effect } from "effect";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
-import padStart from "lodash/padStart.js";
-import split from "lodash/split.js";
 import { v7 } from "uuid";
 
 import { InvalidStatusTransitionError } from "../../errors/invalid-status-transition-error.ts";
 import { ValidationError } from "../../errors/validation-error.ts";
 import { isStatus, nextStatus, type Status } from "./status.ts";
 
-export type CreateAppInput = {
+/* eslint-disable-next-line unicorn/name-replacements */
+export type CreateApplicationInput = {
   readonly applicationUrl: string;
   readonly appliedDate: string;
   readonly company: string;
@@ -22,7 +21,8 @@ export type CreateAppInput = {
   readonly title: string;
 };
 
-export type JobApp = {
+/* eslint-disable-next-line unicorn/name-replacements */
+export type JobApplication = {
   readonly applicationUrl: string;
   readonly appliedDate: string;
   readonly company: string;
@@ -47,7 +47,8 @@ export type ResumeAttachment = {
   readonly size: number;
 };
 
-export type UpdateAppChanges = {
+/* eslint-disable-next-line unicorn/name-replacements */
+export type UpdateApplicationChanges = {
   readonly appliedDate?: string;
   readonly company?: string;
   readonly location?: null | string;
@@ -59,16 +60,7 @@ export type UpdateAppChanges = {
 };
 
 const nowIso = () => {
-  const iso = DateTime.formatIso(DateTime.unsafeNow());
-  // eslint-disable-next-line sonar/pseudo-random
-  const randomNumber = Math.floor(Math.random() * 1_000_000);
-  const randomMicro = padStart(String(randomNumber), 6, "0");
-  const parts = split(iso, ".");
-  if (2 === parts.length) {
-    const base = parts[0];
-    return `${base}.${randomMicro.slice(0, 3)}${randomMicro.slice(3)}Z`;
-  }
-  return iso;
+  return DateTime.formatIso(DateTime.unsafeNow());
 };
 
 const isIsoDate = (value: string) => {
@@ -106,7 +98,8 @@ const optional = <T>(value: null | T | undefined) => {
   return isNil(value) ? null : value;
 };
 
-export const createJobApp = (input: CreateAppInput) => {
+/* eslint-disable-next-line unicorn/name-replacements */
+export const createJobApplication = (input: CreateApplicationInput) => {
   return Effect.gen(function* () {
     const company = yield* requireText(input.company, "company");
     const title = yield* requireText(input.title, "title");
@@ -117,7 +110,7 @@ export const createJobApp = (input: CreateAppInput) => {
       ? "applied"
       : yield* requireStatus(input.status);
     const now = nowIso();
-    const app: JobApp = {
+    const app: JobApplication = {
       applicationUrl: appUrl,
       appliedDate,
       company,
@@ -170,13 +163,19 @@ const validateChangeStatusField = (
   return requireStatus(newValue);
 };
 
-const hasAnyChanges = (changes: UpdateAppChanges) => {
-  return Object.values(changes).some((value) => {
-    return !isNil(value);
+// Semantics: distinguish undefined (keep current) from null (clear to null).
+
+const hasAnyChanges = (changes: UpdateApplicationChanges) => {
+  return Object.values(changes).some((v) => {
+    // eslint-disable-next-line @ethang/no-null-undefined-check, no-undefined, @typescript-eslint/no-unnecessary-condition, sonar/different-types-comparison
+    return v !== undefined;
   });
 };
 
-export const withChanges = (app: JobApp, changes: UpdateAppChanges) => {
+export const withChanges = (
+  app: JobApplication,
+  changes: UpdateApplicationChanges
+) => {
   return Effect.gen(function* () {
     if (!hasAnyChanges(changes)) {
       return yield* Effect.fail(new ValidationError("no changes provided"));
@@ -192,22 +191,31 @@ export const withChanges = (app: JobApp, changes: UpdateAppChanges) => {
       app.appliedDate
     );
     const status = yield* validateChangeStatusField(changes.status, app.status);
+    /* eslint-disable @ethang/no-null-undefined-check, no-undefined */
     return {
       ...app,
       appliedDate,
       company,
-      location: optional(changes.location),
-      nextInterviewDate: optional(changes.nextInterviewDate),
-      notes: optional(changes.notes),
-      salary: optional(changes.salary),
+      location:
+        changes.location === undefined
+          ? app.location
+          : optional(changes.location),
+      nextInterviewDate:
+        changes.nextInterviewDate === undefined
+          ? app.nextInterviewDate
+          : optional(changes.nextInterviewDate),
+      notes: changes.notes === undefined ? app.notes : optional(changes.notes),
+      salary:
+        changes.salary === undefined ? app.salary : optional(changes.salary),
       status,
       title,
       updatedAt: nowIso()
     };
+    /* eslint-enable @ethang/no-null-undefined-check, no-undefined */
   });
 };
 
-export const advanceStatus = (app: JobApp) => {
+export const advanceStatus = (app: JobApplication) => {
   const next = nextStatus(app.status);
   if (isNil(next)) {
     return Effect.fail(
@@ -217,7 +225,10 @@ export const advanceStatus = (app: JobApp) => {
   return Effect.succeed({ ...app, status: next, updatedAt: nowIso() });
 };
 
-export const attachResume = (app: JobApp, attachment: ResumeAttachment) => {
+export const attachResume = (
+  app: JobApplication,
+  attachment: ResumeAttachment
+) => {
   return {
     ...app,
     resumeFilename: attachment.filename,

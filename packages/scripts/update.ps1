@@ -1,4 +1,4 @@
-$currentPath = C:\Users\glove\projects\ethang-monorepo
+$currentPath = (Get-Location).Path
 Write-Output "Updating Windows..."
 Update-Module PSWindowsUpdate
 Get-WindowsUpdate -MicrosoftUpdate -AcceptAll -Install

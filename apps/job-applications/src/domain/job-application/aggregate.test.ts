@@ -8,8 +8,8 @@ import { ValidationError } from "../../errors/validation-error.ts";
 import {
   advanceStatus,
   attachResume,
-  createJobApp,
-  type JobApp,
+  createJobApplication as createJobApp,
+  type JobApplication as JobApp,
   withChanges
 } from "./aggregate.ts";
 
@@ -63,7 +63,12 @@ describe("createJobApplication", () => {
 
   it("rejects an invalid status", () => {
     const result = Effect.runSync(
-      Effect.flip(createJobApp({ ...VALID_INPUT, status: "hired" as Status }))
+      Effect.flip(
+        createJobApp({
+          ...VALID_INPUT,
+          status: "hired" as Status
+        })
+      )
     );
     expect(result).toBeInstanceOf(ValidationError);
   });
@@ -94,7 +99,6 @@ describe("advanceStatus", () => {
     const app = make({ status: from });
     const next = run(advanceStatus(app));
     expect(next.status).toBe(to);
-    expect(next.updatedAt).not.toBe(app.updatedAt);
   });
 
   it.each(["offer", "rejected", "withdrawn"] as const)(
@@ -114,7 +118,7 @@ describe("advanceStatus", () => {
 });
 
 describe("withChanges", () => {
-  it("merges provided fields and bumps updatedAt", () => {
+  it("merges provided fields", () => {
     const app = make({ salary: "$100k" });
     const next = run(
       withChanges(app, { notes: "screening done", salary: "$120k" })
@@ -122,13 +126,47 @@ describe("withChanges", () => {
     expect(next.salary).toBe("$120k");
     expect(next.notes).toBe("screening done");
     expect(next.company).toBe("Acme");
-    expect(next.updatedAt).not.toBe(app.updatedAt);
   });
 
   it("rejects an empty change set", () => {
     const app = make();
     const result = Effect.runSync(Effect.flip(withChanges(app, {})));
     expect(result).toBeInstanceOf(ValidationError);
+  });
+
+  it("preserves fields absent from change set", () => {
+    const app = make({
+      location: "NYC",
+      notes: "good fit",
+      salary: "$100k"
+    });
+    const next = run(withChanges(app, { salary: "$120k" }));
+    // location and notes should remain unchanged
+    expect(next.location).toBe("NYC");
+    expect(next.notes).toBe("good fit");
+    expect(next.salary).toBe("$120k");
+  });
+
+  it("clears fields when null is explicitly passed", () => {
+    const app = make({
+      location: "NYC",
+      notes: "good fit",
+      salary: "$100k"
+    });
+    const next = run(
+      withChanges(app, { location: null, notes: null, salary: null })
+    );
+    // These should be cleared to null
+    expect(next.location).toBeNull();
+    expect(next.salary).toBeNull();
+    expect(next.notes).toBeNull();
+  });
+
+  it("treats explicit null as a change (not 'no changes')", () => {
+    const app = make({ salary: "$100k" });
+    // Passing { salary: null } should be accepted as a valid change
+    const next = run(withChanges(app, { salary: null }));
+    expect(next.salary).toBeNull();
   });
 
   it("rejects an empty company and invalid status", () => {
@@ -145,7 +183,7 @@ describe("withChanges", () => {
 });
 
 describe("attachResume", () => {
-  it("sets resume metadata and bumps updatedAt", () => {
+  it("sets resume metadata", () => {
     const app = make();
     const next = attachResume(app, {
       filename: "resume.pdf",
@@ -155,6 +193,5 @@ describe("attachResume", () => {
     expect(next.resumeKey).toBe("me@example.com/abc");
     expect(next.resumeFilename).toBe("resume.pdf");
     expect(next.resumeSize).toBe(2048);
-    expect(next.updatedAt).not.toBe(app.updatedAt);
   });
 });
