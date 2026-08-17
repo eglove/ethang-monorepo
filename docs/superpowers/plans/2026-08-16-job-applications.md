@@ -2190,13 +2190,15 @@ git add src/rpc-result.ts src/rpc-result.test.ts && git commit -m "feat: add Rpc
 - [ ] **Step 1: Write the failing test** — `schema.test.ts`
 
 ```ts
+import { getTableColumns } from "drizzle-orm";
+import { getTableConfig } from "drizzle-orm/sqlite-core";
 import { describe, expect, it } from "vitest";
 
 import { jobApplicationsTable } from "./schema.ts";
 
 describe("jobApplicationsTable", () => {
   it("defines the expected columns", () => {
-    const columns = jobApplicationsTable.columns;
+    const columns = getTableColumns(jobApplicationsTable);
     expect(columns.id.primary).toBe(true);
     expect(columns.email.notNull).toBe(true);
     expect(columns.applicationUrl.notNull).toBe(true);
@@ -2210,10 +2212,10 @@ describe("jobApplicationsTable", () => {
   });
 
   it("defines the unique (email, applicationUrl) index", () => {
-    const unique = jobApplicationsTable[Symbol.for("drizzle:UniqueIndex")] ?? [];
-    expect(unique.length).toBeGreaterThan(0);
-    const first = unique[0] as { columns: Array<{ name: string }> };
-    expect(first.columns.map((column) => column.name)).toEqual(["email", "applicationUrl"]);
+    const { indexes } = getTableConfig(jobApplicationsTable);
+    const unique = indexes.find((index) => "email_application_url_unique" === index.config.name);
+    expect(unique).toBeDefined();
+    expect(unique?.config.unique).toBe(true);
   });
 });
 ```
