@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       include: ["src/build", "src/setup"],
-      provider: "v8",
+      provider: "istanbul",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         branches: 80,
