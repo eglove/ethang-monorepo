@@ -19,7 +19,7 @@ export const listApplications = (parameters: {
     return {
       items,
       nextCursor:
-        !isNil(last) && items.length === parameters.first ? last.id : null,
+        !isNil(last) && items.length === parameters.first ? last.id : null
     };
   });
 };

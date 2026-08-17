@@ -3,7 +3,7 @@ import { Effect } from "effect";
 
 import {
   type CreateApplicationInput,
-  createJobApplication,
+  createJobApplication
 } from "../domain/job-application/aggregate.ts";
 import { JobApplicationRepository } from "./ports.ts";
 

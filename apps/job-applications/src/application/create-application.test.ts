@@ -12,14 +12,14 @@ const INPUT = {
   appliedDate: "2026-08-01",
   company: "Acme",
   email: "me@example.com",
-  title: "Engineer",
+  title: "Engineer"
 };
 
 describe("createApplication", () => {
   it("creates and persists an application", () => {
     const { layer, rows } = createFakeRepository();
     const app = Effect.runSync(
-      createApplication(INPUT).pipe(Effect.provide(layer)),
+      createApplication(INPUT).pipe(Effect.provide(layer))
     );
     expect(app.status).toBe("applied");
     expect(rows.get(app.id)?.title).toBe("Engineer");
@@ -30,7 +30,7 @@ describe("createApplication", () => {
     Effect.runSync(createApplication(INPUT).pipe(Effect.provide(layer)));
     expect(rows.size).toBe(1);
     const result = Effect.runSync(
-      Effect.flip(createApplication(INPUT).pipe(Effect.provide(layer))),
+      Effect.flip(createApplication(INPUT).pipe(Effect.provide(layer)))
     );
     expect(result).toBeInstanceOf(DuplicateApplicationError);
   });
@@ -39,10 +39,8 @@ describe("createApplication", () => {
     const { layer } = createFakeRepository();
     const result = Effect.runSync(
       Effect.flip(
-        createApplication({ ...INPUT, company: "" }).pipe(
-          Effect.provide(layer),
-        ),
-      ),
+        createApplication({ ...INPUT, company: "" }).pipe(Effect.provide(layer))
+      )
     );
     expect(result).toBeInstanceOf(ValidationError);
   });

@@ -47,7 +47,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
           row.applicationUrl === app.applicationUrl
         ) {
           return Effect.fail(
-            new DuplicateAppError("application already exists"),
+            new DuplicateAppError("application already exists")
           );
         }
       }
@@ -75,7 +75,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
     update: (app) => {
       rows.set(app.id, app);
       return Effect.succeed(app);
-    },
+    }
   };
   return { layer: Layer.succeed(JobAppRepo, repo), rows };
 };

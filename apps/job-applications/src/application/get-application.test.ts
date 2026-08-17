@@ -15,15 +15,15 @@ const makeDefaults = () => {
     appliedDate: "2026-08-01",
     company: "Acme",
     email: EMAIL,
-    title: "Engineer",
+    title: "Engineer"
   };
 };
 
 const make = (
-  overrides?: Partial<Parameters<typeof createJobApplication>[0]>,
+  overrides?: Partial<Parameters<typeof createJobApplication>[0]>
 ) => {
   return Effect.runSync(
-    createJobApplication({ ...makeDefaults(), ...overrides }),
+    createJobApplication({ ...makeDefaults(), ...overrides })
   );
 };
 
@@ -32,7 +32,7 @@ describe("getApplication", () => {
     const app = make();
     const { layer } = createFakeRepository([app]);
     const result = Effect.runSync(
-      getApplication(app.id, EMAIL).pipe(Effect.provide(layer)),
+      getApplication(app.id, EMAIL).pipe(Effect.provide(layer))
     );
     expect(result.id).toBe(app.id);
   });
@@ -40,7 +40,7 @@ describe("getApplication", () => {
   it("fails NOT_FOUND for a missing id", () => {
     const { layer } = createFakeRepository();
     const result = Effect.runSync(
-      Effect.flip(getApplication("missing", EMAIL).pipe(Effect.provide(layer))),
+      Effect.flip(getApplication("missing", EMAIL).pipe(Effect.provide(layer)))
     );
     expect(result).toBeInstanceOf(NotFoundError);
   });
@@ -50,8 +50,8 @@ describe("getApplication", () => {
     const { layer } = createFakeRepository([app]);
     const result = Effect.runSync(
       Effect.flip(
-        getApplication(app.id, "other@example.com").pipe(Effect.provide(layer)),
-      ),
+        getApplication(app.id, "other@example.com").pipe(Effect.provide(layer))
+      )
     );
     expect(result).toBeInstanceOf(NotFoundError);
   });

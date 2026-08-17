@@ -7,11 +7,13 @@ import {
   createJobApplication
 } from "../domain/job-application/aggregate.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
+import { ResumeError } from "../errors/resume-error.ts";
 import { deleteApplication } from "./delete-application.ts";
 import { createFakeRepository } from "./test/fake-repository.ts";
 import { createFakeResumeStore } from "./test/fake-resume-store.ts";
 
 export const EMAIL = "me@example.com";
+const RESUME_FILENAME = "resume.pdf";
 
 const make = (withResume = false) => {
   let app = Effect.runSync(
@@ -25,7 +27,7 @@ const make = (withResume = false) => {
   );
   if (withResume) {
     app = attachResume(app, {
-      filename: "resume.pdf",
+      filename: RESUME_FILENAME,
       key: `${EMAIL}/${app.id}`,
       size: 2048
     });
@@ -78,5 +80,27 @@ describe("deleteApplication", () => {
       )
     );
     expect(result).toBeInstanceOf(NotFoundError);
+  });
+
+  it("fails R2 delete failure and row survives", () => {
+    const app = make(true);
+    const { layer: repoLayer, rows } = createFakeRepository([app]);
+    const { layer: storeLayer, objects } = createFakeResumeStore({
+      failDelete: true
+    });
+    objects.set(app.resumeKey!, {
+      data: new ArrayBuffer(0),
+      filename: RESUME_FILENAME,
+      size: 0
+    });
+    const result = Effect.runSync(
+      Effect.flip(
+        deleteApplication(app.id, EMAIL).pipe(
+          Effect.provide(Layer.mergeAll(repoLayer, storeLayer))
+        )
+      )
+    );
+    expect(result).toBeInstanceOf(ResumeError);
+    expect(rows.size).toBe(1);
   });
 });
