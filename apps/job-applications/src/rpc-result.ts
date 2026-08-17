@@ -30,7 +30,7 @@ const failure = (code: ErrorCode, error: { readonly message: string }) => {
   return { error: { code, message: error.message }, ok: false };
 };
 
-export const toResult = <T>(effect: Effect.Effect<T, unknown>) => {
+export const toResult = <A, E, R>(effect: Effect.Effect<A, E, R>) => {
   return Effect.match(effect, {
     onFailure: (error) => {
       if (error instanceof ValidationError) {
