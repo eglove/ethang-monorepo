@@ -19,15 +19,18 @@ beforeEach(async () => {
 });
 
 const EMAIL = "me@example.com";
+const TITLE = "Engineer";
+const COMPANY = "Acme";
+const APPLIED_DATE = "2026-08-01";
 
 const make = (url = "https://example.com/jobs/1") => {
   return Effect.runSync(
     createJobApplication({
       applicationUrl: url,
-      appliedDate: "2026-08-01",
-      company: "Acme",
+      appliedDate: APPLIED_DATE,
+      company: COMPANY,
       email: EMAIL,
-      title: "Engineer"
+      title: TITLE
     })
   );
 };
@@ -117,6 +120,13 @@ describe("drizzle repository", () => {
       })
     );
     expect(updated.salary).toBe("$150k");
+    const refetched = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.findById(app.id, EMAIL);
+      })
+    );
+    expect(refetched?.salary).toBe("$150k");
     const isDeleted = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
@@ -175,5 +185,137 @@ describe("drizzle repository", () => {
     // ULID ids are lexicographically ordered; string comparison is valid here
     // eslint-disable-next-line sonar/strings-comparison
     expect((first?.id ?? "") > (second?.id ?? "")).toBe(true);
+  });
+});
+describe("drizzle repository (filters)", () => {
+  it("lists with status filter", async () => {
+    const applied = make("https://example.com/jobs/applied");
+    const interview = Effect.runSync(
+      createJobApplication({
+        applicationUrl: "https://example.com/jobs/interview",
+        appliedDate: APPLIED_DATE,
+        company: COMPANY,
+        email: EMAIL,
+        status: "interview",
+        title: TITLE
+      })
+    );
+    const layerInstance = createJobApplicationRepositoryLayer(
+      env.jobApplications
+    );
+    const run = async <A>(
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
+    ) => {
+      return Effect.runPromise(Effect.provide(effect, layerInstance));
+    };
+    await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        yield* repo.insert(applied);
+        yield* repo.insert(interview);
+      })
+    );
+    const results = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.list({
+          after: null,
+          email: EMAIL,
+          first: 10,
+          status: "applied"
+        });
+      })
+    );
+    expect(results).toHaveLength(1);
+    const [only] = results;
+    expect(only?.status).toBe("applied");
+  });
+
+  it("lists with after cursor", async () => {
+    const layerInstance = createJobApplicationRepositoryLayer(
+      env.jobApplications
+    );
+    const run = async <A>(
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
+    ) => {
+      return Effect.runPromise(Effect.provide(effect, layerInstance));
+    };
+    const a = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.insert(make("https://example.com/jobs/a"));
+      })
+    );
+    const b = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.insert(make("https://example.com/jobs/b"));
+      })
+    );
+    await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.insert(make("https://example.com/jobs/c"));
+      })
+    );
+    // b is the middle cursor; lt(b.id) excludes b and c (both >= b.id)
+    const page = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.list({
+          after: b.id,
+          email: EMAIL,
+          first: 10,
+          status: null
+        });
+      })
+    );
+    expect(page).toHaveLength(1);
+    const [only] = page;
+    expect(only?.id).toBe(a.id);
+    // eslint-disable-next-line sonar/strings-comparison, @typescript-eslint/no-unnecessary-condition
+    expect((only?.id ?? "") < (b.id ?? "")).toBe(true);
+  });
+
+  it("excludes other emails from list", async () => {
+    const mine = make("https://example.com/jobs/mine");
+    const foreign = Effect.runSync(
+      createJobApplication({
+        applicationUrl: "https://example.com/jobs/foreign",
+        appliedDate: APPLIED_DATE,
+        company: COMPANY,
+        email: "other@example.com",
+        title: TITLE
+      })
+    );
+    const layerInstance = createJobApplicationRepositoryLayer(
+      env.jobApplications
+    );
+    const run = async <A>(
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
+    ) => {
+      return Effect.runPromise(Effect.provide(effect, layerInstance));
+    };
+    await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        yield* repo.insert(mine);
+        yield* repo.insert(foreign);
+      })
+    );
+    const results = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.list({
+          after: null,
+          email: EMAIL,
+          first: 10,
+          status: null
+        });
+      })
+    );
+    expect(results).toHaveLength(1);
+    const [only] = results;
+    expect(only?.email).toBe(EMAIL);
   });
 });
