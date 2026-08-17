@@ -1,15 +1,16 @@
+/* eslint-disable unicorn/name-replacements */
 import { Effect } from "effect";
 
 import {
-  type CreateApplicationInput as CreateAppInput,
-  createJobApplication as createJobApp
+  type CreateApplicationInput,
+  createJobApplication
 } from "../domain/job-application/aggregate.ts";
-import { JobApplicationRepository as JobAppRepo } from "./ports.ts";
+import { JobApplicationRepository } from "./ports.ts";
 
-export const createApplication = (input: CreateAppInput) => {
+export const createApplication = (input: CreateApplicationInput) => {
   return Effect.gen(function* () {
-    const repo = yield* JobAppRepo;
-    const app = yield* createJobApp(input);
+    const repo = yield* JobApplicationRepository;
+    const app = yield* createJobApplication(input);
     return yield* repo.insert(app);
   });
 };

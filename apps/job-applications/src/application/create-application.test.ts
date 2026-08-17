@@ -2,10 +2,10 @@
 import { Effect } from "effect";
 import { describe, expect, it } from "vitest";
 
-import { DuplicateApplicationError as DuplicateAppError } from "../errors/duplicate-application-error.ts";
+import { DuplicateApplicationError } from "../errors/duplicate-application-error.ts";
 import { ValidationError } from "../errors/validation-error.ts";
-import { createApplication as createApp } from "./create-application.ts";
-import { createFakeRepository as createFakeRepo } from "./test/fake-repository.ts";
+import { createApplication } from "./create-application.ts";
+import { createFakeRepository } from "./test/fake-repository.ts";
 
 const INPUT = {
   applicationUrl: "https://example.com/jobs/1",
@@ -15,30 +15,31 @@ const INPUT = {
   title: "Engineer"
 };
 
-// eslint-disable-next-line unicorn/name-replacements
 describe("createApplication", () => {
   it("creates and persists an application", () => {
-    const { layer, rows } = createFakeRepo();
-    const app = Effect.runSync(createApp(INPUT).pipe(Effect.provide(layer)));
+    const { layer, rows } = createFakeRepository();
+    const app = Effect.runSync(
+      createApplication(INPUT).pipe(Effect.provide(layer))
+    );
     expect(app.status).toBe("applied");
     expect(rows.get(app.id)?.title).toBe("Engineer");
   });
 
   it("fails with DuplicateApplicationError on (email, url) collision", () => {
-    const { layer, rows } = createFakeRepo();
-    Effect.runSync(createApp(INPUT).pipe(Effect.provide(layer)));
+    const { layer, rows } = createFakeRepository();
+    Effect.runSync(createApplication(INPUT).pipe(Effect.provide(layer)));
     expect(rows.size).toBe(1);
     const result = Effect.runSync(
-      Effect.flip(createApp(INPUT).pipe(Effect.provide(layer)))
+      Effect.flip(createApplication(INPUT).pipe(Effect.provide(layer)))
     );
-    expect(result).toBeInstanceOf(DuplicateAppError);
+    expect(result).toBeInstanceOf(DuplicateApplicationError);
   });
 
   it("propagates ValidationError for invalid input", () => {
-    const { layer } = createFakeRepo();
+    const { layer } = createFakeRepository();
     const result = Effect.runSync(
       Effect.flip(
-        createApp({ ...INPUT, company: "" }).pipe(Effect.provide(layer))
+        createApplication({ ...INPUT, company: "" }).pipe(Effect.provide(layer))
       )
     );
     expect(result).toBeInstanceOf(ValidationError);

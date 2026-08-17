@@ -22,7 +22,7 @@ export const createFakeResumeStore = () => {
       objects.set(key, { data, filename, size: data.byteLength });
       // eslint-disable-next-line no-undefined
       return Effect.succeed(undefined);
-    }
+    },
   };
   return { layer: Layer.succeed(ResumeStore, store), objects };
 };
