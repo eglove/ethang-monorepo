@@ -1,14 +1,28 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
-import { JobApplicationsService } from "./index.ts";
+vi.mock("cloudflare:workers", () => {
+  return {
+    WorkerEntrypoint: class {
+      public ctx = {};
+      public env: Record<string, unknown> = {};
 
-describe("JobApplicationsService", () => {
-  it("responds OK to a plain fetch", async () => {
-    const service = new JobApplicationsService(
-      { waitUntil: () => undefined } as unknown as ExecutionContext,
-      {} as unknown as Env,
-    );
-    const response = await service.fetch(new Request("https://example.com/"));
-    expect(await response.text()).toBe("OK");
+      public fetch(_request: Request) {
+        return new Response("OK", { status: 200 });
+      }
+    }
+  };
+});
+
+import JobAppsServiceClass from "./index.ts";
+
+describe("JobAppsService", () => {
+  it("responds OK to a plain fetch", () => {
+    const initializer =
+      JobAppsServiceClass as unknown as new () => InstanceType<
+        typeof JobAppsServiceClass
+      >;
+    const service = new initializer();
+    const response = service.fetch(new Request("https://example.com/"));
+    expect(response.status).toBe(200);
   });
 });

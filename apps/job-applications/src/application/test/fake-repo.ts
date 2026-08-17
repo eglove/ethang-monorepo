@@ -57,18 +57,20 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
       return Effect.succeed(app);
     },
     list: ({ after, email, first, status }) => {
-      const isValidRow = overEvery([
+      const predicates = [
         (row: JobApp) => {
           return row.email === email;
         },
         (row: JobApp) => {
           return null === status || row.status === status;
         }
-      ]);
+      ];
       const allRows: JobApp[] = Array.fromIterable(rows.values());
-      let items: JobApp[] = filter(allRows, isValidRow);
+      let items: JobApp[] = filter(allRows, (row: JobApp) => {
+        return overEvery(predicates)(row);
+      });
       if (!isNil(after)) {
-        items = filter(items, (row) => {
+        items = filter(items, (row: JobApp) => {
           // eslint-disable-next-line sonar/strings-comparison -- uuid v7 ids are lexicographically ordered
           return row.id < after;
         });

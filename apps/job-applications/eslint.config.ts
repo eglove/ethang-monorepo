@@ -9,13 +9,13 @@ export default defineConfig(
     ".wrangler",
     "coverage",
     "scripts",
-    "migrations",
+    "migrations"
   ]),
   ...config,
   {
     languageOptions: {
-      parserOptions: { project: true, tsconfigRootDir: import.meta.dirname },
+      parserOptions: { project: true, tsconfigRootDir: import.meta.dirname }
     },
-    rules: { "sonar/no-wildcard-import": "off" },
-  },
+    rules: { "sonar/no-wildcard-import": "off" }
+  }
 );

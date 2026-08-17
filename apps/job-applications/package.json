@@ -1,5 +1,8 @@
 {
-  "browserslist": ["extends browserslist-config-baseline", "current node"],
+  "browserslist": [
+    "extends browserslist-config-baseline",
+    "current node"
+  ],
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "effect": "^3.22.1",
@@ -23,7 +26,9 @@
     "vitest": "^4.1.10",
     "wrangler": "^4.123.0"
   },
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "name": "job-applications",
   "private": true,
   "scripts": {
