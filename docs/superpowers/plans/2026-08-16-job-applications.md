@@ -2307,15 +2307,20 @@ git add src/db/schema.ts src/db/schema.test.ts migrations/0000_initial.sql && gi
 - [ ] **Step 1: Write the failing test** — `repository.test.ts`
 
 ```ts
-import { readFileSync } from "node:fs";
-import { env } from "cloudflare:test";
+import { applyD1Migrations } from "cloudflare:test";
+import { env } from "cloudflare:workers";
 import { Effect } from "effect";
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, inject, it } from "vitest";
 
-import { createJobApplication } from "../../../domain/job-application/aggregate.ts";
-import { DuplicateApplicationError } from "../../../errors/duplicate-application-error.ts";
+import { JobApplicationRepository } from "../../application/ports.ts";
+import { createJobApplication } from "../../domain/job-application/aggregate.ts";
+import { DuplicateApplicationError } from "../../errors/duplicate-application-error.ts";
 import { createJobApplicationRepositoryLayer } from "./repository.ts";
-import { JobApplicationRepository } from "../../../application/ports.ts";
+
+beforeAll(async () => {
+  const migrations = inject("migrations");
+  await applyD1Migrations(env.jobApplications, migrations);
+});
 
 beforeAll(async () => {
   const sql = readFileSync(new URL("../../../migrations/0000_initial.sql", import.meta.url), "utf8");
@@ -2341,10 +2346,10 @@ const make = (url = "https://example.com/jobs/1") => {
 };
 
 describe("drizzle repository", () => {
-  it("inserts and finds by id (owner only)", () => {
+  it("inserts and finds by id (owner only)", async () => {
     const app = make();
     const layerInstance = createJobApplicationRepositoryLayer(env.jobApplications);
-    const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runSync(Effect.provide(effect, layerInstance));
+    const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runPromise(Effect.provide(effect, layerInstance));
     run(Effect.gen(function* () {
       const repo = yield* JobApplicationRepository;
       return yield* repo.insert(app);
@@ -2361,27 +2366,33 @@ describe("drizzle repository", () => {
     expect(foreign).toBeNull();
   });
 
-  it("maps the unique constraint violation to DuplicateApplicationError", () => {
+  it("maps the unique constraint violation to DuplicateApplicationError", async () => {
     const app = make();
     const layerInstance = createJobApplicationRepositoryLayer(env.jobApplications);
-    const insert = (application: ReturnType<typeof make>) =>
-      Effect.runSync(
-        Effect.flip(
-          Effect.gen(function* () {
-            const repo = yield* JobApplicationRepository;
-            return yield* repo.insert(application);
-          }).pipe(Effect.provide(layerInstance))
-        )
+    const insert = async (application: ReturnType<typeof make>) => {
+      await Effect.runPromise(
+        Effect.gen(function* () {
+          const repo = yield* JobApplicationRepository;
+          return yield* repo.insert(application);
+        }).pipe(Effect.provide(layerInstance))
       );
-    insert(app);
-    const duplicate = insert(make("https://example.com/jobs/1"));
+    };
+    await insert(app);
+    const duplicate = await Effect.runPromise(
+      Effect.flip(
+        Effect.gen(function* () {
+          const repo = yield* JobApplicationRepository;
+          return yield* repo.insert(make("https://example.com/jobs/1"));
+        }).pipe(Effect.provide(layerInstance))
+      )
+    );
     expect(duplicate).toBeInstanceOf(DuplicateApplicationError);
   });
 
-  it("updates and deletes", () => {
+  it("updates and deletes", async () => {
     const app = make();
     const layerInstance = createJobApplicationRepositoryLayer(env.jobApplications);
-    const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runSync(Effect.provide(effect, layerInstance));
+    const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runPromise(Effect.provide(effect, layerInstance));
     run(Effect.gen(function* () {
       const repo = yield* JobApplicationRepository;
       return yield* repo.insert(app);
@@ -2403,12 +2414,12 @@ describe("drizzle repository", () => {
     expect(again).toBe(false);
   });
 
-  it("lists newest-first, filtered and paginated", () => {
+  it("lists newest-first, filtered and paginated", async () => {
     const a = make("https://example.com/jobs/a");
     const b = make("https://example.com/jobs/b");
     const c = make("https://example.com/jobs/c");
     const layerInstance = createJobApplicationRepositoryLayer(env.jobApplications);
-    const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runSync(Effect.provide(effect, layerInstance));
+    const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runPromise(Effect.provide(effect, layerInstance));
     run(Effect.gen(function* () {
       const repo = yield* JobApplicationRepository;
       yield* repo.insert(a);
