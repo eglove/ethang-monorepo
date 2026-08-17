@@ -6,7 +6,7 @@ import { createJobApplication } from "../domain/job-application/aggregate.ts";
 import { InvalidStatusTransitionError } from "../errors/invalid-status-transition-error.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
 import { cycleStatus } from "./cycle-status.ts";
-import { createFakeRepository } from "./test/fake-repository.ts";
+import { createFakeRepository } from "./test/fake-repo.ts";
 
 const EMAIL = "me@example.com";
 

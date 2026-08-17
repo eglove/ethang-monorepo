@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { createJobApplication } from "../domain/job-application/aggregate.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
 import { ValidationError } from "../errors/validation-error.ts";
-import { createFakeRepository } from "./test/fake-repository.ts";
+import { createFakeRepository } from "./test/fake-repo.ts";
 import { updateApplication } from "./update-application.ts";
 
 const EMAIL = "me@example.com";

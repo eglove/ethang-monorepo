@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import { createJobApplication } from "../domain/job-application/aggregate.ts";
 import { listApplications } from "./list-applications.ts";
-import { createFakeRepository } from "./test/fake-repository.ts";
+import { createFakeRepository } from "./test/fake-repo.ts";
 
 const EMAIL = "me@example.com";
 

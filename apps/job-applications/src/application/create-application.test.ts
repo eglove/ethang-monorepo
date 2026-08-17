@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { DuplicateApplicationError } from "../errors/duplicate-application-error.ts";
 import { ValidationError } from "../errors/validation-error.ts";
 import { createApplication } from "./create-application.ts";
-import { createFakeRepository } from "./test/fake-repository.ts";
+import { createFakeRepository } from "./test/fake-repo.ts";
 
 const INPUT = {
   applicationUrl: "https://example.com/jobs/1",

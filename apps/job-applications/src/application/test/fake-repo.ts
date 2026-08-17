@@ -1,5 +1,7 @@
-import { type Context, Effect, Layer } from "effect";
+import { Array, type Context, Effect, Layer } from "effect";
 import filter from "lodash/filter.js";
+import isNil from "lodash/isNil.js";
+import overEvery from "lodash/overEvery.js";
 
 import type { JobApplication as JobApp } from "../../domain/job-application/aggregate.ts";
 
@@ -8,7 +10,7 @@ import { JobApplicationRepository as JobAppRepo } from "../ports.ts";
 
 type Repo = Context.Tag.Service<typeof JobAppRepo>;
 
-// eslint-disable-next-line unicorn/name-replacements
+// eslint-disable-next-line unicorn/name-replacements -- function name kept for backward compatibility with existing imports
 export const createFakeRepository = (initial: readonly JobApp[] = []) => {
   const rows = new Map<string, JobApp>();
   for (const row of initial) {
@@ -55,18 +57,24 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
       return Effect.succeed(app);
     },
     list: ({ after, email, first, status }) => {
-      let items = [...rows.values()].filter((row) => {
-        return (
-          row.email === email && (null === status || row.status === status)
-        );
-      });
-      if (null !== after) {
+      const isValidRow = overEvery([
+        (row: JobApp) => {
+          return row.email === email;
+        },
+        (row: JobApp) => {
+          return null === status || row.status === status;
+        }
+      ]);
+      const allRows: JobApp[] = Array.fromIterable(rows.values());
+      let items: JobApp[] = filter(allRows, isValidRow);
+      if (!isNil(after)) {
         items = filter(items, (row) => {
+          // eslint-disable-next-line sonar/strings-comparison -- uuid v7 ids are lexicographically ordered
           return row.id < after;
         });
       }
       items = items
-        .sort((a, b) => {
+        .toSorted((a, b) => {
           return b.id.localeCompare(a.id);
         })
         .slice(0, first);
