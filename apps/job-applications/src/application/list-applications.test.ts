@@ -14,15 +14,15 @@ const makeDefaults = () => {
     appliedDate: "2026-08-01",
     company: "Acme",
     email: EMAIL,
-    title: "Engineer"
+    title: "Engineer",
   };
 };
 
 const make = (
-  overrides?: Partial<Parameters<typeof createJobApplication>[0]>
+  overrides?: Partial<Parameters<typeof createJobApplication>[0]>,
 ) => {
   return Effect.runSync(
-    createJobApplication({ ...makeDefaults(), ...overrides })
+    createJobApplication({ ...makeDefaults(), ...overrides }),
   );
 };
 
@@ -36,8 +36,8 @@ describe("listApplications", () => {
         after: null,
         email: EMAIL,
         first: 10,
-        status: null
-      }).pipe(Effect.provide(layer))
+        status: null,
+      }).pipe(Effect.provide(layer)),
     );
     expect(items).toHaveLength(2);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,sonar/strings-comparison
@@ -55,8 +55,8 @@ describe("listApplications", () => {
         after: null,
         email: EMAIL,
         first: 10,
-        status: "applied"
-      }).pipe(Effect.provide(layer))
+        status: "applied",
+      }).pipe(Effect.provide(layer)),
     );
 
     expect(items).toHaveLength(1);
@@ -74,8 +74,8 @@ describe("listApplications", () => {
         after: null,
         email: EMAIL,
         first: 2,
-        status: null
-      }).pipe(Effect.provide(layer))
+        status: null,
+      }).pipe(Effect.provide(layer)),
     );
     expect(page1Items).toHaveLength(2);
     expect(page1Cursor).not.toBeNull();
@@ -84,8 +84,8 @@ describe("listApplications", () => {
         after: page1Cursor,
         email: EMAIL,
         first: 2,
-        status: null
-      }).pipe(Effect.provide(layer))
+        status: null,
+      }).pipe(Effect.provide(layer)),
     );
     expect(page2Items).toHaveLength(1);
     expect(page2Cursor).toBeNull();
