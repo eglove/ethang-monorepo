@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/name-replacements */
-import { Effect } from "effect";
+import { Effect, Predicate } from "effect";
 
 import { DuplicateApplicationError } from "./errors/duplicate-application-error.ts";
 import { FetchError } from "./errors/fetch-error.ts";
@@ -54,10 +54,9 @@ export const toResult = <T>(effect: Effect.Effect<T, unknown>) => {
       if (error instanceof FetchError || error instanceof SaveError) {
         return failure("INTERNAL", error);
       }
-      return failure(
-        "INTERNAL",
-        new Error(Error.isError(error) ? error.message : String(error))
-      );
+      return failure("INTERNAL", {
+        message: Predicate.isError(error) ? error.message : String(error)
+      });
     },
     onSuccess: (value) => {
       return { ok: true as const, value };
