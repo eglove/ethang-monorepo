@@ -31,7 +31,7 @@ describe("listApplications", () => {
     const a = make({ title: "A" });
     const b = make({ title: "B" });
     const { layer } = createFakeRepository([a, b]);
-    const result = Effect.runSync(
+    const { items, nextCursor } = Effect.runSync(
       listApplications({
         after: null,
         email: EMAIL,
@@ -39,16 +39,10 @@ describe("listApplications", () => {
         status: null
       }).pipe(Effect.provide(layer))
     );
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const typedResult = result as {
-      items: (typeof a)[];
-      nextCursor: null | string;
-    };
-    expect(typedResult.items).toHaveLength(2);
-    const [first, second] = typedResult.items;
-    // eslint-disable-next-line sonar/strings-comparison
-    expect(first && second && first.id > second.id).toBe(true);
-    expect(typedResult.nextCursor).toBeNull();
+    expect(items).toHaveLength(2);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion,sonar/strings-comparison
+    expect(items[0]!.id > items[1]!.id).toBe(true);
+    expect(nextCursor).toBeNull();
   });
 
   it("filters by status and excludes other users", () => {
@@ -56,7 +50,7 @@ describe("listApplications", () => {
     const interview = make({ status: "interview" });
     const foreign = make({ email: "other@example.com", status: "applied" });
     const { layer } = createFakeRepository([applied, interview, foreign]);
-    const result = Effect.runSync(
+    const { items } = Effect.runSync(
       listApplications({
         after: null,
         email: EMAIL,
@@ -65,11 +59,9 @@ describe("listApplications", () => {
       }).pipe(Effect.provide(layer))
     );
 
-    const typedResult = result as { items: (typeof applied)[] };
-    expect(typedResult.items).toHaveLength(1);
-    const [item] = typedResult.items;
+    expect(items).toHaveLength(1);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    expect(item!.id).toBe(applied.id);
+    expect(items[0]!.id).toBe(applied.id);
   });
 
   it("paginates with after cursor and returns nextCursor on a full page", () => {
@@ -77,7 +69,7 @@ describe("listApplications", () => {
     const b = make();
     const c = make();
     const { layer } = createFakeRepository([a, b, c]);
-    const page1Result = Effect.runSync(
+    const { items: page1Items, nextCursor: page1Cursor } = Effect.runSync(
       listApplications({
         after: null,
         email: EMAIL,
@@ -85,29 +77,17 @@ describe("listApplications", () => {
         status: null
       }).pipe(Effect.provide(layer))
     );
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const page1 = page1Result as {
-      items: (typeof a)[];
-      nextCursor: null | string;
-    };
-    expect(page1.items).toHaveLength(2);
-    expect(page1.nextCursor).not.toBeNull();
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const cursor = page1.nextCursor!;
-    const page2Result = Effect.runSync(
+    expect(page1Items).toHaveLength(2);
+    expect(page1Cursor).not.toBeNull();
+    const { items: page2Items, nextCursor: page2Cursor } = Effect.runSync(
       listApplications({
-        after: cursor,
+        after: page1Cursor,
         email: EMAIL,
         first: 2,
         status: null
       }).pipe(Effect.provide(layer))
     );
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const page2 = page2Result as {
-      items: (typeof a)[];
-      nextCursor: null | string;
-    };
-    expect(page2.items).toHaveLength(1);
-    expect(page2.nextCursor).toBeNull();
+    expect(page2Items).toHaveLength(1);
+    expect(page2Cursor).toBeNull();
   });
 });
