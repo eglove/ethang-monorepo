@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   attachResume,
-  createJobApplication
+  createJobApplication,
 } from "../domain/job-application/aggregate.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
 import { ResumeError } from "../errors/resume-error.ts";
@@ -22,14 +22,14 @@ const make = (withResume = false) => {
       appliedDate: "2026-08-01",
       company: "Acme",
       email: EMAIL,
-      title: "Engineer"
-    })
+      title: "Engineer",
+    }),
   );
   if (withResume) {
     app = attachResume(app, {
       filename: RESUME_FILENAME,
       key: `${EMAIL}/${app.id}`,
-      size: 2048
+      size: 2048,
     });
   }
   return app;
@@ -43,12 +43,12 @@ describe("deleteApplication", () => {
     objects.set(app.resumeKey!, {
       data: new ArrayBuffer(0),
       filename: "resume.pdf",
-      size: 0
+      size: 0,
     });
     const result = Effect.runSync(
       deleteApplication(app.id, EMAIL).pipe(
-        Effect.provide(Layer.mergeAll(repoLayer, storeLayer))
-      )
+        Effect.provide(Layer.mergeAll(repoLayer, storeLayer)),
+      ),
     );
     expect(result).toBe(true);
     expect(rows.size).toBe(0);
@@ -61,8 +61,8 @@ describe("deleteApplication", () => {
     const { layer: storeLayer } = createFakeResumeStore();
     const result = Effect.runSync(
       deleteApplication(app.id, EMAIL).pipe(
-        Effect.provide(Layer.mergeAll(layer, storeLayer))
-      )
+        Effect.provide(Layer.mergeAll(layer, storeLayer)),
+      ),
     );
     expect(result).toBe(true);
     expect(rows.size).toBe(0);
@@ -75,9 +75,9 @@ describe("deleteApplication", () => {
     const result = Effect.runSync(
       Effect.flip(
         deleteApplication(app.id, "other@example.com").pipe(
-          Effect.provide(Layer.mergeAll(layer, storeLayer))
-        )
-      )
+          Effect.provide(Layer.mergeAll(layer, storeLayer)),
+        ),
+      ),
     );
     expect(result).toBeInstanceOf(NotFoundError);
   });
@@ -86,19 +86,19 @@ describe("deleteApplication", () => {
     const app = make(true);
     const { layer: repoLayer, rows } = createFakeRepository([app]);
     const { layer: storeLayer, objects } = createFakeResumeStore({
-      failDelete: true
+      failDelete: true,
     });
     objects.set(app.resumeKey!, {
       data: new ArrayBuffer(0),
       filename: RESUME_FILENAME,
-      size: 0
+      size: 0,
     });
     const result = Effect.runSync(
       Effect.flip(
         deleteApplication(app.id, EMAIL).pipe(
-          Effect.provide(Layer.mergeAll(repoLayer, storeLayer))
-        )
-      )
+          Effect.provide(Layer.mergeAll(repoLayer, storeLayer)),
+        ),
+      ),
     );
     expect(result).toBeInstanceOf(ResumeError);
     expect(rows.size).toBe(1);
