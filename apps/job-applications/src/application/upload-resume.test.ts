@@ -69,6 +69,23 @@ describe("uploadResume", () => {
     expect(result).toBeInstanceOf(ResumeError);
   });
 
+  it("accepts a payload of exactly 5 MB", () => {
+    const app = make();
+    const { layer } = provided(app);
+    const exact = new Uint8Array(5 * 1024 * 1024);
+    const pdfMagic = encoder.encode("%PDF");
+    exact.set(pdfMagic);
+    const result = Effect.runSync(
+      uploadResume({
+        data: exact.buffer,
+        email: EMAIL,
+        filename: "r.pdf",
+        id: app.id
+      }).pipe(Effect.provide(layer))
+    );
+    expect(result.resumeSize).toBe(5 * 1024 * 1024);
+  });
+
   it("rejects a non-PDF payload", () => {
     const app = make();
     const { layer } = provided(app);
