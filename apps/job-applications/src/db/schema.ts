@@ -14,7 +14,7 @@ export const generateId = () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-deprecated, sonar/deprecation
-const jobApplicationsTableImpl = sqliteTable(
+export const jobApplicationsTable = sqliteTable(
   "job_applications",
   {
     applicationUrl: text("applicationUrl").notNull(),
@@ -51,47 +51,3 @@ const jobApplicationsTableImpl = sqliteTable(
     };
   }
 );
-
-// Store unique indexes for test accessibility
-type UniqueIndexMetadata = {
-  columns: { name: string }[];
-};
-
-const uniqueIndexesMetadata: UniqueIndexMetadata[] = [
-  {
-    columns: [{ name: "email" }, { name: "applicationUrl" }]
-  }
-];
-
-Object.defineProperties(jobApplicationsTableImpl, {
-  columns: {
-    configurable: true,
-    value: {
-      applicationUrl: jobApplicationsTableImpl.applicationUrl,
-      appliedDate: jobApplicationsTableImpl.appliedDate,
-      company: jobApplicationsTableImpl.company,
-      createdAt: jobApplicationsTableImpl.createdAt,
-      email: jobApplicationsTableImpl.email,
-      id: jobApplicationsTableImpl.id,
-      location: jobApplicationsTableImpl.location,
-      nextInterviewDate: jobApplicationsTableImpl.nextInterviewDate,
-      notes: jobApplicationsTableImpl.notes,
-      resumeFilename: jobApplicationsTableImpl.resumeFilename,
-      resumeKey: jobApplicationsTableImpl.resumeKey,
-      resumeSize: jobApplicationsTableImpl.resumeSize,
-      salary: jobApplicationsTableImpl.salary,
-      status: jobApplicationsTableImpl.status,
-      title: jobApplicationsTableImpl.title,
-      updatedAt: jobApplicationsTableImpl.updatedAt
-    },
-    writable: false
-  },
-  [Symbol.for("drizzle:UniqueIndex")]: {
-    configurable: true,
-    value: uniqueIndexesMetadata,
-    writable: false
-  }
-});
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-export const jobApplicationsTable = jobApplicationsTableImpl as unknown;
