@@ -2643,17 +2643,20 @@ git add src/infrastructure/drizzle/repository.ts src/infrastructure/drizzle/repo
 - [ ] **Step 1: Write the failing test** — `resume-store.test.ts`
 
 ```ts
-import { env } from "cloudflare:test";
+import { env } from "cloudflare:workers";
 import { Effect } from "effect";
+import map from "lodash/map.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { ResumeStore } from "../../../application/ports.ts";
+import { ResumeStore } from "../../application/ports.ts";
 import { createResumeStoreLayer } from "./resume-store.ts";
 
 const layer = createResumeStoreLayer(env.jobResumes);
 const DATA = new TextEncoder().encode("%PDF-1.7 fake").buffer;
 
-const run = <A>(effect: Effect.Effect<A, unknown>) => Effect.runSync(Effect.provide(effect, layer));
+const run = async (effect: Effect.Effect<unknown, unknown, ResumeStore>) => {
+  return Effect.runPromise(Effect.provide(effect, layer));
+};
 
 beforeEach(async () => {
   for await (const key of (await env.jobResumes.list()).objects.map((object) => object.key)) {
@@ -2662,8 +2665,8 @@ beforeEach(async () => {
 });
 
 describe("resume store", () => {
-  it("puts, gets and deletes an object", () => {
-    run(Effect.gen(function* () {
+  it("puts, gets and deletes an object", async () => {
+    await run(Effect.gen(function* () {
       const store = yield* ResumeStore;
       yield* store.put("me@example.com/1", DATA, "resume.pdf");
       const object = yield* store.get("me@example.com/1");
@@ -2675,8 +2678,8 @@ describe("resume store", () => {
     }));
   });
 
-  it("overwrites in place (no orphan objects)", () => {
-    run(Effect.gen(function* () {
+  it("overwrites in place (no orphan objects)", async () => {
+    await run(Effect.gen(function* () {
       const store = yield* ResumeStore;
       yield* store.put("me@example.com/1", DATA, "a.pdf");
       yield* store.put("me@example.com/1", new TextEncoder().encode("%PDF-1.7 second").buffer, "b.pdf");
