@@ -1,9 +1,9 @@
 /* eslint-disable max-classes-per-file, unicorn/name-replacements */
 import { Context, type Effect } from "effect";
 
-import type { JobApplication as JobApp } from "../domain/job-application/aggregate.ts";
+import type { JobApplication } from "../domain/job-application/aggregate.ts";
 import type { Status } from "../domain/job-application/status.ts";
-import type { DuplicateApplicationError as DuplicateAppError } from "../errors/duplicate-application-error.ts";
+import type { DuplicateApplicationError } from "../errors/duplicate-application-error.ts";
 import type { FetchError } from "../errors/fetch-error.ts";
 import type { ResumeError } from "../errors/resume-error.ts";
 import type { SaveError } from "../errors/save-error.ts";
@@ -21,21 +21,23 @@ export class JobApplicationRepository extends Context.Tag(
     readonly findByEmailAndUrl: (
       email: string,
       appUrl: string
-    ) => Effect.Effect<JobApp | null, FetchError>;
+    ) => Effect.Effect<JobApplication | null, FetchError>;
     readonly findById: (
       id: string,
       email: string
-    ) => Effect.Effect<JobApp | null, FetchError>;
+    ) => Effect.Effect<JobApplication | null, FetchError>;
     readonly insert: (
-      app: JobApp
-    ) => Effect.Effect<JobApp, DuplicateAppError | SaveError>;
+      app: JobApplication
+    ) => Effect.Effect<JobApplication, DuplicateApplicationError | SaveError>;
     readonly list: (parameters: {
       readonly after: null | string;
       readonly email: string;
       readonly first: number;
       readonly status: null | Status;
-    }) => Effect.Effect<JobApp[], FetchError>;
-    readonly update: (app: JobApp) => Effect.Effect<JobApp, SaveError>;
+    }) => Effect.Effect<JobApplication[], FetchError>;
+    readonly update: (
+      app: JobApplication
+    ) => Effect.Effect<JobApplication, SaveError>;
   }
 >() {}
 
