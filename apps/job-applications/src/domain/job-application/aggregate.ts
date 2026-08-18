@@ -1,6 +1,7 @@
 import { DateTime, Effect } from "effect";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
+import isUndefined from "lodash/isUndefined.js";
 import { v7 } from "uuid";
 
 import { InvalidStatusTransitionError } from "../../errors/invalid-status-transition-error.ts";
@@ -66,7 +67,7 @@ const isIsoDate = (value: string) => {
 
 const requireText = (
   value: string,
-  field: string
+  field: string,
 ): Effect.Effect<string, ValidationError> => {
   if (isEmpty(value)) {
     return Effect.fail(new ValidationError(`${field} must not be empty`));
@@ -75,7 +76,7 @@ const requireText = (
 };
 
 const requireStatus = (
-  value: Status
+  value: Status,
 ): Effect.Effect<Status, ValidationError> => {
   if (!isStatus(value)) {
     const message = String(value);
@@ -122,7 +123,7 @@ export const createJobApplication = (input: CreateApplicationInput) => {
       salary: optional(input.salary),
       status,
       title,
-      updatedAt: now
+      updatedAt: now,
     };
     return app;
   });
@@ -131,7 +132,7 @@ export const createJobApplication = (input: CreateApplicationInput) => {
 const validateChangeField = (
   newValue: null | string | undefined,
   currentValue: string,
-  fieldName: string
+  fieldName: string,
 ): Effect.Effect<string, ValidationError> => {
   if (isNil(newValue)) {
     return Effect.succeed(currentValue);
@@ -141,7 +142,7 @@ const validateChangeField = (
 
 const validateChangeDateField = (
   newValue: null | string | undefined,
-  currentValue: string
+  currentValue: string,
 ): Effect.Effect<string, ValidationError> => {
   if (isNil(newValue)) {
     return Effect.succeed(currentValue);
@@ -151,7 +152,7 @@ const validateChangeDateField = (
 
 const validateChangeStatusField = (
   newValue: null | Status | undefined,
-  currentValue: Status
+  currentValue: Status,
 ): Effect.Effect<Status, ValidationError> => {
   if (isNil(newValue)) {
     return Effect.succeed(currentValue);
@@ -163,14 +164,13 @@ const validateChangeStatusField = (
 
 const hasAnyChanges = (changes: UpdateApplicationChanges) => {
   return Object.values(changes).some((v) => {
-    // eslint-disable-next-line @ethang/no-null-undefined-check, no-undefined
-    return v !== undefined;
+    return !isUndefined(v);
   });
 };
 
 export const withChanges = (
   app: JobApplication,
-  changes: UpdateApplicationChanges
+  changes: UpdateApplicationChanges,
 ) => {
   return Effect.gen(function* () {
     if (!hasAnyChanges(changes)) {
@@ -179,35 +179,33 @@ export const withChanges = (
     const company = yield* validateChangeField(
       changes.company,
       app.company,
-      "company"
+      "company",
     );
     const title = yield* validateChangeField(changes.title, app.title, "title");
     const appliedDate = yield* validateChangeDateField(
       changes.appliedDate,
-      app.appliedDate
+      app.appliedDate,
     );
     const status = yield* validateChangeStatusField(changes.status, app.status);
-    /* eslint-disable @ethang/no-null-undefined-check, no-undefined */
+
     return {
       ...app,
       appliedDate,
       company,
-      location:
-        changes.location === undefined
-          ? app.location
-          : optional(changes.location),
-      nextInterviewDate:
-        changes.nextInterviewDate === undefined
-          ? app.nextInterviewDate
-          : optional(changes.nextInterviewDate),
-      notes: changes.notes === undefined ? app.notes : optional(changes.notes),
-      salary:
-        changes.salary === undefined ? app.salary : optional(changes.salary),
+      location: isUndefined(changes.location)
+        ? app.location
+        : optional(changes.location),
+      nextInterviewDate: isUndefined(changes.nextInterviewDate)
+        ? app.nextInterviewDate
+        : optional(changes.nextInterviewDate),
+      notes: isUndefined(changes.notes) ? app.notes : optional(changes.notes),
+      salary: isUndefined(changes.salary)
+        ? app.salary
+        : optional(changes.salary),
       status,
       title,
-      updatedAt: nowIso()
+      updatedAt: nowIso(),
     };
-    /* eslint-enable @ethang/no-null-undefined-check, no-undefined */
   });
 };
 
@@ -215,7 +213,7 @@ export const advanceStatus = (app: JobApplication) => {
   const next = nextStatus(app.status);
   if (isNil(next)) {
     return Effect.fail(
-      new InvalidStatusTransitionError(`cannot advance from ${app.status}`)
+      new InvalidStatusTransitionError(`cannot advance from ${app.status}`),
     );
   }
   return Effect.succeed({ ...app, status: next, updatedAt: nowIso() });
@@ -223,13 +221,13 @@ export const advanceStatus = (app: JobApplication) => {
 
 export const attachResume = (
   app: JobApplication,
-  attachment: ResumeAttachment
+  attachment: ResumeAttachment,
 ) => {
   return {
     ...app,
     resumeFilename: attachment.filename,
     resumeKey: attachment.key,
     resumeSize: attachment.size,
-    updatedAt: nowIso()
+    updatedAt: nowIso(),
   };
 };

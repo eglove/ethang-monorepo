@@ -1,5 +1,5 @@
-/* eslint-disable @ethang/no-null-undefined-check */
 import { Effect } from "effect";
+import isNull from "lodash/isNull.js";
 
 import { NotFoundError } from "../errors/not-found-error.ts";
 import { JobApplicationRepository, ResumeStore } from "./ports.ts";
@@ -9,10 +9,10 @@ export const deleteApplication = (id: string, email: string) => {
     const repo = yield* JobApplicationRepository;
     const store = yield* ResumeStore;
     const existing = yield* repo.findById(id, email);
-    if (null === existing) {
+    if (isNull(existing)) {
       return yield* Effect.fail(new NotFoundError("application not found"));
     }
-    if (null !== existing.resumeKey) {
+    if (!isNull(existing.resumeKey)) {
       yield* store.delete(existing.resumeKey);
     }
     return yield* repo.delete(id, email);
