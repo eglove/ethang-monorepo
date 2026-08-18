@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { SignJWT } from "jose";
 import { describe, expect, it } from "vitest";
 
-import { TokenVerifier } from "../../application/ports.ts";
+import { TokenVerifier } from "../../application/ports/token-verifier.ts";
 import { TokenError } from "../../errors/token-error.ts";
 import { createTokenVerifierLayer } from "./verifier.ts";
 
@@ -13,7 +13,7 @@ const layer = createTokenVerifierLayer(SECRET);
 const sign = async (
   payload: Record<string, string>,
   secret = SECRET,
-  expiresIn = "1yr"
+  expiresIn = "1yr",
 ) => {
   const encoder = new TextEncoder();
   const secretKey = encoder.encode(secret);
@@ -35,7 +35,7 @@ describe("token verifier", () => {
       Effect.gen(function* () {
         const verifier = yield* TokenVerifier;
         return yield* verifier.verify(token);
-      })
+      }),
     );
     expect(result).toBe(EMAIL);
   });
@@ -47,8 +47,8 @@ describe("token verifier", () => {
         Effect.gen(function* () {
           const verifier = yield* TokenVerifier;
           return yield* verifier.verify(token);
-        })
-      )
+        }),
+      ),
     );
     expect(result).toBeInstanceOf(TokenError);
   });
@@ -60,8 +60,8 @@ describe("token verifier", () => {
         Effect.gen(function* () {
           const verifier = yield* TokenVerifier;
           return yield* verifier.verify(token);
-        })
-      )
+        }),
+      ),
     );
     expect(result).toBeInstanceOf(TokenError);
   });
@@ -72,8 +72,8 @@ describe("token verifier", () => {
         Effect.gen(function* () {
           const verifier = yield* TokenVerifier;
           return yield* verifier.verify("not-a-jwt");
-        })
-      )
+        }),
+      ),
     );
     expect(result).toBeInstanceOf(TokenError);
   });
@@ -85,8 +85,8 @@ describe("token verifier", () => {
         Effect.gen(function* () {
           const verifier = yield* TokenVerifier;
           return yield* verifier.verify(token);
-        })
-      )
+        }),
+      ),
     );
     expect(result).toBeInstanceOf(TokenError);
   });

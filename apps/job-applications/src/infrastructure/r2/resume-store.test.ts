@@ -3,7 +3,7 @@ import { Effect } from "effect";
 import map from "lodash/map.js";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { ResumeStore } from "../../application/ports.ts";
+import { ResumeStore } from "../../application/ports/resume-store.ts";
 import { createResumeStoreLayer } from "./resume-store.ts";
 
 const layer = createResumeStoreLayer(env.jobResumes);
@@ -21,7 +21,7 @@ beforeEach(async () => {
   await Promise.all(
     map(listResult.objects, async ({ key }) => {
       return env.jobResumes.delete(key);
-    })
+    }),
   );
 });
 
@@ -37,7 +37,7 @@ describe("resume store", () => {
         yield* store.delete(KEY);
         const gone = yield* store.get(KEY);
         expect(gone).toBeNull();
-      })
+      }),
     );
   });
 
@@ -53,7 +53,7 @@ describe("resume store", () => {
         expect(list.objects).toHaveLength(1);
         const object = yield* store.get(KEY);
         expect(object?.filename).toBe("b.pdf");
-      })
+      }),
     );
   });
 });

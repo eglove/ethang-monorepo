@@ -4,7 +4,8 @@ import isNil from "lodash/isNil.js";
 import { attachResume } from "../domain/job-application/aggregate.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
 import { ResumeError } from "../errors/resume-error.ts";
-import { JobApplicationRepository, ResumeStore } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
+import { ResumeStore } from "./ports/resume-store.ts";
 
 const MAX_RESUME_BYTES = 5 * 1024 * 1024;
 const PDF_MAGIC = "%PDF";
@@ -36,7 +37,7 @@ export const uploadResume = (parameters: {
     const updated = attachResume(existing, {
       filename: parameters.filename,
       key,
-      size: bytes.byteLength
+      size: bytes.byteLength,
     });
     return yield* repo.update(updated);
   });

@@ -3,15 +3,15 @@ import isNil from "lodash/isNil.js";
 
 import {
   type UpdateApplicationChanges,
-  withChanges
+  withChanges,
 } from "../domain/job-application/aggregate.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
-import { JobApplicationRepository } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
 
 export const updateApplication = (
   id: string,
   email: string,
-  changes: UpdateApplicationChanges
+  changes: UpdateApplicationChanges,
 ) => {
   return Effect.gen(function* () {
     const repo = yield* JobApplicationRepository;

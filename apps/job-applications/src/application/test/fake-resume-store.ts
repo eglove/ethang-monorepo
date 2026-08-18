@@ -1,7 +1,7 @@
 import { type Context, Effect, Layer } from "effect";
 
 import { ResumeError } from "../../errors/resume-error.ts";
-import { ResumeStore } from "../ports.ts";
+import { ResumeStore } from "../ports/resume-store.ts";
 
 type Store = Context.Tag.Service<typeof ResumeStore>;
 
@@ -26,7 +26,7 @@ export const createFakeResumeStore = (options?: { failDelete?: boolean }) => {
       objects.set(key, { data, filename, size: data.byteLength });
       // eslint-disable-next-line no-undefined
       return Effect.succeed(undefined);
-    }
+    },
   };
   return { layer: Layer.succeed(ResumeStore, store), objects };
 };

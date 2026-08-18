@@ -3,7 +3,7 @@ import isNull from "lodash/isNull.js";
 
 import { advanceStatus } from "../domain/job-application/aggregate.ts";
 import { NotFoundError } from "../errors/not-found-error.ts";
-import { JobApplicationRepository } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
 
 export const cycleStatus = (id: string, email: string) => {
   return Effect.gen(function* () {

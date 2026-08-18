@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import isNil from "lodash/isNil.js";
 
-import { ResumeStore } from "../../application/ports.ts";
+import { ResumeStore } from "../../application/ports/resume-store.ts";
 import { ResumeError } from "../../errors/resume-error.ts";
 
 export const createResumeStoreLayer = (bucket: R2Bucket) => {
@@ -13,7 +13,7 @@ export const createResumeStoreLayer = (bucket: R2Bucket) => {
         },
         try: async () => {
           await bucket.delete(key);
-        }
+        },
       });
     },
     get: (key) => {
@@ -29,9 +29,9 @@ export const createResumeStoreLayer = (bucket: R2Bucket) => {
           return {
             data: await object.arrayBuffer(),
             filename: object.customMetadata?.["filename"] ?? "",
-            size: object.size
+            size: object.size,
           };
-        }
+        },
       });
     },
     put: (key, data, filename) => {
@@ -42,10 +42,10 @@ export const createResumeStoreLayer = (bucket: R2Bucket) => {
         try: async () => {
           await bucket.put(key, data, {
             customMetadata: { filename },
-            httpMetadata: { contentType: "application/pdf" }
+            httpMetadata: { contentType: "application/pdf" },
           });
-        }
+        },
       });
-    }
+    },
   });
 };

@@ -3,7 +3,7 @@ import isNil from "lodash/isNil.js";
 
 import type { Status } from "../domain/job-application/status.ts";
 
-import { JobApplicationRepository } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
 
 export const listApplications = (parameters: {
   readonly after: null | string;
@@ -18,7 +18,7 @@ export const listApplications = (parameters: {
     return {
       items,
       nextCursor:
-        !isNil(last) && items.length === parameters.first ? last.id : null
+        !isNil(last) && items.length === parameters.first ? last.id : null,
     };
   });
 };

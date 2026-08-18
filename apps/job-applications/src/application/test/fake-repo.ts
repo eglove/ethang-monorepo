@@ -6,7 +6,7 @@ import overEvery from "lodash/overEvery.js";
 import type { JobApplication as JobApp } from "../../domain/job-application/aggregate.ts";
 
 import { DuplicateApplicationError as DuplicateAppError } from "../../errors/duplicate-application-error.ts";
-import { JobApplicationRepository as JobAppRepo } from "../ports.ts";
+import { JobApplicationRepository as JobAppRepo } from "../ports/job-application-repository.ts";
 
 type Repo = Context.Tag.Service<typeof JobAppRepo>;
 
@@ -48,7 +48,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
           row.applicationUrl === app.applicationUrl
         ) {
           return Effect.fail(
-            new DuplicateAppError("application already exists")
+            new DuplicateAppError("application already exists"),
           );
         }
       }
@@ -62,7 +62,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
         },
         (row: JobApp) => {
           return null === status || row.status === status;
-        }
+        },
       ];
       const allRows: JobApp[] = Array.fromIterable(rows.values());
       let items: JobApp[] = filter(allRows, (row: JobApp) => {
@@ -84,7 +84,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
     update: (app) => {
       rows.set(app.id, app);
       return Effect.succeed(app);
-    }
+    },
   };
   return { layer: Layer.succeed(JobAppRepo, repo), rows };
 };

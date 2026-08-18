@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 import { NotFoundError } from "../errors/not-found-error.ts";
-import { JobApplicationRepository } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
 
 export const getApplication = (id: string, email: string) => {
   return Effect.gen(function* () {

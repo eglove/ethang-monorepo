@@ -2,7 +2,8 @@ import { Effect } from "effect";
 import isNil from "lodash/isNil.js";
 
 import { NotFoundError } from "../errors/not-found-error.ts";
-import { JobApplicationRepository, ResumeStore } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
+import { ResumeStore } from "./ports/resume-store.ts";
 
 export const getResume = (id: string, email: string) => {
   return Effect.gen(function* () {
@@ -23,7 +24,7 @@ export const getResume = (id: string, email: string) => {
       contentType: "application/pdf",
       data: object.data,
       filename: object.filename,
-      size: object.size
+      size: object.size,
     };
   });
 };

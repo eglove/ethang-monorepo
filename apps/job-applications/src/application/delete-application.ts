@@ -2,7 +2,8 @@ import { Effect } from "effect";
 import isNull from "lodash/isNull.js";
 
 import { NotFoundError } from "../errors/not-found-error.ts";
-import { JobApplicationRepository, ResumeStore } from "./ports.ts";
+import { JobApplicationRepository } from "./ports/job-application-repository.ts";
+import { ResumeStore } from "./ports/resume-store.ts";
 
 export const deleteApplication = (id: string, email: string) => {
   return Effect.gen(function* () {

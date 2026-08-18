@@ -6,7 +6,7 @@ import map from "lodash/map.js";
 
 import type { JobApplication } from "../../domain/job-application/aggregate.ts";
 
-import { JobApplicationRepository } from "../../application/ports.ts";
+import { JobApplicationRepository } from "../../application/ports/job-application-repository.ts";
 import { jobApplicationsTable } from "../../db/schema.ts";
 import { isStatus } from "../../domain/job-application/status.ts";
 import { DuplicateApplicationError } from "../../errors/duplicate-application-error.ts";
@@ -39,7 +39,7 @@ const toAggregate = (row: Row) => {
     salary: row.salary,
     status: parseStatus(row.status),
     title: row.title,
-    updatedAt: row.updatedAt
+    updatedAt: row.updatedAt,
   };
 };
 
@@ -60,7 +60,7 @@ const toRow = (application: JobApplication) => {
     salary: application.salary,
     status: application.status,
     title: application.title,
-    updatedAt: application.updatedAt
+    updatedAt: application.updatedAt,
   };
 };
 
@@ -94,12 +94,12 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .where(
               and(
                 eq(jobApplicationsTable.id, id),
-                eq(jobApplicationsTable.email, email)
-              )
+                eq(jobApplicationsTable.email, email),
+              ),
             )
             .run();
           return 0 < result.meta.changes;
-        }
+        },
       });
     },
     findByEmailAndUrl: (email, applicationUrl) => {
@@ -112,12 +112,12 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             where: (table, operators) => {
               return operators.and(
                 operators.eq(table.email, email),
-                operators.eq(table.applicationUrl, applicationUrl)
+                operators.eq(table.applicationUrl, applicationUrl),
               );
-            }
+            },
           });
           return row ? toAggregate(row) : null;
-        }
+        },
       });
     },
     findById: (id, email) => {
@@ -130,12 +130,12 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             where: (table, operators) => {
               return operators.and(
                 operators.eq(table.id, id),
-                operators.eq(table.email, email)
+                operators.eq(table.email, email),
               );
-            }
+            },
           });
           return row ? toAggregate(row) : null;
-        }
+        },
       });
     },
     insert: (application) => {
@@ -153,11 +153,11 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .returning();
           if (!row) {
             return Effect.runSync(
-              Effect.die(new Error("insert returned no rows"))
+              Effect.die(new Error("insert returned no rows")),
             );
           }
           return toAggregate(row);
-        }
+        },
       });
     },
     list: ({ after, email, first, status }) => {
@@ -180,7 +180,7 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .orderBy(desc(jobApplicationsTable.id))
             .limit(first);
           return map(rows, toAggregate);
-        }
+        },
       });
     },
     update: (application) => {
@@ -195,8 +195,8 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .where(eq(jobApplicationsTable.id, application.id))
             .run();
           return application;
-        }
+        },
       });
-    }
+    },
   });
 };

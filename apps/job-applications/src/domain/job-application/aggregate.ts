@@ -67,7 +67,7 @@ const isIsoDate = (value: string) => {
 
 const requireText = (
   value: string,
-  field: string,
+  field: string
 ): Effect.Effect<string, ValidationError> => {
   if (isEmpty(value)) {
     return Effect.fail(new ValidationError(`${field} must not be empty`));
@@ -76,7 +76,7 @@ const requireText = (
 };
 
 const requireStatus = (
-  value: Status,
+  value: Status
 ): Effect.Effect<Status, ValidationError> => {
   if (!isStatus(value)) {
     const message = String(value);
@@ -123,7 +123,7 @@ export const createJobApplication = (input: CreateApplicationInput) => {
       salary: optional(input.salary),
       status,
       title,
-      updatedAt: now,
+      updatedAt: now
     };
     return app;
   });
@@ -132,7 +132,7 @@ export const createJobApplication = (input: CreateApplicationInput) => {
 const validateChangeField = (
   newValue: null | string | undefined,
   currentValue: string,
-  fieldName: string,
+  fieldName: string
 ): Effect.Effect<string, ValidationError> => {
   if (isNil(newValue)) {
     return Effect.succeed(currentValue);
@@ -142,7 +142,7 @@ const validateChangeField = (
 
 const validateChangeDateField = (
   newValue: null | string | undefined,
-  currentValue: string,
+  currentValue: string
 ): Effect.Effect<string, ValidationError> => {
   if (isNil(newValue)) {
     return Effect.succeed(currentValue);
@@ -152,7 +152,7 @@ const validateChangeDateField = (
 
 const validateChangeStatusField = (
   newValue: null | Status | undefined,
-  currentValue: Status,
+  currentValue: Status
 ): Effect.Effect<Status, ValidationError> => {
   if (isNil(newValue)) {
     return Effect.succeed(currentValue);
@@ -170,7 +170,7 @@ const hasAnyChanges = (changes: UpdateApplicationChanges) => {
 
 export const withChanges = (
   app: JobApplication,
-  changes: UpdateApplicationChanges,
+  changes: UpdateApplicationChanges
 ) => {
   return Effect.gen(function* () {
     if (!hasAnyChanges(changes)) {
@@ -179,12 +179,12 @@ export const withChanges = (
     const company = yield* validateChangeField(
       changes.company,
       app.company,
-      "company",
+      "company"
     );
     const title = yield* validateChangeField(changes.title, app.title, "title");
     const appliedDate = yield* validateChangeDateField(
       changes.appliedDate,
-      app.appliedDate,
+      app.appliedDate
     );
     const status = yield* validateChangeStatusField(changes.status, app.status);
 
@@ -204,7 +204,7 @@ export const withChanges = (
         : optional(changes.salary),
       status,
       title,
-      updatedAt: nowIso(),
+      updatedAt: nowIso()
     };
   });
 };
@@ -213,7 +213,7 @@ export const advanceStatus = (app: JobApplication) => {
   const next = nextStatus(app.status);
   if (isNil(next)) {
     return Effect.fail(
-      new InvalidStatusTransitionError(`cannot advance from ${app.status}`),
+      new InvalidStatusTransitionError(`cannot advance from ${app.status}`)
     );
   }
   return Effect.succeed({ ...app, status: next, updatedAt: nowIso() });
@@ -221,13 +221,13 @@ export const advanceStatus = (app: JobApplication) => {
 
 export const attachResume = (
   app: JobApplication,
-  attachment: ResumeAttachment,
+  attachment: ResumeAttachment
 ) => {
   return {
     ...app,
     resumeFilename: attachment.filename,
     resumeKey: attachment.key,
     resumeSize: attachment.size,
-    updatedAt: nowIso(),
+    updatedAt: nowIso()
   };
 };
