@@ -1,0 +1,195 @@
+---
+import { env } from "cloudflare:workers";
+import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
+
+import { APPLICATION_PAGE_SIZE, APPLICATION_STATUSES, applicationsLoginRedirect, applicationsPagePath, formatApplicationDate, formatApplicationValue, parseApplicationCursor } from "../lib/applications.ts";
+import { decodeSessionCookie } from "../lib/session.ts";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/ui/Button.astro";
+import Heading from "../components/ui/Heading.astro";
+import Page from "../components/ui/Page.astro";
+
+export const prerender = false;
+
+type Application = {
+  applicationUrl: null | string;
+  appliedDate: null | string;
+  company: string;
+  id: string;
+  location: null | string;
+  nextInterviewDate: null | string;
+  resumeFilename: null | string;
+  salary: null | string;
+  status: (typeof APPLICATION_STATUSES)[number];
+  title: string;
+};
+
+type ListApplicationsInput = {
+  after: null | string;
+  first: number;
+  status: null;
+  token: string;
+};
+
+type ListApplicationsValue = {
+  items: Application[];
+  nextCursor: null | string;
+};
+
+type ListApplicationsResult = {
+  ok: boolean;
+  value?: ListApplicationsValue;
+};
+
+type JobApplicationsWorker = {
+  listApplications: (input: ListApplicationsInput) => Promise<unknown>;
+};
+
+const isSuccessfulListResult = (
+  result: unknown
+): result is ListApplicationsResult & { value: ListApplicationsValue } => {
+  if (!isObject(result) || result.ok !== true || !isObject(result.value)) {
+    return false;
+  }
+
+  return Array.isArray(result.value.items);
+};
+
+const session = decodeSessionCookie(Astro.cookies.get("session")?.value);
+
+if (isNil(session)) {
+  return Astro.redirect(applicationsLoginRedirect());
+}
+
+const after = parseApplicationCursor(Astro.url.searchParams.get("after"));
+const listApplications = (env.job_applications as unknown as JobApplicationsWorker)
+  .listApplications;
+const listResult = await listApplications({
+  after,
+  first: APPLICATION_PAGE_SIZE,
+  status: null,
+  token: session.sessionToken
+}).catch(() => {
+  return null;
+});
+const listValue = isSuccessfulListResult(listResult)
+  ? listResult.value
+  : null;
+---
+
+<BaseLayout title="Applications">
+  <Page class="w-full">
+    <div class="flex w-full flex-col gap-5">
+      <div>
+        <p class="section-kicker mb-2">private application tracker</p>
+        <Heading as="h1" class="text-3xl">Applications</Heading>
+        <div class="section-rule mt-4"></div>
+      </div>
+
+      {
+        isNil(listValue) ? (
+          <div class="surface-card border border-danger/60 bg-danger/10 p-5">
+            <p class="text-sm font-medium text-danger">Unable to load applications.</p>
+          </div>
+        ) : listValue.items.length === 0 ? (
+          <div class="surface-card border border-night-owl-border bg-night-owl-surface/80 p-5">
+            <p class="text-sm text-night-owl-muted">No applications found.</p>
+          </div>
+        ) : (
+          <div class="surface-card overflow-x-auto border border-night-owl-border bg-night-owl-surface/80">
+            <table class="w-full min-w-[900px] text-left text-sm">
+              <thead class="border-b border-night-owl-border text-xs uppercase tracking-wide text-night-owl-muted">
+                <tr>
+                  <th class="px-4 py-3">Company</th>
+                  <th class="px-4 py-3">Title</th>
+                  <th class="px-4 py-3">Applied date</th>
+                  <th class="px-4 py-3">Location</th>
+                  <th class="px-4 py-3">Salary</th>
+                  <th class="px-4 py-3">Next interview</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-night-owl-border">
+                {listValue.items.map((application) => (
+                  <tr>
+                    <td class="px-4 py-4 font-medium text-night-owl-fg">
+                      {formatApplicationValue(application.company)}
+                    </td>
+                    <td class="px-4 py-4 text-night-owl-fg">
+                      {formatApplicationValue(application.title)}
+                    </td>
+                    <td class="px-4 py-4 text-night-owl-muted">
+                      {formatApplicationDate(application.appliedDate)}
+                    </td>
+                    <td class="px-4 py-4 text-night-owl-muted">
+                      {formatApplicationValue(application.location)}
+                    </td>
+                    <td class="px-4 py-4 text-night-owl-muted">
+                      {formatApplicationValue(application.salary)}
+                    </td>
+                    <td class="px-4 py-4 text-night-owl-muted">
+                      {formatApplicationDate(application.nextInterviewDate)}
+                    </td>
+                    <td class="px-4 py-4">
+                      <form method="POST" action="/applications" class="flex items-center gap-2">
+                        <input type="hidden" name="id" value={application.id} />
+                        <input type="hidden" name="after" value={after ?? ""} />
+                        <select
+                          name="status"
+                          class="rounded border border-night-owl-border bg-night-owl-surface px-2 py-1 text-sm text-night-owl-fg"
+                        >
+                          {APPLICATION_STATUSES.map((status) => (
+                            <option value={status} selected={application.status === status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                        <Button type="submit" variant="outline" size="xs">Save</Button>
+                      </form>
+                    </td>
+                    <td class="px-4 py-4">
+                      <div class="flex flex-col items-start gap-1">
+                        {application.applicationUrl ? (
+                          <a
+                            href={application.applicationUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-primary hover:text-primary/80"
+                          >
+                            View application
+                          </a>
+                        ) : null}
+                        {application.resumeFilename ? (
+                          <a
+                            href={`/applications/${encodeURIComponent(application.id)}/resume`}
+                            class="text-primary hover:text-primary/80"
+                          >
+                            {application.resumeFilename}
+                          </a>
+                        ) : null}
+                        {!application.applicationUrl && !application.resumeFilename ? (
+                          <span class="text-night-owl-muted">—</span>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+
+      {!isNil(listValue?.nextCursor) ? (
+        <a
+          href={applicationsPagePath(listValue.nextCursor)}
+          class="self-center text-sm font-semibold text-primary hover:text-primary/80"
+        >
+          Next page
+        </a>
+      ) : null}
+    </div>
+  </Page>
+</BaseLayout>
