@@ -188,6 +188,31 @@ describe("applications page rendering", () => {
     expect(html).toContain(RESUME_FILENAME);
   });
 
+  it("wires each row form to the status action and preserves the cursor", async () => {
+    jobApplications.listApplications.mockResolvedValue({
+      ok: true,
+      value: {
+        items: [
+          makeApplication({ id: "application-1" }),
+          makeApplication({ id: "application-2", status: "offer" })
+        ],
+        nextCursor: null
+      }
+    });
+
+    const html = await render(`${APPLICATIONS_URL}?after=current-1`);
+
+    expect(
+      html.match(
+        /<form method="POST" action="[^"]*updateApplicationStatus[^"]*"/gu
+      )
+    ).toHaveLength(2);
+    expect(html.match(/name="after" value="current-1"/gu)).toHaveLength(2);
+    expect(html).toContain('name="id" value="application-1"');
+    expect(html).toContain('name="id" value="application-2"');
+    expect(html).not.toContain(TOKEN);
+  });
+
   it("uses placeholders and omits optional links when values are absent", async () => {
     jobApplications.listApplications.mockResolvedValue({
       ok: true,

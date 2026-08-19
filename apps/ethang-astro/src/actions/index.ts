@@ -2,14 +2,21 @@ import { defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { env } from "cloudflare:workers";
 import { Effect, Schema } from "effect";
+import constant from "lodash/constant.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
+import {
+  applicationsPagePath,
+  isApplicationStatus,
+  parseApplicationCursor
+} from "../lib/applications.ts";
 import { resolveLoginRedirect } from "../lib/login.ts";
 import {
   addFeed as addFeedProgram,
   markArticleRead as markArticleReadProgram,
-  removeFeed as removeFeedProgram
+  removeFeed as removeFeedProgram,
+  type RssWorker
 } from "../lib/rss.ts";
 import { decodeSessionCookie } from "../lib/session.ts";
 
@@ -42,7 +49,9 @@ export const server = {
         return { error: "Unauthorized" };
       }
 
-      return addFeedProgram(env.ethang_rss, {
+      // The legacy RSS helper expects a structural worker shape that predates generated bindings.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
+      return addFeedProgram(env.ethang_rss as unknown as RssWorker, {
         sessionToken: userSession.sessionToken,
         xmlAddress: input.xmlUrl
       });
@@ -61,7 +70,8 @@ export const server = {
         return { error: "Unauthorized" };
       }
 
-      return markArticleReadProgram(env.ethang_rss, {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
+      return markArticleReadProgram(env.ethang_rss as unknown as RssWorker, {
         articleId: input.articleId,
         isRead: true,
         sessionToken: userSession.sessionToken
@@ -81,7 +91,8 @@ export const server = {
         return { error: "Unauthorized" };
       }
 
-      return removeFeedProgram(env.ethang_rss, {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
+      return removeFeedProgram(env.ethang_rss as unknown as RssWorker, {
         feedId: input.feedId,
         sessionToken: userSession.sessionToken
       });
@@ -192,5 +203,49 @@ export const server = {
 
       return { success: true };
     }
+  }),
+
+  updateApplicationStatus: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return { error: "Unauthorized" };
+      }
+
+      if (!isApplicationStatus(input.status)) {
+        return { error: "Invalid application status" };
+      }
+
+      const result = await env.job_applications
+        .updateApplication({
+          id: input.id,
+          status: input.status,
+          token: userSession.sessionToken
+        })
+        .catch(constant(null));
+
+      if (isNil(result) || !result.ok) {
+        return { error: "Unable to update application." };
+      }
+
+      return {
+        redirect: applicationsPagePath(parseApplicationCursor(input.after)),
+        success: true
+      };
+    },
+    input: z.object({
+      after: z.string().optional(),
+      id: z.string().min(1, "Application is required"),
+      status: z.enum([
+        "applied",
+        "screening",
+        "interview",
+        "offer",
+        "rejected",
+        "withdrawn"
+      ])
+    })
   })
 };

@@ -1,19 +1,22 @@
 import isNil from "lodash/isNil.js";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { addFeed, markArticleRead, removeFeed } = vi.hoisted(() => {
-  return {
-    addFeed: vi.fn(async () => {
-      return { success: true };
-    }),
-    markArticleRead: vi.fn(async () => {
-      return { success: true };
-    }),
-    removeFeed: vi.fn(async () => {
-      return { success: true };
-    })
-  };
-});
+const { addFeed, markArticleRead, removeFeed, updateApplication } = vi.hoisted(
+  () => {
+    return {
+      addFeed: vi.fn(async () => {
+        return { success: true };
+      }),
+      markArticleRead: vi.fn(async () => {
+        return { success: true };
+      }),
+      removeFeed: vi.fn(async () => {
+        return { success: true };
+      }),
+      updateApplication: vi.fn()
+    };
+  }
+);
 
 vi.mock("astro:actions", () => {
   return {
@@ -25,7 +28,10 @@ vi.mock("astro:actions", () => {
 
 vi.mock("cloudflare:workers", () => {
   return {
-    env: { ethang_rss: "rss-worker" }
+    env: {
+      ethang_rss: "rss-worker",
+      job_applications: { updateApplication }
+    }
   };
 });
 
@@ -46,6 +52,10 @@ const SESSION = "session";
 const NO_SESSION = "rejects when there is no session";
 const COOKIE_PATH = { path: "/" } as const;
 const EMAIL = "ada@example.com";
+const APPLICATION_ID = "a1";
+const STATUS = "screening";
+const BACKEND_DETAIL = "secret backend detail";
+const APPLICATIONS_PATH = "/applications";
 
 const sessionUser = JSON.stringify({
   email: EMAIL,
@@ -68,6 +78,8 @@ const cookies = (sessionValue: null | string = null) => {
 const call = (function_: any, input: unknown, context: unknown) => {
   return function_(input, context);
 };
+
+const updateApplicationStatus = server.updateApplicationStatus;
 
 describe("addFeed action", () => {
   it(NO_SESSION, async () => {
@@ -121,6 +133,121 @@ describe("markArticleRead action", () => {
     });
     expect(result).toEqual({ success: true });
   });
+});
+
+describe("updateApplicationStatus action", () => {
+  beforeEach(() => {
+    updateApplication.mockReset();
+    updateApplication.mockResolvedValue({
+      ok: true,
+      value: { id: APPLICATION_ID }
+    });
+  });
+
+  it("rejects an unauthenticated status update", async () => {
+    const result = await call(
+      updateApplicationStatus,
+      { after: "page-2", id: APPLICATION_ID, status: STATUS },
+      { cookies: cookies(null) }
+    );
+
+    expect(result).toEqual({ error: UNAUTHORIZED });
+    expect(updateApplication).not.toHaveBeenCalled();
+  });
+
+  it.each(["", "unknown", null, "SCREENING"])(
+    "rejects invalid status %j",
+    async (status) => {
+      const result = await call(
+        updateApplicationStatus,
+        { after: "page-2", id: APPLICATION_ID, status },
+        { cookies: cookies(sessionUser) }
+      );
+
+      expect(result).toEqual({ error: expect.any(String) });
+      expect(updateApplication).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    "applied",
+    "screening",
+    "interview",
+    "offer",
+    "rejected",
+    "withdrawn"
+  ])("accepts the %s status", async (status) => {
+    const result = await call(
+      updateApplicationStatus,
+      { id: APPLICATION_ID, status },
+      { cookies: cookies(sessionUser) }
+    );
+
+    expect(updateApplication).toHaveBeenCalledWith({
+      id: APPLICATION_ID,
+      status,
+      token: "token"
+    });
+    expect(result).toEqual({ redirect: APPLICATIONS_PATH, success: true });
+    updateApplication.mockClear();
+  });
+
+  it("updates status and preserves the cursor", async () => {
+    updateApplication.mockResolvedValue({
+      ok: true,
+      value: { id: APPLICATION_ID }
+    });
+
+    const result = await call(
+      updateApplicationStatus,
+      { after: "page-2", id: APPLICATION_ID, status: STATUS },
+      { cookies: cookies(sessionUser) }
+    );
+
+    expect(updateApplication).toHaveBeenCalledWith({
+      id: APPLICATION_ID,
+      status: STATUS,
+      token: "token"
+    });
+    expect(result).toEqual({
+      redirect: "/applications?after=page-2",
+      success: true
+    });
+  });
+
+  it.each([
+    { error: { message: BACKEND_DETAIL }, ok: false },
+    new Error(BACKEND_DETAIL)
+  ])("returns a safe error when the update fails", async (failure) => {
+    if (Error.isError(failure)) {
+      updateApplication.mockRejectedValue(failure);
+    } else {
+      updateApplication.mockResolvedValue(failure);
+    }
+
+    const result = await call(
+      updateApplicationStatus,
+      { id: APPLICATION_ID, status: STATUS },
+      { cookies: cookies(sessionUser) }
+    );
+
+    expect(result).toEqual({ error: "Unable to update application." });
+    expect(JSON.stringify(result)).not.toContain(BACKEND_DETAIL);
+  });
+
+  it.each(["{malformed", JSON.stringify({ sessionToken: "token" })])(
+    "rejects malformed session %j",
+    async (session) => {
+      const result = await call(
+        updateApplicationStatus,
+        { id: APPLICATION_ID, status: STATUS },
+        { cookies: cookies(session) }
+      );
+
+      expect(result).toEqual({ error: UNAUTHORIZED });
+      expect(updateApplication).not.toHaveBeenCalled();
+    }
+  );
 });
 
 describe("removeFeed action", () => {
@@ -180,7 +307,7 @@ describe("signIn action", () => {
     const c = cookies();
     const result = await call(
       server.signIn,
-      { email: EMAIL, password: "secret", redirect: "/applications" },
+      { email: EMAIL, password: "secret", redirect: APPLICATIONS_PATH },
       { cookies: c }
     );
 
@@ -200,7 +327,7 @@ describe("signIn action", () => {
       expect.objectContaining({ httpOnly: true, path: "/" })
     );
     expect(result).toEqual({
-      data: { redirect: "/applications", username: "ada" }
+      data: { redirect: APPLICATIONS_PATH, username: "ada" }
     });
 
     vi.unstubAllGlobals();
