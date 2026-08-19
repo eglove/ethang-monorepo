@@ -9,8 +9,7 @@ export default defineConfig({
         compatFlags: ["nodejs_compat"],
         d1Databases: ["jobApplications"],
         r2Buckets: ["jobResumes"]
-      },
-      remoteBindings: false
+      }
     })
   ],
   test: {
