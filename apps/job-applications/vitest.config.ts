@@ -5,8 +5,8 @@ export default defineConfig({
   plugins: [
     cloudflareTest({
       miniflare: {
-        compatDate: "2026-08-18",
-        compatFlags: ["nodejs_compat"],
+        compatibilityDate: "2026-08-18",
+        compatibilityFlags: ["nodejs_compat"],
         d1Databases: ["jobApplications"],
         r2Buckets: ["jobResumes"]
       }
