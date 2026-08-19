@@ -5,6 +5,7 @@ import { Effect, Schema } from "effect";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
+import { resolveLoginRedirect } from "../lib/login.ts";
 import {
   addFeed as addFeedProgram,
   markArticleRead as markArticleReadProgram,
@@ -169,11 +170,17 @@ export const server = {
       }
 
       const decodedUser = signInResult.success;
-      return { data: { username: decodedUser?.username ?? "" } };
+      return {
+        data: {
+          redirect: resolveLoginRedirect(input.redirect),
+          username: decodedUser?.username ?? ""
+        }
+      };
     },
     input: z.object({
       email: z.email({ message: "Invalid email address" }),
-      password: z.string().min(1, "Password is required")
+      password: z.string().min(1, "Password is required"),
+      redirect: z.string().optional()
     })
   }),
 

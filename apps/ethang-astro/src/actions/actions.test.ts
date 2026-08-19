@@ -161,32 +161,47 @@ describe("signOut action", () => {
 
 describe("signIn action", () => {
   it("sets the session cookie and returns the username on success", async () => {
-    const fetchMock = vi.fn(async () => {
-      return Response.json(
-        {
-          email: EMAIL,
-          sessionToken: "token",
-          username: "ada"
-        },
-        { status: 200 }
-      );
-    });
+    let requestInit: RequestInit | undefined;
+    const fetchMock = vi.fn(
+      async (_input: RequestInfo | URL, init?: RequestInit) => {
+        requestInit = init;
+        return Response.json(
+          {
+            email: EMAIL,
+            sessionToken: "token",
+            username: "ada"
+          },
+          { status: 200 }
+        );
+      }
+    );
     vi.stubGlobal("fetch", fetchMock);
 
     const c = cookies();
     const result = await call(
       server.signIn,
-      { email: EMAIL, password: "secret" },
+      { email: EMAIL, password: "secret", redirect: "/applications" },
       { cookies: c }
     );
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://auth.ethang.dev/sign-in",
+      expect.objectContaining({
+        body: JSON.stringify({ email: EMAIL, password: "secret" })
+      })
+    );
+    expect(requestInit?.body).toBe(
+      JSON.stringify({ email: EMAIL, password: "secret" })
+    );
     expect(fetchMock).toHaveBeenCalled();
     expect(c.set).toHaveBeenCalledWith(
       SESSION,
       expect.any(String),
       expect.objectContaining({ httpOnly: true, path: "/" })
     );
-    expect(result).toEqual({ data: { username: "ada" } });
+    expect(result).toEqual({
+      data: { redirect: "/applications", username: "ada" }
+    });
 
     vi.unstubAllGlobals();
   });
