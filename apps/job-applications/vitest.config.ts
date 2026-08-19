@@ -21,6 +21,8 @@ export default defineConfig({
       thresholds: { branches: 80, functions: 80, lines: 80, statements: 80 }
     },
     globalSetup: ["./vitest.global-setup.ts"],
-    include: ["src/**/*.test.ts"]
+    hookTimeout: 30_000,
+    include: ["src/**/*.test.ts"],
+    teardownTimeout: 30_000
   }
 });

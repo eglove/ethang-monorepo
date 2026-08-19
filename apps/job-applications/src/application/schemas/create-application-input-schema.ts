@@ -3,7 +3,7 @@ import { Schema } from "effect";
 import { STATUSES } from "../../domain/job-application/status.ts";
 
 export class CreateApplicationInputSchema extends Schema.Class<CreateApplicationInputSchema>(
-  "CreateApplicationInputSchema",
+  "CreateApplicationInputSchema"
 )({
   applicationUrl: Schema.NonEmptyString,
   appliedDate: Schema.String,
@@ -14,5 +14,5 @@ export class CreateApplicationInputSchema extends Schema.Class<CreateApplication
   salary: Schema.optionalWith(Schema.String, { nullable: true }),
   status: Schema.optionalWith(Schema.Literal(...STATUSES), { nullable: true }),
   title: Schema.NonEmptyString,
-  token: Schema.NonEmptyString,
+  token: Schema.NonEmptyString
 }) {}

@@ -24,7 +24,7 @@ export const getResume = (id: string, email: string) => {
       contentType: "application/pdf",
       data: object.data,
       filename: object.filename,
-      size: object.size,
+      size: object.size
     };
   });
 };

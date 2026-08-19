@@ -29,8 +29,8 @@ const make = (url = "https://example.com/jobs/1") => {
       appliedDate: APPLIED_DATE,
       company: COMPANY,
       email: EMAIL,
-      title: TITLE,
-    }),
+      title: TITLE
+    })
   );
 };
 
@@ -38,10 +38,10 @@ describe("drizzle repository", () => {
   it("inserts and finds by id (owner only)", async () => {
     const app = make();
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -49,20 +49,20 @@ describe("drizzle repository", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      }),
+      })
     );
     const found = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, EMAIL);
-      }),
+      })
     );
     expect(found?.title).toBe("Engineer");
     const foreign = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, "other@example.com");
-      }),
+      })
     );
     expect(foreign).toBeNull();
   });
@@ -70,10 +70,10 @@ describe("drizzle repository", () => {
   it("maps the unique constraint violation to DuplicateApplicationError", async () => {
     const app = make();
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -82,7 +82,7 @@ describe("drizzle repository", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      }),
+      })
     );
     // second insert with same (email, URL) must fail with DuplicateApplicationError
     const duplicate = await Effect.runPromise(
@@ -90,8 +90,8 @@ describe("drizzle repository", () => {
         Effect.gen(function* () {
           const repo = yield* JobApplicationRepository;
           return yield* repo.insert(make("https://example.com/jobs/1"));
-        }).pipe(Effect.provide(layerInstance)),
-      ),
+        }).pipe(Effect.provide(layerInstance))
+      )
     );
     expect(duplicate).toBeInstanceOf(DuplicateApplicationError);
   });
@@ -99,10 +99,10 @@ describe("drizzle repository", () => {
   it("updates and deletes", async () => {
     const app = make();
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -110,34 +110,34 @@ describe("drizzle repository", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      }),
+      })
     );
     const updated = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.update({ ...app, salary: "$150k" });
-      }),
+      })
     );
     expect(updated.salary).toBe("$150k");
     const refetched = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, EMAIL);
-      }),
+      })
     );
     expect(refetched?.salary).toBe("$150k");
     const isDeleted = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.delete(app.id, EMAIL);
-      }),
+      })
     );
     expect(isDeleted).toBe(true);
     const isAgain = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.delete(app.id, EMAIL);
-      }),
+      })
     );
     expect(isAgain).toBe(false);
   });
@@ -147,10 +147,10 @@ describe("drizzle repository", () => {
     const b = make("https://example.com/jobs/b");
     const c = make("https://example.com/jobs/c");
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -164,9 +164,9 @@ describe("drizzle repository", () => {
           after: null,
           email: EMAIL,
           first: 10,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     const page = await run(
       Effect.gen(function* () {
@@ -175,9 +175,9 @@ describe("drizzle repository", () => {
           after: null,
           email: EMAIL,
           first: 2,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     expect(page).toHaveLength(2);
     const [first, second] = page;
@@ -196,14 +196,14 @@ describe("drizzle repository (filters)", () => {
         company: COMPANY,
         email: EMAIL,
         status: "interview",
-        title: TITLE,
-      }),
+        title: TITLE
+      })
     );
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -212,7 +212,7 @@ describe("drizzle repository (filters)", () => {
         const repo = yield* JobApplicationRepository;
         yield* repo.insert(applied);
         yield* repo.insert(interview);
-      }),
+      })
     );
     const results = await run(
       Effect.gen(function* () {
@@ -221,9 +221,9 @@ describe("drizzle repository (filters)", () => {
           after: null,
           email: EMAIL,
           first: 10,
-          status: "applied",
+          status: "applied"
         });
-      }),
+      })
     );
     expect(results).toHaveLength(1);
     const [only] = results;
@@ -232,10 +232,10 @@ describe("drizzle repository (filters)", () => {
 
   it("lists with after cursor", async () => {
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -243,19 +243,19 @@ describe("drizzle repository (filters)", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(make("https://example.com/jobs/a"));
-      }),
+      })
     );
     const b = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(make("https://example.com/jobs/b"));
-      }),
+      })
     );
     await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(make("https://example.com/jobs/c"));
-      }),
+      })
     );
     // b is the middle cursor; lt(b.id) excludes b and c (both >= b.id)
     const page = await run(
@@ -265,9 +265,9 @@ describe("drizzle repository (filters)", () => {
           after: b.id,
           email: EMAIL,
           first: 10,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     expect(page).toHaveLength(1);
     const [only] = page;
@@ -284,14 +284,14 @@ describe("drizzle repository (filters)", () => {
         appliedDate: APPLIED_DATE,
         company: COMPANY,
         email: "other@example.com",
-        title: TITLE,
-      }),
+        title: TITLE
+      })
     );
     const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications,
+      env.jobApplications
     );
     const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+      effect: Effect.Effect<A, unknown, JobApplicationRepository>
     ) => {
       return Effect.runPromise(Effect.provide(effect, layerInstance));
     };
@@ -300,7 +300,7 @@ describe("drizzle repository (filters)", () => {
         const repo = yield* JobApplicationRepository;
         yield* repo.insert(mine);
         yield* repo.insert(foreign);
-      }),
+      })
     );
     const results = await run(
       Effect.gen(function* () {
@@ -309,9 +309,9 @@ describe("drizzle repository (filters)", () => {
           after: null,
           email: EMAIL,
           first: 10,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     expect(results).toHaveLength(1);
     const [only] = results;

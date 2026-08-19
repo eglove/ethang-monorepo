@@ -12,13 +12,13 @@ const VALID = {
   appliedDate: "2026-08-01",
   company: "Acme",
   title: "Engineer",
-  token: "jwt",
+  token: "jwt"
 };
 
 describe("schemas", () => {
   it("decodes a valid create input and applies defaults", () => {
     const result = Effect.runSync(
-      decodeInput(CreateApplicationInputSchema, VALID),
+      decodeInput(CreateApplicationInputSchema, VALID)
     );
     expect(result.company).toBe("Acme");
     expect(result.status).toBeUndefined();
@@ -28,17 +28,17 @@ describe("schemas", () => {
     { ...VALID, company: "" },
     { ...VALID, title: "" },
     { ...VALID, token: "" },
-    { ...VALID, status: "hired" },
+    { ...VALID, status: "hired" }
   ])("rejects invalid create input %#", (input) => {
     const result = Effect.runSync(
-      Effect.flip(decodeInput(CreateApplicationInputSchema, input)),
+      Effect.flip(decodeInput(CreateApplicationInputSchema, input))
     );
     expect(result).toBeInstanceOf(ValidationError);
   });
 
   it("decodes list params with first defaulting to 50", () => {
     const result = Effect.runSync(
-      decodeInput(ListApplicationsParamsSchema, { token: "jwt" }),
+      decodeInput(ListApplicationsParamsSchema, { token: "jwt" })
     );
     expect(result.first).toBe(50);
   });
@@ -48,18 +48,16 @@ describe("schemas", () => {
       Effect.flip(
         decodeInput(ListApplicationsParamsSchema, {
           status: "nope",
-          token: "jwt",
-        }),
-      ),
+          token: "jwt"
+        })
+      )
     );
     expect(result).toBeInstanceOf(ValidationError);
   });
 
   it("rejects an empty update change set (no id)", () => {
     const result = Effect.runSync(
-      Effect.flip(
-        decodeInput(UpdateApplicationChangesSchema, { token: "jwt" }),
-      ),
+      Effect.flip(decodeInput(UpdateApplicationChangesSchema, { token: "jwt" }))
     );
     expect(result).toBeInstanceOf(ValidationError);
   });

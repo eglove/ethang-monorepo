@@ -13,7 +13,7 @@ export const createResumeStoreLayer = (bucket: R2Bucket) => {
         },
         try: async () => {
           await bucket.delete(key);
-        },
+        }
       });
     },
     get: (key) => {
@@ -29,9 +29,9 @@ export const createResumeStoreLayer = (bucket: R2Bucket) => {
           return {
             data: await object.arrayBuffer(),
             filename: object.customMetadata?.["filename"] ?? "",
-            size: object.size,
+            size: object.size
           };
-        },
+        }
       });
     },
     put: (key, data, filename) => {
@@ -42,10 +42,10 @@ export const createResumeStoreLayer = (bucket: R2Bucket) => {
         try: async () => {
           await bucket.put(key, data, {
             customMetadata: { filename },
-            httpMetadata: { contentType: "application/pdf" },
+            httpMetadata: { contentType: "application/pdf" }
           });
-        },
+        }
       });
-    },
+    }
   });
 };

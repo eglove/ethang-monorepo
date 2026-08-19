@@ -18,15 +18,15 @@ export const createTokenVerifierLayer = (secret: string) => {
           try: async () => {
             const { payload } = await jwtVerify(token, secretKey);
             return payload["email"];
-          },
+          }
         });
         if (!isString(email)) {
           return yield* Effect.fail(
-            new TokenError("token is missing email claim"),
+            new TokenError("token is missing email claim")
           );
         }
         return email;
       });
-    },
+    }
   });
 };

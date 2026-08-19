@@ -37,7 +37,7 @@ export const uploadResume = (parameters: {
     const updated = attachResume(existing, {
       filename: parameters.filename,
       key,
-      size: bytes.byteLength,
+      size: bytes.byteLength
     });
     return yield* repo.update(updated);
   });
