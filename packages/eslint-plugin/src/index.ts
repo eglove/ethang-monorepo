@@ -16,6 +16,7 @@ import { preferEffectArrayFromIterableRule } from "./rules/prefer-effect-array-f
 import { preferEffectArrayIntersperseRule } from "./rules/prefer-effect-array-intersperse.ts";
 import { preferEffectArrayScanRule } from "./rules/prefer-effect-array-scan.ts";
 import { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
+import { preferEffectCauseRule } from "./rules/prefer-effect-cause.ts";
 import { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 import { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
 import { preferEffectEqualRule } from "./rules/prefer-effect-equal.ts";
@@ -62,6 +63,7 @@ export const rules = {
   "prefer-effect-array-intersperse": preferEffectArrayIntersperseRule,
   "prefer-effect-array-scan": preferEffectArrayScanRule,
   "prefer-effect-bigint-clamp": preferEffectBigIntClampRule,
+  "prefer-effect-cause": preferEffectCauseRule,
   "prefer-effect-datetime": preferEffectDateTimeRule,
   "prefer-effect-encoding-base64": preferEffectEncodingBase64Rule,
   "prefer-effect-equal": preferEffectEqualRule,
@@ -118,6 +120,7 @@ export { preferEffectArrayFromIterableRule } from "./rules/prefer-effect-array-f
 export { preferEffectArrayIntersperseRule } from "./rules/prefer-effect-array-intersperse.ts";
 export { preferEffectArrayScanRule } from "./rules/prefer-effect-array-scan.ts";
 export { preferEffectBigIntClampRule } from "./rules/prefer-effect-bigint-clamp.ts";
+export { preferEffectCauseRule } from "./rules/prefer-effect-cause.ts";
 export { preferEffectDateTimeRule } from "./rules/prefer-effect-datetime.ts";
 export { preferEffectEncodingBase64Rule } from "./rules/prefer-effect-encoding-base64.ts";
 export { preferEffectEqualRule } from "./rules/prefer-effect-equal.ts";

@@ -32,6 +32,7 @@ describe("plugin", () => {
         "prefer-effect-array-from-iterable",
         "prefer-effect-array-scan",
         "prefer-effect-bigint-clamp",
+        "prefer-effect-cause",
         "prefer-effect-datetime",
         "prefer-effect-equal",
         "prefer-effect-encoding-base64",

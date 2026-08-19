@@ -1,13 +1,6 @@
 import { Effect, Predicate } from "effect";
-
-import { DuplicateApplicationError } from "./errors/duplicate-application-error.ts";
-import { FetchError } from "./errors/fetch-error.ts";
-import { InvalidStatusTransitionError } from "./errors/invalid-status-transition-error.ts";
-import { NotFoundError } from "./errors/not-found-error.ts";
-import { ResumeError } from "./errors/resume-error.ts";
-import { SaveError } from "./errors/save-error.ts";
-import { TokenError } from "./errors/token-error.ts";
-import { ValidationError } from "./errors/validation-error.ts";
+import isNil from "lodash/isNil.js";
+import isObject from "lodash/isObject.js";
 
 export type ErrorCode =
   | "DUPLICATE"
@@ -29,29 +22,36 @@ const failure = (code: ErrorCode, error: { readonly message: string }) => {
   return { error: { code, message: error.message }, ok: false as const };
 };
 
+const TAG_TO_CODE = {
+  DuplicateApplicationError: "DUPLICATE",
+  FetchError: "INTERNAL",
+  InvalidStatusTransitionError: "INVALID_TRANSITION",
+  NotFoundError: "NOT_FOUND",
+  ResumeError: "RESUME",
+  SaveError: "INTERNAL",
+  TokenError: "UNAUTHENTICATED",
+  ValidationError: "VALIDATION"
+} as const;
+
+type TagKey = keyof typeof TAG_TO_CODE;
+
+const isTagKey = (tag: string): tag is TagKey => {
+  return Object.hasOwn(TAG_TO_CODE, tag);
+};
+
+type TaggedError = { readonly _tag: string; readonly message: string };
+
+const isTaggedError = (error: unknown): error is TaggedError => {
+  return (
+    isObject(error) && !isNil(error) && "_tag" in error && "message" in error
+  );
+};
+
 export const toResult = <A, E, R>(effect: Effect.Effect<A, E, R>) => {
   return Effect.match(effect, {
     onFailure: (error) => {
-      if (error instanceof ValidationError) {
-        return failure("VALIDATION", error);
-      }
-      if (error instanceof TokenError) {
-        return failure("UNAUTHENTICATED", error);
-      }
-      if (error instanceof NotFoundError) {
-        return failure("NOT_FOUND", error);
-      }
-      if (error instanceof DuplicateApplicationError) {
-        return failure("DUPLICATE", error);
-      }
-      if (error instanceof InvalidStatusTransitionError) {
-        return failure("INVALID_TRANSITION", error);
-      }
-      if (error instanceof ResumeError) {
-        return failure("RESUME", error);
-      }
-      if (error instanceof FetchError || error instanceof SaveError) {
-        return failure("INTERNAL", error);
+      if (isTaggedError(error) && isTagKey(error._tag)) {
+        return failure(TAG_TO_CODE[error._tag], error);
       }
       return failure("INTERNAL", {
         message: Predicate.isError(error) ? error.message : String(error)
