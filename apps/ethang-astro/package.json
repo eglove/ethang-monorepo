@@ -28,7 +28,7 @@
   "scripts": {
     "astro": "astro",
     "build": "astro build",
-    "cf-typegen": "wrangler types --config wrangler.jsonc --config ../ethang-courses/wrangler.jsonc --config ../ethang-rss/wrangler.jsonc",
+    "cf-typegen": "wrangler types --config wrangler.jsonc --config ../ethang-courses/wrangler.jsonc --config ../ethang-rss/wrangler.jsonc --config ../job-applications/wrangler.jsonc",
     "deploy": "astro build && wrangler deploy",
     "dev": "astro dev",
     "generate-types": "wrangler types",
