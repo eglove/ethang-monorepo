@@ -54,4 +54,4 @@ The retained generated diff is limited to the hash and the new `job_applications
 
 ## Commit
 
-Commit: pending until the final Task 3 commit is created.
+Commit: `7ce98d4454db15f9eb7ce24bdb36899306d77fdc` (`feat: bind job applications service`).
