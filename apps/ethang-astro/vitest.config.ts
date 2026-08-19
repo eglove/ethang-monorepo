@@ -14,7 +14,7 @@ export default getViteConfig({
         "src/env.d.ts"
       ],
       include: ["src/**/*.{ts,astro}", "constants/**/*.ts"],
-      provider: "v8",
+      provider: "istanbul",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         branches: 80,

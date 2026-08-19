@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0",
+    "types": ["@cloudflare/workers-types", "node"]
+  },
+  "exclude": ["coverage"],
+  "extends": ["../../packages/tsconfig/tsconfig.base.json"]
+}

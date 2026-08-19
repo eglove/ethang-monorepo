@@ -9,7 +9,7 @@ export default defineConfig({
         "src/rules/**/*.fixture.ts"
       ],
       include: ["src/**/*.ts"],
-      provider: "v8",
+      provider: "istanbul",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         branches: 80,

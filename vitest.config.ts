@@ -27,7 +27,7 @@ export default defineConfig({
 				"**/test-utilities/**",
 			],
 			include: ["apps/**/*.{ts,tsx}", "packages/**/*.{ts,tsx}"],
-			provider: "v8",
+			provider: "istanbul",
 			reporter: ["text", "json-summary", "html", "lcov"],
 			thresholds: {
 				branches: 80,

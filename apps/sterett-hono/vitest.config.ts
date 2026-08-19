@@ -5,7 +5,7 @@ export default defineConfig({
     coverage: {
       exclude: ["src/**/*.d.ts"],
       include: ["src/**/*.{ts,tsx}"],
-      provider: "v8",
+      provider: "istanbul",
       reporter: ["text", "json-summary", "html", "lcov"],
       thresholds: {
         branches: 80,

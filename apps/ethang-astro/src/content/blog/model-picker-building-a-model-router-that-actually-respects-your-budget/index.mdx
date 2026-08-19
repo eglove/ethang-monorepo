@@ -1,0 +1,212 @@
+---
+blogCategory: "Engineering"
+featuredImage: ./images/featured.jpg
+description: "How I built a model router that intercepts Pi's routing, classifies every prompt into coding/agentic/writing/general, fetches a live catalog from OpenRouter's MCP, applies hard gates (tools, ≥256k context, ≤$0.10/M input, no :batch), and picks the cheapest adequate model — using the best free structured-output model as the classifier itself."
+featuredImageAlt: "A terminal window showing a model-picker status line: 'model-picker: deepseek/deepseek-v4-flash-latest ($0.078/M in)' with a faint overlay of price tags on model names — Opus $15, Sonnet $3, Haiku $0.25 — all crossed out in red marker."
+pubDate: "2026-08-15T12:00:00Z"
+slug: "model-picker-building-a-model-router-that-actually-respects-your-budget"
+title: "Model Picker: Building a Model Router That Actually Respects Your Budget"
+updatedDate: "2026-08-15T12:00:00Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import Heading from "../../../components/ui/Heading.astro";
+
+<Heading as="h2">The Problem With "Auto"</Heading>
+
+You type a prompt. Pi routes it. Somewhere upstream, OpenRouter's `auto` router picks a model. You get an answer. The bill arrives.
+
+The router prefers big names — Anthropic, OpenAI, Google. It optimizes for brand recognition, not your budget. You don't need Opus to rename a variable. You don't need Sonnet to write a regex. You don't even need Haiku for most script-heavy workflows.
+
+Models exist for every task that cost less than $0.10 per million tokens. Right now:
+
+- DeepSeek V4 Flash 0423 — 44% off at $0.0784/M
+- Ling 3.0 Flash — 65% off at $0.021/M
+- Nemotron 3 Ultra — free
+- GLM 5.2 — free
+- DeepSeek V4 Flash 0731 — 44% off at $0.0786/M
+- Providers like DigitalOcean serve shared compute at a fraction of the price
+
+OpenRouter has live data on all of them. Their router just doesn't use it.
+
+<Heading as="h2">The Insight</Heading>
+
+The catalog is there. The prices are there. The capabilities are there. What's missing is a layer that asks the right questions before spending your money:
+
+1. What *kind* of task is this? (coding, agentic, writing, general)
+2. Which models actually support the tools this task needs?
+3. Which models have enough context?
+4. Which models have fixed, predictable pricing under your budget?
+5. Among those, which is the best value — not the cheapest, the *best value*?
+
+<Heading as="h2">Why I Built This</Heading>
+
+This is why I built the model-picker extension. It lives inside Pi as a first-class extension and hooks three extension points:
+
+<Heading as="h3">before_agent_start — Classify and Pick</Heading>
+
+Every prompt hits the classifier first. The classifier doesn't guess — it asks an LLM. But not *your* LLM. It asks the **best free model that supports structured outputs**, resolved fresh each run from OpenRouter's live catalog, ranked by Artificial Analysis intelligence index (fallback: context length). Cached for an hour. If the catalog is down or no free structured-output model exists, it falls back to `openrouter/free` plain text. If *that* fails, keyword matching.
+
+The prompt gets one of four labels: `coding`, `agentic`, `writing`, `general`. Each label maps to a quality axis: `coding-high-to-low`, `agentic-high-to-low`, `intelligence-high-to-low`.
+
+Then the picker fetches the top-N models on that axis from OpenRouter's MCP (fallback: REST). Hard gates apply *before* the LLM sees a single model:
+
+- Must support `tools`
+- Context length ≥ 256k (configurable)
+- Input price ≤ $0.10/M (configurable)
+- No `:batch` models
+- Fixed pricing only (no variable/unknown)
+
+The eligible pool goes to the same resolved free model — structured output, single field: `model_id`. On failure, step down to the next free model. On total failure, cheapest-first deterministic pick.
+
+<Heading as="h3">before_provider_request — Enforce the Pick</Heading>
+
+When Pi sends a request to OpenRouter, the extension rewrites `payload.model` to the picked slug. It sanitizes the payload: drops parameters the model doesn't list in `supported_parameters`, clamps `max_tokens` to the provider's limit, keeps universals (`messages`, `stream`, `temperature`, `tools`, etc.). Budget guard: if the pick somehow exceeds the cap, rewrite is skipped and you're notified.
+
+<Heading as="h3">turn_end — Auto-Disable on Failure</Heading>
+
+If the provider returns an error that looks model-related (400, 401, 404, 422, 429, "unsupported", "parameter", "proxy", "openrouter", "batch", "reasoning"), the extension disables itself for the session. You get a notification. `/modelpick on` re-enables.
+
+<Heading as="h2">The Classifier Is The Product</Heading>
+
+Most routers treat classification as a preprocessing step. Here, the classifier *is* the product — because it runs on the same infrastructure it's routing for.
+
+The best free structured-output model changes over time. Today it might be DeepSeek V4 Flash. Next month it might be Ling 3.0 Flash. The extension doesn't hardcode it. It queries the catalog, filters for `structured_outputs` support, ranks by intelligence index, caches for an hour. The classifier improves automatically as OpenRouter adds better free models.
+
+<Heading as="h2">Why Structured Outputs Matter</Heading>
+
+Plain text classification is fragile. The model might say "coding" or "coding." or "coding " or "The category is coding." Structured outputs (`response_format: json_schema`) guarantee a single field: `{"category": "coding"}`. No parsing. No ambiguity. The schema is strict: `enum: ["coding", "agentic", "writing", "general"]`, `additionalProperties: false`.
+
+Same for the picker: `{"model_id": "deepseek/deepseek-v4-flash-latest"}`. The model either returns a valid ID from the eligible list or it fails and we step down.
+
+<Heading as="h2">The Fallback Chain</Heading>
+
+Every layer has a fallback. The catalog: MCP → REST. The classifier: free structured models (stepping down) → `openrouter/free` text → keywords. The picker: free structured models (stepping down) → `openrouter/free` text → cheapest-first. The rewrite: budget guard → skip with notification. The session: auto-disable on provider error → manual re-enable.
+
+Nothing throws. Nothing crashes the agent. The worst case: you get `openrouter/auto` behavior.
+
+<Heading as="h2">What It Looks Like In Practice</Heading>
+
+You type: `"refactor the auth module to use the new token format"`
+
+The status line updates: `model-picker: deepseek/deepseek-v4-flash-latest ($0.078/M in)`
+
+You type: `"research the web for latest rust async patterns and write a comparison"`
+
+Status: `model-picker: z-ai/glm-4.5-air (free)`
+
+You type: `"write a blog post about why auto-routers waste money"`
+
+Status: `model-picker: ling-3.0-flash ($0.021/M in)`
+
+The picker doesn't always choose the absolute cheapest. It chooses the cheapest *adequate* model for the task type. A coding task gets a coding-strong model. An agentic task gets an agentic-strong model. All under $0.10/M.
+
+<Heading as="h2">The Core Logic</Heading>
+
+The extension is built around three pure functions that compose into the full behavior:
+
+<Heading as="h3">1. Resolving the Best Free Classifier</Heading>
+
+Each run, the extension queries OpenRouter's live catalog and picks the highest-ranked free model that supports `structured_outputs`. The ranking uses Artificial Analysis intelligence index (tiebreak: context length), cached for an hour:
+
+```typescript
+function rankBestFreeStructured(models: RawModel[]): string[] {
+  const candidates = models.filter(
+    m => !ROUTER_ALIASES.has(m.id) && isFree(m) && supportsStructuredOutputs(m)
+  );
+
+  const scored = candidates.filter(
+    m => typeof m.benchmarks?.artificial_analysis?.intelligence_index === "number"
+  );
+  const unscored = candidates.filter(
+    m => typeof m.benchmarks?.artificial_analysis?.intelligence_index !== "number"
+  );
+
+  scored.sort((a, b) =>
+    b.benchmarks!.artificial_analysis!.intelligence_index! -
+    a.benchmarks!.artificial_analysis!.intelligence_index! ||
+    (b.context_length ?? 0) - (a.context_length ?? 0)
+  );
+  unscored.sort((a, b) => (b.context_length ?? 0) - (a.context_length ?? 0));
+
+  return [...scored.map(m => m.id), ...unscored.map(m => m.id)];
+}
+```
+
+This means the classifier *improves automatically* as OpenRouter adds better free models. No code changes, no hardcoded model IDs.
+
+<Heading as="h3">2. Hard Gates Before the LLM Sees Anything</Heading>
+
+The picker fetches the top-N models on the task's quality axis, then applies hard filters *before* any LLM call. Only models passing all gates enter the eligible pool:
+
+```typescript
+function filterEligible(
+  models: ModelRecord[],
+  config: ModelPickerConfig
+): { eligible: ModelRecord[]; rejected: RejectedCounts } {
+  const rejected: RejectedCounts = {
+    noTools: 0,
+    tooSmallContext: 0,
+    variablePrice: 0,
+    overBudget: 0,
+    batchOnly: 0,
+  };
+  const eligible: ModelRecord[] = [];
+
+  for (const model of models) {
+    if (model.id.includes(":batch")) { rejected.batchOnly++; continue; }
+    if (!hasTools(model)) { rejected.noTools++; continue; }
+    if (config.minContext > 0 && (model.context_length ?? 0) < config.minContext) {
+      rejected.tooSmallContext++; continue;
+    }
+    const price = parseInputPricePerM(model);
+    if (price === undefined) { rejected.variablePrice++; continue; }
+    if (price > config.priceCapPerMInput) { rejected.overBudget++; continue; }
+    if (price === 0 && !config.allowFree) continue;
+    eligible.push(model);
+  }
+
+  return { eligible, rejected };
+}
+```
+
+Every rejection is counted. You can see exactly why a model didn't qualify.
+
+<Heading as="h3">3. Stepping Down Through Free Models</Heading>
+
+Both classification and picking use the same stepping pattern: try the best free structured-output model, on failure step down to the next, then fall back to `openrouter/free` plain text, then deterministic cheapest-first:
+
+```typescript
+for (const model of freeModels) {
+  try {
+    const obj = await askFreeStructured(system, user, schema, model, deps);
+    const answer = extractAnswer(obj);
+    if (answer) return answer;
+    // Non-fatal — step down to next model
+  } catch {
+    // Step down to next model
+  }
+}
+// All structured models exhausted — fall through to openrouter/free
+const raw = await askFreeText(system, user, "openrouter/free", deps);
+// ...then keyword fallback
+```
+
+Nothing throws. The worst case is `openrouter/auto` behavior — the extension gets out of the way.
+
+<Heading as="h2">Why Not Just Use OpenRouter Auto?</Heading>
+
+Because `auto` optimizes for the provider's revenue, not your constraints. It routes to the models that make OpenRouter the most margin. It doesn't know your task type. It doesn't enforce a budget. It doesn't require tools support. It doesn't clamp max tokens. It doesn't auto-disable on provider errors.
+
+The model-picker does all of that. It's 1,200 lines of TypeScript that saves you money every single prompt.
+
+<Heading as="h2">The Idea</Heading>
+These principles apply anywhere you have a router and a budget — whether you're building for yourself, for a team, or into a product:
+
+- **Classify before you route.** Don't let the provider guess what kind of work this is.
+- **Gate before you pick.** Filter on tools, context, price, and pricing model before the LLM sees a single option.
+- **Use the best free model as your judge.** The classifier and picker should improve automatically as the ecosystem evolves.
+- **Fall back, never fail.** Every layer should degrade gracefully to the next, and the worst case should be the behavior you'd get without the picker at all.
+- **Sanitize the payload.** A model can't use parameters it doesn't support — strip them before they cause errors.
+- **Auto-disable on provider errors.** If the pick breaks the request, stop rewriting and get out of the way.

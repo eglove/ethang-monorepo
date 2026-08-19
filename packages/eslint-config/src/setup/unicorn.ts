@@ -11,6 +11,10 @@ const customRules = [
     rule: "off"
   },
   {
+    name: "name-replacements",
+    rule: "off"
+  },
+  {
     name: "explicit-length-check",
     rule: "off"
   },
