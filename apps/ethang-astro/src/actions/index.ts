@@ -1,4 +1,6 @@
 import { ActionError, defineAction } from "astro:actions";
+
+type ActionErrorInput = ConstructorParameters<typeof ActionError>[0];
 import { z } from "astro/zod";
 import { env } from "cloudflare:workers";
 import { Effect, Schema } from "effect";
@@ -33,6 +35,10 @@ const getSessionUser = (context: {
   cookies: { get: (name: string) => { value?: string } | undefined };
 }) => {
   return decodeSessionCookie(context.cookies.get("session")?.value);
+};
+
+const rejectActionError = async (input: ActionErrorInput) => {
+  await Promise.reject(new ActionError(input));
 };
 
 export const server = {
@@ -207,11 +213,14 @@ export const server = {
       const userSession = getSessionUser(context);
 
       if (isNil(userSession)) {
-        throw new ActionError({ code: "UNAUTHORIZED", message: "Unauthorized" });
+        return rejectActionError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized"
+        });
       }
 
       if (!isApplicationStatus(input.status)) {
-        throw new ActionError({
+        return rejectActionError({
           code: "BAD_REQUEST",
           message: "Invalid application status"
         });
@@ -226,7 +235,7 @@ export const server = {
         .catch(constant(null));
 
       if (isNil(result) || !result.ok) {
-        throw new ActionError({
+        return rejectActionError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Unable to update application."
         });

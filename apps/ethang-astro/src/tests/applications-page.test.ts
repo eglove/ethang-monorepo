@@ -1,5 +1,5 @@
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { actions } from "astro:actions";
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const jobApplications = vi.hoisted(() => {
@@ -13,7 +13,6 @@ vi.mock("cloudflare:workers", () => {
   return { env: { job_applications: jobApplications } };
 });
 
-import { server } from "../actions/index.ts";
 import Applications from "../pages/applications.astro";
 
 const APPLICATIONS_URL = "https://ethang.dev/applications";
@@ -44,6 +43,10 @@ const render = async (url: string, session = SESSION) => {
   return response.text();
 };
 
+const parseActionQuery = (action: unknown) => {
+  return new URLSearchParams(String(action));
+};
+
 const renderActionResult = async (actionResult: {
   body: string;
   contentType: string;
@@ -51,20 +54,21 @@ const renderActionResult = async (actionResult: {
   type: "data" | "error";
 }) => {
   const container = await AstroContainer.create();
-  return container.renderToResponse(Applications as never, {
-    locals: {
-      _actionPayload: {
-        actionName:
-          new URLSearchParams(
-            actions.updateApplicationStatus.toString()
-          ).get("_action") ?? "",
-        actionResult
-      }
-    },
-    request: new Request(`${APPLICATIONS_URL}?after=current-1`, {
-      headers: { Cookie: `session=${encodeURIComponent(SESSION)}` }
-    })
-  } as never);
+  const actionSearchParams = parseActionQuery(actions.updateApplicationStatus);
+  return container.renderToResponse(
+    Applications as never,
+    {
+      locals: {
+        _actionPayload: {
+          actionName: actionSearchParams.get("_action") ?? "",
+          actionResult
+        }
+      },
+      request: new Request(`${APPLICATIONS_URL}?after=current-1`, {
+        headers: { Cookie: `session=${encodeURIComponent(SESSION)}` }
+      })
+    } as never
+  );
 };
 
 type Application = {

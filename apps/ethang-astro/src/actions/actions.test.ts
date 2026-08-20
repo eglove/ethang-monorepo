@@ -20,10 +20,14 @@ const { addFeed, markArticleRead, removeFeed, updateApplication } = vi.hoisted(
 
 vi.mock("astro:actions", () => {
   class MockActionError extends Error {
-    code: string;
+    public code: string;
 
-    constructor(input: { code: string; message: string }) {
-      super(input.message);
+    public constructor(
+      input: { code: string; message: string },
+      options: ErrorOptions
+    ) {
+      super(input.message, options);
+      this.name = "MockActionError";
       this.code = input.code;
     }
   }
@@ -163,6 +167,16 @@ describe("updateApplicationStatus action", () => {
       )
     ).rejects.toMatchObject({ code: "UNAUTHORIZED", message: UNAUTHORIZED });
     expect(updateApplication).not.toHaveBeenCalled();
+  });
+
+  it("uses a named action error for rejected updates", async () => {
+    await expect(
+      call(
+        updateApplicationStatus,
+        { after: "page-2", id: APPLICATION_ID, status: STATUS },
+        { cookies: cookies(null) }
+      )
+    ).rejects.toMatchObject({ name: "MockActionError" });
   });
 
   it.each(["", "unknown", null, "SCREENING"])(

@@ -10,13 +10,30 @@ export type LoginResult = {
   error?: { message?: string };
 };
 
+const isLocalPath = (value: string) => {
+  return value.startsWith("/");
+};
+
+const isNotProtocolRelative = (value: string) => {
+  return !value.startsWith("//");
+};
+
+const hasNoBackslash = (value: string) => {
+  return !value.includes("\\");
+};
+
+const isSafeLoginRedirect = (value: null | string | undefined) => {
+  if (!isString(value)) {
+    return false;
+  }
+
+  return (
+    isLocalPath(value) && isNotProtocolRelative(value) && hasNoBackslash(value)
+  );
+};
+
 export const resolveLoginRedirect = (value: null | string | undefined) => {
-  return isString(value) &&
-    value.startsWith("/") &&
-    !value.startsWith("//") &&
-    !value.includes("\\")
-    ? value
-    : "/";
+  return isSafeLoginRedirect(value) && isString(value) ? value : "/";
 };
 
 export function resolveLoginOutcome(
