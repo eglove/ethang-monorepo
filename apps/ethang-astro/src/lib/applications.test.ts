@@ -75,7 +75,7 @@ describe("safe application URLs", () => {
     ["data:text/html,unsafe", false],
     ["//acme.example/jobs/1", false],
     ["not-a-url", false],
-    ["https:\\\\evil.example", false],
+    [String.raw`https:\\evil.example`, false],
     [null, false],
     [undefined, false]
   ])("validates %j as %j", (value, expected) => {
