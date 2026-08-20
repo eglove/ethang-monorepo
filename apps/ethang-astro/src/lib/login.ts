@@ -1,6 +1,5 @@
 export type LoginOutcome =
-  | { error: null | string; kind: "error" }
-  | { kind: "redirect"; path: string };
+  { error: null | string; kind: "error" } | { kind: "redirect"; path: string };
 
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
@@ -40,7 +39,7 @@ export const resolveLoginRedirect = (value: null | string | undefined) => {
 export function resolveLoginOutcome(
   result: LoginResult | undefined,
   urlError: null | string,
-  requestedRedirect: null | string = null,
+  requestedRedirect: null | string = null
 ) {
   if (!isNil(result) && isNil(result.error)) {
     const data = result.data;
@@ -49,8 +48,8 @@ export function resolveLoginOutcome(
     return {
       kind: "redirect",
       path: resolveLoginRedirect(
-        isString(redirect) ? redirect : requestedRedirect,
-      ),
+        isString(redirect) ? redirect : requestedRedirect
+      )
     };
   }
 

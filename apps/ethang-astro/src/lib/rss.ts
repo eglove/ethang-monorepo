@@ -88,17 +88,17 @@ export const EMPTY_PAGE_INFO: PageInfo = {
   endCursor: null,
   hasNextPage: false,
   hasPreviousPage: false,
-  startCursor: null,
+  startCursor: null
 };
 
 export const EMPTY_SUBSCRIPTIONS: SubscriptionsResult = {
   edges: [],
-  pageInfo: EMPTY_PAGE_INFO,
+  pageInfo: EMPTY_PAGE_INFO
 };
 
 export const EMPTY_ARTICLES: ArticlesResult = {
   edges: [],
-  pageInfo: EMPTY_PAGE_INFO,
+  pageInfo: EMPTY_PAGE_INFO
 };
 
 export type MutationResult = { error: string } | { success: true };
@@ -114,7 +114,7 @@ valid default so the worker is never queried with garbage.
 */
 export const getPageNumber = (
   searchParameters: URLSearchParams,
-  key: string,
+  key: string
 ) => {
   const raw = searchParameters.get(key);
   if (isNil(raw)) {
@@ -153,7 +153,7 @@ export const buildLoadMoreHref = (currentUrl: URL, pageParameter: string) => {
 export const getSubscriptions = async (
   worker: RssWorker,
   sessionToken: string,
-  page: number,
+  page: number
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -163,21 +163,21 @@ export const getSubscriptions = async (
       try: async () => {
         return worker.subscriptions({
           first: getFirst(page),
-          sessionToken,
+          sessionToken
         });
-      },
+      }
     }).pipe(
       Effect.catchAll(() => {
         return Effect.succeed(EMPTY_SUBSCRIPTIONS);
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const getArticles = async (
   worker: RssWorker,
   sessionToken: string,
-  page: number,
+  page: number
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -188,20 +188,20 @@ export const getArticles = async (
         return worker.allArticles({
           first: getFirst(page),
           isRead: false,
-          sessionToken,
+          sessionToken
         });
-      },
+      }
     }).pipe(
       Effect.catchAll(() => {
         return Effect.succeed(EMPTY_ARTICLES);
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const addFeed = async (
   worker: RssWorker,
-  parameters: { sessionToken: string; xmlAddress: string },
+  parameters: { sessionToken: string; xmlAddress: string }
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -209,18 +209,18 @@ export const addFeed = async (
       try: async () => {
         await worker.addSubscription(parameters);
         return { success: true as const };
-      },
+      }
     }).pipe(
       Effect.catchAll((message) => {
         return Effect.succeed({ error: message });
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const removeFeed = async (
   worker: RssWorker,
-  parameters: { feedId: string; sessionToken: string },
+  parameters: { feedId: string; sessionToken: string }
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -228,18 +228,18 @@ export const removeFeed = async (
       try: async () => {
         await worker.removeSubscription(parameters);
         return { success: true as const };
-      },
+      }
     }).pipe(
       Effect.catchAll((message) => {
         return Effect.succeed({ error: message });
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const markArticleRead = async (
   worker: RssWorker,
-  parameters: { articleId: string; isRead: boolean; sessionToken: string },
+  parameters: { articleId: string; isRead: boolean; sessionToken: string }
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -247,11 +247,11 @@ export const markArticleRead = async (
       try: async () => {
         await worker.markArticleRead(parameters);
         return { success: true as const };
-      },
+      }
     }).pipe(
       Effect.catchAll((message) => {
         return Effect.succeed({ error: message });
-      }),
-    ),
+      })
+    )
   );
 };

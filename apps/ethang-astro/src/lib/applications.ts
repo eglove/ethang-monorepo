@@ -11,7 +11,7 @@ export const APPLICATION_STATUSES = [
   "interview",
   "offer",
   "rejected",
-  "withdrawn",
+  "withdrawn"
 ] as const;
 
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
@@ -45,7 +45,7 @@ export const formatApplicationDate = (value: null | string | undefined) => {
   }
 
   const maybeDate = DateTime.make(
-    /^\d{4}-\d{2}-\d{2}$/u.test(value) ? `${value}T00:00:00Z` : value,
+    /^\d{4}-\d{2}-\d{2}$/u.test(value) ? `${value}T00:00:00Z` : value
   );
   if (Option.isNone(maybeDate)) {
     return formatApplicationValue(value);
@@ -55,13 +55,13 @@ export const formatApplicationDate = (value: null | string | undefined) => {
     day: "numeric",
     month: "short",
     timeZone: "UTC",
-    year: "numeric",
+    year: "numeric"
   });
   return formatter.format(DateTime.toDateUtc(maybeDate.value));
 };
 
 export const isApplicationStatus = (
-  value: unknown,
+  value: unknown
 ): value is ApplicationStatus => {
   return (
     isString(value) &&
