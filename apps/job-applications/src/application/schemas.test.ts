@@ -55,6 +55,40 @@ describe("schemas", () => {
     expect(result).toBeInstanceOf(ValidationError);
   });
 
+  it("decodes list params with a composite after cursor", () => {
+    const result = Effect.runSync(
+      decodeInput(ListApplicationsParamsSchema, {
+        after: "2026-08-01|01JZQ0EXAMPLE",
+        token: "jwt"
+      })
+    );
+    expect(result.after).toStrictEqual({
+      appliedDate: "2026-08-01",
+      id: "01JZQ0EXAMPLE"
+    });
+  });
+
+  it("normalizes a null after cursor to undefined", () => {
+    const result = Effect.runSync(
+      decodeInput(ListApplicationsParamsSchema, { after: null, token: "jwt" })
+    );
+    expect(result.after).toBeUndefined();
+  });
+
+  it.each([
+    "01JZQ0EXAMPLE",
+    "not-a-cursor",
+    "2026-13-01|01JZQ0EXAMPLE",
+    "2026-08-01|"
+  ])("rejects a list with a malformed after cursor %j", (after) => {
+    const result = Effect.runSync(
+      Effect.flip(
+        decodeInput(ListApplicationsParamsSchema, { after, token: "jwt" })
+      )
+    );
+    expect(result).toBeInstanceOf(ValidationError);
+  });
+
   it("rejects an empty update change set (no id)", () => {
     const result = Effect.runSync(
       Effect.flip(decodeInput(UpdateApplicationChangesSchema, { token: "jwt" }))

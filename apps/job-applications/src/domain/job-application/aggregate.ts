@@ -6,6 +6,7 @@ import { v7 } from "uuid";
 
 import { InvalidStatusTransitionError } from "../../errors/invalid-status-transition-error.ts";
 import { ValidationError } from "../../errors/validation-error.ts";
+import { isIsoDate } from "./iso-date.ts";
 import { isStatus, nextStatus, type Status } from "./status.ts";
 
 export type CreateApplicationInput = {
@@ -59,10 +60,6 @@ export type UpdateApplicationChanges = {
 
 const nowIso = () => {
   return DateTime.formatIso(DateTime.unsafeNow());
-};
-
-const isIsoDate = (value: string) => {
-  return /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/u.test(value);
 };
 
 const requireText = (
