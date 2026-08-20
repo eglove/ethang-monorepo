@@ -1,5 +1,5 @@
-// @ts-nocheck
 import type { env } from "cloudflare:workers";
+
 import isNil from "lodash/isNil.js";
 import { describe, expect, it, vi } from "vitest";
 
