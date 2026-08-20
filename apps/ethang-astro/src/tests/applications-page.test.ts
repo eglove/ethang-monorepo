@@ -1,5 +1,6 @@
 import { actions } from "astro:actions";
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import isNil from "lodash/isNil.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const jobApplications = vi.hoisted(() => {
@@ -31,6 +32,7 @@ const getResume = async (context: ResumeContext) => {
 
 const APPLICATIONS_URL = "https://ethang.dev/applications";
 const APPLICATION_URL = "https://acme.example/jobs/1";
+const APPLICATION_ID = "application-1";
 const UNSAFE_APPLICATION_URL = ["java", "script:alert(1)"].join("");
 const BACKEND_ERROR = "secret backend detail";
 const RESUME_FILENAME = "resume.pdf";
@@ -104,7 +106,7 @@ const makeApplication = (overrides: Partial<Application> = {}) => {
     applicationUrl: APPLICATION_URL,
     appliedDate: "2026-08-01",
     company: "Acme",
-    id: "application-1",
+    id: APPLICATION_ID,
     location: "Remote",
     nextInterviewDate: "2026-08-15",
     resumeFilename: RESUME_FILENAME,
@@ -126,7 +128,8 @@ beforeEach(() => {
 
 describe("resume endpoint", () => {
   it("streams the authenticated application resume from R2", async () => {
-    const data = new TextEncoder().encode("%PDF-1.7");
+    const encoder = new TextEncoder();
+    const data = encoder.encode("%PDF-1.7");
     jobApplications.jobResumes.get.mockResolvedValue({
       body: new ReadableStream({
         start(controller) {
@@ -144,7 +147,7 @@ describe("resume endpoint", () => {
           return { value: SESSION };
         }
       },
-      params: { id: "application-1" }
+      params: { id: APPLICATION_ID }
     });
 
     expect(response.status).toBe(200);
@@ -158,16 +161,16 @@ describe("resume endpoint", () => {
     );
   });
 
-  it.each([undefined, null])(
-    "rejects an unauthenticated request",
-    async (session) => {
+  it.each([undefined, "{malformed"])(
+    "rejects an unauthenticated request %j",
+    async (cookie) => {
       const response = await getResume({
         cookies: {
           get: () => {
-            return session ? { value: session } : undefined;
+            return isNil(cookie) ? undefined : { value: cookie };
           }
         },
-        params: { id: "application-1" }
+        params: { id: APPLICATION_ID }
       });
 
       expect(response.status).toBe(302);
