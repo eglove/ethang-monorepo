@@ -131,7 +131,7 @@ const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
                                     <th class="px-4 py-3">Company</th>
                                     <th class="px-4 py-3">Title</th>
                                     <th class="px-4 py-3">Applied date</th>
-                                    <th class="px-4 py-3">Location</th>
+                                    <th class="px-4 py-3">Resume</th>
                                     <th class="px-4 py-3">Salary</th>
                                     <th class="px-4 py-3">Next interview</th>
                                     <th class="px-4 py-3">Status</th>
@@ -157,8 +157,17 @@ const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
                                             )}
                                         </td>
                                         <td class="px-4 py-4 text-night-owl-muted">
-                                            {formatApplicationValue(
-                                                application.location,
+                                            {application.resumeFilename ? (
+                                                <a
+                                                    href={`/applications/${application.id}/resume`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="text-primary hover:text-primary/80"
+                                                >
+                                                    {application.resumeFilename}
+                                                </a>
+                                            ) : (
+                                                "—"
                                             )}
                                         </td>
                                         <td class="px-4 py-4 text-night-owl-muted">

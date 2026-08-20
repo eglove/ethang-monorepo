@@ -8,6 +8,13 @@
   "compatibility_flags": ["global_fetch_strictly_public"],
   "main": "@astrojs/cloudflare/entrypoints/server",
   "name": "ethang-astro",
+  "r2_buckets": [
+    {
+      "binding": "jobResumes",
+      "bucket_name": "job-resumes",
+      "preview_bucket_name": "job-resumes-preview"
+    }
+  ],
   "observability": {
     "enabled": true
   },

@@ -6,14 +6,28 @@ const jobApplications = vi.hoisted(() => {
   return {
     listApplications: vi.fn(),
     updateApplication: vi.fn(),
+    jobResumes: { get: vi.fn() },
   };
 });
 
 vi.mock("cloudflare:workers", () => {
-  return { env: { job_applications: jobApplications } };
+  return {
+    env: {
+      job_applications: jobApplications,
+      jobResumes: jobApplications.jobResumes,
+    },
+  };
 });
 
 import Applications from "../pages/applications.astro";
+type ResumeContext = Parameters<
+  typeof import("../pages/applications/[id]/resume.ts").GET
+>[0];
+
+const getResume = async (context: ResumeContext) => {
+  const module = await import("../pages/applications/[id]/resume.ts");
+  return module.GET(context);
+};
 
 const APPLICATIONS_URL = "https://ethang.dev/applications";
 const APPLICATION_URL = "https://acme.example/jobs/1";
@@ -108,10 +122,58 @@ const makeApplication = (overrides: Partial<Application> = {}) => {
 
 beforeEach(() => {
   jobApplications.listApplications.mockReset();
+  jobApplications.jobResumes.get.mockReset();
   jobApplications.listApplications.mockResolvedValue({
     ok: true,
     value: { items: [], nextCursor: null },
   });
+});
+
+describe("resume endpoint", () => {
+  it("streams the authenticated application resume from R2", async () => {
+    const data = new TextEncoder().encode("%PDF-1.7");
+    jobApplications.jobResumes.get.mockResolvedValue({
+      body: new ReadableStream({
+        start(controller) {
+          controller.enqueue(data);
+          controller.close();
+        },
+      }),
+      customMetadata: { filename: RESUME_FILENAME },
+      httpMetadata: { contentType: "application/pdf" },
+    });
+
+    const response = await getResume({
+      cookies: { get: () => ({ value: SESSION }) },
+      params: { id: "application-1" },
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("application/pdf");
+    expect(response.headers.get("content-disposition")).toContain(
+      RESUME_FILENAME,
+    );
+    expect(await response.text()).toBe("%PDF-1.7");
+    expect(jobApplications.jobResumes.get).toHaveBeenCalledWith(
+      `ada@example.com/application-1`,
+    );
+  });
+
+  it.each([undefined, null])(
+    "rejects an unauthenticated request",
+    async (session) => {
+      const response = await getResume({
+        cookies: { get: () => (session ? { value: session } : undefined) },
+        params: { id: "application-1" },
+      } as never);
+
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe(
+        "/login?redirect=%2Fapplications",
+      );
+      expect(jobApplications.jobResumes.get).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe("applications page authentication", () => {
@@ -213,7 +275,7 @@ describe("applications page rendering", () => {
       "Company",
       "Title",
       "Applied date",
-      "Location",
+      "Resume",
       "Salary",
       "Next interview",
       "Status",
@@ -239,8 +301,9 @@ describe("applications page rendering", () => {
     expect(html).toContain("Aug 1, 2026");
     expect(html).toContain("Aug 15, 2026");
     expect(html).toContain(`href="${APPLICATION_URL}"`);
-    expect(html).not.toContain('href="/applications/application-1/resume"');
-    expect(html).not.toContain(RESUME_FILENAME);
+    expect(html).toContain('href="/applications/application-1/resume"');
+    expect(html).toContain(RESUME_FILENAME);
+    expect(html).not.toContain('<th class="px-4 py-3">Location</th>');
   });
 
   it("wires each row form to the status action and preserves the cursor", async () => {
