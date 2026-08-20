@@ -4,9 +4,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const jobApplications = vi.hoisted(() => {
   return {
-    listApplications: vi.fn(),
-    updateApplication: vi.fn(),
     jobResumes: { get: vi.fn() },
+    listApplications: vi.fn(),
+    updateApplication: vi.fn()
   };
 });
 
@@ -14,8 +14,8 @@ vi.mock("cloudflare:workers", () => {
   return {
     env: {
       job_applications: jobApplications,
-      jobResumes: jobApplications.jobResumes,
-    },
+      jobResumes: jobApplications.jobResumes
+    }
   };
 });
 
@@ -38,7 +38,7 @@ const TOKEN = "token";
 const SESSION = JSON.stringify({
   email: "ada@example.com",
   sessionToken: TOKEN,
-  username: "ada",
+  username: "ada"
 });
 
 const renderResponse = async (url: string, session = SESSION) => {
@@ -47,7 +47,7 @@ const renderResponse = async (url: string, session = SESSION) => {
     "" === session
       ? new Request(url)
       : new Request(url, {
-          headers: { Cookie: `session=${encodeURIComponent(session)}` },
+          headers: { Cookie: `session=${encodeURIComponent(session)}` }
         });
   return container.renderToResponse(Applications as never, { request });
 };
@@ -75,13 +75,13 @@ const renderActionResult = async (actionResult: {
       locals: {
         _actionPayload: {
           actionName: actionSearchParams.get("_action") ?? "",
-          actionResult,
-        },
+          actionResult
+        }
       },
       request: new Request(`${APPLICATIONS_URL}?after=current-1`, {
-        headers: { Cookie: `session=${encodeURIComponent(SESSION)}` },
-      }),
-    } as never,
+        headers: { Cookie: `session=${encodeURIComponent(SESSION)}` }
+      })
+    } as never
   );
 };
 
@@ -95,12 +95,7 @@ type Application = {
   resumeFilename?: null | string;
   salary?: null | string;
   status:
-    | "applied"
-    | "interview"
-    | "offer"
-    | "rejected"
-    | "screening"
-    | "withdrawn";
+    "applied" | "interview" | "offer" | "rejected" | "screening" | "withdrawn";
   title?: null | string;
 };
 
@@ -116,7 +111,7 @@ const makeApplication = (overrides: Partial<Application> = {}) => {
     salary: "$120,000",
     status: "screening",
     title: "Engineer",
-    ...overrides,
+    ...overrides
   };
 };
 
@@ -125,7 +120,7 @@ beforeEach(() => {
   jobApplications.jobResumes.get.mockReset();
   jobApplications.listApplications.mockResolvedValue({
     ok: true,
-    value: { items: [], nextCursor: null },
+    value: { items: [], nextCursor: null }
   });
 });
 
@@ -137,25 +132,29 @@ describe("resume endpoint", () => {
         start(controller) {
           controller.enqueue(data);
           controller.close();
-        },
+        }
       }),
       customMetadata: { filename: RESUME_FILENAME },
-      httpMetadata: { contentType: "application/pdf" },
+      httpMetadata: { contentType: "application/pdf" }
     });
 
     const response = await getResume({
-      cookies: { get: () => ({ value: SESSION }) },
-      params: { id: "application-1" },
-    } as never);
+      cookies: {
+        get: () => {
+          return { value: SESSION };
+        }
+      },
+      params: { id: "application-1" }
+    });
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/pdf");
     expect(response.headers.get("content-disposition")).toContain(
-      RESUME_FILENAME,
+      RESUME_FILENAME
     );
     expect(await response.text()).toBe("%PDF-1.7");
     expect(jobApplications.jobResumes.get).toHaveBeenCalledWith(
-      `ada@example.com/application-1`,
+      `ada@example.com/application-1`
     );
   });
 
@@ -163,16 +162,20 @@ describe("resume endpoint", () => {
     "rejects an unauthenticated request",
     async (session) => {
       const response = await getResume({
-        cookies: { get: () => (session ? { value: session } : undefined) },
-        params: { id: "application-1" },
-      } as never);
+        cookies: {
+          get: () => {
+            return session ? { value: session } : undefined;
+          }
+        },
+        params: { id: "application-1" }
+      });
 
       expect(response.status).toBe(302);
       expect(response.headers.get("location")).toBe(
-        "/login?redirect=%2Fapplications",
+        "/login?redirect=%2Fapplications"
       );
       expect(jobApplications.jobResumes.get).not.toHaveBeenCalled();
-    },
+    }
   );
 });
 
@@ -184,17 +187,17 @@ describe("applications page authentication", () => {
 
       expect(response.status).toBe(302);
       expect(response.headers.get("location")).toBe(
-        "/login?redirect=%2Fapplications",
+        "/login?redirect=%2Fapplications"
       );
       expect(jobApplications.listApplications).not.toHaveBeenCalled();
-    },
+    }
   );
 });
 
 describe("applications page loading", () => {
   it("preserves the worker receiver when loading applications", async () => {
     jobApplications.listApplications.mockImplementation(async function (
-      this: typeof jobApplications,
+      this: typeof jobApplications
     ) {
       if (this !== jobApplications) {
         throw new Error("Worker receiver was lost");
@@ -202,7 +205,7 @@ describe("applications page loading", () => {
 
       return {
         ok: true,
-        value: { items: [makeApplication()], nextCursor: null },
+        value: { items: [makeApplication()], nextCursor: null }
       };
     });
 
@@ -214,7 +217,7 @@ describe("applications page loading", () => {
   it("loads 25 applications with the session token and cursor", async () => {
     jobApplications.listApplications.mockResolvedValue({
       ok: true,
-      value: { items: [makeApplication()], nextCursor: "next-1" },
+      value: { items: [makeApplication()], nextCursor: "next-1" }
     });
 
     const html = await render(`${APPLICATIONS_URL}?after=current-1`);
@@ -223,7 +226,7 @@ describe("applications page loading", () => {
       after: "current-1",
       first: 25,
       status: null,
-      token: TOKEN,
+      token: TOKEN
     });
     expect(html).toContain("Acme");
     expect(html).toContain('href="/applications?after=next-1"');
@@ -237,16 +240,16 @@ describe("applications page loading", () => {
       after: null,
       first: 25,
       status: null,
-      token: TOKEN,
+      token: TOKEN
     });
   });
 
   it.each([
     {
       error: { code: "INTERNAL", message: BACKEND_ERROR },
-      ok: false,
+      ok: false
     },
-    new Error(BACKEND_ERROR),
+    new Error(BACKEND_ERROR)
   ])("renders a safe error when listing fails", async (failure) => {
     if (Error.isError(failure)) {
       jobApplications.listApplications.mockRejectedValue(failure);
@@ -266,7 +269,7 @@ describe("applications page rendering", () => {
   it("renders the approved columns, status options, values, and links", async () => {
     jobApplications.listApplications.mockResolvedValue({
       ok: true,
-      value: { items: [makeApplication()], nextCursor: null },
+      value: { items: [makeApplication()], nextCursor: null }
     });
 
     const html = await render(APPLICATIONS_URL);
@@ -279,7 +282,7 @@ describe("applications page rendering", () => {
       "Salary",
       "Next interview",
       "Status",
-      "Actions",
+      "Actions"
     ]) {
       expect(html).toContain(header);
     }
@@ -290,13 +293,13 @@ describe("applications page rendering", () => {
       "interview",
       "offer",
       "rejected",
-      "withdrawn",
+      "withdrawn"
     ]) {
       expect(html).toContain(`<option value="${status}"`);
     }
 
     expect(html).toContain(
-      '<option value="screening" selected>screening</option>',
+      '<option value="screening" selected>screening</option>'
     );
     expect(html).toContain("Aug 1, 2026");
     expect(html).toContain("Aug 15, 2026");
@@ -312,22 +315,22 @@ describe("applications page rendering", () => {
       value: {
         items: [
           makeApplication({ id: "application-1" }),
-          makeApplication({ id: "application-2", status: "offer" }),
+          makeApplication({ id: "application-2", status: "offer" })
         ],
-        nextCursor: null,
-      },
+        nextCursor: null
+      }
     });
 
     const html = await render(`${APPLICATIONS_URL}?after=current-1`);
 
     expect(
       html.match(
-        /<form method="POST" action="[^"]*updateApplicationStatus[^"]*"/gu,
-      ),
+        /<form method="POST" action="[^"]*updateApplicationStatus[^"]*"/gu
+      )
     ).toHaveLength(2);
     expect(html.match(/name="after" value="current-1"/gu)).toHaveLength(2);
     expect(html).toContain(
-      'action="?_action=updateApplicationStatus&amp;after=current-1"',
+      'action="?_action=updateApplicationStatus&amp;after=current-1"'
     );
     expect(html).toContain('name="id" value="application-1"');
     expect(html).toContain('name="id" value="application-2"');
@@ -339,8 +342,8 @@ describe("applications page rendering", () => {
       ok: true,
       value: {
         items: [makeApplication({ applicationUrl: UNSAFE_APPLICATION_URL })],
-        nextCursor: null,
-      },
+        nextCursor: null
+      }
     });
 
     const html = await render(APPLICATIONS_URL);
@@ -354,12 +357,12 @@ describe("applications page rendering", () => {
       body: '[{"success":1},true]',
       contentType: "application/json+devalue",
       status: 200,
-      type: "data",
+      type: "data"
     });
 
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe(
-      "/applications?after=current-1",
+      "/applications?after=current-1"
     );
   });
 
@@ -368,11 +371,11 @@ describe("applications page rendering", () => {
       body: JSON.stringify({
         code: "INTERNAL_SERVER_ERROR",
         message: "Unable to update application.",
-        type: "AstroActionError",
+        type: "AstroActionError"
       }),
       contentType: "application/json",
       status: 500,
-      type: "error",
+      type: "error"
     });
     const html = await response.text();
 
@@ -383,7 +386,7 @@ describe("applications page rendering", () => {
       after: "current-1",
       first: 25,
       status: null,
-      token: TOKEN,
+      token: TOKEN
     });
   });
 
@@ -400,11 +403,11 @@ describe("applications page rendering", () => {
             nextInterviewDate: null,
             resumeFilename: null,
             salary: null,
-            title: null,
-          }),
+            title: null
+          })
         ],
-        nextCursor: null,
-      },
+        nextCursor: null
+      }
     });
 
     const html = await render(APPLICATIONS_URL);
@@ -419,7 +422,7 @@ describe("applications page rendering", () => {
   it("does not add applications to the navigation links", async () => {
     jobApplications.listApplications.mockResolvedValue({
       ok: true,
-      value: { items: [], nextCursor: null },
+      value: { items: [], nextCursor: null }
     });
 
     const html = await render(APPLICATIONS_URL);

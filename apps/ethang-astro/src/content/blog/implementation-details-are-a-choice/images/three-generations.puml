@@ -1,0 +1,23 @@
+@startuml three-generations
+left to right direction
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName Inter
+skinparam component {
+  BackgroundColor #0f1b2d
+  BorderColor #7dd3fc
+  FontColor #e0f2fe
+}
+
+component "Automated proof\nTests + static analysis" as Proof
+component "Continuous delivery\nMainline + feedback" as Delivery
+component "AI-assisted implementation\nMore choices, faster" as AI
+rectangle "Proven business behavior\nImplementation remains replaceable" as Outcome #172554
+
+Proof --> Delivery : checks every change
+Delivery --> AI : safe surface for production
+AI --> Proof : generated work returns\nfor verification
+Delivery --> Outcome
+Proof --> Outcome
+AI --> Outcome
+@enduml

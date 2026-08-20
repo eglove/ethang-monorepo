@@ -5,7 +5,7 @@ describe("Astro R2 configuration", () => {
   it("uses the remote resume bucket during local development", async () => {
     const config = await readFile(
       new URL("../../wrangler.jsonc", import.meta.url),
-      "utf8",
+      "utf8"
     );
 
     expect(config).toContain('"binding": "jobResumes"');
