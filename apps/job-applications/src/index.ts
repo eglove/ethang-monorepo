@@ -32,7 +32,7 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
       Effect.gen(function* () {
         const input = yield* decodeInput(
           CreateApplicationInputSchema,
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         return yield* createApplication({
@@ -45,9 +45,9 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
           notes: input.notes ?? null,
           salary: input.salary ?? null,
           status: input.status ?? null,
-          title: input.title
+          title: input.title,
         });
-      })
+      }),
     );
   }
 
@@ -58,13 +58,13 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
         const input = yield* decodeInput(
           Schema.Struct({
             id: Schema.NonEmptyString,
-            token: Schema.NonEmptyString
+            token: Schema.NonEmptyString,
           }),
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         return yield* cycleStatus(input.id, email);
-      })
+      }),
     );
   }
 
@@ -75,13 +75,13 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
         const input = yield* decodeInput(
           Schema.Struct({
             id: Schema.NonEmptyString,
-            token: Schema.NonEmptyString
+            token: Schema.NonEmptyString,
           }),
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         return yield* deleteApplication(input.id, email);
-      })
+      }),
     );
   }
 
@@ -96,13 +96,13 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
         const input = yield* decodeInput(
           Schema.Struct({
             id: Schema.NonEmptyString,
-            token: Schema.NonEmptyString
+            token: Schema.NonEmptyString,
           }),
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         return yield* getApplication(input.id, email);
-      })
+      }),
     );
   }
 
@@ -113,13 +113,13 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
         const input = yield* decodeInput(
           Schema.Struct({
             id: Schema.NonEmptyString,
-            token: Schema.NonEmptyString
+            token: Schema.NonEmptyString,
           }),
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         return yield* getResume(input.id, email);
-      })
+      }),
     );
   }
 
@@ -129,7 +129,7 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
       Effect.gen(function* () {
         const input = yield* decodeInput(
           ListApplicationsParamsSchema,
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         const first = clamp(input.first, 1, 100);
@@ -137,9 +137,9 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
           after: input.after ?? null,
           email,
           first,
-          status: input.status ?? null
+          status: input.status ?? null,
         });
-      })
+      }),
     );
   }
 
@@ -149,12 +149,12 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
       Effect.gen(function* () {
         const input = yield* decodeInput(
           UpdateApplicationChangesSchema,
-          parameters
+          parameters,
         );
         const { id, token, ...changes } = input;
         const email = yield* verify(token);
         return yield* updateApplication(id, email, changes);
-      })
+      }),
     );
   }
 
@@ -167,18 +167,18 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
             data: Schema.instanceOf(ArrayBuffer),
             filename: Schema.NonEmptyString,
             id: Schema.NonEmptyString,
-            token: Schema.NonEmptyString
+            token: Schema.NonEmptyString,
           }),
-          parameters
+          parameters,
         );
         const email = yield* verify(input.token);
         return yield* uploadResume({
           data: input.data,
           email,
           filename: input.filename,
-          id: input.id
+          id: input.id,
         });
-      })
+      }),
     );
   }
 
@@ -186,12 +186,12 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
     return Layer.mergeAll(
       createJobApplicationRepositoryLayer(this.env.jobApplications),
       createResumeStoreLayer(this.env.jobResumes),
-      createTokenVerifierLayer(this.env["token-auth"])
+      createTokenVerifierLayer(this.env["token-auth"]),
     );
   };
 
   private readonly run = async <A, E>(
-    program: Effect.Effect<A, E, Services>
+    program: Effect.Effect<A, E, Services>,
   ) => {
     const layer = this.layer();
     const result = toResult(program).pipe(Effect.provide(layer));
