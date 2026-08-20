@@ -13,8 +13,7 @@ import { resolveLoginRedirect } from "../lib/login.ts";
 import {
   addFeed as addFeedProgram,
   markArticleRead as markArticleReadProgram,
-  removeFeed as removeFeedProgram,
-  type RssWorker
+  removeFeed as removeFeedProgram
 } from "../lib/rss.ts";
 import { decodeSessionCookie } from "../lib/session.ts";
 
@@ -51,9 +50,7 @@ export const server = {
         return { error: "Unauthorized" };
       }
 
-      // The legacy RSS helper expects a structural worker shape that predates generated bindings.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
-      return addFeedProgram(env.ethang_rss as unknown as RssWorker, {
+      return addFeedProgram(env.ethang_rss, {
         sessionToken: userSession.sessionToken,
         xmlAddress: input.xmlUrl
       });
@@ -72,8 +69,7 @@ export const server = {
         return { error: "Unauthorized" };
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
-      return markArticleReadProgram(env.ethang_rss as unknown as RssWorker, {
+      return markArticleReadProgram(env.ethang_rss, {
         articleId: input.articleId,
         isRead: true,
         sessionToken: userSession.sessionToken
@@ -93,8 +89,7 @@ export const server = {
         return { error: "Unauthorized" };
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
-      return removeFeedProgram(env.ethang_rss as unknown as RssWorker, {
+      return removeFeedProgram(env.ethang_rss, {
         feedId: input.feedId,
         sessionToken: userSession.sessionToken
       });
