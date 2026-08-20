@@ -14,14 +14,14 @@ import {
   addFeed as addFeedProgram,
   markArticleRead as markArticleReadProgram,
   removeFeed as removeFeedProgram,
-  type RssWorker
+  type RssWorker,
 } from "../lib/rss.ts";
 import { decodeSessionCookie } from "../lib/session.ts";
 
 const UserSchema = Schema.Struct({
   email: Schema.String,
   sessionToken: Schema.String,
-  username: Schema.String
+  username: Schema.String,
 });
 
 type SignInResult =
@@ -55,12 +55,12 @@ export const server = {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
       return addFeedProgram(env.ethang_rss as unknown as RssWorker, {
         sessionToken: userSession.sessionToken,
-        xmlAddress: input.xmlUrl
+        xmlAddress: input.xmlUrl,
       });
     },
     input: z.object({
-      xmlUrl: z.url("Please enter a valid URL")
-    })
+      xmlUrl: z.url("Please enter a valid URL"),
+    }),
   }),
 
   markArticleRead: defineAction({
@@ -76,12 +76,12 @@ export const server = {
       return markArticleReadProgram(env.ethang_rss as unknown as RssWorker, {
         articleId: input.articleId,
         isRead: true,
-        sessionToken: userSession.sessionToken
+        sessionToken: userSession.sessionToken,
       });
     },
     input: z.object({
-      articleId: z.string().min(1, "Article is required")
-    })
+      articleId: z.string().min(1, "Article is required"),
+    }),
   }),
 
   removeFeed: defineAction({
@@ -96,12 +96,12 @@ export const server = {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- adapter boundary for the existing RSS helper
       return removeFeedProgram(env.ethang_rss as unknown as RssWorker, {
         feedId: input.feedId,
-        sessionToken: userSession.sessionToken
+        sessionToken: userSession.sessionToken,
       });
     },
     input: z.object({
-      feedId: z.string().min(1, "Feed is required")
-    })
+      feedId: z.string().min(1, "Feed is required"),
+    }),
   }),
 
   signIn: defineAction({
@@ -117,17 +117,17 @@ export const server = {
               return fetch("https://auth.ethang.dev/sign-in", {
                 body: JSON.stringify({
                   email: input.email,
-                  password: input.password
+                  password: input.password,
                 }),
                 headers: { "Content-Type": "application/json" },
-                method: "POST"
+                method: "POST",
               });
-            }
+            },
           });
 
           if (!response.ok) {
             return yield* Effect.succeed({
-              failure: new Error("Invalid Credentials")
+              failure: new Error("Invalid Credentials"),
             });
           }
 
@@ -137,7 +137,7 @@ export const server = {
             },
             try: async () => {
               return response.json();
-            }
+            },
           });
 
           // Validate the auth response using Effect Schema
@@ -147,7 +147,7 @@ export const server = {
             },
             try: () => {
               return Schema.decodeUnknownSync(UserSchema)(rawJson);
-            }
+            },
           });
 
           if (
@@ -156,7 +156,7 @@ export const server = {
             !isString(decoded.username)
           ) {
             return yield* Effect.succeed({
-              failure: new Error("Invalid response from server")
+              failure: new Error("Invalid response from server"),
             });
           }
 
@@ -165,17 +165,17 @@ export const server = {
             httpOnly: true,
             maxAge: 60 * 60 * 24 * 7,
             path: "/",
-            sameSite: "lax"
+            sameSite: "lax",
           });
 
           return yield* Effect.succeed({ success: decoded });
         }).pipe(
           Effect.catchAll((error: unknown) => {
             return Effect.succeed({
-              failure: Error.isError(error) ? error : new Error(String(error))
+              failure: Error.isError(error) ? error : new Error(String(error)),
             });
-          })
-        )
+          }),
+        ),
       );
 
       if ("failure" in signInResult && Error.isError(signInResult.failure)) {
@@ -186,15 +186,15 @@ export const server = {
       return {
         data: {
           redirect: resolveLoginRedirect(input.redirect),
-          username: decodedUser?.username ?? ""
-        }
+          username: decodedUser?.username ?? "",
+        },
       };
     },
     input: z.object({
       email: z.email({ message: "Invalid email address" }),
       password: z.string().min(1, "Password is required"),
-      redirect: z.string().optional()
-    })
+      redirect: z.string().optional(),
+    }),
   }),
 
   signOut: defineAction({
@@ -204,7 +204,7 @@ export const server = {
       context.cookies.delete("session", { path: "/" });
 
       return { success: true };
-    }
+    },
   }),
 
   updateApplicationStatus: defineAction({
@@ -215,14 +215,14 @@ export const server = {
       if (isNil(userSession)) {
         return rejectActionError({
           code: "UNAUTHORIZED",
-          message: "Unauthorized"
+          message: "Unauthorized",
         });
       }
 
       if (!isApplicationStatus(input.status)) {
         return rejectActionError({
           code: "BAD_REQUEST",
-          message: "Invalid application status"
+          message: "Invalid application status",
         });
       }
 
@@ -230,14 +230,14 @@ export const server = {
         .updateApplication({
           id: input.id,
           status: input.status,
-          token: userSession.sessionToken
+          token: userSession.sessionToken,
         })
         .catch(constant(null));
 
       if (isNil(result) || !result.ok) {
         return rejectActionError({
           code: "INTERNAL_SERVER_ERROR",
-          message: "Unable to update application."
+          message: "Unable to update application.",
         });
       }
 
@@ -252,8 +252,8 @@ export const server = {
         "interview",
         "offer",
         "rejected",
-        "withdrawn"
-      ])
-    })
-  })
+        "withdrawn",
+      ]),
+    }),
+  }),
 };

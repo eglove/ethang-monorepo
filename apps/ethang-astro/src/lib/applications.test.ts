@@ -8,7 +8,7 @@ import {
   formatApplicationValue,
   isApplicationStatus,
   isSafeApplicationUrl,
-  parseApplicationCursor
+  parseApplicationCursor,
 } from "./applications.ts";
 
 const HTTP_APPLICATION_URL = ["http", "://acme.example/jobs/1"].join("");
@@ -21,7 +21,7 @@ describe("parseApplicationCursor", () => {
     ["", null],
     [repeat(" ", 3), null],
     ["cursor-1", "cursor-1"],
-    ["  cursor-1  ", "cursor-1"]
+    ["  cursor-1  ", "cursor-1"],
   ])("parses cursor %j as %j", (input, expected) => {
     expect(parseApplicationCursor(input)).toBe(expected);
   });
@@ -38,7 +38,7 @@ describe("isApplicationStatus", () => {
     ["rejected", true],
     ["withdrawn", true],
     ["unknown", false],
-    [1, false]
+    [1, false],
   ])("validates status %j", (input, expected) => {
     expect(isApplicationStatus(input)).toBe(expected);
   });
@@ -49,7 +49,7 @@ describe("formatApplicationValue", () => {
     [undefined, "—"],
     [null, "—"],
     ["", "—"],
-    ["Acme", "Acme"]
+    ["Acme", "Acme"],
   ])("formats optional value %j", (input, expected) => {
     expect(formatApplicationValue(input)).toBe(expected);
   });
@@ -61,7 +61,7 @@ describe("formatApplicationDate", () => {
     [null, "—"],
     ["", "—"],
     ["not-a-date", "not-a-date"],
-    ["2026-08-01", "Aug 1, 2026"]
+    ["2026-08-01", "Aug 1, 2026"],
   ])("formats date %j as %j", (input, expected) => {
     expect(formatApplicationDate(input)).toBe(expected);
   });
@@ -77,7 +77,7 @@ describe("safe application URLs", () => {
     ["not-a-url", false],
     [String.raw`https:\\evil.example`, false],
     [null, false],
-    [undefined, false]
+    [undefined, false],
   ])("validates %j as %j", (value, expected) => {
     expect(isSafeApplicationUrl(value)).toBe(expected);
   });
@@ -88,7 +88,7 @@ describe("application paths", () => {
     expect(applicationsLoginRedirect()).toBe("/login?redirect=%2Fapplications");
     expect(applicationsPagePath(null)).toBe("/applications");
     expect(applicationsPagePath("a cursor")).toBe(
-      "/applications?after=a%20cursor"
+      "/applications?after=a%20cursor",
     );
   });
 });
