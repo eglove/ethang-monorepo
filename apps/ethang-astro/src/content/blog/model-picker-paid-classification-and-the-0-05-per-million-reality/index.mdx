@@ -1,0 +1,208 @@
+---
+blogCategory: "Engineering"
+featuredImage: ./images/featured.jpg
+featuredImageAlt: "A terminal window showing a model-picker status line with price tags and routing decisions, evoking budget-conscious model selection."
+description: "The model-picker extension ditched free classification models for paid ones, added per-endpoint pricing with provider discounts, and pinned the cheapest reliable endpoint per request. After 24 hours of real usage: 191 million tokens, $9.85 total, $0.05 per million. Every token routed through a paid model. No free routers. No rate limits."
+pubDate: "2026-08-21T12:00:00Z"
+slug: "model-picker-paid-classification-and-the-0-05-per-million-reality"
+title: "Model Picker: Paid Classification and the $0.05 Per Million Reality"
+updatedDate: "2026-08-21T12:00:00Z"
+---
+
+import Blockquote from "../../../components/ui/Blockquote.astro";
+import PostImage from "../../../components/ui/PostImage.astro";
+import Heading from "../../../components/ui/Heading.astro";
+
+This is part two in a series. If you haven't read [part one](/blog/model-picker-building-a-model-router-that-actually-respects-your-budget), it covers the architecture, the hard gates, and the fallback chain this post builds on.
+
+<Heading as="h2">Free Was a Liability</Heading>
+
+The original design asked free models to classify every prompt and pick every route. The logic was clean: let the ecosystem’s best free structured-output model be the judge, and it’ll improve automatically as OpenRouter adds better ones.
+
+A day of real traffic exposed the problem. Free models rate-limit. They time out. They return nonsense when the provider’s shared compute gets slammed. When the classifier fails, the whole picker degrades — and degrading too often means you’re back to `openrouter/auto`, which is exactly what the extension exists to replace.
+
+So the design flipped. The classifier no longer uses free models. It uses the cheapest paid model that supports structured outputs, resolved from the live catalog every hour.
+
+<Heading as="h2">The New Classification Pipeline</Heading>
+
+Every hour, a resolution step queries the OpenRouter catalog and filters for non-free models that support structured outputs and cost at or below the configured cap. The cheapest one wins. Tiebreaks go to context length, then intelligence index. The result is cached so the catalog isn’t hammered on every request.
+
+If the catalog is unreachable, or no qualifying model exists, the fallback is the same as before: OpenAI’s auto-router with plain text, then keyword matching. But the happy path is now a paid model that costs a fraction of a cent per classification.
+
+Here’s what the classification decision looks like in practice:
+
+```json
+{
+  "method": "structured",
+  "model": "inclusionai/ling-2.6-flash",
+  "taskType": "agentic",
+  "prompt": "orchestrate several subagents"
+}
+```
+
+A prompt about subagent orchestration hits the paid classifier, runs through structured output, and returns `agentic` in a single field. The classification itself costs roughly $0.00002. Reliable. Repeatable. No rate limits.
+
+When the structured output path fails — the model returns malformed JSON, the network drops, the provider rate-limits — the extension steps down through a chain: next cheapest paid model, then `openrouter/free` plain text, then keyword matching. Every degradation is logged so you can see exactly where and why:
+
+```json
+{
+  "method": "keyword",
+  "taskType": "coding",
+  "prompt": "fix the bug in src/app.ts"
+}
+```
+
+```json
+{
+  "level": "warn",
+  "event": "classify: LLM failed, using keywords",
+  "error": "Error: network down"
+}
+```
+
+<Heading as="h2">Endpoints Changed the Price Math</Heading>
+
+The original picker looked at a model’s list price and decided. That was naive. OpenRouter exposes per-provider endpoints for every model — and those endpoints carry discounts.
+
+One provider might serve a model at the full list price. Another, like DigitalOcean or a shared-compute provider, might serve the same model at a discount of several cents per million tokens. The extension now fetches those endpoints and uses the *effective* price: list price minus the provider’s discount, floored at zero.
+
+It also gates on throughput. An endpoint has to sustain at least 20 tokens per second at the median to qualify. A model that’s technically cheap but served through a crawling provider won’t make the cut.
+
+The result isn’t just “pick the cheapest model.” It’s “pick the cheapest *endpoint* that’s fast enough to not slow you down.”
+
+```typescript
+function effectiveInputPrice(model, config) {
+  if (!config.useDiscount || !model.endpoints) {
+    return model.listPrice;
+  }
+  const qualifying = model.endpoints
+    .filter(e => e.tps_p50 >= config.minTps)
+    .map(e => Math.max(0, e.listPrice - e.discount));
+  return qualifying.length > 0 ? Math.min(...qualifying) : undefined;
+}
+```
+
+<Heading as="h2">Provider Pinning</Heading>
+
+Once the picker selects a model, it doesn’t stop there. It also selects the best *provider* for that model — the one with the cheapest discounted endpoint that meets the throughput threshold. That provider tag gets pinned into the request so OpenRouter doesn’t route to a more expensive endpoint behind your back.
+
+```json
+{
+  "model": "openai/gpt-5.6-luna-pro",
+  "price": 0.10,
+  "bestTag": "openai/flex"
+}
+```
+
+The `bestTag` field tells OpenRouter to prefer a specific provider while still allowing fallbacks if that provider is down. You get the discount when it’s available and the backup when it’s not.
+
+<Heading as="h2">No Free Models, By Default</Heading>
+
+The configuration now defaults `allowFree` to `false`. Free models are excluded from the eligible pool at the gate stage — not because free models are bad, but because their rate limits introduce unpredictability. When you’re running dozens or hundreds of prompts in a session, a single rate-limited free model can cascade into fallback behavior that costs more in wasted time than a paid model costs in tokens.
+
+Every model in the eligible pool is a paid model with fixed, predictable pricing. No variable pricing. No free tiers. No batch-only models. Just reliable, budgeted throughput.
+
+<Heading as="h2">24 Hours, 191 Million Tokens, $9.85</Heading>
+
+Here’s the number that validates the whole design.
+
+Over a 24-hour window of real usage — classification, picking, rewriting, and actual prompt execution — the extension routed 191 million tokens. The total cost was $9.85. That’s $0.05 per million tokens.
+
+No free routers were used. Every token went through a paid model. The classification and picking overhead was negligible — a few hundred tokens per request, costing fractions of a cent, to save dollars on the actual execution.
+
+To put that in perspective: if those same prompts had hit `openrouter/auto` and landed on Claude Opus for even 10% of the traffic, the bill would be an order of magnitude higher. Opus costs $15 per million input tokens. The picker kept 191 million tokens at an average of five cents.
+
+<Heading as="h2">What the Logs Reveal</Heading>
+
+The extension keeps a running ledger of every classification, every pick, every fallback, and every rewrite. For me, that ledger is the closest thing to a test suite that covers the live system — when a real prompt degrades, the log shows exactly which layer caught it and where.
+
+When things are working:
+
+```json
+{
+  "method": "structured",
+  "model": "inclusionai/ling-2.6-flash",
+  "taskType": "coding",
+  "prompt": "write a function that parses JSON"
+}
+```
+
+```json
+{
+  "method": "structured",
+  "model": "inclusionai/ling-2.6-flash",
+  "pick": "openai/gpt-5.6-luna-pro",
+  "eligibleCount": 23
+}
+```
+
+When the cheapest model can’t resolve — catalog down, provider error, or no qualifying models at the cap — the extension logs the failure and tries the next:
+
+```json
+{
+  "level": "warn",
+  "event": "best-cheap resolve failed",
+  "error": "Error: boom"
+}
+```
+
+When the classifier gets an unrecognized response from a fallback call, it doesn’t guess — it drops to keywords:
+
+```json
+{
+  "level": "warn",
+  "event": "classify: unrecognized fallback output",
+  "raw": "purple monkey dishwasher"
+}
+```
+
+```json
+{
+  "method": "keyword",
+  "taskType": "coding"
+}
+```
+
+When a model rate-limits, the extension steps down instead of retrying into the same wall:
+
+```json
+{
+  "level": "warn",
+  "event": "pick: model failed, stepping down",
+  "model": "bad-model",
+  "error": "Error: 429 rate limited"
+}
+```
+
+Every fallback is visible. Every degradation leaves a trace. When I'm developing this, the ledger is what tells me whether the fallback chain is holding up under real traffic — without having to read source code to find out.
+
+<Heading as="h2">The Parameter Sanitizer Got Smarter</Heading>
+
+A side-effect of endpoint-aware routing: the extension now strips parameters the chosen model doesn’t support before the request leaves my machine. If the model lists `["tools", "temperature"]` as supported parameters but the prompt payload carries `reasoning_effort`, that field gets dropped. OpenRouter never sees it, the model never rejects it, and you never get a confusing 400 error.
+
+The sanitizer also clamps `max_tokens` to the provider’s limit. A model that advertises 128k context but whose chosen provider caps completions at 16k won’t receive a request asking for 32k tokens.
+
+<Heading as="h2">What Stayed the Same</Heading>
+
+The architecture didn’t change. The extension still hooks three extension points — classify and pick before the agent starts, rewrite the model on each provider request, and auto-disable on provider errors. The fallback chain still degrades gracefully: structured output to plain text to keywords to cheapest-first deterministic pick. The worst case is still `openrouter/auto` behavior.
+
+What changed is the *quality of the happy path*. The classifier is now a paid model that doesn’t rate-limit. The picker now considers per-endpoint discounts and throughput. The eligible pool excludes free models by default. Every rewrite pins a specific provider when a discount is available.
+
+<Heading as="h2">The Principle That Survived</Heading>
+
+The original post ended with six principles. Five held. One evolved:
+
+- **Classify before you route.** Unchanged.
+- **Gate before you pick.** Unchanged.
+- **Use the cheapest adequate model as your judge.** This replaced “use the best free model.” The principle is the same — let the catalog determine the classifier, not a hardcoded ID — but the constraint shifted from “free” to “cheapest paid.” Reliability matters more than a zero on the classification line item.
+- **Fall back, never fail.** Unchanged.
+- **Sanitize the payload.** Strengthened with endpoint-aware parameter stripping.
+- **Auto-disable on provider errors.** Unchanged.
+
+<Heading as="h2">$0.05 Per Million Is the New Baseline</Heading>
+
+The picker isn’t guessing. It isn’t hoping. It’s making structured decisions with paid models, endpoint discounts, provider pinning, and hard budget gates — and the 24-hour receipt proves it works.
+
+191 million tokens. $9.85. No free routers. No rate limits. No surprises.
+
+That’s not a marketing number. It’s the actual log, summed.
