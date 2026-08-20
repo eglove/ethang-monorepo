@@ -1,4 +1,4 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { env } from "cloudflare:workers";
 import { Effect, Schema } from "effect";
@@ -6,11 +6,7 @@ import constant from "lodash/constant.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
-import {
-  applicationsPagePath,
-  isApplicationStatus,
-  parseApplicationCursor
-} from "../lib/applications.ts";
+import { isApplicationStatus } from "../lib/applications.ts";
 import { resolveLoginRedirect } from "../lib/login.ts";
 import {
   addFeed as addFeedProgram,
@@ -211,11 +207,14 @@ export const server = {
       const userSession = getSessionUser(context);
 
       if (isNil(userSession)) {
-        return { error: "Unauthorized" };
+        throw new ActionError({ code: "UNAUTHORIZED", message: "Unauthorized" });
       }
 
       if (!isApplicationStatus(input.status)) {
-        return { error: "Invalid application status" };
+        throw new ActionError({
+          code: "BAD_REQUEST",
+          message: "Invalid application status"
+        });
       }
 
       const result = await env.job_applications
@@ -227,13 +226,13 @@ export const server = {
         .catch(constant(null));
 
       if (isNil(result) || !result.ok) {
-        return { error: "Unable to update application." };
+        throw new ActionError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to update application."
+        });
       }
 
-      return {
-        redirect: applicationsPagePath(parseApplicationCursor(input.after)),
-        success: true
-      };
+      return { success: true };
     },
     input: z.object({
       after: z.string().optional(),

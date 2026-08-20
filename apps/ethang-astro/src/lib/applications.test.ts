@@ -7,8 +7,12 @@ import {
   formatApplicationDate,
   formatApplicationValue,
   isApplicationStatus,
+  isSafeApplicationUrl,
   parseApplicationCursor
 } from "./applications.ts";
+
+const HTTP_APPLICATION_URL = ["http", "://acme.example/jobs/1"].join("");
+const SCRIPT_APPLICATION_URL = ["java", "script:alert(1)"].join("");
 
 describe("parseApplicationCursor", () => {
   it.each([
@@ -60,6 +64,22 @@ describe("formatApplicationDate", () => {
     ["2026-08-01", "Aug 1, 2026"]
   ])("formats date %j as %j", (input, expected) => {
     expect(formatApplicationDate(input)).toBe(expected);
+  });
+});
+
+describe("safe application URLs", () => {
+  it.each([
+    ["https://acme.example/jobs/1", true],
+    [HTTP_APPLICATION_URL, true],
+    [SCRIPT_APPLICATION_URL, false],
+    ["data:text/html,unsafe", false],
+    ["//acme.example/jobs/1", false],
+    ["not-a-url", false],
+    ["https:\\\\evil.example", false],
+    [null, false],
+    [undefined, false]
+  ])("validates %j as %j", (value, expected) => {
+    expect(isSafeApplicationUrl(value)).toBe(expected);
   });
 });
 

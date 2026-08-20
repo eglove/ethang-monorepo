@@ -68,3 +68,14 @@ export const isApplicationStatus = (
     (APPLICATION_STATUSES as readonly string[]).includes(value)
   );
 };
+
+export const isSafeApplicationUrl = (value: null | string | undefined) => {
+  if (!isString(value) || value.includes("\\")) {
+    return false;
+  }
+
+  const parsed = URL.parse(value);
+  return isNil(parsed)
+    ? false
+    : "http:" === parsed.protocol || "https:" === parsed.protocol;
+};

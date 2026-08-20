@@ -11,7 +11,10 @@ export type LoginResult = {
 };
 
 export const resolveLoginRedirect = (value: null | string | undefined) => {
-  return isString(value) && value.startsWith("/") && !value.startsWith("//")
+  return isString(value) &&
+    value.startsWith("/") &&
+    !value.startsWith("//") &&
+    !value.includes("\\")
     ? value
     : "/";
 };

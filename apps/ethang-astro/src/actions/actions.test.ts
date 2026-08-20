@@ -19,7 +19,17 @@ const { addFeed, markArticleRead, removeFeed, updateApplication } = vi.hoisted(
 );
 
 vi.mock("astro:actions", () => {
+  class MockActionError extends Error {
+    code: string;
+
+    constructor(input: { code: string; message: string }) {
+      super(input.message);
+      this.code = input.code;
+    }
+  }
+
   return {
+    ActionError: MockActionError,
     defineAction: <T>(config: { handler: T }) => {
       return config.handler;
     }
@@ -145,26 +155,26 @@ describe("updateApplicationStatus action", () => {
   });
 
   it("rejects an unauthenticated status update", async () => {
-    const result = await call(
-      updateApplicationStatus,
-      { after: "page-2", id: APPLICATION_ID, status: STATUS },
-      { cookies: cookies(null) }
-    );
-
-    expect(result).toEqual({ error: UNAUTHORIZED });
+    await expect(
+      call(
+        updateApplicationStatus,
+        { after: "page-2", id: APPLICATION_ID, status: STATUS },
+        { cookies: cookies(null) }
+      )
+    ).rejects.toMatchObject({ code: "UNAUTHORIZED", message: UNAUTHORIZED });
     expect(updateApplication).not.toHaveBeenCalled();
   });
 
   it.each(["", "unknown", null, "SCREENING"])(
     "rejects invalid status %j",
     async (status) => {
-      const result = await call(
-        updateApplicationStatus,
-        { after: "page-2", id: APPLICATION_ID, status },
-        { cookies: cookies(sessionUser) }
-      );
-
-      expect(result).toEqual({ error: expect.any(String) });
+      await expect(
+        call(
+          updateApplicationStatus,
+          { after: "page-2", id: APPLICATION_ID, status },
+          { cookies: cookies(sessionUser) }
+        )
+      ).rejects.toMatchObject({ code: "BAD_REQUEST" });
       expect(updateApplication).not.toHaveBeenCalled();
     }
   );
@@ -188,16 +198,11 @@ describe("updateApplicationStatus action", () => {
       status,
       token: "token"
     });
-    expect(result).toEqual({ redirect: APPLICATIONS_PATH, success: true });
+    expect(result).toEqual({ success: true });
     updateApplication.mockClear();
   });
 
-  it("updates status and preserves the cursor", async () => {
-    updateApplication.mockResolvedValue({
-      ok: true,
-      value: { id: APPLICATION_ID }
-    });
-
+  it("returns success after updating the application", async () => {
     const result = await call(
       updateApplicationStatus,
       { after: "page-2", id: APPLICATION_ID, status: STATUS },
@@ -209,10 +214,7 @@ describe("updateApplicationStatus action", () => {
       status: STATUS,
       token: "token"
     });
-    expect(result).toEqual({
-      redirect: "/applications?after=page-2",
-      success: true
-    });
+    expect(result).toEqual({ success: true });
   });
 
   it.each([
@@ -225,26 +227,28 @@ describe("updateApplicationStatus action", () => {
       updateApplication.mockResolvedValue(failure);
     }
 
-    const result = await call(
-      updateApplicationStatus,
-      { id: APPLICATION_ID, status: STATUS },
-      { cookies: cookies(sessionUser) }
-    );
-
-    expect(result).toEqual({ error: "Unable to update application." });
-    expect(JSON.stringify(result)).not.toContain(BACKEND_DETAIL);
+    await expect(
+      call(
+        updateApplicationStatus,
+        { id: APPLICATION_ID, status: STATUS },
+        { cookies: cookies(sessionUser) }
+      )
+    ).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Unable to update application."
+    });
   });
 
   it.each(["{malformed", JSON.stringify({ sessionToken: "token" })])(
     "rejects malformed session %j",
     async (session) => {
-      const result = await call(
-        updateApplicationStatus,
-        { id: APPLICATION_ID, status: STATUS },
-        { cookies: cookies(session) }
-      );
-
-      expect(result).toEqual({ error: UNAUTHORIZED });
+      await expect(
+        call(
+          updateApplicationStatus,
+          { id: APPLICATION_ID, status: STATUS },
+          { cookies: cookies(session) }
+        )
+      ).rejects.toMatchObject({ code: "UNAUTHORIZED", message: UNAUTHORIZED });
       expect(updateApplication).not.toHaveBeenCalled();
     }
   );

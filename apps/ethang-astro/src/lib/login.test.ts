@@ -16,6 +16,7 @@ describe("resolveLoginRedirect", () => {
     ],
     ["https://evil.example", DEFAULT_REDIRECT],
     ["//evil.example", DEFAULT_REDIRECT],
+    ["/\\\\evil.example", DEFAULT_REDIRECT],
     ["applications", DEFAULT_REDIRECT]
   ])("resolves login redirect %j", (input, expected) => {
     expect(resolveLoginRedirect(input)).toBe(expected);

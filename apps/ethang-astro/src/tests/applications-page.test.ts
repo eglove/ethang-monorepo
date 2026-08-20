@@ -1,9 +1,11 @@
 import { experimental_AstroContainer as AstroContainer } from "astro/container";
+import { actions } from "astro:actions";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const jobApplications = vi.hoisted(() => {
   return {
-    listApplications: vi.fn()
+    listApplications: vi.fn(),
+    updateApplication: vi.fn()
   };
 });
 
@@ -11,10 +13,12 @@ vi.mock("cloudflare:workers", () => {
   return { env: { job_applications: jobApplications } };
 });
 
+import { server } from "../actions/index.ts";
 import Applications from "../pages/applications.astro";
 
 const APPLICATIONS_URL = "https://ethang.dev/applications";
 const APPLICATION_URL = "https://acme.example/jobs/1";
+const UNSAFE_APPLICATION_URL = ["java", "script:alert(1)"].join("");
 const BACKEND_ERROR = "secret backend detail";
 const RESUME_FILENAME = "resume.pdf";
 const TOKEN = "token";
@@ -38,6 +42,29 @@ const renderResponse = async (url: string, session = SESSION) => {
 const render = async (url: string, session = SESSION) => {
   const response = await renderResponse(url, session);
   return response.text();
+};
+
+const renderActionResult = async (actionResult: {
+  body: string;
+  contentType: string;
+  status: number;
+  type: "data" | "error";
+}) => {
+  const container = await AstroContainer.create();
+  return container.renderToResponse(Applications as never, {
+    locals: {
+      _actionPayload: {
+        actionName:
+          new URLSearchParams(
+            actions.updateApplicationStatus.toString()
+          ).get("_action") ?? "",
+        actionResult
+      }
+    },
+    request: new Request(`${APPLICATIONS_URL}?after=current-1`, {
+      headers: { Cookie: `session=${encodeURIComponent(SESSION)}` }
+    })
+  } as never);
 };
 
 type Application = {
@@ -184,8 +211,8 @@ describe("applications page rendering", () => {
     expect(html).toContain("Aug 1, 2026");
     expect(html).toContain("Aug 15, 2026");
     expect(html).toContain(`href="${APPLICATION_URL}"`);
-    expect(html).toContain('href="/applications/application-1/resume"');
-    expect(html).toContain(RESUME_FILENAME);
+    expect(html).not.toContain('href="/applications/application-1/resume"');
+    expect(html).not.toContain(RESUME_FILENAME);
   });
 
   it("wires each row form to the status action and preserves the cursor", async () => {
@@ -208,9 +235,65 @@ describe("applications page rendering", () => {
       )
     ).toHaveLength(2);
     expect(html.match(/name="after" value="current-1"/gu)).toHaveLength(2);
+    expect(html).toContain(
+      'action="?_action=updateApplicationStatus&amp;after=current-1"'
+    );
     expect(html).toContain('name="id" value="application-1"');
     expect(html).toContain('name="id" value="application-2"');
     expect(html).not.toContain(TOKEN);
+  });
+
+  it("omits unsafe application URLs", async () => {
+    jobApplications.listApplications.mockResolvedValue({
+      ok: true,
+      value: {
+        items: [makeApplication({ applicationUrl: UNSAFE_APPLICATION_URL })],
+        nextCursor: null
+      }
+    });
+
+    const html = await render(APPLICATIONS_URL);
+
+    expect(html).not.toContain(`href="${UNSAFE_APPLICATION_URL}"`);
+    expect(html).not.toContain("View application");
+  });
+
+  it("redirects a successful Astro action result with the current cursor", async () => {
+    const response = await renderActionResult({
+      body: '[{"success":1},true]',
+      contentType: "application/json+devalue",
+      status: 200,
+      type: "data"
+    });
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      "/applications?after=current-1"
+    );
+  });
+
+  it("renders an Astro action error envelope while preserving the cursor", async () => {
+    const response = await renderActionResult({
+      body: JSON.stringify({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Unable to update application.",
+        type: "AstroActionError"
+      }),
+      contentType: "application/json",
+      status: 500,
+      type: "error"
+    });
+    const html = await response.text();
+
+    expect(response.status).toBe(500);
+    expect(html).toContain("Unable to update application.");
+    expect(html).not.toContain(BACKEND_ERROR);
+    expect(jobApplications.listApplications).toHaveBeenCalledWith({
+      after: "current-1",
+      first: 25,
+      status: null,
+      token: TOKEN
+    });
   });
 
   it("uses placeholders and omits optional links when values are absent", async () => {

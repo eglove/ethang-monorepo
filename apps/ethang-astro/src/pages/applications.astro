@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 
-import { APPLICATION_PAGE_SIZE, APPLICATION_STATUSES, applicationsLoginRedirect, applicationsPagePath, formatApplicationDate, formatApplicationValue, parseApplicationCursor } from "../lib/applications.ts";
+import { APPLICATION_PAGE_SIZE, APPLICATION_STATUSES, applicationsLoginRedirect, applicationsPagePath, formatApplicationDate, formatApplicationValue, isSafeApplicationUrl, parseApplicationCursor } from "../lib/applications.ts";
 import { decodeSessionCookie } from "../lib/session.ts";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/ui/Button.astro";
@@ -65,7 +65,14 @@ if (isNil(session)) {
 
 const after = parseApplicationCursor(Astro.url.searchParams.get("after"));
 const actionResult = Astro.getActionResult(actions.updateApplicationStatus);
+const actionData = actionResult?.data;
+if (isObject(actionData) && actionData.success === true) {
+  return Astro.redirect(applicationsPagePath(after));
+}
 const actionError = actionResult?.error?.message;
+const actionPath = isNil(after)
+  ? actions.updateApplicationStatus
+  : `${actions.updateApplicationStatus}&after=${encodeURIComponent(after)}`;
 const listApplications = (env.job_applications as unknown as JobApplicationsWorker)
   .listApplications;
 const listResult = await listApplications({
@@ -142,7 +149,7 @@ const listValue = isSuccessfulListResult(listResult)
                       {formatApplicationDate(application.nextInterviewDate)}
                     </td>
                     <td class="px-4 py-4">
-                      <form method="POST" action={actions.updateApplicationStatus} class="flex items-center gap-2">
+                      <form method="POST" action={actionPath} class="flex items-center gap-2">
                         <input type="hidden" name="id" value={application.id} />
                         <input type="hidden" name="after" value={after ?? ""} />
                         <select
@@ -160,7 +167,7 @@ const listValue = isSuccessfulListResult(listResult)
                     </td>
                     <td class="px-4 py-4">
                       <div class="flex flex-col items-start gap-1">
-                        {application.applicationUrl ? (
+                        {isSafeApplicationUrl(application.applicationUrl) ? (
                           <a
                             href={application.applicationUrl}
                             target="_blank"
@@ -170,15 +177,7 @@ const listValue = isSuccessfulListResult(listResult)
                             View application
                           </a>
                         ) : null}
-                        {application.resumeFilename ? (
-                          <a
-                            href={`/applications/${encodeURIComponent(application.id)}/resume`}
-                            class="text-primary hover:text-primary/80"
-                          >
-                            {application.resumeFilename}
-                          </a>
-                        ) : null}
-                        {!application.applicationUrl && !application.resumeFilename ? (
+                        {!isSafeApplicationUrl(application.applicationUrl) ? (
                           <span class="text-night-owl-muted">—</span>
                         ) : null}
                       </div>
