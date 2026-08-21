@@ -3,22 +3,27 @@ import map from "lodash/map.js";
 
 import { paginationEdgeClass, paginationNumberClass } from "../../lib/ui.ts";
 
+export type PaginationEntry = {
+    readonly href: string;
+    readonly label: string;
+};
+
 interface Props {
-    linkFor: (page: number) => string;
-    maxPages: number;
-    page: number;
+    ariaLabel: string;
+    currentIndex: number;
+    entries: readonly PaginationEntry[];
 }
 
-const { linkFor, maxPages, page } = Astro.props;
+const { ariaLabel, currentIndex, entries } = Astro.props;
 ---
 
 {
-    1 < maxPages ? (
-        <nav class="flex gap-2 justify-center" aria-label="Blog pagination">
+    1 < entries.length ? (
+        <nav class="flex gap-2 justify-center" aria-label={ariaLabel}>
             {
-                1 < page ? (
+                0 < currentIndex ? (
                     <a
-                        href={linkFor(page - 1)}
+                        href={entries[currentIndex - 1]?.href}
                         rel="prev"
                         aria-label="Previous page"
                         class={paginationEdgeClass(false)}
@@ -33,25 +38,23 @@ const { linkFor, maxPages, page } = Astro.props;
             }
 
             {
-                map(Array.from({ length: maxPages }), (_value, index) => {
-                    const pageNumber = index + 1;
-
-                    return (
-                        <a
-                            href={linkFor(pageNumber)}
-                            aria-current={pageNumber === page ? "page" : undefined}
-                            class={paginationNumberClass(pageNumber === page)}
-                        >
-                            {pageNumber}
-                        </a>
-                    );
-                })
+                map(entries, (entry, index) => (
+                    <a
+                        href={entry.href}
+                        aria-current={
+                            index === currentIndex ? "page" : undefined
+                        }
+                        class={paginationNumberClass(index === currentIndex)}
+                    >
+                        {entry.label}
+                    </a>
+                ))
             }
 
             {
-                page < maxPages ? (
+                currentIndex < entries.length - 1 ? (
                     <a
-                        href={linkFor(page + 1)}
+                        href={entries[currentIndex + 1]?.href}
                         rel="next"
                         aria-label="Next page"
                         class={paginationEdgeClass(false)}

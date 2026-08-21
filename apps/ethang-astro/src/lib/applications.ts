@@ -1,9 +1,9 @@
 import { DateTime, Option } from "effect";
+import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
+import map from "lodash/map.js";
 import trim from "lodash/trim.js";
-
-export const APPLICATION_PAGE_SIZE = 25;
 
 export const APPLICATION_STATUSES = [
   "applied",
@@ -11,28 +11,62 @@ export const APPLICATION_STATUSES = [
   "interview",
   "offer",
   "rejected",
-  "withdrawn"
+  "withdrawn",
 ] as const;
 
 export type ApplicationStatus = (typeof APPLICATION_STATUSES)[number];
 
-export const parseApplicationCursor = (value: null | string | undefined) => {
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/u;
+
+export const parseApplicationDateParam = (value: null | string | undefined) => {
   if (isNil(value)) {
     return null;
   }
 
-  const cursor = trim(value);
-  return "" === cursor ? null : cursor;
+  const date = trim(value);
+  return ISO_DATE_PATTERN.test(date) ? date : null;
 };
 
 export const applicationsLoginRedirect = () => {
   return `/login?redirect=${encodeURIComponent("/applications")}`;
 };
 
-export const applicationsPagePath = (after: null | string) => {
-  return isNil(after)
+export const applicationsPagePath = (date: null | string) => {
+  return isNil(date)
     ? "/applications"
-    : `/applications?after=${encodeURIComponent(after)}`;
+    : `/applications?date=${encodeURIComponent(date)}`;
+};
+
+export type ApplicationPagination = {
+  readonly currentIndex: number;
+  readonly entries: readonly ApplicationPaginationEntry[];
+};
+
+export type ApplicationPaginationEntry = {
+  readonly href: string;
+  readonly label: string;
+};
+
+export const applicationDatePagination = (
+  dates: readonly string[],
+  selectedDate: null | string,
+) => {
+  const entries = map(dates, (date) => {
+    return {
+      href: applicationsPagePath(date),
+      label: formatApplicationDate(date),
+    };
+  });
+
+  if (isEmpty(dates)) {
+    return { currentIndex: -1, entries };
+  }
+
+  const selectedIndex = dates.indexOf(selectedDate ?? "");
+  return {
+    currentIndex: -1 === selectedIndex ? 0 : selectedIndex,
+    entries,
+  };
 };
 
 export const formatApplicationValue = (value: null | string | undefined) => {
@@ -45,7 +79,7 @@ export const formatApplicationDate = (value: null | string | undefined) => {
   }
 
   const maybeDate = DateTime.make(
-    /^\d{4}-\d{2}-\d{2}$/u.test(value) ? `${value}T00:00:00Z` : value
+    /^\d{4}-\d{2}-\d{2}$/u.test(value) ? `${value}T00:00:00Z` : value,
   );
   if (Option.isNone(maybeDate)) {
     return formatApplicationValue(value);
@@ -55,13 +89,13 @@ export const formatApplicationDate = (value: null | string | undefined) => {
     day: "numeric",
     month: "short",
     timeZone: "UTC",
-    year: "numeric"
+    year: "numeric",
   });
   return formatter.format(DateTime.toDateUtc(maybeDate.value));
 };
 
 export const isApplicationStatus = (
-  value: unknown
+  value: unknown,
 ): value is ApplicationStatus => {
   return (
     isString(value) &&
