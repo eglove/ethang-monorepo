@@ -14,13 +14,6 @@
   "placement": {
     "mode": "smart"
   },
-  "r2_buckets": [
-    {
-      "binding": "jobResumes",
-      "bucket_name": "job-resumes",
-      "preview_bucket_name": "job-resumes-preview"
-    }
-  ],
   "routes": [
     {
       "custom_domain": true,

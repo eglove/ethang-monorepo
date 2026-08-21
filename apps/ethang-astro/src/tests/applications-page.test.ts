@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const jobApplications = vi.hoisted(() => {
   return {
-    jobResumes: { get: vi.fn() },
+    getResume: vi.fn(),
     listApplications: vi.fn(),
     updateApplication: vi.fn()
   };
@@ -14,8 +14,7 @@ const jobApplications = vi.hoisted(() => {
 vi.mock("cloudflare:workers", () => {
   return {
     env: {
-      job_applications: jobApplications,
-      jobResumes: jobApplications.jobResumes
+      job_applications: jobApplications
     }
   };
 });
@@ -37,6 +36,7 @@ const UNSAFE_APPLICATION_URL = ["java", "script:alert(1)"].join("");
 const BACKEND_ERROR = "secret backend detail";
 const RESUME_FILENAME = "resume.pdf";
 const TOKEN = "token";
+const INVALID_TOKEN = "invalid token";
 const SESSION = JSON.stringify({
   email: "ada@example.com",
   sessionToken: TOKEN,
@@ -119,7 +119,7 @@ const makeApplication = (overrides: Partial<Application> = {}) => {
 
 beforeEach(() => {
   jobApplications.listApplications.mockReset();
-  jobApplications.jobResumes.get.mockReset();
+  jobApplications.getResume.mockReset();
   jobApplications.listApplications.mockResolvedValue({
     ok: true,
     value: { items: [], nextCursor: null }
@@ -127,18 +127,17 @@ beforeEach(() => {
 });
 
 describe("resume endpoint", () => {
-  it("streams the authenticated application resume from R2", async () => {
+  it("streams the authenticated application resume through the worker RPC", async () => {
     const encoder = new TextEncoder();
-    const data = encoder.encode("%PDF-1.7");
-    jobApplications.jobResumes.get.mockResolvedValue({
-      body: new ReadableStream({
-        start(controller) {
-          controller.enqueue(data);
-          controller.close();
-        }
-      }),
-      customMetadata: { filename: RESUME_FILENAME },
-      httpMetadata: { contentType: "application/pdf" }
+    const data = encoder.encode("%PDF-1.7").buffer;
+    jobApplications.getResume.mockResolvedValue({
+      ok: true,
+      value: {
+        contentType: "application/pdf",
+        data,
+        filename: RESUME_FILENAME,
+        size: data.byteLength
+      }
     });
 
     const response = await getResume({
@@ -156,9 +155,87 @@ describe("resume endpoint", () => {
       RESUME_FILENAME
     );
     expect(await response.text()).toBe("%PDF-1.7");
-    expect(jobApplications.jobResumes.get).toHaveBeenCalledWith(
-      `ada@example.com/application-1`
-    );
+    expect(jobApplications.getResume).toHaveBeenCalledWith({
+      id: APPLICATION_ID,
+      token: TOKEN
+    });
+  });
+
+  it("serves no resume for a forged session email and forwards the token to the worker", async () => {
+    const forgedSession = JSON.stringify({
+      email: "victim@example.com",
+      sessionToken: "forged-token",
+      username: "attacker"
+    });
+    jobApplications.getResume.mockResolvedValue({
+      error: { code: "UNAUTHENTICATED", message: INVALID_TOKEN },
+      ok: false
+    });
+
+    const response = await getResume({
+      cookies: {
+        get: () => {
+          return { value: forgedSession };
+        }
+      },
+      params: { id: APPLICATION_ID }
+    });
+
+    expect(response.status).toBe(404);
+    expect(jobApplications.getResume).toHaveBeenCalledWith({
+      id: APPLICATION_ID,
+      token: "forged-token"
+    });
+  });
+
+  it.each([
+    {
+      outcome: { ok: true, value: null },
+      reason: "no resume uploaded"
+    },
+    {
+      outcome: {
+        error: { code: "NOT_FOUND", message: "application not found" },
+        ok: false
+      },
+      reason: "application not found"
+    },
+    {
+      outcome: {
+        error: { code: "UNAUTHENTICATED", message: INVALID_TOKEN },
+        ok: false
+      },
+      reason: INVALID_TOKEN
+    }
+  ])("returns 404 when the worker reports: $reason", async ({ outcome }) => {
+    jobApplications.getResume.mockResolvedValue(outcome);
+
+    const response = await getResume({
+      cookies: {
+        get: () => {
+          return { value: SESSION };
+        }
+      },
+      params: { id: APPLICATION_ID }
+    });
+
+    expect(response.status).toBe(404);
+  });
+
+  it("returns 404 without leaking backend errors when the RPC fails", async () => {
+    jobApplications.getResume.mockRejectedValue(new Error(BACKEND_ERROR));
+
+    const response = await getResume({
+      cookies: {
+        get: () => {
+          return { value: SESSION };
+        }
+      },
+      params: { id: APPLICATION_ID }
+    });
+
+    expect(response.status).toBe(404);
+    expect(await response.text()).not.toContain(BACKEND_ERROR);
   });
 
   it.each([undefined, "{malformed"])(
@@ -177,7 +254,7 @@ describe("resume endpoint", () => {
       expect(response.headers.get("location")).toBe(
         "/login?redirect=%2Fapplications"
       );
-      expect(jobApplications.jobResumes.get).not.toHaveBeenCalled();
+      expect(jobApplications.getResume).not.toHaveBeenCalled();
     }
   );
 });

@@ -1,4 +1,5 @@
 import { env } from "cloudflare:workers";
+import constant from "lodash/constant.js";
 import isEmpty from "lodash/isEmpty.js";
 import isNil from "lodash/isNil.js";
 import replace from "lodash/replace.js";
@@ -31,18 +32,24 @@ export const GET = async (context: {
     return new Response("Not found", { status: 404 });
   }
 
-  const object = await env.jobResumes.get(`${session.email}/${id}`);
-  if (isNil(object)) {
+  // Authorization is delegated to the worker: the session token is verified
+  // server-side and the email is derived from it, so a forged cookie email
+  // grants access to nothing.
+  const result = await env.job_applications
+    .getResume({ id, token: session.sessionToken })
+    .catch(constant(null));
+  if (isNil(result) || !result.ok || isNil(result.value)) {
     return new Response("Not found", { status: 404 });
   }
 
-  return new Response(object.body, {
+  const resume = result.value;
+  return new Response(resume.data, {
     headers: {
       "Content-Disposition": contentDisposition(
-        object.customMetadata?.["filename"] ?? "resume.pdf"
+        isEmpty(resume.filename) ? "resume.pdf" : resume.filename
       ),
-      "Content-Length": String(object.size),
-      "Content-Type": object.httpMetadata?.contentType ?? "application/pdf"
+      "Content-Length": String(resume.size),
+      "Content-Type": resume.contentType
     }
   });
 };
