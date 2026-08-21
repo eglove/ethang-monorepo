@@ -10,17 +10,21 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 const appRoot = path.resolve(import.meta.dirname, "..", "..");
 
 describe("workspace type safety", () => {
-  it("type-checks without pulling sibling worker sources into the program", () => {
-    const result = spawnSync("pnpm exec tsc --noEmit", {
-      cwd: appRoot,
-      encoding: "utf8",
-      shell: true,
-      timeout: 120_000,
-    });
-    const lines = compact([result.stdout, result.stderr]);
-    const output = join(lines, "\n").slice(0, 4000);
-    expect(result.status, output).toBe(0);
-  });
+  it(
+    "type-checks without pulling sibling worker sources into the program",
+    { timeout: 120_000 },
+    () => {
+      const result = spawnSync("pnpm exec tsc --noEmit", {
+        cwd: appRoot,
+        encoding: "utf8",
+        shell: true,
+        timeout: 120_000
+      });
+      const lines = compact([result.stdout, result.stderr]);
+      const output = join(lines, "\n").slice(0, 4000);
+      expect(result.status, output).toBe(0);
+    }
+  );
 
   it("keeps service binding RPC signatures concrete", () => {
     expectTypeOf<
@@ -38,10 +42,10 @@ describe("workspace type safety", () => {
 describe("lint script", () => {
   it("type-checks as part of lint, like every other project", () => {
     const packageManifest = JSON.parse(
-      readFileSync(path.resolve(appRoot, "package.json"), "utf8"),
+      readFileSync(path.resolve(appRoot, "package.json"), "utf8")
     ) as { scripts: { lint: string } };
     expect(packageManifest.scripts.lint).toBe(
-      "eslint . --fix && pnpm tsc --noEmit",
+      "eslint . --fix && pnpm tsc --noEmit"
     );
   });
 });
