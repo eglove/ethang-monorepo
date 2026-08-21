@@ -18,6 +18,7 @@
     "@vitest/coverage-v8": "^4.1.10",
     "browserslist-config-baseline": "^0.5.0",
     "sharp": "0.35.3",
+    "typescript": "^6.0.3",
     "vitest": "^4.1.10",
     "wrangler": "^4.123.0"
   },
@@ -28,12 +29,14 @@
   "scripts": {
     "astro": "astro",
     "build": "astro build",
-    "cf-typegen": "wrangler types --config wrangler.jsonc --config ../ethang-courses/wrangler.jsonc --config ../ethang-rss/wrangler.jsonc --config ../job-applications/wrangler.jsonc",
+    "cf-typegen": "wrangler types --config wrangler.jsonc --config ../ethang-courses/wrangler.jsonc --config ../ethang-rss/wrangler.jsonc --config ../job-applications/wrangler.jsonc && pnpm emit-rpc-declarations && pnpm rewrite-rpc-imports",
     "deploy": "astro build && wrangler deploy",
     "dev": "astro dev",
+    "emit-rpc-declarations": "node scripts/emit-rpc-declarations.ts",
     "generate-types": "wrangler types",
-    "lint": "eslint . --fix",
+    "lint": "eslint . --fix && pnpm tsc --noEmit",
     "preview": "astro build && astro preview",
+    "rewrite-rpc-imports": "node scripts/rewrite-rpc-imports.ts",
     "test": "pnpm test:vitest",
     "test:vitest": "vitest run --coverage"
   },
