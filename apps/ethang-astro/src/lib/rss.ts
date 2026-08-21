@@ -13,7 +13,7 @@ export const EMPTY_PAGE_INFO = {
   endCursor: null,
   hasNextPage: false,
   hasPreviousPage: false,
-  startCursor: null,
+  startCursor: null
 };
 
 // @ts-expect-error partial
@@ -21,7 +21,7 @@ export const EMPTY_SUBSCRIPTIONS: Awaited<
   ReturnType<typeof env.ethang_rss.subscriptions>
 > = {
   edges: [],
-  pageInfo: EMPTY_PAGE_INFO,
+  pageInfo: EMPTY_PAGE_INFO
 };
 
 // @ts-expect-error partial
@@ -29,7 +29,7 @@ export const EMPTY_ARTICLES: Awaited<
   ReturnType<typeof env.ethang_rss.allArticles>
 > = {
   edges: [],
-  pageInfo: EMPTY_PAGE_INFO,
+  pageInfo: EMPTY_PAGE_INFO
 };
 
 export type MutationResult = { error: string } | { success: true };
@@ -45,7 +45,7 @@ valid default so the worker is never queried with garbage.
 */
 export const getPageNumber = (
   searchParameters: URLSearchParams,
-  key: string,
+  key: string
 ) => {
   const raw = searchParameters.get(key);
   if (isNil(raw)) {
@@ -84,7 +84,7 @@ export const buildLoadMoreHref = (currentUrl: URL, pageParameter: string) => {
 export const getSubscriptions = async (
   worker: typeof env.ethang_rss,
   sessionToken: string,
-  page: number,
+  page: number
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -95,21 +95,21 @@ export const getSubscriptions = async (
         return worker.subscriptions({
           first: getFirst(page),
           sessionToken,
-          sortBy: { direction: "ASC", field: "TITLE" },
+          sortBy: { direction: "ASC", field: "TITLE" }
         });
-      },
+      }
     }).pipe(
       Effect.catchAll(() => {
         return Effect.succeed(EMPTY_SUBSCRIPTIONS);
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const getArticles = async (
   worker: typeof env.ethang_rss,
   sessionToken: string,
-  page: number,
+  page: number
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -120,20 +120,20 @@ export const getArticles = async (
         return worker.allArticles({
           first: getFirst(page),
           isRead: false,
-          sessionToken,
+          sessionToken
         });
-      },
+      }
     }).pipe(
       Effect.catchAll(() => {
         return Effect.succeed(EMPTY_ARTICLES);
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const addFeed = async (
   worker: typeof env.ethang_rss,
-  parameters: { sessionToken: string; xmlAddress: string },
+  parameters: { sessionToken: string; xmlAddress: string }
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -141,18 +141,18 @@ export const addFeed = async (
       try: async () => {
         await worker.addSubscription(parameters);
         return { success: true as const };
-      },
+      }
     }).pipe(
       Effect.catchAll((message) => {
         return Effect.succeed({ error: message });
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const removeFeed = async (
   worker: typeof env.ethang_rss,
-  parameters: { feedId: string; sessionToken: string },
+  parameters: { feedId: string; sessionToken: string }
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -160,18 +160,18 @@ export const removeFeed = async (
       try: async () => {
         await worker.removeSubscription(parameters);
         return { success: true as const };
-      },
+      }
     }).pipe(
       Effect.catchAll((message) => {
         return Effect.succeed({ error: message });
-      }),
-    ),
+      })
+    )
   );
 };
 
 export const markArticleRead = async (
   worker: typeof env.ethang_rss,
-  parameters: { articleId: string; isRead: boolean; sessionToken: string },
+  parameters: { articleId: string; isRead: boolean; sessionToken: string }
 ) => {
   return Effect.runPromise(
     Effect.tryPromise({
@@ -179,11 +179,11 @@ export const markArticleRead = async (
       try: async () => {
         await worker.markArticleRead(parameters);
         return { success: true as const };
-      },
+      }
     }).pipe(
       Effect.catchAll((message) => {
         return Effect.succeed({ error: message });
-      }),
-    ),
+      })
+    )
   );
 };

@@ -15,15 +15,15 @@ const makeDefaults = () => {
     appliedDate: AUGUST,
     company: "Acme",
     email: EMAIL,
-    title: "Engineer",
+    title: "Engineer"
   };
 };
 
 const make = (
-  overrides?: Partial<Parameters<typeof createJobApplication>[0]>,
+  overrides?: Partial<Parameters<typeof createJobApplication>[0]>
 ) => {
   return Effect.runSync(
-    createJobApplication({ ...makeDefaults(), ...overrides }),
+    createJobApplication({ ...makeDefaults(), ...overrides })
   );
 };
 
@@ -34,7 +34,7 @@ describe("listAppliedDates", () => {
     const july = make({ appliedDate: JULY });
     const { layer } = createFakeRepository([august, july, augustAgain]);
     const dates = Effect.runSync(
-      listAppliedDates({ email: EMAIL }).pipe(Effect.provide(layer)),
+      listAppliedDates({ email: EMAIL }).pipe(Effect.provide(layer))
     );
     expect(dates).toStrictEqual([AUGUST, JULY]);
   });
@@ -43,11 +43,11 @@ describe("listAppliedDates", () => {
     const mine = make({ appliedDate: AUGUST });
     const foreign = make({
       appliedDate: JULY,
-      email: "other@example.com",
+      email: "other@example.com"
     });
     const { layer } = createFakeRepository([mine, foreign]);
     const dates = Effect.runSync(
-      listAppliedDates({ email: EMAIL }).pipe(Effect.provide(layer)),
+      listAppliedDates({ email: EMAIL }).pipe(Effect.provide(layer))
     );
     expect(dates).toStrictEqual([AUGUST]);
   });
@@ -55,7 +55,7 @@ describe("listAppliedDates", () => {
   it("returns an empty list when the user has no applications", () => {
     const { layer } = createFakeRepository([]);
     const dates = Effect.runSync(
-      listAppliedDates({ email: EMAIL }).pipe(Effect.provide(layer)),
+      listAppliedDates({ email: EMAIL }).pipe(Effect.provide(layer))
     );
     expect(dates).toStrictEqual([]);
   });

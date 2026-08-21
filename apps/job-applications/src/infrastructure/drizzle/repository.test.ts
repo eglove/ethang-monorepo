@@ -7,7 +7,7 @@ import { beforeAll, beforeEach, describe, expect, inject, it } from "vitest";
 import { JobApplicationRepository } from "../../application/ports/job-application-repository.ts";
 import {
   createJobApplication,
-  type JobApplication,
+  type JobApplication
 } from "../../domain/job-application/aggregate.ts";
 import { DuplicateApplicationError } from "../../errors/duplicate-application-error.ts";
 import { createJobApplicationRepositoryLayer } from "./repository.ts";
@@ -40,19 +40,19 @@ const make = (url = jobUrl("1"), appliedDate = APPLIED_DATE) => {
       appliedDate,
       company: COMPANY,
       email: EMAIL,
-      title: TITLE,
-    }),
+      title: TITLE
+    })
   );
 };
 
 const run = async <A>(
-  effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+  effect: Effect.Effect<A, unknown, JobApplicationRepository>
 ) => {
   return Effect.runPromise(
     Effect.provide(
       effect,
-      createJobApplicationRepositoryLayer(env.jobApplications),
-    ),
+      createJobApplicationRepositoryLayer(env.jobApplications)
+    )
   );
 };
 
@@ -65,9 +65,9 @@ const insertAll = async (apps: readonly JobApplication[]) => {
         (app) => {
           return repo.insert(app);
         },
-        { discard: true },
+        { discard: true }
       );
-    }),
+    })
   );
 };
 
@@ -78,20 +78,20 @@ describe("drizzle repository", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      }),
+      })
     );
     const found = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, EMAIL);
-      }),
+      })
     );
     expect(found?.title).toBe("Engineer");
     const foreign = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, FOREIGN_EMAIL);
-      }),
+      })
     );
     expect(foreign).toBeNull();
   });
@@ -103,7 +103,7 @@ describe("drizzle repository", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      }),
+      })
     );
     // second insert with same (email, URL) must fail with DuplicateApplicationError
     const duplicate = await Effect.runPromise(
@@ -113,10 +113,10 @@ describe("drizzle repository", () => {
           return yield* repo.insert(make());
         }).pipe(
           Effect.provide(
-            createJobApplicationRepositoryLayer(env.jobApplications),
-          ),
-        ),
-      ),
+            createJobApplicationRepositoryLayer(env.jobApplications)
+          )
+        )
+      )
     );
     expect(duplicate).toBeInstanceOf(DuplicateApplicationError);
   });
@@ -127,34 +127,34 @@ describe("drizzle repository", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      }),
+      })
     );
     const updated = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.update({ ...app, salary: "$150k" });
-      }),
+      })
     );
     expect(updated.salary).toBe("$150k");
     const refetched = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, EMAIL);
-      }),
+      })
     );
     expect(refetched?.salary).toBe("$150k");
     const isDeleted = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.delete(app.id, EMAIL);
-      }),
+      })
     );
     expect(isDeleted).toBe(true);
     const isAgain = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.delete(app.id, EMAIL);
-      }),
+      })
     );
     expect(isAgain).toBe(false);
   });
@@ -173,9 +173,9 @@ describe("drizzle repository (list)", () => {
         return yield* repo.list({
           appliedDate: APPLIED_DATE,
           email: EMAIL,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     const expectedIds = [augustA.id, augustB.id].toSorted((a, b) => {
       return b.localeCompare(a);
@@ -191,9 +191,9 @@ describe("drizzle repository (list)", () => {
         return yield* repo.list({
           appliedDate: APPLIED_DATE,
           email: EMAIL,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     expect(items).toStrictEqual([]);
   });
@@ -203,13 +203,13 @@ describe("drizzle repository (list)", () => {
       make(jobUrl("june"), JUNE),
       make(jobUrl("july"), JULY),
       make(jobUrl("august-a"), APPLIED_DATE),
-      make(jobUrl("august-b"), APPLIED_DATE),
+      make(jobUrl("august-b"), APPLIED_DATE)
     ]);
     const dates = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.listAppliedDates(EMAIL);
-      }),
+      })
     );
     expect(dates).toStrictEqual([APPLIED_DATE, JULY, JUNE]);
   });
@@ -222,15 +222,15 @@ describe("drizzle repository (list)", () => {
         appliedDate: APPLIED_DATE,
         company: COMPANY,
         email: FOREIGN_EMAIL,
-        title: TITLE,
-      }),
+        title: TITLE
+      })
     );
     await insertAll([mine, foreign]);
     const dates = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.listAppliedDates(EMAIL);
-      }),
+      })
     );
     expect(dates).toStrictEqual([JUNE]);
   });
@@ -240,7 +240,7 @@ describe("drizzle repository (list)", () => {
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.listAppliedDates(EMAIL);
-      }),
+      })
     );
     expect(dates).toStrictEqual([]);
   });
@@ -256,8 +256,8 @@ describe("drizzle repository (filters)", () => {
         company: COMPANY,
         email: EMAIL,
         status: "interview",
-        title: TITLE,
-      }),
+        title: TITLE
+      })
     );
     await insertAll([applied, interview]);
     const results = await run(
@@ -266,9 +266,9 @@ describe("drizzle repository (filters)", () => {
         return yield* repo.list({
           appliedDate: APPLIED_DATE,
           email: EMAIL,
-          status: "applied",
+          status: "applied"
         });
-      }),
+      })
     );
     expect(results).toHaveLength(1);
     const [only] = results;
@@ -283,8 +283,8 @@ describe("drizzle repository (filters)", () => {
         appliedDate: APPLIED_DATE,
         company: COMPANY,
         email: FOREIGN_EMAIL,
-        title: TITLE,
-      }),
+        title: TITLE
+      })
     );
     await insertAll([mine, foreign]);
     const results = await run(
@@ -293,9 +293,9 @@ describe("drizzle repository (filters)", () => {
         return yield* repo.list({
           appliedDate: APPLIED_DATE,
           email: EMAIL,
-          status: null,
+          status: null
         });
-      }),
+      })
     );
     expect(results).toHaveLength(1);
     const [only] = results;

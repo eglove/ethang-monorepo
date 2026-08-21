@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 const rssWorker = vi.hoisted(() => {
   return {
     allArticles: vi.fn(),
-    subscriptions: vi.fn(),
+    subscriptions: vi.fn()
   };
 });
 
@@ -14,10 +14,10 @@ vi.mock("cloudflare:workers", () => {
       ethang_courses: {
         coursesAll: vi.fn(async () => {
           return [];
-        }),
+        })
       },
-      ethang_rss: rssWorker,
-    },
+      ethang_rss: rssWorker
+    }
   };
 });
 
@@ -30,7 +30,7 @@ const FEED_ID = "f1";
 const sessionUser = JSON.stringify({
   email: "ada@example.com",
   sessionToken: "token",
-  username: "ada",
+  username: "ada"
 });
 
 const render = async (request?: Request) => {
@@ -44,8 +44,8 @@ const makeSubscription = (overrides: Record<string, unknown> = {}) => {
     node: {
       id: FEED_ID,
       title: FEED_TITLE,
-      ...overrides,
-    },
+      ...overrides
+    }
   };
 };
 
@@ -56,8 +56,8 @@ const makeArticle = (overrides: Record<string, unknown> = {}) => {
       id: "a1",
       link: "https://x/a1",
       title: "Article One",
-      ...overrides,
-    },
+      ...overrides
+    }
   };
 };
 
@@ -66,13 +66,13 @@ const pageInfo = (hasNextPage = false) => {
     endCursor: null,
     hasNextPage,
     hasPreviousPage: false,
-    startCursor: null,
+    startCursor: null
   };
 };
 
 const sessionRequest = () => {
   return new Request("https://ethang.dev/rss", {
-    headers: { cookie: `${SESSION}=${sessionUser}` },
+    headers: { cookie: `${SESSION}=${sessionUser}` }
   });
 };
 
@@ -80,11 +80,11 @@ describe("rss page authenticated", () => {
   it("renders subscriptions and articles for an authenticated user", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [makeSubscription()],
-      pageInfo: pageInfo(),
+      pageInfo: pageInfo()
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [makeArticle()],
-      pageInfo: pageInfo(),
+      pageInfo: pageInfo()
     });
 
     const html = await render(sessionRequest());
@@ -98,11 +98,11 @@ describe("rss page authenticated", () => {
   it("shows the show-more link when pagination exists for feeds", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [makeSubscription()],
-      pageInfo: pageInfo(true),
+      pageInfo: pageInfo(true)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
 
     const html = await render(sessionRequest());
@@ -113,11 +113,11 @@ describe("rss page authenticated", () => {
   it("shows the show-more link when pagination exists for articles", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [makeArticle()],
-      pageInfo: pageInfo(true),
+      pageInfo: pageInfo(true)
     });
 
     const html = await render(sessionRequest());
@@ -128,16 +128,16 @@ describe("rss page authenticated", () => {
   it("renders the feed and published date on articles when present", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [
         makeArticle({
           feed: { iconUrl: null, id: FEED_ID, title: FEED_TITLE },
-          publishedAt: PUBLISHED_AT,
-        }),
+          publishedAt: PUBLISHED_AT
+        })
       ],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
 
     const html = await render(sessionRequest());
@@ -148,7 +148,7 @@ describe("rss page authenticated", () => {
   it("renders the site icon image when the feed provides one", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [
@@ -156,12 +156,12 @@ describe("rss page authenticated", () => {
           feed: {
             iconUrl: "https://example.com/favicon.ico",
             id: FEED_ID,
-            title: FEED_TITLE,
+            title: FEED_TITLE
           },
-          publishedAt: PUBLISHED_AT,
-        }),
+          publishedAt: PUBLISHED_AT
+        })
       ],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
 
     const html = await render(sessionRequest());
@@ -174,16 +174,16 @@ describe("rss page authenticated", () => {
   it("omits the icon image when the feed has none", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [
         makeArticle({
           feed: { iconUrl: null, id: FEED_ID, title: FEED_TITLE },
-          publishedAt: PUBLISHED_AT,
-        }),
+          publishedAt: PUBLISHED_AT
+        })
       ],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
 
     const html = await render(sessionRequest());
@@ -195,11 +195,11 @@ describe("rss page authenticated", () => {
   it("omits the icon image when the article has no feed", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [makeArticle()],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
 
     const html = await render(sessionRequest());
@@ -210,11 +210,11 @@ describe("rss page authenticated", () => {
   it("shows the no-feeds message for an authenticated user with no feeds", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
     rssWorker.allArticles.mockResolvedValue({
       edges: [],
-      pageInfo: pageInfo(false),
+      pageInfo: pageInfo(false)
     });
 
     const html = await render(sessionRequest());

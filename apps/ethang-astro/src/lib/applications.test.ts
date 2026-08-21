@@ -9,7 +9,7 @@ import {
   formatApplicationValue,
   isApplicationStatus,
   isSafeApplicationUrl,
-  parseApplicationDateParam,
+  parseApplicationDateParam
 } from "./applications.ts";
 
 const HTTP_APPLICATION_URL = ["http", "://acme.example/jobs/1"].join("");
@@ -28,7 +28,7 @@ describe("parseApplicationDateParam", () => {
     [repeat(" ", 3), null],
     [AUGUST_DATE, AUGUST_DATE],
     ["2026-8-1", null],
-    [INVALID_DATE, null],
+    [INVALID_DATE, null]
   ])("parses date param %j as %j", (input, expected) => {
     expect(parseApplicationDateParam(input)).toBe(expected);
   });
@@ -45,7 +45,7 @@ describe("isApplicationStatus", () => {
     ["rejected", true],
     ["withdrawn", true],
     ["unknown", false],
-    [1, false],
+    [1, false]
   ])("validates status %j", (input, expected) => {
     expect(isApplicationStatus(input)).toBe(expected);
   });
@@ -56,7 +56,7 @@ describe("formatApplicationValue", () => {
     [undefined, PLACEHOLDER],
     [null, PLACEHOLDER],
     ["", PLACEHOLDER],
-    ["Acme", "Acme"],
+    ["Acme", "Acme"]
   ])("formats optional value %j", (input, expected) => {
     expect(formatApplicationValue(input)).toBe(expected);
   });
@@ -68,7 +68,7 @@ describe("formatApplicationDate", () => {
     [null, PLACEHOLDER],
     ["", PLACEHOLDER],
     [INVALID_DATE, INVALID_DATE],
-    ["2026-08-01", "Aug 1, 2026"],
+    ["2026-08-01", "Aug 1, 2026"]
   ])("formats date %j as %j", (input, expected) => {
     expect(formatApplicationDate(input)).toBe(expected);
   });
@@ -84,7 +84,7 @@ describe("safe application URLs", () => {
     ["not-a-url", false],
     [String.raw`https:\\evil.example`, false],
     [null, false],
-    [undefined, false],
+    [undefined, false]
   ])("validates %j as %j", (value, expected) => {
     expect(isSafeApplicationUrl(value)).toBe(expected);
   });
@@ -95,7 +95,7 @@ describe("application paths", () => {
     expect(applicationsLoginRedirect()).toBe("/login?redirect=%2Fapplications");
     expect(applicationsPagePath(null)).toBe("/applications");
     expect(applicationsPagePath(AUGUST_DATE)).toBe(
-      `/applications?date=${AUGUST_DATE}`,
+      `/applications?date=${AUGUST_DATE}`
     );
   });
 });
@@ -108,7 +108,7 @@ describe("applicationDatePagination", () => {
     expect(entries).toStrictEqual([
       { href: `/applications?date=${AUGUST_DATE}`, label: "Aug 1, 2026" },
       { href: `/applications?date=${JULY_DATE}`, label: "Jul 30, 2026" },
-      { href: `/applications?date=${JUNE_DATE}`, label: "Jun 15, 2026" },
+      { href: `/applications?date=${JUNE_DATE}`, label: "Jun 15, 2026" }
     ]);
   });
 
@@ -116,20 +116,20 @@ describe("applicationDatePagination", () => {
     { currentIndex: 0, selected: null },
     { currentIndex: 0, selected: "2000-01-01" },
     { currentIndex: 1, selected: JULY_DATE },
-    { currentIndex: 2, selected: JUNE_DATE },
+    { currentIndex: 2, selected: JUNE_DATE }
   ])(
     "selects index $currentIndex for selected %j",
     ({ currentIndex, selected }) => {
       expect(applicationDatePagination(DATES, selected).currentIndex).toBe(
-        currentIndex,
+        currentIndex
       );
-    },
+    }
   );
 
   it("returns no entries and no selection without dates", () => {
     expect(applicationDatePagination([], AUGUST_DATE)).toStrictEqual({
       currentIndex: -1,
-      entries: [],
+      entries: []
     });
   });
 });

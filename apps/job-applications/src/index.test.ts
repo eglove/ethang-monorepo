@@ -24,8 +24,8 @@ const service = new JobApplicationsService(
   {
     jobApplications: env.jobApplications,
     jobResumes: env.jobResumes,
-    "token-auth": SECRET,
-  },
+    "token-auth": SECRET
+  }
 );
 
 const OTHER_EMAIL = "other@example.com";
@@ -42,7 +42,7 @@ const CREATE = {
   applicationUrl: "https://example.com/jobs/1",
   appliedDate: "2026-08-01",
   company: "Acme",
-  title: "Engineer",
+  title: "Engineer"
 };
 
 beforeAll(async () => {
@@ -56,7 +56,7 @@ beforeEach(async () => {
   await Promise.all(
     map(objects.objects, async (o) => {
       return env.jobResumes.delete(o.key);
-    }),
+    })
   );
 });
 
@@ -64,7 +64,7 @@ describe("JobApplicationsService RPC", () => {
   it("createApplication succeeds and returns the record", async () => {
     const result = await service.createApplication({
       ...CREATE,
-      token: await sign(),
+      token: await sign()
     });
     expect(result.ok).toBe(true);
     if (result.ok) {
@@ -87,7 +87,7 @@ describe("JobApplicationsService RPC", () => {
     const result = await service.createApplication({
       ...CREATE,
       company: "",
-      token: await sign(),
+      token: await sign()
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -111,7 +111,7 @@ describe("JobApplicationsService RPC", () => {
   it("getApplication returns NOT_FOUND for a foreign id", async () => {
     const created = await service.createApplication({
       ...CREATE,
-      token: await sign(),
+      token: await sign()
     });
     if (!created.ok) {
       throw new Error(SETUP_FAILED);
@@ -119,7 +119,7 @@ describe("JobApplicationsService RPC", () => {
     const foreignToken = await sign({ email: OTHER_EMAIL });
     const result = await service.getApplication({
       id: created.value.id,
-      token: foreignToken,
+      token: foreignToken
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {
@@ -130,7 +130,7 @@ describe("JobApplicationsService RPC", () => {
   it("cycleStatus advances applied -> screening and rejects terminal", async () => {
     const created = await service.createApplication({
       ...CREATE,
-      token: await sign(),
+      token: await sign()
     });
     if (!created.ok) {
       throw new Error(SETUP_FAILED);
@@ -144,7 +144,7 @@ describe("JobApplicationsService RPC", () => {
     const terminal = await service.updateApplication({
       id: created.value.id,
       status: "offer",
-      token,
+      token
     });
     expect(terminal.ok).toBe(true);
     const rejected = await service.cycleStatus({ id: created.value.id, token });
@@ -157,7 +157,7 @@ describe("JobApplicationsService RPC", () => {
   it("uploadResume and getResume round-trip a PDF", async () => {
     const created = await service.createApplication({
       ...CREATE,
-      token: await sign(),
+      token: await sign()
     });
     if (!created.ok) {
       throw new Error(SETUP_FAILED);
@@ -168,7 +168,7 @@ describe("JobApplicationsService RPC", () => {
       data: pdf,
       filename: RESUME_FILENAME,
       id: created.value.id,
-      token,
+      token
     });
     expect(uploaded.ok).toBe(true);
     if (uploaded.ok) {
@@ -184,7 +184,7 @@ describe("JobApplicationsService RPC", () => {
   it("deleteApplication removes the record and its resume", async () => {
     const created = await service.createApplication({
       ...CREATE,
-      token: await sign(),
+      token: await sign()
     });
     if (!created.ok) {
       throw new Error(SETUP_FAILED);
@@ -194,11 +194,11 @@ describe("JobApplicationsService RPC", () => {
       data: new TextEncoder().encode("%PDF-1.7 delete").buffer,
       filename: RESUME_FILENAME,
       id: created.value.id,
-      token,
+      token
     });
     const deleted = await service.deleteApplication({
       id: created.value.id,
-      token,
+      token
     });
     expect(deleted.ok).toBe(true);
     const { objects: r2Objects } = await env.jobResumes.list();
@@ -221,24 +221,24 @@ describe("JobApplicationsService RPC (applications list)", () => {
     const b = await service.createApplication({
       ...CREATE,
       applicationUrl: jobUrl("2"),
-      token,
+      token
     });
     expect(a.ok && b.ok).toBe(true);
     await service.createApplication({
       ...CREATE,
       applicationUrl: jobUrl("3"),
       appliedDate: JULY_DATE,
-      token,
+      token
     });
     const foreign = await service.createApplication({
       ...CREATE,
       applicationUrl: jobUrl("4"),
-      token: await sign({ email: OTHER_EMAIL }),
+      token: await sign({ email: OTHER_EMAIL })
     });
     expect(foreign.ok).toBe(true);
     const list = await service.listApplications({
       appliedDate: CREATE.appliedDate,
-      token,
+      token
     });
     expect(list.ok).toBe(true);
     if (list.ok) {
@@ -246,7 +246,7 @@ describe("JobApplicationsService RPC (applications list)", () => {
       expect(
         Object.keys(list.value).toSorted((x, y) => {
           return x.localeCompare(y);
-        }),
+        })
       ).toStrictEqual(["items"]);
     }
   });
@@ -258,12 +258,12 @@ describe("JobApplicationsService RPC (applications list)", () => {
       ...CREATE,
       applicationUrl: jobUrl("2"),
       appliedDate: JULY_DATE,
-      token,
+      token
     });
     await service.createApplication({
       ...CREATE,
       applicationUrl: jobUrl("3"),
-      token,
+      token
     });
     const dates = await service.listAppliedDates({ token });
     expect(dates.ok).toBe(true);
@@ -275,7 +275,7 @@ describe("JobApplicationsService RPC (applications list)", () => {
   it("listApplications returns VALIDATION for a malformed applied date", async () => {
     const result = await service.listApplications({
       appliedDate: "not-a-date",
-      token: await sign(),
+      token: await sign()
     });
     expect(result.ok).toBe(false);
     if (!result.ok) {

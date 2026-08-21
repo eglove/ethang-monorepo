@@ -15,13 +15,13 @@ const VALID = {
   appliedDate: APPLIED_DATE,
   company: "Acme",
   title: "Engineer",
-  token: TOKEN,
+  token: TOKEN
 };
 
 describe("schemas", () => {
   it("decodes a valid create input and applies defaults", () => {
     const result = Effect.runSync(
-      decodeInput(CreateApplicationInputSchema, VALID),
+      decodeInput(CreateApplicationInputSchema, VALID)
     );
     expect(result.company).toBe("Acme");
     expect(result.status).toBeUndefined();
@@ -31,10 +31,10 @@ describe("schemas", () => {
     { ...VALID, company: "" },
     { ...VALID, title: "" },
     { ...VALID, token: "" },
-    { ...VALID, status: "hired" },
+    { ...VALID, status: "hired" }
   ])("rejects invalid create input %#", (input) => {
     const result = Effect.runSync(
-      Effect.flip(decodeInput(CreateApplicationInputSchema, input)),
+      Effect.flip(decodeInput(CreateApplicationInputSchema, input))
     );
     expect(result).toBeInstanceOf(ValidationError);
   });
@@ -43,8 +43,8 @@ describe("schemas", () => {
     const result = Effect.runSync(
       decodeInput(ListApplicationsParamsSchema, {
         appliedDate: APPLIED_DATE,
-        token: TOKEN,
-      }),
+        token: TOKEN
+      })
     );
     expect(result.appliedDate).toBe("2026-08-01");
     expect(result.status).toBeUndefined();
@@ -52,7 +52,7 @@ describe("schemas", () => {
 
   it("rejects a list with a missing applied date", () => {
     const result = Effect.runSync(
-      Effect.flip(decodeInput(ListApplicationsParamsSchema, { token: TOKEN })),
+      Effect.flip(decodeInput(ListApplicationsParamsSchema, { token: TOKEN }))
     );
     expect(result).toBeInstanceOf(ValidationError);
   });
@@ -64,12 +64,12 @@ describe("schemas", () => {
         Effect.flip(
           decodeInput(ListApplicationsParamsSchema, {
             appliedDate,
-            token: TOKEN,
-          }),
-        ),
+            token: TOKEN
+          })
+        )
       );
       expect(result).toBeInstanceOf(ValidationError);
-    },
+    }
   );
 
   it("rejects a list with an invalid status", () => {
@@ -78,18 +78,16 @@ describe("schemas", () => {
         decodeInput(ListApplicationsParamsSchema, {
           appliedDate: APPLIED_DATE,
           status: "nope",
-          token: TOKEN,
-        }),
-      ),
+          token: TOKEN
+        })
+      )
     );
     expect(result).toBeInstanceOf(ValidationError);
   });
 
   it("rejects an empty update change set (no id)", () => {
     const result = Effect.runSync(
-      Effect.flip(
-        decodeInput(UpdateApplicationChangesSchema, { token: TOKEN }),
-      ),
+      Effect.flip(decodeInput(UpdateApplicationChangesSchema, { token: TOKEN }))
     );
     expect(result).toBeInstanceOf(ValidationError);
   });

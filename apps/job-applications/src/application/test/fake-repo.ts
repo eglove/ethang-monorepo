@@ -47,7 +47,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
           row.applicationUrl === app.applicationUrl
         ) {
           return Effect.fail(
-            new DuplicateAppError("application already exists"),
+            new DuplicateAppError("application already exists")
           );
         }
       }
@@ -64,7 +64,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
         },
         (row: JobApp) => {
           return row.appliedDate === appliedDate;
-        },
+        }
       ];
       const allRows: JobApp[] = Array.fromIterable(rows.values());
       const items = filter(allRows, (row: JobApp) => {
@@ -73,7 +73,7 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
       return Effect.succeed(
         items.toSorted((a, b) => {
           return b.id.localeCompare(a.id);
-        }),
+        })
       );
     },
     listAppliedDates: (email) => {
@@ -86,13 +86,13 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
       return Effect.succeed(
         Array.fromIterable(dates).toSorted((a, b) => {
           return b.localeCompare(a);
-        }),
+        })
       );
     },
     update: (app) => {
       rows.set(app.id, app);
       return Effect.succeed(app);
-    },
+    }
   };
   return { layer: Layer.succeed(JobAppRepo, repo), rows };
 };

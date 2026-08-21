@@ -39,7 +39,7 @@ const toAggregate = (row: Row) => {
     salary: row.salary,
     status: parseStatus(row.status),
     title: row.title,
-    updatedAt: row.updatedAt,
+    updatedAt: row.updatedAt
   };
 };
 
@@ -60,7 +60,7 @@ const toRow = (application: JobApplication) => {
     salary: application.salary,
     status: application.status,
     title: application.title,
-    updatedAt: application.updatedAt,
+    updatedAt: application.updatedAt
   };
 };
 
@@ -94,12 +94,12 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .where(
               and(
                 eq(jobApplicationsTable.id, id),
-                eq(jobApplicationsTable.email, email),
-              ),
+                eq(jobApplicationsTable.email, email)
+              )
             )
             .run();
           return 0 < result.meta.changes;
-        },
+        }
       });
     },
     findByEmailAndUrl: (email, applicationUrl) => {
@@ -112,12 +112,12 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             where: (table, operators) => {
               return operators.and(
                 operators.eq(table.email, email),
-                operators.eq(table.applicationUrl, applicationUrl),
+                operators.eq(table.applicationUrl, applicationUrl)
               );
-            },
+            }
           });
           return row ? toAggregate(row) : null;
-        },
+        }
       });
     },
     findById: (id, email) => {
@@ -130,12 +130,12 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             where: (table, operators) => {
               return operators.and(
                 operators.eq(table.id, id),
-                operators.eq(table.email, email),
+                operators.eq(table.email, email)
               );
-            },
+            }
           });
           return row ? toAggregate(row) : null;
-        },
+        }
       });
     },
     insert: (application) => {
@@ -153,11 +153,11 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .returning();
           if (!row) {
             return Effect.runSync(
-              Effect.die(new Error("insert returned no rows")),
+              Effect.die(new Error("insert returned no rows"))
             );
           }
           return toAggregate(row);
-        },
+        }
       });
     },
     list: ({ appliedDate, email, status }) => {
@@ -168,7 +168,7 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
         try: async () => {
           const conditions: (SQL | undefined)[] = [
             eq(jobApplicationsTable.appliedDate, appliedDate),
-            eq(jobApplicationsTable.email, email),
+            eq(jobApplicationsTable.email, email)
           ];
           if (!isNil(status)) {
             conditions.push(eq(jobApplicationsTable.status, status));
@@ -179,7 +179,7 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .where(and(...conditions))
             .orderBy(desc(jobApplicationsTable.id));
           return map(rows, toAggregate);
-        },
+        }
       });
     },
     listAppliedDates: (email) => {
@@ -190,13 +190,13 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
         try: async () => {
           const rows = await db
             .selectDistinct({
-              appliedDate: jobApplicationsTable.appliedDate,
+              appliedDate: jobApplicationsTable.appliedDate
             })
             .from(jobApplicationsTable)
             .where(eq(jobApplicationsTable.email, email))
             .orderBy(desc(jobApplicationsTable.appliedDate));
           return map(rows, "appliedDate");
-        },
+        }
       });
     },
     update: (application) => {
@@ -211,8 +211,8 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
             .where(eq(jobApplicationsTable.id, application.id))
             .run();
           return application;
-        },
+        }
       });
-    },
+    }
   });
 };

@@ -15,15 +15,15 @@ const makeDefaults = () => {
     appliedDate: AUGUST,
     company: "Acme",
     email: EMAIL,
-    title: "Engineer",
+    title: "Engineer"
   };
 };
 
 const make = (
-  overrides?: Partial<Parameters<typeof createJobApplication>[0]>,
+  overrides?: Partial<Parameters<typeof createJobApplication>[0]>
 ) => {
   return Effect.runSync(
-    createJobApplication({ ...makeDefaults(), ...overrides }),
+    createJobApplication({ ...makeDefaults(), ...overrides })
   );
 };
 
@@ -37,8 +37,8 @@ describe("listApplications", () => {
       listApplications({
         appliedDate: AUGUST,
         email: EMAIL,
-        status: null,
-      }).pipe(Effect.provide(layer)),
+        status: null
+      }).pipe(Effect.provide(layer))
     );
     const expectedIds = map([augustA, augustB], "id").toSorted((a, b) => {
       return b.localeCompare(a);
@@ -53,8 +53,8 @@ describe("listApplications", () => {
       listApplications({
         appliedDate: AUGUST,
         email: EMAIL,
-        status: null,
-      }).pipe(Effect.provide(layer)),
+        status: null
+      }).pipe(Effect.provide(layer))
     );
     expect(result).toStrictEqual({ items: [only] });
   });
@@ -68,8 +68,8 @@ describe("listApplications", () => {
       listApplications({
         appliedDate: AUGUST,
         email: EMAIL,
-        status: "applied",
-      }).pipe(Effect.provide(layer)),
+        status: "applied"
+      }).pipe(Effect.provide(layer))
     );
 
     expect(items).toHaveLength(1);
@@ -83,8 +83,8 @@ describe("listApplications", () => {
       listApplications({
         appliedDate: AUGUST,
         email: EMAIL,
-        status: null,
-      }).pipe(Effect.provide(layer)),
+        status: null
+      }).pipe(Effect.provide(layer))
     );
     expect(items).toStrictEqual([]);
   });

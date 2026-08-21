@@ -17,7 +17,7 @@ import VideoEmbed from "./VideoEmbed.astro";
 
 const render = async (
   component: never,
-  options: Record<string, never> = {},
+  options: Record<string, never> = {}
 ) => {
   const container = await AstroContainer.create();
   return container.renderToString(component, options);
@@ -29,8 +29,8 @@ describe("Card", () => {
       Card as never,
       {
         props: { class: "extra" },
-        slots: { default: "Hello" },
-      } as never,
+        slots: { default: "Hello" }
+      } as never
     );
 
     expect(html).toContain("Hello");
@@ -43,8 +43,8 @@ describe("Card", () => {
       Card as never,
       {
         props: { tint: true },
-        slots: { default: "Tinted" },
-      } as never,
+        slots: { default: "Tinted" }
+      } as never
     );
 
     expect(html).toContain("surface-card-tint");
@@ -60,7 +60,7 @@ describe("Button", () => {
     {
       name: "small danger",
       props: { size: "sm", variant: "danger" },
-      slot: "Delete",
+      slot: "Delete"
     },
     { name: "xs ghost", props: { size: "xs", variant: "ghost" }, slot: "Skip" },
     { name: "gradient", props: { variant: "gradient" }, slot: "Sign in" },
@@ -68,15 +68,15 @@ describe("Button", () => {
     {
       name: "with aria-label",
       props: { ariaLabel: "Save changes" },
-      slot: "Save",
-    },
+      slot: "Save"
+    }
   ])("renders $name", async ({ props, slot }) => {
     const html = await render(
       Button as never,
       {
         props,
-        slots: { default: slot },
-      } as never,
+        slots: { default: slot }
+      } as never
     );
 
     expect(html).toContain(slot);
@@ -87,8 +87,8 @@ describe("Button", () => {
     const html = await render(
       Button as never,
       {
-        slots: { default: "Hi" },
-      } as never,
+        slots: { default: "Hi" }
+      } as never
     );
 
     expect(html).toContain('type="submit"');
@@ -101,14 +101,14 @@ describe("Heading", () => {
     { as: "h1", tag: "h1" },
     { as: "h2", tag: "h2" },
     { as: "h3", tag: "h3" },
-    { as: "h4", tag: "h4" },
+    { as: "h4", tag: "h4" }
   ])("renders as $tag", async ({ as, tag }) => {
     const html = await render(
       Heading as never,
       {
         props: { as },
-        slots: { default: "Title" },
-      } as never,
+        slots: { default: "Title" }
+      } as never
     );
 
     expect(html).toContain(`<${tag}`);
@@ -119,8 +119,8 @@ describe("Heading", () => {
     const html = await render(
       Heading as never,
       {
-        slots: { default: "Default" },
-      } as never,
+        slots: { default: "Default" }
+      } as never
     );
 
     expect(html).toContain("<h2");
@@ -131,14 +131,14 @@ describe("InlineLink", () => {
   it.each([
     { name: "primary", variant: "primary" },
     { name: "nav", variant: "nav" },
-    { name: "underline", variant: "underline" },
+    { name: "underline", variant: "underline" }
   ])("renders the $name variant", async ({ variant }) => {
     const html = await render(
       InlineLink as never,
       {
         props: { href: "/x", variant },
-        slots: { default: "Link" },
-      } as never,
+        slots: { default: "Link" }
+      } as never
     );
 
     expect(html).toContain('href="/x"');
@@ -153,10 +153,10 @@ describe("InlineLink", () => {
           ariaLabel: "Open",
           href: "https://example.com",
           rel: "noopener",
-          target: "_blank",
+          target: "_blank"
         },
-        slots: { default: "Extern" },
-      } as never,
+        slots: { default: "Extern" }
+      } as never
     );
 
     expect(html).toContain('href="https://example.com"');
@@ -170,11 +170,11 @@ describe("Pagination", () => {
   const ARIA_LABEL = "Applications pagination";
   const ENTRY_ONE = {
     href: "/applications?date=2026-08-01",
-    label: "Aug 1, 2026",
+    label: "Aug 1, 2026"
   };
   const ENTRY_TWO = {
     href: "/applications?date=2026-07-30",
-    label: "Jul 30, 2026",
+    label: "Jul 30, 2026"
   };
 
   it("renders nothing for a single entry", async () => {
@@ -184,9 +184,9 @@ describe("Pagination", () => {
         props: {
           ariaLabel: ARIA_LABEL,
           currentIndex: 0,
-          entries: [ENTRY_ONE],
-        },
-      } as never,
+          entries: [ENTRY_ONE]
+        }
+      } as never
     );
 
     expect(html).not.toContain("<nav");
@@ -199,9 +199,9 @@ describe("Pagination", () => {
         props: {
           ariaLabel: ARIA_LABEL,
           currentIndex: 0,
-          entries: [ENTRY_ONE, ENTRY_TWO],
-        },
-      } as never,
+          entries: [ENTRY_ONE, ENTRY_TWO]
+        }
+      } as never
     );
 
     expect(html).toContain("lsaquo");
@@ -217,9 +217,9 @@ describe("Pagination", () => {
         props: {
           ariaLabel: ARIA_LABEL,
           currentIndex: 1,
-          entries: [ENTRY_ONE, ENTRY_TWO],
-        },
-      } as never,
+          entries: [ENTRY_ONE, ENTRY_TWO]
+        }
+      } as never
     );
 
     expect(html).toContain('aria-current="page"');
@@ -236,8 +236,8 @@ describe("Blockquote", () => {
     const html = await render(
       Blockquote as never,
       {
-        slots: { default: "Quote" },
-      } as never,
+        slots: { default: "Quote" }
+      } as never
     );
 
     expect(html).toContain("Quote");
@@ -249,8 +249,8 @@ describe("Blockquote", () => {
       Blockquote as never,
       {
         props: { author: "Ada" },
-        slots: { default: "Q" },
-      } as never,
+        slots: { default: "Q" }
+      } as never
     );
 
     expect(html).toContain("Ada");
@@ -264,10 +264,10 @@ describe("Blockquote", () => {
         props: {
           author: "Ada",
           source: "Docs",
-          sourceUrl: "https://docs.example",
+          sourceUrl: "https://docs.example"
         },
-        slots: { default: "Q" },
-      } as never,
+        slots: { default: "Q" }
+      } as never
     );
 
     expect(html).toContain('href="https://docs.example"');
@@ -279,8 +279,8 @@ describe("Blockquote", () => {
       Blockquote as never,
       {
         props: { source: "Book" },
-        slots: { default: "Q" },
-      } as never,
+        slots: { default: "Q" }
+      } as never
     );
 
     expect(html).toContain("<cite>Book</cite>");
@@ -293,8 +293,8 @@ describe("Page", () => {
       Page as never,
       {
         props: { class: "pt-4" },
-        slots: { default: "Body" },
-      } as never,
+        slots: { default: "Body" }
+      } as never
     );
 
     expect(html).toContain("max-w-6xl");
@@ -309,8 +309,8 @@ describe("FieldLabel", () => {
       FieldLabel as never,
       {
         props: { for: "email" },
-        slots: { default: "Email" },
-      } as never,
+        slots: { default: "Email" }
+      } as never
     );
 
     expect(html).toContain('for="email"');
@@ -323,14 +323,14 @@ describe("TextInput", () => {
     { name: "defaults to text", props: {} },
     {
       name: "email type",
-      props: { id: "email", name: "email", type: "email" },
+      props: { id: "email", name: "email", type: "email" }
     },
     { name: "password type", props: { name: "password", type: "password" } },
     {
       name: "required with placeholder",
-      props: { placeholder: "Type", required: true },
+      props: { placeholder: "Type", required: true }
     },
-    { name: "with value and class", props: { class: "mt-2", value: "hi" } },
+    { name: "with value and class", props: { class: "mt-2", value: "hi" } }
   ])("renders $name", async ({ props }) => {
     const html = await render(TextInput as never, { props } as never);
 
@@ -349,13 +349,13 @@ describe("VideoEmbed", () => {
     { name: "raw video id", props: { videoId: "dQw4w9WgXcQ" } },
     {
       name: "watch URL",
-      props: { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" },
+      props: { url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
     },
     { name: "short URL", props: { url: "https://youtu.be/dQw4w9WgXcQ" } },
     {
       name: "embed URL",
-      props: { url: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
-    },
+      props: { url: "https://www.youtube.com/embed/dQw4w9WgXcQ" }
+    }
   ])("builds the no-cookie embed URL from $name", async ({ props }) => {
     const html = await render(VideoEmbed as never, { props } as never);
 
@@ -372,8 +372,8 @@ describe("VideoEmbed", () => {
     const html = await render(
       VideoEmbed as never,
       {
-        props: { url: "https://example.com/nope" },
-      } as never,
+        props: { url: "https://example.com/nope" }
+      } as never
     );
 
     expect(html).not.toContain("iframe");
@@ -383,8 +383,8 @@ describe("VideoEmbed", () => {
     const html = await render(
       VideoEmbed as never,
       {
-        props: { title: "Demo", videoId: "dQw4w9WgXcQ" },
-      } as never,
+        props: { title: "Demo", videoId: "dQw4w9WgXcQ" }
+      } as never
     );
 
     expect(html).toContain('title="Demo"');
@@ -394,8 +394,8 @@ describe("VideoEmbed", () => {
     const html = await render(
       VideoEmbed as never,
       {
-        props: { videoId: "dQw4w9WgXcQ" },
-      } as never,
+        props: { videoId: "dQw4w9WgXcQ" }
+      } as never
     );
 
     expect(html).toContain('title="YouTube video"');
@@ -405,8 +405,8 @@ describe("VideoEmbed", () => {
     const html = await render(
       VideoEmbed as never,
       {
-        props: { url: "https://youtu.be/dQw4w9WgXcQ", videoId: "" },
-      } as never,
+        props: { url: "https://youtu.be/dQw4w9WgXcQ", videoId: "" }
+      } as never
     );
 
     expect(html).toContain("youtube-nocookie.com/embed/dQw4w9WgXcQ");
@@ -418,8 +418,8 @@ describe("PostImage", () => {
     const html = await render(
       PostImage as never,
       {
-        props: { src: profileImage },
-      } as never,
+        props: { src: profileImage }
+      } as never
     );
 
     expect(html).toContain("<img");
@@ -431,8 +431,8 @@ describe("PostImage", () => {
     const html = await render(
       PostImage as never,
       {
-        props: { alt: "Profile", caption: "Me", src: profileImage },
-      } as never,
+        props: { alt: "Profile", caption: "Me", src: profileImage }
+      } as never
     );
 
     expect(html).toContain("<figcaption");
@@ -443,8 +443,8 @@ describe("PostImage", () => {
     const html = await render(
       PostImage as never,
       {
-        props: { alt: "Profile", caption: "", src: profileImage },
-      } as never,
+        props: { alt: "Profile", caption: "", src: profileImage }
+      } as never
     );
 
     expect(html).not.toContain("<figcaption");
@@ -455,13 +455,13 @@ describe("CodeBlock", () => {
   it.each([
     { expected: "ts", lang: "ts", name: "valid language" },
     { expected: "plaintext", lang: "klingon", name: "unknown language" },
-    { expected: "plaintext", lang: null, name: "missing language" },
+    { expected: "plaintext", lang: null, name: "missing language" }
   ])("sanitizes the language for $name", async ({ expected, lang }) => {
     const html = await render(
       CodeBlock as never,
       {
-        props: { code: "const x = 1;", lang },
-      } as never,
+        props: { code: "const x = 1;", lang }
+      } as never
     );
 
     expect(html).toContain("astro-code");
