@@ -344,9 +344,7 @@ describe("signIn action", () => {
       expect.any(String),
       expect.objectContaining({ httpOnly: true, path: "/" })
     );
-    expect(result).toEqual({
-      data: { redirect: APPLICATIONS_PATH, username: "ada" }
-    });
+    expect(result).toEqual({ redirect: APPLICATIONS_PATH, username: "ada" });
 
     vi.unstubAllGlobals();
   });

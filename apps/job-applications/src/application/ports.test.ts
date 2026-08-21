@@ -24,6 +24,9 @@ describe("ports", () => {
         list: () => {
           return Effect.succeed([]);
         },
+        listAppliedDates: () => {
+          return Effect.succeed([]);
+        },
         update: (app) => {
           return Effect.succeed(app);
         }

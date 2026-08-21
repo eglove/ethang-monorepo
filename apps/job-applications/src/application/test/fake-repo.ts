@@ -1,6 +1,5 @@
 import { Array, type Context, Effect, Layer } from "effect";
 import filter from "lodash/filter.js";
-import isNil from "lodash/isNil.js";
 import overEvery from "lodash/overEvery.js";
 
 import type { JobApplication as JobApp } from "../../domain/job-application/aggregate.ts";
@@ -55,36 +54,39 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
       rows.set(app.id, app);
       return Effect.succeed(app);
     },
-    list: ({ after, email, first, status }) => {
+    list: ({ appliedDate, email, status }) => {
       const predicates = [
         (row: JobApp) => {
           return row.email === email;
         },
         (row: JobApp) => {
           return null === status || row.status === status;
+        },
+        (row: JobApp) => {
+          return row.appliedDate === appliedDate;
         }
       ];
-      if (!isNil(after)) {
-        predicates.push((row: JobApp) => {
-          const dateOrder = row.appliedDate.localeCompare(after.appliedDate);
-          return (
-            0 > dateOrder ||
-            (0 === dateOrder && 0 > row.id.localeCompare(after.id))
-          );
-        });
-      }
       const allRows: JobApp[] = Array.fromIterable(rows.values());
       const items = filter(allRows, (row: JobApp) => {
         return overEvery(predicates)(row);
       });
       return Effect.succeed(
-        items
-          .toSorted((a, b) => {
-            return a.appliedDate === b.appliedDate
-              ? b.id.localeCompare(a.id)
-              : b.appliedDate.localeCompare(a.appliedDate);
-          })
-          .slice(0, first)
+        items.toSorted((a, b) => {
+          return b.id.localeCompare(a.id);
+        })
+      );
+    },
+    listAppliedDates: (email) => {
+      const dates = new Set<string>();
+      for (const row of rows.values()) {
+        if (row.email === email) {
+          dates.add(row.appliedDate);
+        }
+      }
+      return Effect.succeed(
+        Array.fromIterable(dates).toSorted((a, b) => {
+          return b.localeCompare(a);
+        })
       );
     },
     update: (app) => {

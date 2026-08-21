@@ -18,7 +18,7 @@ import {
   markArticleRead,
   MAX_PAGE,
   removeFeed,
-  RSS_PAGE_SIZE
+  RSS_PAGE_SIZE,
 } from "./rss.ts";
 
 const FEED_ID = "feed-1";
@@ -31,12 +31,12 @@ const STRING_FAILURE = "string failure";
 const REMOVE_FEED_PARAMS = { feedId: FEED_ID, sessionToken: SESSION_TOKEN };
 const ADD_FEED_PARAMS = {
   sessionToken: SESSION_TOKEN,
-  xmlAddress: XML_ADDRESS
+  xmlAddress: XML_ADDRESS,
 };
 const MARK_READ_PARAMS = {
   articleId: ARTICLE_ID,
   isRead: true,
-  sessionToken: SESSION_TOKEN
+  sessionToken: SESSION_TOKEN,
 };
 
 const resolveNull = async () => {
@@ -56,7 +56,7 @@ const makeWorker = (overrides: Partial<typeof env.ethang_rss> = {}) => {
     markArticleRead: vi.fn(resolveNull),
     removeSubscription: vi.fn(resolveNull),
     subscriptions: vi.fn(resolveEmptySubscriptions),
-    ...overrides
+    ...overrides,
   };
 };
 
@@ -73,7 +73,7 @@ describe("getPageNumber", () => {
     { expected: 7, name: "leading zeros", raw: "007" },
     { expected: 100, name: "at max", raw: "100" },
     { expected: MAX_PAGE, name: "above max", raw: "999" },
-    { expected: MAX_PAGE, name: "one above max", raw: "101" }
+    { expected: MAX_PAGE, name: "one above max", raw: "101" },
   ])("returns $expected for $name ($raw)", ({ expected, raw }) => {
     const searchParameters = new URLSearchParams();
     if (!isNil(raw)) {
@@ -92,7 +92,7 @@ describe("getFirst", () => {
   it.each([
     { expected: RSS_PAGE_SIZE, page: 1 },
     { expected: RSS_PAGE_SIZE * 3, page: 3 },
-    { expected: RSS_PAGE_SIZE * MAX_PAGE, page: MAX_PAGE }
+    { expected: RSS_PAGE_SIZE * MAX_PAGE, page: MAX_PAGE },
   ])("returns $expected for page $page", ({ expected, page }) => {
     expect(getFirst(page)).toBe(expected);
   });
@@ -108,7 +108,7 @@ describe("buildFormHref", () => {
   it("works without any existing query params", () => {
     const url = new URL("https://ethang.dev/rss");
     expect(buildFormHref(url, "markArticleRead")).toBe(
-      "/rss?_action=markArticleRead"
+      "/rss?_action=markArticleRead",
     );
   });
 
@@ -122,7 +122,7 @@ describe("buildLoadMoreHref", () => {
   it("increments the target page and preserves the other", () => {
     const url = new URL("https://ethang.dev/rss?feedsPage=2&articlesPage=3");
     expect(buildLoadMoreHref(url, FEEDS_PAGE_PARAM)).toBe(
-      "/rss?feedsPage=3&articlesPage=3"
+      "/rss?feedsPage=3&articlesPage=3",
     );
   });
 
@@ -134,7 +134,7 @@ describe("buildLoadMoreHref", () => {
   it("clamps the page at the maximum", () => {
     const url = new URL(`https://ethang.dev/rss?feedsPage=${MAX_PAGE}`);
     expect(buildLoadMoreHref(url, FEEDS_PAGE_PARAM)).toBe(
-      `/rss?feedsPage=${MAX_PAGE}`
+      `/rss?feedsPage=${MAX_PAGE}`,
     );
   });
 });
@@ -147,26 +147,27 @@ describe("getSubscriptions", () => {
         endCursor: null,
         hasNextPage: false,
         hasPreviousPage: false,
-        startCursor: null
-      }
+        startCursor: null,
+      },
     };
     const worker = makeWorker({
       subscriptions: vi.fn(async () => {
         return result;
-      })
+      }),
     });
     await expect(getSubscriptions(worker, SESSION_TOKEN, 2)).resolves.toBe(
-      result
+      result,
     );
   });
 
-  it("passes the growing first limit and the session token", async () => {
+  it("passes the growing first limit, the session token, and title sort", async () => {
     const subscriptions = vi.fn(resolveEmptySubscriptions);
     const worker = makeWorker({ subscriptions });
     await getSubscriptions(worker, SESSION_TOKEN, 3);
     expect(subscriptions).toHaveBeenCalledWith({
       first: getFirst(3),
-      sessionToken: SESSION_TOKEN
+      sessionToken: SESSION_TOKEN,
+      sortBy: { direction: "ASC", field: "TITLE" },
     });
   });
 
@@ -174,10 +175,10 @@ describe("getSubscriptions", () => {
     const worker = makeWorker({
       subscriptions: vi.fn(async () => {
         throw new Error(BOOM);
-      })
+      }),
     });
     await expect(getSubscriptions(worker, SESSION_TOKEN, 1)).resolves.toBe(
-      EMPTY_SUBSCRIPTIONS
+      EMPTY_SUBSCRIPTIONS,
     );
   });
 });
@@ -190,7 +191,7 @@ describe("getArticles", () => {
     expect(allArticles).toHaveBeenCalledWith({
       first: getFirst(2),
       isRead: false,
-      sessionToken: SESSION_TOKEN
+      sessionToken: SESSION_TOKEN,
     });
   });
 
@@ -198,10 +199,10 @@ describe("getArticles", () => {
     const worker = makeWorker({
       allArticles: vi.fn(async () => {
         throw new Error(BOOM);
-      })
+      }),
     });
     await expect(getArticles(worker, SESSION_TOKEN, 1)).resolves.toBe(
-      EMPTY_ARTICLES
+      EMPTY_ARTICLES,
     );
   });
 });
@@ -211,11 +212,11 @@ describe("removeFeed", () => {
     const removeSubscription = vi.fn(resolveNull);
     const worker = makeWorker({ removeSubscription });
     await expect(removeFeed(worker, REMOVE_FEED_PARAMS)).resolves.toEqual({
-      success: true
+      success: true,
     });
     expect(removeSubscription).toHaveBeenCalledWith({
       feedId: FEED_ID,
-      sessionToken: SESSION_TOKEN
+      sessionToken: SESSION_TOKEN,
     });
   });
 
@@ -223,10 +224,10 @@ describe("removeFeed", () => {
     const worker = makeWorker({
       removeSubscription: vi.fn(async () => {
         throw new Error(NOPE);
-      })
+      }),
     });
     await expect(removeFeed(worker, REMOVE_FEED_PARAMS)).resolves.toEqual({
-      error: NOPE
+      error: NOPE,
     });
   });
 
@@ -234,10 +235,10 @@ describe("removeFeed", () => {
     const worker = makeWorker({
       removeSubscription: vi.fn(async () => {
         throw STRING_FAILURE;
-      })
+      }),
     });
     await expect(removeFeed(worker, REMOVE_FEED_PARAMS)).resolves.toEqual({
-      error: STRING_FAILURE
+      error: STRING_FAILURE,
     });
   });
 });
@@ -247,11 +248,11 @@ describe("addFeed", () => {
     const addSubscription = vi.fn(resolveNull);
     const worker = makeWorker({ addSubscription });
     await expect(addFeed(worker, ADD_FEED_PARAMS)).resolves.toEqual({
-      success: true
+      success: true,
     });
     expect(addSubscription).toHaveBeenCalledWith({
       sessionToken: SESSION_TOKEN,
-      xmlAddress: XML_ADDRESS
+      xmlAddress: XML_ADDRESS,
     });
   });
 
@@ -259,10 +260,10 @@ describe("addFeed", () => {
     const worker = makeWorker({
       addSubscription: vi.fn(async () => {
         throw new Error(NOPE);
-      })
+      }),
     });
     await expect(addFeed(worker, ADD_FEED_PARAMS)).resolves.toEqual({
-      error: NOPE
+      error: NOPE,
     });
   });
 });
@@ -272,12 +273,12 @@ describe("markArticleRead", () => {
     const markArticleReadMock = vi.fn(resolveNull);
     const worker = makeWorker({ markArticleRead: markArticleReadMock });
     await expect(markArticleRead(worker, MARK_READ_PARAMS)).resolves.toEqual({
-      success: true
+      success: true,
     });
     expect(markArticleReadMock).toHaveBeenCalledWith({
       articleId: ARTICLE_ID,
       isRead: true,
-      sessionToken: SESSION_TOKEN
+      sessionToken: SESSION_TOKEN,
     });
   });
 
@@ -285,14 +286,14 @@ describe("markArticleRead", () => {
     const worker = makeWorker({
       markArticleRead: vi.fn(async () => {
         throw new Error(NOPE);
-      })
+      }),
     });
     await expect(
       markArticleRead(worker, {
         articleId: ARTICLE_ID,
         isRead: true,
-        sessionToken: SESSION_TOKEN
-      })
+        sessionToken: SESSION_TOKEN,
+      }),
     ).resolves.toEqual({ error: NOPE });
   });
 });

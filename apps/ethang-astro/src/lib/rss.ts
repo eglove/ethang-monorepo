@@ -94,7 +94,8 @@ export const getSubscriptions = async (
       try: async () => {
         return worker.subscriptions({
           first: getFirst(page),
-          sessionToken
+          sessionToken,
+          sortBy: { direction: "ASC", field: "TITLE" }
         });
       }
     }).pipe(

@@ -5,20 +5,21 @@ import isNil from "lodash/isNil.js";
 import isObject from "lodash/isObject.js";
 
 import {
-    APPLICATION_PAGE_SIZE,
     APPLICATION_STATUSES,
+    applicationDatePagination,
     applicationsLoginRedirect,
     applicationsPagePath,
     formatApplicationDate,
     formatApplicationValue,
     isSafeApplicationUrl,
-    parseApplicationCursor,
+    parseApplicationDateParam,
 } from "../lib/applications.ts";
 import { decodeSessionCookie } from "../lib/session.ts";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "../components/ui/Button.astro";
 import Heading from "../components/ui/Heading.astro";
 import Page from "../components/ui/Page.astro";
+import Pagination from "../components/ui/Pagination.astro";
 
 export const prerender = false;
 
@@ -35,16 +36,8 @@ type Application = {
     title: string;
 };
 
-type ListApplicationsInput = {
-    after: null | string;
-    first: number;
-    status: null;
-    token: string;
-};
-
 type ListApplicationsValue = {
     items: Application[];
-    nextCursor: null | string;
 };
 
 type ListApplicationsResult = {
@@ -68,27 +61,70 @@ if (isNil(session)) {
     return Astro.redirect(applicationsLoginRedirect());
 }
 
-const after = parseApplicationCursor(Astro.url.searchParams.get("after"));
+const selectedDate = parseApplicationDateParam(
+    Astro.url.searchParams.get("date"),
+);
 const actionResult = Astro.getActionResult(actions.updateApplicationStatus);
 const actionData = actionResult?.data;
 if (isObject(actionData) && actionData.success === true) {
-    return Astro.redirect(applicationsPagePath(after));
+    return Astro.redirect(applicationsPagePath(selectedDate));
 }
 const actionError = actionResult?.error?.message;
-const actionPath = isNil(after)
+const actionPath = isNil(selectedDate)
     ? actions.updateApplicationStatus
-    : `${actions.updateApplicationStatus}&after=${encodeURIComponent(after)}`;
-const listResult = await env.job_applications
-    .listApplications({
-        after,
-        first: APPLICATION_PAGE_SIZE,
-        status: null,
-        token: session.sessionToken,
-    })
+    : `${actions.updateApplicationStatus}&date=${encodeURIComponent(selectedDate)}`;
+
+const isSuccessfulDatesResult = (
+    result: unknown,
+): result is { ok: true; value: string[] } => {
+    return (
+        isObject(result) && result.ok === true && Array.isArray(result.value)
+    );
+};
+
+const datesResult = await env.job_applications
+    .listAppliedDates({ token: session.sessionToken })
     .catch(() => {
         return null;
     });
-const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
+const datesFailed = !isSuccessfulDatesResult(datesResult);
+const appliedDates = datesFailed ? [] : datesResult.value;
+
+const activeDate = selectedDate ?? appliedDates[0] ?? null;
+const listOutcome =
+    isNil(activeDate) ?
+        ({ ok: true as const, value: { items: [] } } as const)
+    :   await env.job_applications
+            .listApplications({
+                appliedDate: activeDate,
+                status: null,
+                token: session.sessionToken,
+            })
+            .catch(() => {
+                return null;
+            });
+const listFailed = !isSuccessfulListResult(listOutcome);
+const hasLoadError = datesFailed || listFailed;
+const items = listFailed ? [] : listOutcome.value.items;
+const pagination = applicationDatePagination(appliedDates, activeDate);
+
+const isUnauthorizedResult = (result: unknown) => {
+    return (
+        isObject(result) &&
+        "ok" in result &&
+        result.ok === false &&
+        "error" in result &&
+        isObject(result.error) &&
+        "code" in result.error &&
+        result.error.code === "UNAUTHENTICATED"
+    );
+};
+
+if (isUnauthorizedResult(datesResult) || isUnauthorizedResult(listOutcome)) {
+    return Astro.redirect(
+        `/login?redirect=${encodeURIComponent(`${Astro.url.pathname}${Astro.url.search}`)}`,
+    );
+}
 ---
 
 <BaseLayout title="Applications">
@@ -111,13 +147,13 @@ const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
             }
 
             {
-                isNil(listValue) ? (
+                hasLoadError ? (
                     <div class="surface-card border border-danger/60 bg-danger/10 p-5">
                         <p class="text-sm font-medium text-danger">
                             Unable to load applications.
                         </p>
                     </div>
-                ) : listValue.items.length === 0 ? (
+                ) : 0 === items.length ? (
                     <div class="surface-card border border-night-owl-border bg-night-owl-surface/80 p-5">
                         <p class="text-sm text-night-owl-muted">
                             No applications found.
@@ -139,7 +175,7 @@ const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-night-owl-border">
-                                {listValue.items.map((application) => (
+                                {items.map((application) => (
                                     <tr>
                                         <td class="px-4 py-4 font-medium text-night-owl-fg">
                                             {formatApplicationValue(
@@ -193,8 +229,8 @@ const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
                                                 />
                                                 <input
                                                     type="hidden"
-                                                    name="after"
-                                                    value={after ?? ""}
+                                                    name="date"
+                                                    value={activeDate ?? ""}
                                                 />
                                                 <select
                                                     name="status"
@@ -256,16 +292,11 @@ const listValue = isSuccessfulListResult(listResult) ? listResult.value : null;
                 )
             }
 
-            {
-                !isNil(listValue?.nextCursor) ? (
-                    <a
-                        href={applicationsPagePath(listValue.nextCursor)}
-                        class="self-center text-sm font-semibold text-primary hover:text-primary/80"
-                    >
-                        Next page
-                    </a>
-                ) : null
-            }
+            <Pagination
+                ariaLabel="Applications pagination"
+                currentIndex={pagination.currentIndex}
+                entries={pagination.entries}
+            />
         </div>
     </Page>
 </BaseLayout>

@@ -5,6 +5,7 @@ import { env } from "cloudflare:workers";
 import isNil from "lodash/isNil.js";
 import Button from "../components/ui/Button.astro";
 import Card from "../components/ui/Card.astro";
+import InlineLink from "../components/ui/InlineLink.astro";
 import Page from "../components/ui/Page.astro";
 import TextInput from "../components/ui/TextInput.astro";
 
@@ -133,7 +134,9 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
               </p>
             ) : (
               <p class="text-sm text-night-owl-muted">
-                Sign in to manage RSS feeds.
+                <InlineLink variant="underline" href="/login?redirect=%2Frss">
+                  Sign in to manage RSS feeds.
+                </InlineLink>
               </p>
             )
           }
@@ -161,7 +164,18 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
                           {edge.node.title}
                         </p>
                         {edge.node.feed ? (
-                          <p class="text-xs text-night-owl-muted mt-1">
+                          <p class="mt-1 flex items-center gap-1.5 text-xs text-night-owl-muted">
+                            {edge.node.feed.iconUrl ? (
+                              <img
+                                src={edge.node.feed.iconUrl}
+                                alt=""
+                                width="16"
+                                height="16"
+                                loading="lazy"
+                                referrerpolicy="no-referrer"
+                                class="shrink-0 rounded-sm"
+                              />
+                            ) : null}
                             {edge.node.feed.title}
                           </p>
                         ) : null}
@@ -209,7 +223,9 @@ const hasNextArticlesPage = articles.pageInfo.hasNextPage;
               </p>
             ) : (
               <p class="text-sm text-night-owl-muted">
-                Sign in to view RSS articles.
+                <InlineLink variant="underline" href="/login?redirect=%2Frss">
+                  Sign in to view RSS articles.
+                </InlineLink>
               </p>
             )
           }

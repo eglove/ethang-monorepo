@@ -1,10 +1,9 @@
-import { and, desc, eq, lt, or, type SQL } from "drizzle-orm";
+import { and, desc, eq, type SQL } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Effect, Layer } from "effect";
 import isNil from "lodash/isNil.js";
 import map from "lodash/map.js";
 
-import type { ApplicationCursor } from "../../application/application-cursor.ts";
 import type { JobApplication } from "../../domain/job-application/aggregate.ts";
 
 import { JobApplicationRepository } from "../../application/ports/job-application-repository.ts";
@@ -66,16 +65,6 @@ const toRow = (application: JobApplication) => {
 };
 
 const UNIQUE_CONSTRAINT_MSG = "UNIQUE constraint failed";
-
-const appliedDateKeyset = (after: ApplicationCursor) => {
-  return or(
-    lt(jobApplicationsTable.appliedDate, after.appliedDate),
-    and(
-      eq(jobApplicationsTable.appliedDate, after.appliedDate),
-      lt(jobApplicationsTable.id, after.id)
-    )
-  );
-};
 
 const isUniqueViolation = (cause: unknown) => {
   if (!Error.isError(cause)) {
@@ -171,31 +160,42 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
         }
       });
     },
-    list: ({ after, email, first, status }) => {
+    list: ({ appliedDate, email, status }) => {
       return Effect.tryPromise({
         catch: (cause) => {
           return new FetchError(String(cause));
         },
         try: async () => {
           const conditions: (SQL | undefined)[] = [
+            eq(jobApplicationsTable.appliedDate, appliedDate),
             eq(jobApplicationsTable.email, email)
           ];
           if (!isNil(status)) {
             conditions.push(eq(jobApplicationsTable.status, status));
           }
-          if (!isNil(after)) {
-            conditions.push(appliedDateKeyset(after));
-          }
           const rows = await db
             .select()
             .from(jobApplicationsTable)
             .where(and(...conditions))
-            .orderBy(
-              desc(jobApplicationsTable.appliedDate),
-              desc(jobApplicationsTable.id)
-            )
-            .limit(first);
+            .orderBy(desc(jobApplicationsTable.id));
           return map(rows, toAggregate);
+        }
+      });
+    },
+    listAppliedDates: (email) => {
+      return Effect.tryPromise({
+        catch: (cause) => {
+          return new FetchError(String(cause));
+        },
+        try: async () => {
+          const rows = await db
+            .selectDistinct({
+              appliedDate: jobApplicationsTable.appliedDate
+            })
+            .from(jobApplicationsTable)
+            .where(eq(jobApplicationsTable.email, email))
+            .orderBy(desc(jobApplicationsTable.appliedDate));
+          return map(rows, "appliedDate");
         }
       });
     },

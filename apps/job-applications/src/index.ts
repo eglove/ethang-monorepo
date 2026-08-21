@@ -1,6 +1,5 @@
 import { WorkerEntrypoint } from "cloudflare:workers";
 import { Effect, Layer, Schema } from "effect";
-import clamp from "lodash/clamp.js";
 
 import type { JobApplicationRepository } from "./application/ports/job-application-repository.ts";
 import type { ResumeStore } from "./application/ports/resume-store.ts";
@@ -11,6 +10,7 @@ import { deleteApplication } from "./application/delete-application.ts";
 import { getApplication } from "./application/get-application.ts";
 import { getResume } from "./application/get-resume.ts";
 import { listApplications } from "./application/list-applications.ts";
+import { listAppliedDates } from "./application/list-applied-dates.ts";
 import { TokenVerifier } from "./application/ports/token-verifier.ts";
 import { CreateApplicationInputSchema } from "./application/schemas/create-application-input-schema.ts";
 import { ListApplicationsParamsSchema } from "./application/schemas/list-applications-params-schema.ts";
@@ -132,13 +132,25 @@ export class JobApplicationsService extends WorkerEntrypoint<Env> {
           parameters
         );
         const email = yield* verify(input.token);
-        const first = clamp(input.first, 1, 100);
         return yield* listApplications({
-          after: input.after ?? null,
+          appliedDate: input.appliedDate,
           email,
-          first,
           status: input.status ?? null
         });
+      })
+    );
+  }
+
+  public async listAppliedDates(parameters: unknown) {
+    const { run, verify } = this;
+    return run(
+      Effect.gen(function* () {
+        const input = yield* decodeInput(
+          Schema.Struct({ token: Schema.NonEmptyString }),
+          parameters
+        );
+        const email = yield* verify(input.token);
+        return yield* listAppliedDates({ email });
       })
     );
   }

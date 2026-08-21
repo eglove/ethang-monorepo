@@ -66,8 +66,17 @@ export declare class JobApplicationsService extends WorkerEntrypoint<Env> {
         ok: true;
         value: {
             items: import("./domain/job-application/aggregate.ts").JobApplication[];
-            nextCursor: string | null;
         };
+    }>;
+    listAppliedDates(parameters: unknown): Promise<{
+        error: {
+            code: import("./rpc-result.ts").ErrorCode;
+            message: string;
+        };
+        ok: false;
+    } | {
+        ok: true;
+        value: string[];
     }>;
     updateApplication(parameters: unknown): Promise<{
         error: {

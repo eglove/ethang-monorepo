@@ -58,9 +58,9 @@ declare const UpdateApplicationChangesSchema_base: Schema.Class<UpdateApplicatio
 } & {
     readonly status?: "applied" | "screening" | "interview" | "offer" | "rejected" | "withdrawn" | undefined;
 } & {
-    readonly id: string;
-} & {
     readonly token: string;
+} & {
+    readonly id: string;
 }, {}, {}>;
 export declare class UpdateApplicationChangesSchema extends UpdateApplicationChangesSchema_base {
 }

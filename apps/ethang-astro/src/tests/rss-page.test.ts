@@ -24,6 +24,9 @@ vi.mock("cloudflare:workers", () => {
 import Rss from "../pages/rss.astro";
 
 const SESSION = "session";
+const FEED_TITLE = "Feed One";
+const PUBLISHED_AT = "2024-01-01T00:00:00.000Z";
+const FEED_ID = "f1";
 const sessionUser = JSON.stringify({
   email: "ada@example.com",
   sessionToken: "token",
@@ -39,8 +42,8 @@ const makeSubscription = (overrides: Record<string, unknown> = {}) => {
   return {
     cursor: "c1",
     node: {
-      id: "f1",
-      title: "Feed One",
+      id: FEED_ID,
+      title: FEED_TITLE,
       ...overrides
     }
   };
@@ -86,7 +89,7 @@ describe("rss page authenticated", () => {
 
     const html = await render(sessionRequest());
 
-    expect(html).toContain("Feed One");
+    expect(html).toContain(FEED_TITLE);
     expect(html).toContain("Article One");
     expect(html).toContain("Remove Feed One");
     expect(html).toContain("Mark as read");
@@ -130,8 +133,8 @@ describe("rss page authenticated", () => {
     rssWorker.allArticles.mockResolvedValue({
       edges: [
         makeArticle({
-          feed: { iconUrl: null, id: "f1", title: "Feed One" },
-          publishedAt: "2024-01-01T00:00:00.000Z"
+          feed: { iconUrl: null, id: FEED_ID, title: FEED_TITLE },
+          publishedAt: PUBLISHED_AT
         })
       ],
       pageInfo: pageInfo(false)
@@ -139,7 +142,77 @@ describe("rss page authenticated", () => {
 
     const html = await render(sessionRequest());
 
-    expect(html).toContain("Feed One");
+    expect(html).toContain(FEED_TITLE);
+  });
+
+  it("renders the site icon image when the feed provides one", async () => {
+    rssWorker.subscriptions.mockResolvedValue({
+      edges: [],
+      pageInfo: pageInfo(false)
+    });
+    rssWorker.allArticles.mockResolvedValue({
+      edges: [
+        makeArticle({
+          feed: {
+            iconUrl: "https://example.com/favicon.ico",
+            id: FEED_ID,
+            title: FEED_TITLE
+          },
+          publishedAt: PUBLISHED_AT
+        })
+      ],
+      pageInfo: pageInfo(false)
+    });
+
+    const html = await render(sessionRequest());
+
+    expect(html).toContain('src="https://example.com/favicon.ico"');
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('referrerpolicy="no-referrer"');
+  });
+
+  it("omits the icon image when the feed has none", async () => {
+    rssWorker.subscriptions.mockResolvedValue({
+      edges: [],
+      pageInfo: pageInfo(false)
+    });
+    rssWorker.allArticles.mockResolvedValue({
+      edges: [
+        makeArticle({
+          feed: { iconUrl: null, id: FEED_ID, title: FEED_TITLE },
+          publishedAt: PUBLISHED_AT
+        })
+      ],
+      pageInfo: pageInfo(false)
+    });
+
+    const html = await render(sessionRequest());
+
+    expect(html).not.toContain("<img");
+    expect(html).toContain(FEED_TITLE);
+  });
+
+  it("omits the icon image when the article has no feed", async () => {
+    rssWorker.subscriptions.mockResolvedValue({
+      edges: [],
+      pageInfo: pageInfo(false)
+    });
+    rssWorker.allArticles.mockResolvedValue({
+      edges: [makeArticle()],
+      pageInfo: pageInfo(false)
+    });
+
+    const html = await render(sessionRequest());
+
+    expect(html).not.toContain("<img");
+  });
+
+  it("links the sign-in prompts back to the rss page", async () => {
+    const html = await render();
+
+    expect(html).toContain("Sign in to manage RSS feeds.");
+    expect(html).toContain("Sign in to view RSS articles.");
+    expect(html).toContain('href="/login?redirect=%2Frss"');
   });
 
   it("shows the no-feeds message for an authenticated user with no feeds", async () => {

@@ -167,33 +167,39 @@ describe("InlineLink", () => {
 });
 
 describe("Pagination", () => {
-  it("renders nothing when there is only one page", async () => {
+  const ARIA_LABEL = "Applications pagination";
+  const ENTRY_ONE = {
+    href: "/applications?date=2026-08-01",
+    label: "Aug 1, 2026"
+  };
+  const ENTRY_TWO = {
+    href: "/applications?date=2026-07-30",
+    label: "Jul 30, 2026"
+  };
+
+  it("renders nothing for a single entry", async () => {
     const html = await render(
       Pagination as never,
       {
         props: {
-          linkFor: () => {
-            return "/blog/page/1";
-          },
-          maxPages: 1,
-          page: 1
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 0,
+          entries: [ENTRY_ONE]
         }
       } as never
     );
 
-    expect(html).not.toContain("nav");
+    expect(html).not.toContain("<nav");
   });
 
-  it("disables the previous edge on the first page", async () => {
+  it("disables the previous edge on the first entry", async () => {
     const html = await render(
       Pagination as never,
       {
         props: {
-          linkFor: (n: number) => {
-            return `/blog/page/${n}`;
-          },
-          maxPages: 3,
-          page: 1
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 0,
+          entries: [ENTRY_ONE, ENTRY_TWO]
         }
       } as never
     );
@@ -201,24 +207,26 @@ describe("Pagination", () => {
     expect(html).toContain("lsaquo");
     expect(html).toContain('aria-hidden="true"');
     expect(html).toContain('rel="next"');
+    expect(html).not.toContain('rel="prev"');
   });
 
-  it("disables the next edge on the last page and marks the active number", async () => {
+  it("marks the active entry and disables the next edge on the last entry", async () => {
     const html = await render(
       Pagination as never,
       {
         props: {
-          linkFor: (n: number) => {
-            return `/blog/page/${n}`;
-          },
-          maxPages: 2,
-          page: 2
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 1,
+          entries: [ENTRY_ONE, ENTRY_TWO]
         }
       } as never
     );
 
-    expect(html).toContain('rel="prev"');
     expect(html).toContain('aria-current="page"');
+    expect(html).toContain("Jul 30, 2026");
+    expect(html).toContain("Aug 1, 2026");
+    expect(html).toContain('rel="prev"');
+    expect(html).not.toContain('rel="next"');
     expect(html).toContain("rsaquo");
   });
 });

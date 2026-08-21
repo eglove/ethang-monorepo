@@ -7,6 +7,7 @@ const jobApplications = vi.hoisted(() => {
   return {
     getResume: vi.fn(),
     listApplications: vi.fn(),
+    listAppliedDates: vi.fn(),
     updateApplication: vi.fn()
   };
 });
@@ -36,6 +37,9 @@ const UNSAFE_APPLICATION_URL = ["java", "script:alert(1)"].join("");
 const BACKEND_ERROR = "secret backend detail";
 const RESUME_FILENAME = "resume.pdf";
 const TOKEN = "token";
+const LOGIN_REDIRECT = "/login?redirect=%2Fapplications";
+const DATE_LATEST = "2026-08-01";
+const DATE_PREVIOUS = "2026-07-30";
 const INVALID_TOKEN = "invalid token";
 const SESSION = JSON.stringify({
   email: "ada@example.com",
@@ -80,7 +84,7 @@ const renderActionResult = async (actionResult: {
           actionResult
         }
       },
-      request: new Request(`${APPLICATIONS_URL}?after=current-1`, {
+      request: new Request(`${APPLICATIONS_URL}?date=${DATE_PREVIOUS}`, {
         headers: { Cookie: `session=${encodeURIComponent(SESSION)}` }
       })
     } as never
@@ -120,9 +124,14 @@ const makeApplication = (overrides: Partial<Application> = {}) => {
 beforeEach(() => {
   jobApplications.listApplications.mockReset();
   jobApplications.getResume.mockReset();
+  jobApplications.listAppliedDates.mockReset();
+  jobApplications.listAppliedDates.mockResolvedValue({
+    ok: true,
+    value: [DATE_LATEST]
+  });
   jobApplications.listApplications.mockResolvedValue({
     ok: true,
-    value: { items: [], nextCursor: null }
+    value: { items: [] }
   });
 });
 
@@ -251,9 +260,7 @@ describe("resume endpoint", () => {
       });
 
       expect(response.status).toBe(302);
-      expect(response.headers.get("location")).toBe(
-        "/login?redirect=%2Fapplications"
-      );
+      expect(response.headers.get("location")).toBe(LOGIN_REDIRECT);
       expect(jobApplications.getResume).not.toHaveBeenCalled();
     }
   );
@@ -266,9 +273,7 @@ describe("applications page authentication", () => {
       const response = await renderResponse(APPLICATIONS_URL, session);
 
       expect(response.status).toBe(302);
-      expect(response.headers.get("location")).toBe(
-        "/login?redirect=%2Fapplications"
-      );
+      expect(response.headers.get("location")).toBe(LOGIN_REDIRECT);
       expect(jobApplications.listApplications).not.toHaveBeenCalled();
     }
   );
@@ -294,34 +299,78 @@ describe("applications page loading", () => {
     expect(html).toContain("Acme");
   });
 
-  it("loads 25 applications with the session token and cursor", async () => {
+  it("loads the requested date with the session token", async () => {
     jobApplications.listApplications.mockResolvedValue({
       ok: true,
-      value: { items: [makeApplication()], nextCursor: "next-1" }
+      value: { items: [makeApplication()] }
     });
 
-    const html = await render(`${APPLICATIONS_URL}?after=current-1`);
+    const html = await render(`${APPLICATIONS_URL}?date=${DATE_PREVIOUS}`);
 
+    expect(jobApplications.listAppliedDates).toHaveBeenCalledWith({
+      token: TOKEN
+    });
     expect(jobApplications.listApplications).toHaveBeenCalledWith({
-      after: "current-1",
-      first: 25,
+      appliedDate: DATE_PREVIOUS,
       status: null,
       token: TOKEN
     });
     expect(html).toContain("Acme");
-    expect(html).toContain('href="/applications?after=next-1"');
     expect(html).not.toContain("token");
   });
 
-  it("ignores an empty cursor", async () => {
-    await render(`${APPLICATIONS_URL}?after=`);
+  it("defaults to the newest applied date without a date parameter", async () => {
+    await render(APPLICATIONS_URL);
 
-    expect(jobApplications.listApplications.mock.calls.at(-1)?.[0]).toEqual({
-      after: null,
-      first: 25,
+    expect(jobApplications.listApplications).toHaveBeenCalledWith({
+      appliedDate: DATE_LATEST,
       status: null,
       token: TOKEN
     });
+  });
+
+  it("falls back to the newest applied date for an invalid date", async () => {
+    await render(`${APPLICATIONS_URL}?date=not-a-date`);
+
+    expect(jobApplications.listApplications).toHaveBeenCalledWith({
+      appliedDate: DATE_LATEST,
+      status: null,
+      token: TOKEN
+    });
+  });
+
+  it("redirects to login when the worker rejects the session token", async () => {
+    jobApplications.listAppliedDates.mockResolvedValue({
+      error: { code: "UNAUTHENTICATED", message: "Unauthorized" },
+      ok: false
+    });
+
+    const response = await renderResponse(APPLICATIONS_URL);
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(LOGIN_REDIRECT);
+  });
+
+  it("redirects to login preserving the date bucket when unauthorized", async () => {
+    jobApplications.listAppliedDates.mockResolvedValue({
+      ok: true,
+      value: [DATE_LATEST]
+    });
+    jobApplications.listApplications.mockResolvedValue({
+      error: { code: "UNAUTHENTICATED", message: "Unauthorized" },
+      ok: false
+    });
+
+    const response = await renderResponse(
+      `${APPLICATIONS_URL}?date=${DATE_PREVIOUS}`
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      `/login?redirect=${encodeURIComponent(
+        `/applications?date=${DATE_PREVIOUS}`
+      )}`
+    );
   });
 
   it.each([
@@ -401,16 +450,16 @@ describe("applications page rendering", () => {
       }
     });
 
-    const html = await render(`${APPLICATIONS_URL}?after=current-1`);
+    const html = await render(`${APPLICATIONS_URL}?date=${DATE_PREVIOUS}`);
 
     expect(
       html.match(
         /<form method="POST" action="[^"]*updateApplicationStatus[^"]*"/gu
       )
     ).toHaveLength(2);
-    expect(html.match(/name="after" value="current-1"/gu)).toHaveLength(2);
+    expect(html.match(/name="date" value="2026-07-30"/gu)).toHaveLength(2);
     expect(html).toContain(
-      'action="?_action=updateApplicationStatus&amp;after=current-1"'
+      'action="?_action=updateApplicationStatus&amp;date=2026-07-30"'
     );
     expect(html).toContain('name="id" value="application-1"');
     expect(html).toContain('name="id" value="application-2"');
@@ -442,7 +491,7 @@ describe("applications page rendering", () => {
 
     expect(response.status).toBe(302);
     expect(response.headers.get("location")).toBe(
-      "/applications?after=current-1"
+      `/applications?date=${DATE_PREVIOUS}`
     );
   });
 
@@ -463,8 +512,7 @@ describe("applications page rendering", () => {
     expect(html).toContain("Unable to update application.");
     expect(html).not.toContain(BACKEND_ERROR);
     expect(jobApplications.listApplications).toHaveBeenCalledWith({
-      after: "current-1",
-      first: 25,
+      appliedDate: DATE_PREVIOUS,
       status: null,
       token: TOKEN
     });
@@ -497,6 +545,22 @@ describe("applications page rendering", () => {
     expect(html).not.toContain(`href="${APPLICATION_URL}"`);
     expect(html).not.toContain(RESUME_FILENAME);
     expect(html).not.toContain("/applications/application-1/resume");
+  });
+
+  it("renders date navigation linking every applied date", async () => {
+    jobApplications.listAppliedDates.mockResolvedValue({
+      ok: true,
+      value: [DATE_LATEST, DATE_PREVIOUS]
+    });
+
+    const html = await render(APPLICATIONS_URL);
+
+    // These hrefs are produced exclusively by the date pagination control.
+    expect(html).toContain(`href="/applications?date=${DATE_LATEST}"`);
+    expect(html).toContain(`href="/applications?date=${DATE_PREVIOUS}"`);
+    expect(html).toContain('aria-label="Applications pagination"');
+    expect(html).toContain("Aug 1, 2026");
+    expect(html).toContain('aria-current="page"');
   });
 
   it("does not add applications to the navigation links", async () => {

@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 
 import BaseLayout from "./BaseLayout.astro";
 
+const SITE_ORIGIN = "https://ethang.dev/";
+
 const render = async (
   properties: Record<string, unknown>,
   request?: Request
@@ -16,12 +18,12 @@ const render = async (
 
 describe("BaseLayout", () => {
   it("renders the default head and the logged-out nav", async () => {
-    const html = await render({});
+    const html = await render({}, new Request(SITE_ORIGIN));
 
     expect(html).toContain("<title>Ethan Glover</title>");
     expect(html).toContain('content="website"');
     expect(html).toContain('name="twitter:card" content="summary"');
-    expect(html).toContain('href="/login"');
+    expect(html).toContain('href="/login?redirect=%2F"');
   });
 
   it("renders description, article times, and a canonical link", async () => {
@@ -49,7 +51,7 @@ describe("BaseLayout", () => {
       sessionToken: "token",
       username: "ada"
     });
-    const request = new Request("https://ethang.dev/", {
+    const request = new Request(SITE_ORIGIN, {
       headers: { cookie: `session=${session}` }
     });
     const html = await render({}, request);
@@ -59,11 +61,17 @@ describe("BaseLayout", () => {
   });
 
   it("falls back to the login link for an invalid session cookie", async () => {
-    const request = new Request("https://ethang.dev/", {
+    const request = new Request(SITE_ORIGIN, {
       headers: { cookie: "session=not-json" }
     });
     const html = await render({}, request);
 
-    expect(html).toContain('href="/login"');
+    expect(html).toContain('href="/login?redirect=%2F"');
+  });
+
+  it("points the login link back to the page the visitor came from", async () => {
+    const html = await render({}, new Request("https://ethang.dev/rss"));
+
+    expect(html).toContain('href="/login?redirect=%2Frss"');
   });
 });
