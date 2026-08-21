@@ -207,6 +207,14 @@ describe("rss page authenticated", () => {
     expect(html).not.toContain("<img");
   });
 
+  it("links the sign-in prompts back to the rss page", async () => {
+    const html = await render();
+
+    expect(html).toContain("Sign in to manage RSS feeds.");
+    expect(html).toContain("Sign in to view RSS articles.");
+    expect(html).toContain('href="/login?redirect=%2Frss"');
+  });
+
   it("shows the no-feeds message for an authenticated user with no feeds", async () => {
     rssWorker.subscriptions.mockResolvedValue({
       edges: [],

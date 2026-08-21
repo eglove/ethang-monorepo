@@ -107,6 +107,24 @@ const listFailed = !isSuccessfulListResult(listOutcome);
 const hasLoadError = datesFailed || listFailed;
 const items = listFailed ? [] : listOutcome.value.items;
 const pagination = applicationDatePagination(appliedDates, activeDate);
+
+const isUnauthorizedResult = (result: unknown) => {
+    return (
+        isObject(result) &&
+        "ok" in result &&
+        result.ok === false &&
+        "error" in result &&
+        isObject(result.error) &&
+        "code" in result.error &&
+        result.error.code === "UNAUTHENTICATED"
+    );
+};
+
+if (isUnauthorizedResult(datesResult) || isUnauthorizedResult(listOutcome)) {
+    return Astro.redirect(
+        `/login?redirect=${encodeURIComponent(`${Astro.url.pathname}${Astro.url.search}`)}`,
+    );
+}
 ---
 
 <BaseLayout title="Applications">

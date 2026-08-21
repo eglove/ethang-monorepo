@@ -179,10 +179,8 @@ export const server = {
 
       const decodedUser = signInResult.success;
       return {
-        data: {
-          redirect: resolveLoginRedirect(input.redirect),
-          username: decodedUser?.username ?? ""
-        }
+        redirect: resolveLoginRedirect(input.redirect),
+        username: decodedUser?.username ?? ""
       };
     },
     input: z.object({

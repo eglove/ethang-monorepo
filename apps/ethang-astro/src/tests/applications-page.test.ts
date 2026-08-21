@@ -37,6 +37,7 @@ const UNSAFE_APPLICATION_URL = ["java", "script:alert(1)"].join("");
 const BACKEND_ERROR = "secret backend detail";
 const RESUME_FILENAME = "resume.pdf";
 const TOKEN = "token";
+const LOGIN_REDIRECT = "/login?redirect=%2Fapplications";
 const DATE_LATEST = "2026-08-01";
 const DATE_PREVIOUS = "2026-07-30";
 const INVALID_TOKEN = "invalid token";
@@ -259,9 +260,7 @@ describe("resume endpoint", () => {
       });
 
       expect(response.status).toBe(302);
-      expect(response.headers.get("location")).toBe(
-        "/login?redirect=%2Fapplications"
-      );
+      expect(response.headers.get("location")).toBe(LOGIN_REDIRECT);
       expect(jobApplications.getResume).not.toHaveBeenCalled();
     }
   );
@@ -274,9 +273,7 @@ describe("applications page authentication", () => {
       const response = await renderResponse(APPLICATIONS_URL, session);
 
       expect(response.status).toBe(302);
-      expect(response.headers.get("location")).toBe(
-        "/login?redirect=%2Fapplications"
-      );
+      expect(response.headers.get("location")).toBe(LOGIN_REDIRECT);
       expect(jobApplications.listApplications).not.toHaveBeenCalled();
     }
   );
@@ -340,6 +337,40 @@ describe("applications page loading", () => {
       status: null,
       token: TOKEN
     });
+  });
+
+  it("redirects to login when the worker rejects the session token", async () => {
+    jobApplications.listAppliedDates.mockResolvedValue({
+      error: { code: "UNAUTHENTICATED", message: "Unauthorized" },
+      ok: false
+    });
+
+    const response = await renderResponse(APPLICATIONS_URL);
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(LOGIN_REDIRECT);
+  });
+
+  it("redirects to login preserving the date bucket when unauthorized", async () => {
+    jobApplications.listAppliedDates.mockResolvedValue({
+      ok: true,
+      value: [DATE_LATEST]
+    });
+    jobApplications.listApplications.mockResolvedValue({
+      error: { code: "UNAUTHENTICATED", message: "Unauthorized" },
+      ok: false
+    });
+
+    const response = await renderResponse(
+      `${APPLICATIONS_URL}?date=${DATE_PREVIOUS}`
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      `/login?redirect=${encodeURIComponent(
+        `/applications?date=${DATE_PREVIOUS}`
+      )}`
+    );
   });
 
   it.each([

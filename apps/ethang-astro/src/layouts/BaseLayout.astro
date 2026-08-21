@@ -89,6 +89,10 @@ const session = await Effect.runPromise(
 
 const isLoggedIn = !isNil(session);
 const currentPath = Astro.url.pathname;
+const loginHref =
+  currentPath === "/login"
+    ? "/login"
+    : `/login?redirect=${encodeURIComponent(currentPath)}`;
 ---
 
 <!doctype html>
@@ -166,7 +170,7 @@ const currentPath = Astro.url.pathname;
                 </form>
               </div>
             ) : (
-              <InlineLink variant="nav" href="/login" class={navLinkClass(currentPath === "/login")}>
+              <InlineLink variant="nav" href={loginHref} class={navLinkClass(currentPath === "/login")}>
                 {navigation.LOGIN}
               </InlineLink>
             )
