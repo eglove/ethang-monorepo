@@ -36,9 +36,9 @@
 	* `import reactConfig from "@ethang/eslint-config/config.react.js";`
 	* 139 rules from [@eslint-react/eslint-plugin](https://eslint-react.xyz/)
 	* 29 rules from [eslint-plugin-react-hooks](https://github.com/facebook/react/tree/main/packages/eslint-plugin-react-hooks)
-* 18 rules for **Solid**
+* 25 rules for **Solid**
 	* `import solidConfig from "@ethang/eslint-config/config.solid.js";`
-	* 18 rules from [eslint-plugin-solid](https://github.com/solidjs-community/eslint-plugin-solid)
+	* 25 rules from [eslint-plugin-solid](https://github.com/solidjs-community/eslint-plugin-solid)
 * 89 rules for **Angular**
 	* `import angularConfig from "@ethang/eslint-config/config.angular.js";`
 	* 50 rules from [@angular-eslint/eslint-plugin](https://github.com/angular-eslint/angular-eslint/blob/main/packages/eslint-plugin/README.md)
@@ -46,9 +46,9 @@
 * 16 rules for **Storybook**
 	* `import storybookConfig from "@ethang/eslint-config/config.storybook.js";`
 	* 16 rules from [eslint-plugin-storybook](https://github.com/storybookjs/eslint-plugin-storybook)
-* 6 rules for **Tailwind**
+* 7 rules for **Tailwind**
 	* `import tailwindConfig from "@ethang/eslint-config/config.tailwind.js";`
-	* 6 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
+	* 7 rules from [eslint-plugin-tailwindcss](https://github.com/francoismassart/eslint-plugin-tailwindcss)
 * 70 rules for **Vitest**
 	* `import vitestConfig from "@ethang/eslint-config/config.vitest.js";`
 	* 70 rules from [@vitest/eslint-plugin](https://github.com/vitest-dev/eslint-plugin-vitest)

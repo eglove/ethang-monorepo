@@ -13,12 +13,12 @@
     "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.25",
-    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/coverage-v8": "^4.1.11",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.0",
     "typescript": "^6.0.3",
-    "vite": "^8.2.1",
-    "vitest": "^4.1.10"
+    "vite": "^8.2.2",
+    "vitest": "^4.1.11"
   },
   "engines": {
     "node": ">=24"

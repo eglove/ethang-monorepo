@@ -8,5 +8,5 @@
     "skipLibCheck": true
   },
   "extends": "./tsconfig.json",
-  "include": ["src/index.ts", "worker-configuration.d.ts"]
+  "include": ["src/index.ts", "src/**/*.d.ts", "worker-configuration.d.ts"]
 }

@@ -6,12 +6,12 @@
   "dependencies": {
     "drizzle-orm": "^0.45.2",
     "effect": "^3.22.1",
-    "fast-xml-parser": "^5.10.1",
+    "fast-xml-parser": "^5.11.0",
     "lodash": "^4.18.1",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.2"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.21.3",
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@ethang/eslint-config": "workspace:*",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.25",
@@ -19,10 +19,10 @@
     "browserslist-config-baseline": "^0.5.0",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.0",
     "typescript": "^6.0.3",
-    "vitest": "~4.1.10",
-    "wrangler": "^4.123.0"
+    "vitest": "~4.1.11",
+    "wrangler": "^4.125.0"
   },
   "engines": {
     "node": ">=24"

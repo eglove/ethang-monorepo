@@ -5,20 +5,20 @@
     "current node"
   ],
   "dependencies": {
-    "@sanity/cli": "^8.0.0",
-    "@sanity/code-input": "^7.3.5",
-    "@sanity/dashboard": "^6.0.16",
+    "@sanity/cli": "^8.2.1",
+    "@sanity/code-input": "^7.3.7",
+    "@sanity/dashboard": "^6.0.18",
     "@sanity/icons": "^5.2.1",
-    "@sanity/orderable-document-list": "^2.0.20",
-    "@sanity/vision": "^6.9.2",
+    "@sanity/orderable-document-list": "^2.0.22",
+    "@sanity/vision": "^6.10.1",
     "@types/react": "19.2.18",
     "effect": "^3.22.1",
     "lodash": "^4.18.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-is": "^19.2.8",
-    "sanity": "^6.9.2",
-    "styled-components": "^6.5.2"
+    "sanity": "^6.10.1",
+    "styled-components": "^6.5.3"
   },
   "description": "",
   "devDependencies": {
@@ -27,11 +27,11 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.25",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.8.1",
+    "eslint": "^10.9.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
-    "vite": "^8.2.1",
-    "wrangler": "^4.123.0"
+    "vite": "^8.2.2",
+    "wrangler": "^4.125.0"
   },
   "engines": {
     "node": ">=24"
