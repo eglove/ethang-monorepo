@@ -1,17 +1,18 @@
 import { Schema } from "effect";
 
+import { isIsoDate } from "../../domain/job-application/iso-date.ts";
 import { STATUSES } from "../../domain/job-application/status.ts";
-import { ApplicationCursorFromEncoded } from "../application-cursor.ts";
+
+const AppliedDateSchema = Schema.NonEmptyString.pipe(
+  Schema.filter((value) => {
+    return isIsoDate(value);
+  }),
+);
 
 export class ListApplicationsParamsSchema extends Schema.Class<ListApplicationsParamsSchema>(
-  "ListApplicationsParamsSchema"
+  "ListApplicationsParamsSchema",
 )({
-  after: Schema.optionalWith(ApplicationCursorFromEncoded, { nullable: true }),
-  first: Schema.optionalWith(Schema.Number, {
-    default: () => {
-      return 50;
-    }
-  }),
+  appliedDate: AppliedDateSchema,
   status: Schema.optionalWith(Schema.Literal(...STATUSES), { nullable: true }),
-  token: Schema.NonEmptyString
+  token: Schema.NonEmptyString,
 }) {}

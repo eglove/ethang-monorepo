@@ -1,13 +1,14 @@
 import { applyD1Migrations } from "cloudflare:test";
 import { env } from "cloudflare:workers";
-import { Array, Effect } from "effect";
-import filter from "lodash/filter.js";
-import isNil from "lodash/isNil.js";
+import { Effect } from "effect";
 import map from "lodash/map.js";
 import { beforeAll, beforeEach, describe, expect, inject, it } from "vitest";
 
 import { JobApplicationRepository } from "../../application/ports/job-application-repository.ts";
-import { createJobApplication } from "../../domain/job-application/aggregate.ts";
+import {
+  createJobApplication,
+  type JobApplication,
+} from "../../domain/job-application/aggregate.ts";
 import { DuplicateApplicationError } from "../../errors/duplicate-application-error.ts";
 import { createJobApplicationRepositoryLayer } from "./repository.ts";
 
@@ -21,6 +22,7 @@ beforeEach(async () => {
 });
 
 const EMAIL = "me@example.com";
+const FOREIGN_EMAIL = "other@example.com";
 const TITLE = "Engineer";
 const COMPANY = "Acme";
 const APPLIED_DATE = "2026-08-01";
@@ -38,60 +40,70 @@ const make = (url = jobUrl("1"), appliedDate = APPLIED_DATE) => {
       appliedDate,
       company: COMPANY,
       email: EMAIL,
-      title: TITLE
-    })
+      title: TITLE,
+    }),
+  );
+};
+
+const run = async <A>(
+  effect: Effect.Effect<A, unknown, JobApplicationRepository>,
+) => {
+  return Effect.runPromise(
+    Effect.provide(
+      effect,
+      createJobApplicationRepositoryLayer(env.jobApplications),
+    ),
+  );
+};
+
+const insertAll = async (apps: readonly JobApplication[]) => {
+  await run(
+    Effect.gen(function* () {
+      const repo = yield* JobApplicationRepository;
+      yield* Effect.forEach(
+        apps,
+        (app) => {
+          return repo.insert(app);
+        },
+        { discard: true },
+      );
+    }),
   );
 };
 
 describe("drizzle repository", () => {
   it("inserts and finds by id (owner only)", async () => {
     const app = make();
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
     await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      })
+      }),
     );
     const found = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, EMAIL);
-      })
+      }),
     );
     expect(found?.title).toBe("Engineer");
     const foreign = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
-        return yield* repo.findById(app.id, "other@example.com");
-      })
+        return yield* repo.findById(app.id, FOREIGN_EMAIL);
+      }),
     );
     expect(foreign).toBeNull();
   });
 
   it("maps the unique constraint violation to DuplicateApplicationError", async () => {
     const app = make();
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
     // first insert must succeed
     await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      })
+      }),
     );
     // second insert with same (email, URL) must fail with DuplicateApplicationError
     const duplicate = await Effect.runPromise(
@@ -99,211 +111,138 @@ describe("drizzle repository", () => {
         Effect.gen(function* () {
           const repo = yield* JobApplicationRepository;
           return yield* repo.insert(make());
-        }).pipe(Effect.provide(layerInstance))
-      )
+        }).pipe(
+          Effect.provide(
+            createJobApplicationRepositoryLayer(env.jobApplications),
+          ),
+        ),
+      ),
     );
     expect(duplicate).toBeInstanceOf(DuplicateApplicationError);
   });
 
   it("updates and deletes", async () => {
     const app = make();
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
     await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.insert(app);
-      })
+      }),
     );
     const updated = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.update({ ...app, salary: "$150k" });
-      })
+      }),
     );
     expect(updated.salary).toBe("$150k");
     const refetched = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.findById(app.id, EMAIL);
-      })
+      }),
     );
     expect(refetched?.salary).toBe("$150k");
     const isDeleted = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.delete(app.id, EMAIL);
-      })
+      }),
     );
     expect(isDeleted).toBe(true);
     const isAgain = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.delete(app.id, EMAIL);
-      })
+      }),
     );
     expect(isAgain).toBe(false);
   });
 });
 
 describe("drizzle repository (list)", () => {
-  it("lists newest appliedDate first with id tie-break", async () => {
+  it("lists only the requested applied date, newest id first", async () => {
     const june = make(jobUrl("june"), JUNE);
     const july = make(jobUrl("july"), JULY);
     const augustA = make(jobUrl("august-a"), APPLIED_DATE);
     const augustB = make(jobUrl("august-b"), APPLIED_DATE);
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
-    await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        yield* repo.insert(june);
-        yield* repo.insert(july);
-        yield* repo.insert(augustA);
-        yield* repo.insert(augustB);
-      })
-    );
-    const page = await run(
+    await insertAll([june, july, augustA, augustB]);
+    const items = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.list({
-          after: null,
+          appliedDate: APPLIED_DATE,
           email: EMAIL,
-          first: 10,
-          status: null
+          status: null,
         });
-      })
+      }),
     );
-    expect(map(page, "appliedDate")).toStrictEqual([
-      APPLIED_DATE,
-      APPLIED_DATE,
-      JULY,
-      JUNE
-    ]);
-    const augustIds = map(filter(page, ["appliedDate", APPLIED_DATE]), "id");
-    expect(augustIds).toStrictEqual(
-      Array.fromIterable(augustIds).toSorted((a, b) => {
-        return b.localeCompare(a);
-      })
-    );
-  });
-
-  it("paginates by composite cursor without skipping tied dates", async () => {
-    const june = make(jobUrl("june"), JUNE);
-    const july = make(jobUrl("july"), JULY);
-    const augustA = make(jobUrl("august-a"), APPLIED_DATE);
-    const augustB = make(jobUrl("august-b"), APPLIED_DATE);
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
-    await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        yield* repo.insert(june);
-        yield* repo.insert(july);
-        yield* repo.insert(augustA);
-        yield* repo.insert(augustB);
-      })
-    );
-    const augustIds = [augustA.id, augustB.id].toSorted((a, b) => {
+    const expectedIds = [augustA.id, augustB.id].toSorted((a, b) => {
       return b.localeCompare(a);
     });
-    const page1 = await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        return yield* repo.list({
-          after: null,
-          email: EMAIL,
-          first: 2,
-          status: null
-        });
-      })
-    );
-    expect(map(page1, "id")).toStrictEqual(augustIds);
-    const lastOfPage1 = page1.at(-1);
-    if (isNil(lastOfPage1)) {
-      throw new Error("the first page must contain rows");
-    }
-    const page2 = await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        return yield* repo.list({
-          after: {
-            appliedDate: lastOfPage1.appliedDate,
-            id: lastOfPage1.id
-          },
-          email: EMAIL,
-          first: 2,
-          status: null
-        });
-      })
-    );
-    expect(map(page2, "id")).toStrictEqual([july.id, june.id]);
-    const seenIds = [...map(page1, "id"), ...map(page2, "id")];
-    const uniqueIds = new Set(seenIds);
-    expect(uniqueIds.size).toBe(seenIds.length);
-    expect(seenIds).toStrictEqual([...augustIds, july.id, june.id]);
+    expect(map(items, "id")).toStrictEqual(expectedIds);
   });
 
-  it("lists with a composite after cursor", async () => {
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
-    const a = await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        return yield* repo.insert(make(jobUrl("a"), JUNE));
-      })
-    );
-    const b = await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        return yield* repo.insert(make(jobUrl("b"), "2026-07-15"));
-      })
-    );
-    await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        return yield* repo.insert(make(jobUrl("c"), APPLIED_DATE));
-      })
-    );
-    // The cursor sits on b; b itself and anything newer (c) are excluded.
-    const page = await run(
+  it("returns an empty list for a date without applications", async () => {
+    await insertAll([make(jobUrl("june"), JUNE)]);
+    const items = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.list({
-          after: { appliedDate: b.appliedDate, id: b.id },
+          appliedDate: APPLIED_DATE,
           email: EMAIL,
-          first: 10,
-          status: null
+          status: null,
         });
-      })
+      }),
     );
-    expect(page).toHaveLength(1);
-    const [only] = page;
-    expect(only?.id).toBe(a.id);
+    expect(items).toStrictEqual([]);
+  });
+
+  it("lists distinct applied dates newest first", async () => {
+    await insertAll([
+      make(jobUrl("june"), JUNE),
+      make(jobUrl("july"), JULY),
+      make(jobUrl("august-a"), APPLIED_DATE),
+      make(jobUrl("august-b"), APPLIED_DATE),
+    ]);
+    const dates = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.listAppliedDates(EMAIL);
+      }),
+    );
+    expect(dates).toStrictEqual([APPLIED_DATE, JULY, JUNE]);
+  });
+
+  it("excludes other users from the applied dates", async () => {
+    const mine = make(jobUrl("mine"), JUNE);
+    const foreign = Effect.runSync(
+      createJobApplication({
+        applicationUrl: jobUrl("foreign"),
+        appliedDate: APPLIED_DATE,
+        company: COMPANY,
+        email: FOREIGN_EMAIL,
+        title: TITLE,
+      }),
+    );
+    await insertAll([mine, foreign]);
+    const dates = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.listAppliedDates(EMAIL);
+      }),
+    );
+    expect(dates).toStrictEqual([JUNE]);
+  });
+
+  it("returns no dates for a user without applications", async () => {
+    const dates = await run(
+      Effect.gen(function* () {
+        const repo = yield* JobApplicationRepository;
+        return yield* repo.listAppliedDates(EMAIL);
+      }),
+    );
+    expect(dates).toStrictEqual([]);
   });
 });
 
@@ -317,34 +256,19 @@ describe("drizzle repository (filters)", () => {
         company: COMPANY,
         email: EMAIL,
         status: "interview",
-        title: TITLE
-      })
+        title: TITLE,
+      }),
     );
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
-    await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        yield* repo.insert(applied);
-        yield* repo.insert(interview);
-      })
-    );
+    await insertAll([applied, interview]);
     const results = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.list({
-          after: null,
+          appliedDate: APPLIED_DATE,
           email: EMAIL,
-          first: 10,
-          status: "applied"
+          status: "applied",
         });
-      })
+      }),
     );
     expect(results).toHaveLength(1);
     const [only] = results;
@@ -358,35 +282,20 @@ describe("drizzle repository (filters)", () => {
         applicationUrl: jobUrl("foreign"),
         appliedDate: APPLIED_DATE,
         company: COMPANY,
-        email: "other@example.com",
-        title: TITLE
-      })
+        email: FOREIGN_EMAIL,
+        title: TITLE,
+      }),
     );
-    const layerInstance = createJobApplicationRepositoryLayer(
-      env.jobApplications
-    );
-    const run = async <A>(
-      effect: Effect.Effect<A, unknown, JobApplicationRepository>
-    ) => {
-      return Effect.runPromise(Effect.provide(effect, layerInstance));
-    };
-    await run(
-      Effect.gen(function* () {
-        const repo = yield* JobApplicationRepository;
-        yield* repo.insert(mine);
-        yield* repo.insert(foreign);
-      })
-    );
+    await insertAll([mine, foreign]);
     const results = await run(
       Effect.gen(function* () {
         const repo = yield* JobApplicationRepository;
         return yield* repo.list({
-          after: null,
+          appliedDate: APPLIED_DATE,
           email: EMAIL,
-          first: 10,
-          status: null
+          status: null,
         });
-      })
+      }),
     );
     expect(results).toHaveLength(1);
     const [only] = results;

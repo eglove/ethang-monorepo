@@ -4,18 +4,17 @@ import type { Status } from "../../domain/job-application/status.ts";
 import type { DuplicateApplicationError } from "../../errors/duplicate-application-error.ts";
 import type { FetchError } from "../../errors/fetch-error.ts";
 import type { SaveError } from "../../errors/save-error.ts";
-import type { ApplicationCursor } from "../application-cursor.ts";
 declare const JobApplicationRepository_base: Context.TagClass<JobApplicationRepository, "JobApplicationRepository", {
     readonly delete: (id: string, email: string) => Effect.Effect<boolean, FetchError>;
     readonly findByEmailAndUrl: (email: string, appUrl: string) => Effect.Effect<JobApplication | null, FetchError>;
     readonly findById: (id: string, email: string) => Effect.Effect<JobApplication | null, FetchError>;
     readonly insert: (app: JobApplication) => Effect.Effect<JobApplication, DuplicateApplicationError | SaveError>;
     readonly list: (parameters: {
-        readonly after: ApplicationCursor | null;
+        readonly appliedDate: string;
         readonly email: string;
-        readonly first: number;
         readonly status: null | Status;
     }) => Effect.Effect<JobApplication[], FetchError>;
+    readonly listAppliedDates: (email: string) => Effect.Effect<string[], FetchError>;
     readonly update: (app: JobApplication) => Effect.Effect<JobApplication, SaveError>;
 }>;
 export declare class JobApplicationRepository extends JobApplicationRepository_base {

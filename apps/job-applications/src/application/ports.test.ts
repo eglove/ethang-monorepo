@@ -24,9 +24,12 @@ describe("ports", () => {
         list: () => {
           return Effect.succeed([]);
         },
+        listAppliedDates: () => {
+          return Effect.succeed([]);
+        },
         update: (app) => {
           return Effect.succeed(app);
-        }
+        },
       }),
       Layer.succeed(ResumeStore, {
         delete: () => {
@@ -37,13 +40,13 @@ describe("ports", () => {
         },
         put: () => {
           return Effect.succeed(undefined);
-        }
+        },
       }),
       Layer.succeed(TokenVerifier, {
         verify: () => {
           return Effect.succeed("me@example.com");
-        }
-      })
+        },
+      }),
     );
     const program = Effect.gen(function* () {
       const repo = yield* JobAppRepo;
@@ -52,7 +55,7 @@ describe("ports", () => {
       return [repo, store, verifier] as const;
     });
     const [repo, store, verifier] = Effect.runSync(
-      Effect.provide(program, layer)
+      Effect.provide(program, layer),
     );
     expect(repo).toBeDefined();
     expect(store).toBeDefined();
