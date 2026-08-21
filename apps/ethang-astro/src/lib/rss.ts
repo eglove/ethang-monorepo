@@ -1,3 +1,5 @@
+import type { env } from "cloudflare:workers";
+
 import { Effect, Number as EffectNumber, Option } from "effect";
 import isNil from "lodash/isNil.js";
 
@@ -7,96 +9,25 @@ export const FEEDS_PAGE_PARAM = "feedsPage";
 export const ARTICLES_PAGE_PARAM = "articlesPage";
 export const ACTION_PARAM = "_action";
 
-export type ArticleEdge = {
-  cursor: string;
-  node: ArticleNode;
-};
-
-export type ArticleNode = {
-  content: null | string;
-  feed: { iconUrl: null | string; id: string; title: string } | null;
-  guid: string;
-  id: string;
-  isRead: boolean;
-  link: string;
-  publishedAt: null | string;
-  title: string;
-};
-
-export type ArticlesResult = {
-  edges: ArticleEdge[];
-  pageInfo: PageInfo;
-};
-
-export type FeedNode = {
-  iconUrl: null | string;
-  id: string;
-  title: string;
-  website: null | string;
-};
-
-export type PageInfo = {
-  endCursor: null | string;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor: null | string;
-};
-
-/**
-Structural subset of the `ethang_rss` worker surface used by the astro app.
-Declaring the dependency as an interface keeps the helpers unit-testable
-with a mock worker instead of the real Cloudflare binding.
-*/
-export type RssWorker = {
-  addSubscription: (parameters: {
-    sessionToken: string;
-    xmlAddress: string;
-  }) => Promise<unknown>;
-  allArticles: (parameters: {
-    after?: null | string;
-    first?: number;
-    isRead?: boolean;
-    sessionToken: string;
-  }) => Promise<ArticlesResult>;
-  markArticleRead: (parameters: {
-    articleId: string;
-    isRead: boolean;
-    sessionToken: string;
-  }) => Promise<unknown>;
-  removeSubscription: (parameters: {
-    feedId: string;
-    sessionToken: string;
-  }) => Promise<unknown>;
-  subscriptions: (parameters: {
-    after?: null | string;
-    first?: number;
-    sessionToken: string;
-  }) => Promise<SubscriptionsResult>;
-};
-
-export type SubscriptionEdge = {
-  cursor: string;
-  node: FeedNode;
-};
-
-export type SubscriptionsResult = {
-  edges: SubscriptionEdge[];
-  pageInfo: PageInfo;
-};
-
-export const EMPTY_PAGE_INFO: PageInfo = {
+export const EMPTY_PAGE_INFO = {
   endCursor: null,
   hasNextPage: false,
   hasPreviousPage: false,
   startCursor: null
 };
 
-export const EMPTY_SUBSCRIPTIONS: SubscriptionsResult = {
+// @ts-expect-error partial
+export const EMPTY_SUBSCRIPTIONS: Awaited<
+  ReturnType<typeof env.ethang_rss.subscriptions>
+> = {
   edges: [],
   pageInfo: EMPTY_PAGE_INFO
 };
 
-export const EMPTY_ARTICLES: ArticlesResult = {
+// @ts-expect-error partial
+export const EMPTY_ARTICLES: Awaited<
+  ReturnType<typeof env.ethang_rss.allArticles>
+> = {
   edges: [],
   pageInfo: EMPTY_PAGE_INFO
 };
@@ -151,7 +82,7 @@ export const buildLoadMoreHref = (currentUrl: URL, pageParameter: string) => {
 };
 
 export const getSubscriptions = async (
-  worker: RssWorker,
+  worker: typeof env.ethang_rss,
   sessionToken: string,
   page: number
 ) => {
@@ -175,7 +106,7 @@ export const getSubscriptions = async (
 };
 
 export const getArticles = async (
-  worker: RssWorker,
+  worker: typeof env.ethang_rss,
   sessionToken: string,
   page: number
 ) => {
@@ -200,7 +131,7 @@ export const getArticles = async (
 };
 
 export const addFeed = async (
-  worker: RssWorker,
+  worker: typeof env.ethang_rss,
   parameters: { sessionToken: string; xmlAddress: string }
 ) => {
   return Effect.runPromise(
@@ -219,7 +150,7 @@ export const addFeed = async (
 };
 
 export const removeFeed = async (
-  worker: RssWorker,
+  worker: typeof env.ethang_rss,
   parameters: { feedId: string; sessionToken: string }
 ) => {
   return Effect.runPromise(
@@ -238,7 +169,7 @@ export const removeFeed = async (
 };
 
 export const markArticleRead = async (
-  worker: RssWorker,
+  worker: typeof env.ethang_rss,
   parameters: { articleId: string; isRead: boolean; sessionToken: string }
 ) => {
   return Effect.runPromise(

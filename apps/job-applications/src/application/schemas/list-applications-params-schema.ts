@@ -1,11 +1,12 @@
 import { Schema } from "effect";
 
 import { STATUSES } from "../../domain/job-application/status.ts";
+import { ApplicationCursorFromEncoded } from "../application-cursor.ts";
 
 export class ListApplicationsParamsSchema extends Schema.Class<ListApplicationsParamsSchema>(
   "ListApplicationsParamsSchema"
 )({
-  after: Schema.optionalWith(Schema.NonEmptyString, { nullable: true }),
+  after: Schema.optionalWith(ApplicationCursorFromEncoded, { nullable: true }),
   first: Schema.optionalWith(Schema.Number, {
     default: () => {
       return 50;

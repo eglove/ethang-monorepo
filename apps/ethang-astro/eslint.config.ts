@@ -11,7 +11,9 @@ export default defineConfig(
     "dist",
     ".wrangler",
     "**/*.d.ts",
-    ".astro"
+    ".astro",
+    "src/lib/rss.test.ts",
+    "tsconfig.json"
   ]),
   ...config,
   ...astroConfig,

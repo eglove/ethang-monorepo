@@ -10,8 +10,13 @@ import { resolveLoginOutcome } from "../lib/login.ts";
 
 export const prerender = false;
 
+const redirect = Astro.url.searchParams.get("redirect");
 const result = Astro.getActionResult(actions.signIn);
-const outcome = resolveLoginOutcome(result, Astro.url.searchParams.get("error"));
+const outcome = resolveLoginOutcome(
+    result,
+    Astro.url.searchParams.get("error"),
+    redirect
+);
 
 if (outcome.kind === "redirect") {
   return Astro.redirect(outcome.path);
@@ -45,6 +50,8 @@ const error = outcome.error;
                             </div>
                         ) : null
                     }
+
+                    <input type="hidden" name="redirect" value={redirect ?? ""} />
 
                     <div class="flex flex-col gap-1">
                         <FieldLabel for="email">{forms.EMAIL_ADDRESS}</FieldLabel>

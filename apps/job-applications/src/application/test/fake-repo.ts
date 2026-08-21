@@ -64,22 +64,28 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
           return null === status || row.status === status;
         }
       ];
-      const allRows: JobApp[] = Array.fromIterable(rows.values());
-      let items: JobApp[] = filter(allRows, (row: JobApp) => {
-        return overEvery(predicates)(row);
-      });
       if (!isNil(after)) {
-        items = filter(items, (row: JobApp) => {
-          // eslint-disable-next-line sonar/strings-comparison -- uuid v7 ids are lexicographically ordered
-          return row.id < after;
+        predicates.push((row: JobApp) => {
+          const dateOrder = row.appliedDate.localeCompare(after.appliedDate);
+          return (
+            0 > dateOrder ||
+            (0 === dateOrder && 0 > row.id.localeCompare(after.id))
+          );
         });
       }
-      items = items
-        .toSorted((a, b) => {
-          return b.id.localeCompare(a.id);
-        })
-        .slice(0, first);
-      return Effect.succeed(items);
+      const allRows: JobApp[] = Array.fromIterable(rows.values());
+      const items = filter(allRows, (row: JobApp) => {
+        return overEvery(predicates)(row);
+      });
+      return Effect.succeed(
+        items
+          .toSorted((a, b) => {
+            return a.appliedDate === b.appliedDate
+              ? b.id.localeCompare(a.id)
+              : b.appliedDate.localeCompare(a.appliedDate);
+          })
+          .slice(0, first)
+      );
     },
     update: (app) => {
       rows.set(app.id, app);

@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "dist-types",
+    "rootDir": "src",
+    "skipLibCheck": true
+  },
+  "extends": "./tsconfig.json",
+  "include": ["src/index.ts", "worker-configuration.d.ts"]
+}

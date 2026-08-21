@@ -5,6 +5,7 @@ import type { Status } from "../../domain/job-application/status.ts";
 import type { DuplicateApplicationError } from "../../errors/duplicate-application-error.ts";
 import type { FetchError } from "../../errors/fetch-error.ts";
 import type { SaveError } from "../../errors/save-error.ts";
+import type { ApplicationCursor } from "../application-cursor.ts";
 
 export class JobApplicationRepository extends Context.Tag(
   "JobApplicationRepository"
@@ -27,7 +28,7 @@ export class JobApplicationRepository extends Context.Tag(
       app: JobApplication
     ) => Effect.Effect<JobApplication, DuplicateApplicationError | SaveError>;
     readonly list: (parameters: {
-      readonly after: null | string;
+      readonly after: ApplicationCursor | null;
       readonly email: string;
       readonly first: number;
       readonly status: null | Status;

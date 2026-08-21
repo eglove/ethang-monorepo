@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" role="img" aria-labelledby="three-generations-title three-generations-desc">
+  <title id="three-generations-title">Three generations of software engineering combine into proven business behavior</title>
+  <desc id="three-generations-desc">Automated proof feeds continuous delivery. AI-assisted implementation operates inside that proof system, returning generated work to tests and static analysis. Together they support proven business behavior while keeping implementation replaceable.</desc>
+  <defs>
+    <linearGradient id="three-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#08111f"/>
+      <stop offset="1" stop-color="#111d35"/>
+    </linearGradient>
+    <linearGradient id="three-outcome" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#172554"/>
+      <stop offset="1" stop-color="#164e63"/>
+    </linearGradient>
+    <marker id="three-arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7dd3fc"/>
+    </marker>
+    <filter id="three-shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#020617" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="620" rx="28" fill="url(#three-bg)"/>
+  <text x="72" y="74" fill="#e0f2fe" font-family="Inter, sans-serif" font-size="30" font-weight="700">Three generations, one engineering system</text>
+  <text x="72" y="108" fill="#94a3b8" font-family="Inter, sans-serif" font-size="17">AI becomes leverage when proof and delivery surround it.</text>
+
+  <g filter="url(#three-shadow)">
+    <rect x="72" y="168" width="292" height="174" rx="18" fill="#0f1b2d" stroke="#7dd3fc" stroke-width="2"/>
+    <rect x="72" y="168" width="292" height="9" rx="4" fill="#38bdf8"/>
+    <text x="100" y="216" fill="#7dd3fc" font-family="Inter, sans-serif" font-size="16" font-weight="700">GENERATION 1</text>
+    <text x="100" y="254" fill="#f8fafc" font-family="Inter, sans-serif" font-size="24" font-weight="700">Automated proof</text>
+    <text x="100" y="286" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="16">Tests + static analysis</text>
+    <text x="100" y="316" fill="#94a3b8" font-family="Inter, sans-serif" font-size="15">Make behavior executable.</text>
+
+    <rect x="454" y="168" width="292" height="174" rx="18" fill="#0f1b2d" stroke="#a5b4fc" stroke-width="2"/>
+    <rect x="454" y="168" width="292" height="9" rx="4" fill="#818cf8"/>
+    <text x="482" y="216" fill="#a5b4fc" font-family="Inter, sans-serif" font-size="16" font-weight="700">GENERATION 2</text>
+    <text x="482" y="254" fill="#f8fafc" font-family="Inter, sans-serif" font-size="24" font-weight="700">Continuous delivery</text>
+    <text x="482" y="286" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="16">Mainline + fast feedback</text>
+    <text x="482" y="316" fill="#94a3b8" font-family="Inter, sans-serif" font-size="15">Make proof continuous.</text>
+
+    <rect x="836" y="168" width="292" height="174" rx="18" fill="#0f1b2d" stroke="#f0abfc" stroke-width="2"/>
+    <rect x="836" y="168" width="292" height="9" rx="4" fill="#e879f9"/>
+    <text x="864" y="216" fill="#f0abfc" font-family="Inter, sans-serif" font-size="16" font-weight="700">GENERATION 3</text>
+    <text x="864" y="254" fill="#f8fafc" font-family="Inter, sans-serif" font-size="24" font-weight="700">AI implementation</text>
+    <text x="864" y="286" fill="#cbd5e1" font-family="Inter, sans-serif" font-size="16">More choices, faster</text>
+    <text x="864" y="316" fill="#94a3b8" font-family="Inter, sans-serif" font-size="15">Produce inside the proof.</text>
+  </g>
+
+  <path d="M364 255 H444" stroke="#7dd3fc" stroke-width="3" marker-end="url(#three-arrow)"/>
+  <path d="M746 255 H826" stroke="#7dd3fc" stroke-width="3" marker-end="url(#three-arrow)"/>
+  <path d="M982 350 V408 H218 V350" fill="none" stroke="#7dd3fc" stroke-width="3" marker-end="url(#three-arrow)"/>
+  <text x="497" y="393" fill="#bae6fd" font-family="Inter, sans-serif" font-size="15" text-anchor="middle">every generated change returns to verification</text>
+
+  <rect x="238" y="448" width="724" height="108" rx="20" fill="url(#three-outcome)" stroke="#38bdf8" stroke-width="2" filter="url(#three-shadow)"/>
+  <text x="600" y="494" fill="#f8fafc" font-family="Inter, sans-serif" font-size="25" font-weight="700" text-anchor="middle">Proven business behavior</text>
+  <text x="600" y="528" fill="#bae6fd" font-family="Inter, sans-serif" font-size="16" text-anchor="middle">Implementation is a choice, not the promise.</text>
+</svg>

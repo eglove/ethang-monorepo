@@ -1,3 +1,5 @@
+import type { env } from "cloudflare:workers";
+
 import isNil from "lodash/isNil.js";
 import { describe, expect, it, vi } from "vitest";
 
@@ -16,8 +18,7 @@ import {
   markArticleRead,
   MAX_PAGE,
   removeFeed,
-  RSS_PAGE_SIZE,
-  type RssWorker
+  RSS_PAGE_SIZE
 } from "./rss.ts";
 
 const FEED_ID = "feed-1";
@@ -48,7 +49,7 @@ const resolveEmptySubscriptions = async () => {
   return EMPTY_SUBSCRIPTIONS;
 };
 
-const makeWorker = (overrides: Partial<RssWorker> = {}) => {
+const makeWorker = (overrides: Partial<typeof env.ethang_rss> = {}) => {
   return {
     addSubscription: vi.fn(resolveNull),
     allArticles: vi.fn(resolveEmptyArticles),

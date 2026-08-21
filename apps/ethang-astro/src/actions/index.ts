@@ -1,10 +1,15 @@
-import { defineAction } from "astro:actions";
+import { ActionError, defineAction } from "astro:actions";
+
+type ActionErrorInput = ConstructorParameters<typeof ActionError>[0];
 import { z } from "astro/zod";
 import { env } from "cloudflare:workers";
 import { Effect, Schema } from "effect";
+import constant from "lodash/constant.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
 
+import { isApplicationStatus } from "../lib/applications.ts";
+import { resolveLoginRedirect } from "../lib/login.ts";
 import {
   addFeed as addFeedProgram,
   markArticleRead as markArticleReadProgram,
@@ -29,6 +34,10 @@ const getSessionUser = (context: {
   cookies: { get: (name: string) => { value?: string } | undefined };
 }) => {
   return decodeSessionCookie(context.cookies.get("session")?.value);
+};
+
+const rejectActionError = async (input: ActionErrorInput) => {
+  await Promise.reject(new ActionError(input));
 };
 
 export const server = {
@@ -169,11 +178,17 @@ export const server = {
       }
 
       const decodedUser = signInResult.success;
-      return { data: { username: decodedUser?.username ?? "" } };
+      return {
+        data: {
+          redirect: resolveLoginRedirect(input.redirect),
+          username: decodedUser?.username ?? ""
+        }
+      };
     },
     input: z.object({
       email: z.email({ message: "Invalid email address" }),
-      password: z.string().min(1, "Password is required")
+      password: z.string().min(1, "Password is required"),
+      redirect: z.string().optional()
     })
   }),
 
@@ -185,5 +200,55 @@ export const server = {
 
       return { success: true };
     }
+  }),
+
+  updateApplicationStatus: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return rejectActionError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized"
+        });
+      }
+
+      if (!isApplicationStatus(input.status)) {
+        return rejectActionError({
+          code: "BAD_REQUEST",
+          message: "Invalid application status"
+        });
+      }
+
+      const result = await env.job_applications
+        .updateApplication({
+          id: input.id,
+          status: input.status,
+          token: userSession.sessionToken
+        })
+        .catch(constant(null));
+
+      if (isNil(result) || !result.ok) {
+        return rejectActionError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to update application."
+        });
+      }
+
+      return { success: true };
+    },
+    input: z.object({
+      after: z.string().optional(),
+      id: z.string().min(1, "Application is required"),
+      status: z.enum([
+        "applied",
+        "screening",
+        "interview",
+        "offer",
+        "rejected",
+        "withdrawn"
+      ])
+    })
   })
 };

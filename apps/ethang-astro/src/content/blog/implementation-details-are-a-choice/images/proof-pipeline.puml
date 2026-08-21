@@ -1,0 +1,35 @@
+@startuml proof-pipeline
+skinparam shadowing false
+skinparam defaultFontName Inter
+skinparam sequence {
+  ArrowColor #38bdf8
+  LifeLineBorderColor #64748b
+  LifeLineBackgroundColor #0f1b2d
+  ParticipantBorderColor #7dd3fc
+  ParticipantBackgroundColor #172554
+  ParticipantFontColor #e0f2fe
+  BoxBorderColor #475569
+  BoxBackgroundColor #0b1220
+}
+
+actor "Domain\nowner" as Domain
+participant "Developer" as Dev
+participant "AI assistant" as AI
+participant "CI + Sonar\nquality gate" as CI
+participant "Production" as Prod
+
+Domain -> Dev : business requirement
+Dev -> Dev : write failing test
+Dev -> AI : bounded task + test
+AI -> Dev : implementation proposal
+Dev -> CI : push change
+CI -> CI : tests + types + analysis
+alt evidence passes
+  CI -> Domain : review behavior and risk
+  Domain -> Prod : approve release
+  Prod --> Domain : production feedback
+else evidence fails
+  CI --> Dev : findings and failing checks
+  Dev -> AI : simplify or correct
+end
+@enduml
