@@ -16,16 +16,26 @@ for (const app of BOUND_APPS) {
     force: true,
     recursive: true
   });
-  const result = spawnSync("pnpm exec tsc -p tsconfig.rpc.json", {
-    cwd: appDirectory,
-    encoding: "utf8",
-    shell: true
-  });
+  const tscBin = path.join(
+    appDirectory,
+    "node_modules",
+    "typescript",
+    "bin",
+    "tsc"
+  );
+  const result = spawnSync(
+    process.execPath,
+    [tscBin, "-p", "tsconfig.rpc.json"],
+    {
+      cwd: appDirectory,
+      encoding: "utf8"
+    }
+  );
   if (0 !== result.status) {
-    const output = join(compact([result.stdout, result.stderr]), "\n").slice(
-      0,
-      4000
-    );
+    const output = join(
+      compact([result.stdout, result.stderr, result.error?.message]),
+      "\n"
+    ).slice(0, 4000);
     failures.push(`${app} exited ${String(result.status)}:\n${output}`);
   }
 }
