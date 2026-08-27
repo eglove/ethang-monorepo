@@ -1,22 +1,27 @@
 import isNil from "lodash/isNil.js";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { addFeed, markArticleRead, removeFeed, updateApplication } = vi.hoisted(
-  () => {
-    return {
-      addFeed: vi.fn(async () => {
-        return { success: true };
-      }),
-      markArticleRead: vi.fn(async () => {
-        return { success: true };
-      }),
-      removeFeed: vi.fn(async () => {
-        return { success: true };
-      }),
-      updateApplication: vi.fn()
-    };
-  }
-);
+const {
+  addFeed,
+  deleteApplication,
+  markArticleRead,
+  removeFeed,
+  updateApplication
+} = vi.hoisted(() => {
+  return {
+    addFeed: vi.fn(async () => {
+      return { success: true };
+    }),
+    deleteApplication: vi.fn(),
+    markArticleRead: vi.fn(async () => {
+      return { success: true };
+    }),
+    removeFeed: vi.fn(async () => {
+      return { success: true };
+    }),
+    updateApplication: vi.fn()
+  };
+});
 
 vi.mock("astro:actions", () => {
   class MockActionError extends Error {
@@ -44,7 +49,7 @@ vi.mock("cloudflare:workers", () => {
   return {
     env: {
       ethang_rss: "rss-worker",
-      job_applications: { updateApplication }
+      job_applications: { deleteApplication, updateApplication }
     }
   };
 });
@@ -94,6 +99,7 @@ const call = (function_: any, input: unknown, context: unknown) => {
 };
 
 const updateApplicationStatus = server.updateApplicationStatus;
+const deleteApplicationAction = server.deleteApplication;
 
 describe("addFeed action", () => {
   it(NO_SESSION, async () => {
@@ -266,6 +272,68 @@ describe("updateApplicationStatus action", () => {
       expect(updateApplication).not.toHaveBeenCalled();
     }
   );
+});
+
+describe("deleteApplication action", () => {
+  beforeEach(() => {
+    deleteApplication.mockReset();
+    deleteApplication.mockResolvedValue({ ok: true, value: true });
+  });
+
+  it.each([null, "{malformed", JSON.stringify({ sessionToken: "token" })])(
+    "rejects unauthenticated deletion for session %j",
+    async (session) => {
+      await expect(
+        call(
+          deleteApplicationAction,
+          { id: APPLICATION_ID },
+          { cookies: cookies(session) }
+        )
+      ).rejects.toMatchObject({
+        code: "UNAUTHORIZED",
+        message: UNAUTHORIZED,
+        name: "MockActionError"
+      });
+      expect(deleteApplication).not.toHaveBeenCalled();
+    }
+  );
+
+  it("deletes the application and resume through the worker RPC", async () => {
+    const result = await call(
+      deleteApplicationAction,
+      { id: APPLICATION_ID },
+      { cookies: cookies(sessionUser) }
+    );
+
+    expect(deleteApplication).toHaveBeenCalledWith({
+      id: APPLICATION_ID,
+      token: "token"
+    });
+    expect(result).toEqual({ success: true });
+  });
+
+  it.each([
+    { error: { code: "NOT_FOUND", message: BACKEND_DETAIL }, ok: false },
+    { error: { message: BACKEND_DETAIL }, ok: false },
+    new Error(BACKEND_DETAIL)
+  ])("returns a safe error when the delete fails", async (failure) => {
+    if (Error.isError(failure)) {
+      deleteApplication.mockRejectedValue(failure);
+    } else {
+      deleteApplication.mockResolvedValue(failure);
+    }
+
+    await expect(
+      call(
+        deleteApplicationAction,
+        { id: APPLICATION_ID },
+        { cookies: cookies(sessionUser) }
+      )
+    ).rejects.toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Unable to delete application."
+    });
+  });
 });
 
 describe("removeFeed action", () => {

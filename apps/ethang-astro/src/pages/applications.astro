@@ -7,6 +7,7 @@ import isObject from "lodash/isObject.js";
 import {
     APPLICATION_STATUSES,
     applicationDatePagination,
+    applicationFormAction,
     applicationsLoginRedirect,
     applicationsPagePath,
     formatApplicationDate,
@@ -65,14 +66,25 @@ const selectedDate = parseApplicationDateParam(
     Astro.url.searchParams.get("date"),
 );
 const actionResult = Astro.getActionResult(actions.updateApplicationStatus);
-const actionData = actionResult?.data;
-if (isObject(actionData) && actionData.success === true) {
+const deleteResult = Astro.getActionResult(actions.deleteApplication);
+const actionSucceeded = (result: {
+    data?: null | { success?: boolean };
+}) => {
+    return result?.data?.success === true;
+};
+if (actionSucceeded(actionResult) || actionSucceeded(deleteResult)) {
     return Astro.redirect(applicationsPagePath(selectedDate));
 }
-const actionError = actionResult?.error?.message;
-const actionPath = isNil(selectedDate)
-    ? actions.updateApplicationStatus
-    : `${actions.updateApplicationStatus}&date=${encodeURIComponent(selectedDate)}`;
+const actionError =
+    actionResult?.error?.message ?? deleteResult?.error?.message;
+const actionPath = applicationFormAction(
+    String(actions.updateApplicationStatus),
+    selectedDate,
+);
+const deleteFormAction = applicationFormAction(
+    String(actions.deleteApplication),
+    selectedDate,
+);
 
 const isSuccessfulDatesResult = (
     result: unknown,
@@ -282,6 +294,25 @@ if (isUnauthorizedResult(datesResult) || isUnauthorizedResult(listOutcome)) {
                                                         —
                                                     </span>
                                                 ) : null}
+                                                <form
+                                                    method="POST"
+                                                    action={deleteFormAction}
+                                                    onsubmit="return confirm('Delete this application and its resume? This cannot be undone.')"
+                                                >
+                                                    <input
+                                                        type="hidden"
+                                                        name="id"
+                                                        value={application.id}
+                                                    />
+                                                    <Button
+                                                        type="submit"
+                                                        variant="danger"
+                                                        size="xs"
+                                                        ariaLabel={`Delete ${application.company} application`}
+                                                    >
+                                                        Delete
+                                                    </Button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>

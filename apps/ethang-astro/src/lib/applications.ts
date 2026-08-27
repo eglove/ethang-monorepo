@@ -37,6 +37,13 @@ export const applicationsPagePath = (date: null | string) => {
     : `/applications?date=${encodeURIComponent(date)}`;
 };
 
+export const applicationFormAction = (
+  action: string,
+  date: null | string | undefined
+) => {
+  return isNil(date) ? action : `${action}&date=${encodeURIComponent(date)}`;
+};
+
 export type ApplicationPagination = {
   readonly currentIndex: number;
   readonly entries: readonly ApplicationPaginationEntry[];
