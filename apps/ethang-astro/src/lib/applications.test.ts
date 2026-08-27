@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   applicationDatePagination,
+  applicationFormAction,
   applicationsLoginRedirect,
   applicationsPagePath,
   formatApplicationDate,
@@ -97,6 +98,20 @@ describe("application paths", () => {
     expect(applicationsPagePath(AUGUST_DATE)).toBe(
       `/applications?date=${AUGUST_DATE}`
     );
+  });
+});
+
+describe("applicationFormAction", () => {
+  const DELETE_ACTION = "?_action=deleteApplication";
+
+  it.each([
+    [null, DELETE_ACTION],
+    [undefined, DELETE_ACTION],
+    ["", `${DELETE_ACTION}&date=`],
+    [AUGUST_DATE, `${DELETE_ACTION}&date=${AUGUST_DATE}`],
+    ["2026 08 01", `${DELETE_ACTION}&date=2026%2008%2001`]
+  ])("builds the form action for date %j", (date, expected) => {
+    expect(applicationFormAction(DELETE_ACTION, date)).toBe(expected);
   });
 });
 

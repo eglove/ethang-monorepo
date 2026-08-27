@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const jobApplications = vi.hoisted(() => {
   return {
+    deleteApplication: vi.fn(),
     getResume: vi.fn(),
     listApplications: vi.fn(),
     listAppliedDates: vi.fn(),
@@ -67,14 +68,17 @@ const parseActionQuery = (action: unknown) => {
   return new URLSearchParams(String(action));
 };
 
-const renderActionResult = async (actionResult: {
-  body: string;
-  contentType: string;
-  status: number;
-  type: "data" | "error";
-}) => {
+const renderActionResult = async (
+  actionResult: {
+    body: string;
+    contentType: string;
+    status: number;
+    type: "data" | "error";
+  },
+  action: unknown = actions.updateApplicationStatus
+) => {
   const container = await AstroContainer.create();
-  const actionSearchParams = parseActionQuery(actions.updateApplicationStatus);
+  const actionSearchParams = parseActionQuery(action);
   return container.renderToResponse(
     Applications as never,
     {
@@ -124,6 +128,7 @@ const makeApplication = (overrides: Partial<Application> = {}) => {
 beforeEach(() => {
   jobApplications.listApplications.mockReset();
   jobApplications.getResume.mockReset();
+  jobApplications.deleteApplication.mockReset();
   jobApplications.listAppliedDates.mockReset();
   jobApplications.listAppliedDates.mockResolvedValue({
     ok: true,
@@ -573,5 +578,79 @@ describe("applications page rendering", () => {
     const navigation = /<nav[\s\S]*?<\/nav>/u.exec(html)?.[0] ?? "";
 
     expect(navigation).not.toContain("/applications");
+  });
+});
+
+describe("applications page delete button", () => {
+  it("wires a delete form with confirmation to every row preserving the cursor", async () => {
+    jobApplications.listApplications.mockResolvedValue({
+      ok: true,
+      value: {
+        items: [
+          makeApplication({ id: APPLICATION_ID }),
+          makeApplication({ id: "application-2", status: "offer" })
+        ],
+        nextCursor: null
+      }
+    });
+
+    const html = await render(`${APPLICATIONS_URL}?date=${DATE_PREVIOUS}`);
+
+    expect(
+      html.match(/<form method="POST" action="[^"]*deleteApplication[^"]*"/gu)
+    ).toHaveLength(2);
+    expect(
+      html.match(
+        /<form method="POST" action="[^"]*deleteApplication[^"]*"[^>]*onsubmit="return confirm\('/gu
+      )
+    ).toHaveLength(2);
+    expect(html).toContain("This cannot be undone");
+    expect(html).toContain("Delete");
+    expect(html).toContain('name="id" value="application-1"');
+    expect(html).toContain('name="id" value="application-2"');
+    expect(html).not.toContain(TOKEN);
+  });
+
+  it("redirects a successful delete action result with the current cursor", async () => {
+    const response = await renderActionResult(
+      {
+        body: '[{"success":1},true]',
+        contentType: "application/json+devalue",
+        status: 200,
+        type: "data"
+      },
+      actions.deleteApplication
+    );
+
+    expect(response.status).toBe(302);
+    expect(response.headers.get("location")).toBe(
+      `/applications?date=${DATE_PREVIOUS}`
+    );
+  });
+
+  it("renders a delete action error envelope while preserving the cursor", async () => {
+    const response = await renderActionResult(
+      {
+        body: JSON.stringify({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to delete application.",
+          type: "AstroActionError"
+        }),
+        contentType: "application/json",
+        status: 500,
+        type: "error"
+      },
+      actions.deleteApplication
+    );
+    const html = await response.text();
+
+    expect(response.status).toBe(500);
+    expect(html).toContain("Unable to delete application.");
+    expect(html).not.toContain(BACKEND_ERROR);
+    expect(jobApplications.listApplications).toHaveBeenCalledWith({
+      appliedDate: DATE_PREVIOUS,
+      status: null,
+      token: TOKEN
+    });
   });
 });

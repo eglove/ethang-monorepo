@@ -60,6 +60,39 @@ export const server = {
     })
   }),
 
+  deleteApplication: defineAction({
+    accept: "form",
+    handler: async (input, context) => {
+      const userSession = getSessionUser(context);
+
+      if (isNil(userSession)) {
+        return rejectActionError({
+          code: "UNAUTHORIZED",
+          message: "Unauthorized"
+        });
+      }
+
+      const result = await env.job_applications
+        .deleteApplication({
+          id: input.id,
+          token: userSession.sessionToken
+        })
+        .catch(constant(null));
+
+      if (isNil(result) || !result.ok) {
+        return rejectActionError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Unable to delete application."
+        });
+      }
+
+      return { success: true };
+    },
+    input: z.object({
+      id: z.string().min(1, "Application is required")
+    })
+  }),
+
   markArticleRead: defineAction({
     accept: "form",
     handler: async (input, context) => {
