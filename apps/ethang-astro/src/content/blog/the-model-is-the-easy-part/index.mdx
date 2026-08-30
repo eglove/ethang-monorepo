@@ -17,7 +17,19 @@ You open a tab, pick a model, and start working. The reply streams, the plan tak
 
 ## One tool, made general
 
-Most harnesses hand the model a long menu of narrow utilities — one for searching, one for editing, one for every special case. Each utility is a fresh place to be surprised. eThang Agent hands the model one general instrument instead: `exec`, which compiles and runs a C# program in-process through Roslyn. There is no shell intermediary to inject characters the model never typed; each argument becomes one token of a native command line, re-parsed with Windows argv rules so the process receives what the model intended. File system work, LINQ queries over the workspace, external commands, tool calls from inside the script — all of it is the same surface.
+Most harnesses hand the model a long menu of narrow utilities — one for searching, one for editing, one for every special case. eThang Agent refuses that trade-off. There are discrete tools — read, write, edit, git_status, working_diff, db_schema, db_query, a durable todo list, curated memory, sub-agent spawning — and each carries its own validated contract. Alongside them runs the general instrument: `exec`, which compiles and runs a C# program in-process through Roslyn. There is no shell intermediary to inject characters the model never typed; each argument becomes one token of a native command line, re-parsed with Windows argv rules so the process receives what the model intended. File system work, LINQ queries over the workspace, external commands, tool calls from inside the script — all of it is the same surface.
+
+That last part is the quiet advantage. From inside one `exec` call, the named tools become values the script can sequence — read, patch, test, commit:
+
+```csharp
+var head = Tools.read(new { path = "src/App.ts", startLine = 1, endLine = 50 });
+Tools.edit(new { path = "src/App.ts", old = "render()", replacement = "renderApp()", occurrences = 1 });
+var tests = Shell("dotnet", "test");
+if (tests.ExitCode == 0)
+  Tools.Invoke("git_commit", new { type = "fix", description = "mount App once" });
+```
+
+The script composes them with conditionals and loops, so four calls become one decision point instead of four round trips — and the whole sequence still runs under a single budget.
 
 The loop inside the tool reads like its contract — parse, reject, and only then act:
 
