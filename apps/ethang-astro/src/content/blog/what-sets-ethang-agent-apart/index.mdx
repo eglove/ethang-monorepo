@@ -31,9 +31,9 @@ new ToolParameter("overwrite", ToolParameterType.Flag,
 
 That is `write`'s overwrite gate: the call fails if the file exists unless overwrite is exactly true — it will never silently replace anything. And under everything sits a hard budget: every tool call carries a mandatory `timeoutSeconds` (1–3600, floor declared `Minimum: 1`, enforced by `ToolCallEnvelopeParser`). Exceed it and the call fails as `Error [ToolTimeout]` — a recoverable, named error, never a silent hang.
 
-The payoff shows in the transcript. Each exec call renders as a card — program on the call, full result below, errors highlighted:
+The payoff shows in the transcript. Each exec call renders as a card — program on the call, full result below:
 
-<PostImage src={ExecCalls} alt="The desktop transcript with exec tool calls rendered as expandable cards" caption="Exec calls in the transcript: the program on the call card, the full result on the result card, errors highlighted." />
+<PostImage src={ExecCalls} alt="The desktop transcript with exec tool calls rendered as expandable cards" caption="Exec calls in the transcript: the program on the call card, the full result on the result card." />
 
 The composition is the point — read, patch, test, commit conditionally, all inside one compiled, budgeted call:
 
