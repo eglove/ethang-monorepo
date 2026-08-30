@@ -2,30 +2,30 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 const postPath = new URL(
-  "blog/ethang-agent-vs-the-field/index.mdx",
+  "blog/what-sets-ethang-agent-apart/index.mdx",
   import.meta.url
 );
 
 const pubDate = "2026-08-30T18:06:00Z";
-const updatedDate = "2026-08-30T18:38:02Z";
+const updatedDate = "2026-08-30T19:05:36Z";
 
 const imagePaths = {
   dbDiagram: new URL(
-    "blog/ethang-agent-vs-the-field/images/ethang-agent-db.png",
+    "blog/what-sets-ethang-agent-apart/images/ethang-agent-db.png",
     import.meta.url
   ),
   execCalls: new URL(
-    "blog/ethang-agent-vs-the-field/images/exec-calls.png",
+    "blog/what-sets-ethang-agent-apart/images/exec-calls.png",
     import.meta.url
   ),
   statusLine: new URL(
-    "blog/ethang-agent-vs-the-field/images/statusline.png",
+    "blog/what-sets-ethang-agent-apart/images/statusline.png",
     import.meta.url
   )
 };
 
 const requiredSnippets = [
-  "ethang-agent-vs-the-field",
+  "what sets it apart",
   "the scaffolding an AI model acts through",
   "Claude Code",
   "OpenAI Codex",
@@ -33,25 +33,30 @@ const requiredSnippets = [
   "Cursor",
   "Windsurf",
   "OpenCode",
+  "type-safe",
+  "exec mode",
+  "Roslyn",
+  "Tools.edit(new {",
+  'Tools.Invoke("git_commit"',
+  "ToolCallEnvelopeParser",
+  "Minimum: 1",
+  "Error [ToolTimeout]",
+  "timeoutSeconds",
+  "overwrite is exactly true",
   "one project per bounded context",
-  "eThangAgent.Tool.Domain",
+  "anti-corruption layer",
   "eThangAgent.Roslyn.ACL",
   "eThangAgent.Composition",
   "eThangAgent.Desktop",
-  "anti-corruption layer",
-  "eThang Agent exposes discrete tools",
-  "working_diff",
-  "sub-agent spawning",
-  "timeoutSeconds",
-  "Error [ToolTimeout]",
-  "Roslyn",
-  "depth limit",
-  "80%",
   "SQLite",
+  "memory.recall",
+  "db_schema",
+  "db_query",
   "DPAPI",
-  "ToolCallEnvelopeParser",
-  "Minimum: 1",
-  "overwrite is exactly true",
+  "80%",
+  "depth limit",
+  "fullscreen IDE",
+  "not a VS Code fork",
   "file explorer",
   "diffing",
   "static analysis",
@@ -76,6 +81,7 @@ const requiredImageSnippets = [
   "<PostImage src={ExecCalls}",
   "<PostImage src={StatusLine}",
   "<PostImage src={DbDiagram}",
+  "featuredImage: ./images/exec-calls.png",
   'alt="The desktop transcript with exec tool calls rendered as expandable cards"',
   'alt="The status bar showing a live context utilization readout for the open session"',
   'alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables"',
@@ -83,21 +89,15 @@ const requiredImageSnippets = [
   'style={{ backgroundColor: "#ffffff", padding: "0.5rem" }}'
 ] as const;
 
-describe("eThang Agent vs the field", () => {
+describe("What Sets eThang Agent Apart", () => {
   it("exists with the agreed metadata", async () => {
     const post = await readFile(postPath, "utf8");
 
-    expect(post).toContain('slug: "ethang-agent-vs-the-field"');
-    expect(post).toContain(
-      'title: "eThang Agent vs the Field: How a Windows-Native Harness Compares"'
-    );
+    expect(post).toContain('slug: "what-sets-ethang-agent-apart"');
+    expect(post).toContain('title: "What Sets eThang Agent Apart"');
     expect(post).toContain('blogCategory: "Blog"');
     expect(post).toContain(`pubDate: "${pubDate}"`);
     expect(post).toContain(`updatedDate: "${updatedDate}"`);
-    expect(post).toContain("featuredImage: ./images/exec-calls.png");
-    expect(post).toContain(
-      'featuredImageAlt: "The eThang Agent desktop transcript with exec tool calls rendered as expandable cards, the program on the call and the full result below."'
-    );
   });
 
   it.each(requiredSnippets)("makes the claim %s", async (snippet) => {
