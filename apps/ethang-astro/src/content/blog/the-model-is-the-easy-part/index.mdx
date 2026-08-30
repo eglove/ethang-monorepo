@@ -1,0 +1,52 @@
+---
+blogCategory: "Blog"
+description: "A tour of the eThang Agent harness: in-process C# scripting through Roslyn, a hard budget on every tool call, SQLite session memory that survives the tab, and a draft of plans aimed at a full IDE."
+pubDate: "2026-08-30T18:06:00Z"
+slug: "the-model-is-the-easy-part"
+title: "The Model Is the Easy Part"
+updatedDate: "2026-08-30T18:06:00Z"
+---
+
+You open a tab, pick a model, and start working. The reply streams, the plan takes shape, the code lands in the right file. Then a command hangs and the run stalls with it. A context window fills and the session dies mid-thought. A tab closes and takes the whole working memory of the project with it. None of that is the model failing. It is the scaffolding around the model failing, and the scaffolding is where these products are actually built.
+
+eThang Agent begins from that inversion. It is an agent harness for Windows: the scaffolding an AI model acts through — agent loop, tool dispatch, session persistence, a desktop shell — while the model supplies the decisions. The core is .NET 10 behind an Avalonia frontend, with provider-neutral contracts over OpenRouter (https://openrouter.ai/) and z.ai (https://z.ai/). The premise is unglamorous and correct: intelligence is now the cheap part. Continuity, discipline, and a small blast radius are not.
+
+## One tool, made general
+
+Most harnesses hand the model a long menu of narrow utilities — one for searching, one for editing, one for every special case. Each utility is a fresh place to be surprised. eThang Agent hands the model one general instrument instead: `exec`, which compiles and runs a C# program in-process through Roslyn. There is no shell intermediary to inject characters the model never typed; each argument becomes one token of a native command line, re-parsed with Windows argv rules so the process receives what the model intended. File system work, LINQ queries over the workspace, external commands, tool calls from inside the script — all of it is the same surface.
+
+The details show the attitude. When output runs past 50,000 characters, nothing is dropped: both ends are preserved and the full text is saved as an artifact the model can read back with a follow-up call. An argument missing its budget is not a silent default; it is an immediate error telling the model exactly which parameter to correct.
+
+## A budget on every action
+
+That budget is the harness's spine. Every tool call carries a mandatory `timeoutSeconds`, a whole number between 1 and 3600. Exceed it and the call fails as `Error [ToolTimeout]` — a visible error, not a hang, and the model gets a fresh decision: re-issue with a larger budget if the work genuinely needs it, or find another route. Nothing spins until a human notices the spinning. The agent's own loop runs uncapped until it answers without tool calls, and cancellation is honored at every turn boundary, so Stop means stop.
+
+A stuck call is the classic way agent runs die quietly. Here the failure has a name, a type, and a recovery path — which is the difference between a tool and a liability.
+
+## Memory that survives the tab
+
+Sessions persist to an app-owned SQLite database through versioned migrations: every message, every tool call and result, in order. The Sessions menu lists what exists and resumes one deliberately, replaying the full transcript on its original provider and workspace. `memory.recall` searches prior transcripts for decisions, errors, and context from earlier work. A separate curated store holds durable facts — conventions, failures worth not repeating — as versioned, tagged entries the model can search before it assumes.
+
+The API keys that drive it all sit in the same database, DPAPI-encrypted with current-user scope: plaintext keys never touch disk, and only the Windows user who wrote them can read them back. The boring choices are the trust choices.
+
+## The safety ledger
+
+Power concentrates quickly in an agent, so the harness rations it on purpose. The database tools are read-only — a statement that writes, chains, or attaches a foreign database is rejected outright. `write` refuses to clobber an existing file behind an explicit overwrite gate. `git_commit` validates every message against the user's chosen commit style and returns a typed error naming the exact rule when the type is wrong or an emoji sneaks in where it is forbidden.
+
+Delegation stays a tree, not a flood: sub-agents spawn with a hard depth limit and concurrency caps, and each one inherits the same ledger. Input typed mid-turn is never dropped — it waits in a session inbox and reaches the model at the next safe point, never splitting a tool call from its results. Stop hard-cancels the turn and every child, and half-finished tool batches are repaired in place so the conversation history stays valid for whatever comes next.
+
+## What it will not pretend
+
+The harness is honest about the edges. Capability that a provider endpoint does not expose is not simulated into existence: z.ai's live search, page reading, image generation, OCR, and audio transcription appear only on the endpoint that actually offers them. A stream cut off without its terminator is a named error, never a silently truncated answer. Length-capped turns continue automatically, the partial answer kept, and the cap itself surfaced as a visible error if it runs out.
+
+Context gets the same treatment. The status bar shows live utilization; when it crosses 80% at a turn boundary, the oldest conversation is summarized by a compaction model and replaced by that handoff, and the session keeps going instead of dying at the window. Compacted sessions persist and resume like any other.
+
+## The draft on the wall
+
+In the repository root sits `grand-plan.md`, the place the harness admits it is not finished. The file opens by warning that it is a rough idea of future plans, then aims high: a fullscreen IDE by every definition, inspired by JetBrains rather than a chat box; a background maintenance process that polls for hung agents and reprompts them; MCP support; local models through LM Studio and Ollama; agents that trigger their own compaction at milestones; even TLA+ written to validate concurrency plans during the planning phase. And it proposes subtraction too — deleting the general search tool where in-process scripting already covers it, deleting structured clarify prompts and letting the model format its own questions.
+
+That is the trajectory worth watching. The scaffolding is not a static frame around a model; it is the actual product, and this one is being shaped toward an environment where the machinery stays inspectable even as it grows.
+
+## The part that has to tell the truth
+
+Every harness faces the same trade. Hide the machinery and the model feels magical; keep the machinery legible and the work becomes trustworthy. eThang Agent chooses legible — budgets on every action, errors with names and recovery paths, memory you can resume, a ledger of what the agent may not do. The model is the easy part. The harness is the part that has to tell the truth.
