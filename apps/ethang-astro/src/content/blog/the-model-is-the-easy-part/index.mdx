@@ -7,6 +7,10 @@ title: "The Model Is the Easy Part"
 updatedDate: "2026-08-30T18:06:00Z"
 ---
 
+import PostImage from "../../../components/ui/PostImage.astro";
+import ExecCalls from "./images/exec-calls.png";
+import StatusLine from "./images/statusline.png";
+
 You open a tab, pick a model, and start working. The reply streams, the plan takes shape, the code lands in the right file. Then a command hangs and the run stalls with it. A context window fills and the session dies mid-thought. A tab closes and takes the whole working memory of the project with it. None of that is the model failing. It is the scaffolding around the model failing, and the scaffolding is where these products are actually built.
 
 eThang Agent begins from that inversion. It is an agent harness for Windows: the scaffolding an AI model acts through — agent loop, tool dispatch, session persistence, a desktop shell — while the model supplies the decisions. The core is .NET 10 behind an Avalonia frontend, with provider-neutral contracts over OpenRouter (https://openrouter.ai/) and z.ai (https://z.ai/). The premise is unglamorous and correct: intelligence is now the cheap part. Continuity, discipline, and a small blast radius are not.
@@ -29,6 +33,8 @@ Result<ToolCallEnvelope> budget = ToolCallEnvelopeParser.Parse(input.Name, input
 ```
 
 A malformed call never reaches the compiler. It comes back as a typed error naming the rule it broke, and the model corrects the call from the error's own words.
+
+<PostImage src={ExecCalls} alt="The desktop transcript with exec tool calls rendered as expandable cards" caption="Exec calls in the transcript: the program on the call card, the full result on the result card, errors highlighted." />
 
 The details show the attitude. When output runs past 50,000 characters, nothing is dropped: both ends are preserved and the full text is saved as an artifact the model can read back with a follow-up call.
 
@@ -71,6 +77,8 @@ Delegation stays a tree, not a flood: sub-agents spawn with a hard depth limit a
 The harness is honest about the edges. Capability that a provider endpoint does not expose is not simulated into existence: z.ai's live search, page reading, image generation, OCR, and audio transcription appear only on the endpoint that actually offers them. A stream cut off without its terminator is a named error, never a silently truncated answer. Length-capped turns continue automatically, the partial answer kept, and the cap itself surfaced as a visible error if it runs out.
 
 Context gets the same treatment. The status bar shows live utilization; when it crosses 80% at a turn boundary, the oldest conversation is summarized by a compaction model and replaced by that handoff, and the session keeps going instead of dying at the window. Compacted sessions persist and resume like any other.
+
+<PostImage src={StatusLine} alt="The status bar showing a live context utilization readout for the open session" caption="The status bar: live context utilization for the open session." />
 
 ## The draft on the wall
 
