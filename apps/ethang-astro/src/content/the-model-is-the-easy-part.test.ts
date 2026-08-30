@@ -10,6 +10,10 @@ const pubDate = "2026-08-30T18:06:00Z";
 const updatedDate = "2026-08-30T18:38:02Z";
 
 const imagePaths = {
+  dbDiagram: new URL(
+    "blog/the-model-is-the-easy-part/images/ethang-agent-db.png",
+    import.meta.url
+  ),
   execCalls: new URL(
     "blog/the-model-is-the-easy-part/images/exec-calls.png",
     import.meta.url
@@ -69,7 +73,10 @@ const requiredImageSnippets = [
   "<PostImage src={ExecCalls}",
   "<PostImage src={StatusLine}",
   'alt="The desktop transcript with exec tool calls rendered as expandable cards"',
-  'alt="The status bar showing a live context utilization readout for the open session"'
+  'alt="The status bar showing a live context utilization readout for the open session"',
+  'import DbDiagram from "./images/ethang-agent-db.png";',
+  "<PostImage src={DbDiagram}",
+  'alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables"'
 ] as const;
 
 describe("The Model Is the Easy Part blog post", () => {
@@ -102,15 +109,19 @@ describe("The Model Is the Easy Part blog post", () => {
   );
 
   it("ships the screenshots as valid PNGs", async () => {
-    const [execCalls, statusLine] = await Promise.all([
+    const [execCalls, statusLine, dbDiagram] = await Promise.all([
       readFile(imagePaths.execCalls),
-      readFile(imagePaths.statusLine)
+      readFile(imagePaths.statusLine),
+      readFile(imagePaths.dbDiagram)
     ]);
 
     expect(execCalls.subarray(0, 4)).toEqual(
       Buffer.from([0x89, 0x50, 0x4e, 0x47])
     );
     expect(statusLine.subarray(0, 4)).toEqual(
+      Buffer.from([0x89, 0x50, 0x4e, 0x47])
+    );
+    expect(dbDiagram.subarray(0, 4)).toEqual(
       Buffer.from([0x89, 0x50, 0x4e, 0x47])
     );
   });

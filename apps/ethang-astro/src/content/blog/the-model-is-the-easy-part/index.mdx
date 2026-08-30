@@ -10,6 +10,7 @@ updatedDate: "2026-08-30T18:38:02Z"
 import PostImage from "../../../components/ui/PostImage.astro";
 import ExecCalls from "./images/exec-calls.png";
 import StatusLine from "./images/statusline.png";
+import DbDiagram from "./images/ethang-agent-db.png";
 
 [eThang Agent](https://github.com/eglove/ethang-agent) is an AI agent harness for Windows: the scaffolding an AI model acts through — agent loop, tool dispatch, session persistence, desktop UI — while the model supplies the decisions. It is built on .NET 10 with an Avalonia frontend, and it talks to [OpenRouter](https://openrouter.ai/) and [z.ai](https://z.ai/) behind provider-neutral contracts. This post is a breakdown of how the application is put together: the project architecture, the tool surface, the provider layer, the persistence model, and the test strategy.
 
@@ -85,6 +86,10 @@ A few behaviors worth stealing:
 <PostImage src={StatusLine} alt="The status bar showing a live context utilization readout for the open session" caption="The status bar: live context utilization for the open session." />
 
 ## Persistence and memory
+
+The persistence design is easiest to see as its tables. The database groups cleanly along the same bounded-context lines as the code — one set of tables per context, with foreign keys reaching across:
+
+<PostImage src={DbDiagram} alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables" caption="The app database: tables grouped by bounded context, foreign keys crossing where contexts meet." />
 
 Everything lives in one app-owned SQLite database (`eThangAgent.Storage.ACL`, schema changes via versioned migrations): full transcripts including tool calls and results, durable workspace state keys, the curated-memory store, and the agent graph. Three consequences:
 
