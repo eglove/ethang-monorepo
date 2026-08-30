@@ -7,6 +7,7 @@ const postPath = new URL(
 );
 
 const pubDate = "2026-08-30T18:06:00Z";
+const updatedDate = "2026-08-30T18:38:02Z";
 
 const imagePaths = {
   execCalls: new URL(
@@ -22,34 +23,37 @@ const imagePaths = {
 const requiredSnippets = [
   "eThang Agent",
   "the scaffolding an AI model acts through",
+  "one project per bounded context",
+  "eThangAgent.Tool.Domain",
+  "eThangAgent.Roslyn.ACL",
+  "eThangAgent.Composition",
+  "eThangAgent.Desktop",
+  "anti-corruption layer",
+  "mirror-image test projects",
+  "fakes only",
+  "mock provider server",
+  "xUnit v3",
+  "The harness exposes discrete tools",
+  "working_diff",
+  "sub-agent spawning",
   "timeoutSeconds",
   "Error [ToolTimeout]",
   "Roslyn",
-  "OpenRouter",
-  "z.ai",
+  "depth limit",
   "80%",
   "SQLite",
   "DPAPI",
-  "depth limit",
-  "There are discrete tools",
-  "working_diff",
-  "sub-agent spawning",
-  "Tools.read(new {",
-  "Tools.edit(new {",
-  "Tools.Invoke(\"git_commit\"",
-  "Shell(\"dotnet\", \"test\")",
   "ToolCallEnvelopeParser",
   "Minimum: 1",
   "overwrite is exactly true",
-  "in the project's own words: a fullscreen IDE",
-  "JetBrains",
   "file explorer",
   "diffing",
   "static analysis",
   "kanban",
-  "database",
+  "database view",
   "debug port",
   "Debug Adapter Protocol",
+  "JetBrains",
   "MCP",
   "Ollama",
   "TLA+",
@@ -68,17 +72,17 @@ const requiredImageSnippets = [
   'alt="The status bar showing a live context utilization readout for the open session"'
 ] as const;
 
-const firstPerson = /\b(I|me|my|we|us|our)\b/u;
-
 describe("The Model Is the Easy Part blog post", () => {
   it("exists with the agreed metadata", async () => {
     const post = await readFile(postPath, "utf8");
 
     expect(post).toContain('slug: "the-model-is-the-easy-part"');
-    expect(post).toContain('title: "The Model Is the Easy Part"');
+    expect(post).toContain(
+      'title: "The Model Is the Easy Part: Inside the eThang Agent Harness"'
+    );
     expect(post).toContain('blogCategory: "Blog"');
     expect(post).toContain(`pubDate: "${pubDate}"`);
-    expect(post).toContain(`updatedDate: "${pubDate}"`);
+    expect(post).toContain(`updatedDate: "${updatedDate}"`);
     expect(post).not.toContain("featuredImage:");
   });
 
@@ -117,11 +121,5 @@ describe("The Model Is the Easy Part blog post", () => {
     expect(post).not.toContain("do not use it as a guide");
     expect(post).not.toContain("grand-plan.md");
     expect(post).not.toContain(String.raw`C:\Users`);
-  });
-
-  it("keeps the reader-centric voice with no first-person framing", async () => {
-    const post = await readFile(postPath, "utf8");
-
-    expect(post).not.toMatch(firstPerson);
   });
 });

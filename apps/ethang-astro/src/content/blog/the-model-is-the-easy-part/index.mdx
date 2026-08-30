@@ -1,37 +1,35 @@
 ---
 blogCategory: "Blog"
-description: "A tour of the eThang Agent harness: in-process C# scripting through Roslyn, a hard budget on every tool call, SQLite session memory that survives the tab, and a draft of plans aimed at a full IDE."
+description: "A technical breakdown of the eThang Agent harness: its bounded-context architecture, the exec scripting engine, provider-neutral model access, SQLite-backed session state, and the test strategy that keeps it honest."
 pubDate: "2026-08-30T18:06:00Z"
 slug: "the-model-is-the-easy-part"
-title: "The Model Is the Easy Part"
-updatedDate: "2026-08-30T18:06:00Z"
+title: "The Model Is the Easy Part: Inside the eThang Agent Harness"
+updatedDate: "2026-08-30T18:38:02Z"
 ---
 
 import PostImage from "../../../components/ui/PostImage.astro";
 import ExecCalls from "./images/exec-calls.png";
 import StatusLine from "./images/statusline.png";
 
-You open a tab, pick a model, and start working. The reply streams, the plan takes shape, the code lands in the right file. Then a command hangs and the run stalls with it. A context window fills and the session dies mid-thought. A tab closes and takes the whole working memory of the project with it. None of that is the model failing. It is the scaffolding around the model failing, and the scaffolding is where these products are actually built.
+[eThang Agent](https://github.com/eglove/ethang-agent) is an AI agent harness for Windows: the scaffolding an AI model acts through — agent loop, tool dispatch, session persistence, desktop UI — while the model supplies the decisions. It is built on .NET 10 with an Avalonia frontend, and it talks to [OpenRouter](https://openrouter.ai/) and [z.ai](https://z.ai/) behind provider-neutral contracts. This post is a breakdown of how the application is put together: the project architecture, the tool surface, the provider layer, the persistence model, and the test strategy.
 
-[eThang Agent](https://github.com/eglove/ethang-agent) begins from that inversion. It is an agent harness for Windows: the scaffolding an AI model acts through — agent loop, tool dispatch, session persistence, a desktop shell — while the model supplies the decisions. The core is .NET 10 behind an Avalonia frontend, with provider-neutral contracts over [OpenRouter](https://openrouter.ai/) and [z.ai](https://z.ai/). The premise is unglamorous and correct: intelligence is now the cheap part. Continuity, discipline, and a small blast radius are not.
+The design bet is simple to state. The model is the easy part; the harness is where reliability is actually decided. A hung tool call, a lost session, a corrupted transcript — none of those are model failures, and all of them are harness failures. Everything below follows from treating that seriously.
 
-## One tool, made general
+## Architecture: one project per bounded context
 
-Most harnesses hand the model a long menu of narrow utilities — one for searching, one for editing, one for every special case. eThang Agent refuses that trade-off. There are discrete tools — read, write, edit, git_status, working_diff, db_schema, db_query, a durable todo list, curated memory, sub-agent spawning — and each carries its own validated contract. Alongside them runs the general instrument: `exec`, which compiles and runs a C# program in-process through Roslyn. There is no shell intermediary to inject characters the model never typed; each argument becomes one token of a native command line, re-parsed with Windows argv rules so the process receives what the model intended. File system work, LINQ queries over the workspace, external commands, tool calls from inside the script — all of it is the same surface.
+The solution is organized as one project per bounded context, plus a set of anti-corruption layers (ACLs) that isolate every external dependency behind its own boundary:
 
-That last part is the quiet advantage. From inside one `exec` call, the named tools become values the script can sequence — read, patch, test, commit:
+- **Domains** — `eThangAgent.Tool.Domain` (tool contracts), `eThangAgent.Conversation.Domain` (turns and streaming), `eThangAgent.Agent.Domain` (the agent loop), `eThangAgent.Model.Domain`, `eThangAgent.Capability.Domain` (the capability registry), `eThangAgent.Memory.Domain`, `eThangAgent.Skill.Domain`, `eThangAgent.State.Domain`, and `eThangAgent.SharedKernel` for shared primitives like `Result<T>`.
+- **ACLs** — `eThangAgent.Roslyn.ACL` (script execution), `eThangAgent.OpenRouter.ACL` and `eThangAgent.Zai.ACL` (providers), `eThangAgent.Provider.Wire` (wire-format contracts), `eThangAgent.FileSystem.ACL`, and `eThangAgent.Storage.ACL` (SQLite).
+- **Composition and UI** — `eThangAgent.Composition` is the host-agnostic wiring used by `eThangAgent.Desktop`, the Avalonia frontend.
 
-```csharp
-var head = Tools.read(new { path = "src/App.ts", startLine = 1, endLine = 50 });
-Tools.edit(new { path = "src/App.ts", old = "render()", replacement = "renderApp()", occurrences = 1 });
-var tests = Shell("dotnet", "test");
-if (tests.ExitCode == 0)
-  Tools.Invoke("git_commit", new { type = "fix", description = "mount App once" });
-```
+Domains do not know Roslyn, HTTP, OpenRouter, or SQLite exist. Each external concern sits behind an interface owned by the domain and implemented by an ACL, which is a textbook anti-corruption layer arrangement. The rule buys something concrete: the tool-contract tests run without compiling a single script, and swapping the OpenRouter ACL for a local mock never touches the conversation logic.
 
-The script composes them with conditionals and loops, so four calls become one decision point instead of four round trips — and the whole sequence still runs under a single budget.
+## The tool layer: validated contracts plus one general tool
 
-The loop inside the tool reads like its contract — parse, reject, and only then act:
+The harness exposes discrete tools — read, write, edit, search, git_status, working_diff, db_schema, db_query, todo, curated memory, clarify, sub-agent spawning — and each one is a class implementing a single `ITool` interface with a declarative `ToolDefinition`: name, description, typed parameters, required-parameter list. Alongside them runs `exec`, a general-purpose C# scripting tool that compiles and runs a program in-process through Roslyn.
+
+Every tool follows the same shape. Parse the input into a validated value; on failure, return a typed error. Only then check the budget and run. From `ExecTool.cs`:
 
 ```csharp
 Result<ExecToolInput> parsed = ExecToolInput.Create(input.JsonArguments);
@@ -44,64 +42,78 @@ if (!parsed.IsSuccess)
 Result<ToolCallEnvelope> budget = ToolCallEnvelopeParser.Parse(input.Name, input.JsonArguments);
 ```
 
-A malformed call never reaches the compiler. It comes back as a typed error naming the rule it broke, and the model corrects the call from the error's own words.
+A malformed call never reaches the compiler; it comes back as `Error [Code]: message`, which the model can correct directly. Validation rules live in the parameter declarations themselves — `Minimum: 1` on a whole-number parameter is enforced by the envelope parser, not by a convention.
 
-<PostImage src={ExecCalls} alt="The desktop transcript with exec tool calls rendered as expandable cards" caption="Exec calls in the transcript: the program on the call card, the full result on the result card, errors highlighted." />
+The budget deserves its own paragraph because it is the spine of the whole tool surface. Every tool call carries a mandatory `timeoutSeconds` (a whole number, 1–3600). When the budget elapses, the call fails as `Error [ToolTimeout]` — a stoppable, named error the model can recover from by re-issuing with a larger budget or taking a different route. Nothing hangs silently. The agent loop itself runs uncapped and honors cancellation at every turn boundary.
 
-The details show the attitude. When output runs past 50,000 characters, nothing is dropped: both ends are preserved and the full text is saved as an artifact the model can read back with a follow-up call.
-
-## A budget on every action
-
-That budget is the harness's spine. Every tool call carries a mandatory `timeoutSeconds`, a whole number between 1 and 3600, declared in every tool definition as a required parameter with its floor written where the parser can enforce it:
-
-```csharp
-new ToolParameter(ToolTimeout.ParameterName, ToolParameterType.WholeNumber,
-    ToolTimeout.ParameterDescription, Minimum: 1)
-```
-
-Exceed it and the call fails as `Error [ToolTimeout]` — a visible error, not a hang, and the model gets a fresh decision: re-issue with a larger budget if the work genuinely needs it, or find another route. Nothing spins until a human notices the spinning. The agent's own loop runs uncapped until it answers without tool calls, and cancellation is honored at every turn boundary, so Stop means stop.
-
-A stuck call is the classic way agent runs die quietly. Here the failure has a name, a type, and a recovery path — which is the difference between a tool and a liability.
-
-## Memory that survives the tab
-
-Sessions persist to an app-owned SQLite database through versioned migrations: every message, every tool call and result, in order. The Sessions menu lists what exists and resumes one deliberately, replaying the full transcript on its original provider and workspace. `memory.recall` searches prior transcripts for decisions, errors, and context from earlier work. A separate curated store holds durable facts — conventions, failures worth not repeating — as versioned, tagged entries the model can search before it assumes.
-
-The API keys that drive it all sit in the same database, DPAPI-encrypted with current-user scope: plaintext keys never touch disk, and only the Windows user who wrote them can read them back. The boring choices are the trust choices.
-
-## The safety ledger
-
-Power concentrates quickly in an agent, so the harness rations it on purpose. The database tools are read-only — a statement that writes, chains, or attaches a foreign database is rejected outright. `git_commit` validates every message against the user's chosen commit style and returns a typed error naming the exact rule when the type is wrong or an emoji sneaks in where it is forbidden.
-
-`write` refuses to clobber an existing file: the call fails if the file exists unless overwrite is exactly true — it will never silently replace anything. The gate is not policy prose; it is a declared parameter:
+`WriteTool` shows the same philosophy at the file boundary: the call fails if the file exists unless overwrite is exactly true — it will never silently replace anything, and parent directories are never created automatically. The overwrite gate is a declared parameter, not prose in the docs:
 
 ```csharp
 new ToolParameter("overwrite", ToolParameterType.Flag,
     "Optional. Defaults to refusing replacement of an existing file; true replaces it.")
 ```
 
-Create-only by default. Replacement is a decision the model has to state out loud.
+In the desktop transcript, each call and result renders as an expandable card — arguments pretty-printed on the call, full result content on the result, errors highlighted red:
 
-Delegation stays a tree, not a flood: sub-agents spawn with a hard depth limit and concurrency caps, and each one inherits the same ledger. Input typed mid-turn is never dropped — it waits in a session inbox and reaches the model at the next safe point, never splitting a tool call from its results. Stop hard-cancels the turn and every child, and half-finished tool batches are repaired in place so the conversation history stays valid for whatever comes next.
+<PostImage src={ExecCalls} alt="The desktop transcript with exec tool calls rendered as expandable cards" caption="Exec calls in the transcript: the program on the call card, the full result on the result card, errors highlighted." />
 
-## What it will not pretend
+### Composition through exec
 
-The harness is honest about the edges. Capability that a provider endpoint does not expose is not simulated into existence: z.ai's live search, page reading, image generation, OCR, and audio transcription appear only on the endpoint that actually offers them. A stream cut off without its terminator is a named error, never a silently truncated answer. Length-capped turns continue automatically, the partial answer kept, and the cap itself surfaced as a visible error if it runs out.
+The named tools are also exposed inside the exec script environment, which makes them composable. One script can read a file, patch it, run the test suite, and conditionally commit — with branch logic no linear tool-call sequence can express:
 
-Context gets the same treatment. The status bar shows live utilization; when it crosses 80% at a turn boundary, the oldest conversation is summarized by a compaction model and replaced by that handoff, and the session keeps going instead of dying at the window. Compacted sessions persist and resume like any other.
+```csharp
+var head = Tools.read(new { path = "src/App.ts", startLine = 1, endLine = 50 });
+Tools.edit(new { path = "src/App.ts", old = "render()", replacement = "renderApp()", occurrences = 1 });
+var tests = Shell("dotnet", "test");
+if (tests.ExitCode == 0)
+  Tools.Invoke("git_commit", new { type = "fix", description = "mount App once" });
+```
+
+`Shell` here is the exec environment's escape hatch to native processes: no shell intermediary, each argument one token of a native command line re-parsed with Windows argv rules, exit code propagated verbatim. Large outputs are never silently truncated — past 50,000 characters, both ends are preserved and the full text is written to an artifact file the model can read back.
+
+## The provider layer
+
+Provider access is split into two ACLs behind a shared wire-contract project. Each agent tab binds to exactly one provider — [OpenRouter](https://openrouter.ai/) or [z.ai](https://z.ai/) — for its lifetime. The split is deliberate: the two providers differ in model catalogs, endpoint modes, and capability surfaces, and the harness refuses to paper over that with a merged abstraction.
+
+A few behaviors worth stealing:
+
+- **Retries with backoff** — 429/408/5xx, transport errors, and timeouts retry exponentially (four attempts by default), honoring a server `Retry-After` hint. A streaming request retries only while nothing has been emitted; mid-stream failures surface as errors so output is never duplicated.
+- **Continuation** — when a response hits the model's output limit (`finish_reason: length`), the partial answer is kept, a continuation nudge is appended, and the loop resumes, bounded per turn. A stream cut off without its terminator is a `StreamInterrupted` error, never a silently truncated answer.
+- **Capability honesty** — z.ai's web search, page reading, image generation, OCR, and transcription tools exist only on the endpoint that actually offers them. The harness does not simulate capability an endpoint lacks.
+- **Context compaction** — the status bar shows live token utilization; when it crosses 80% at a turn boundary, the oldest conversation is summarized by a compaction model and replaced with that handoff. The session keeps going instead of dying at the window, and compacted sessions persist and resume like any other.
 
 <PostImage src={StatusLine} alt="The status bar showing a live context utilization readout for the open session" caption="The status bar: live context utilization for the open session." />
 
-## The draft on the wall
+## Persistence and memory
 
-The ambitions are kept in the open, in the project's own words: a fullscreen IDE — "by every definition," inspired by JetBrains rather than a chat box or a VS Code clone — where the harness's views grow real engineering surface. A file explorer with live syntax highlighting, watched by a file watcher rather than polled. A git view with realtime diffing, pull-request management, and CI status. A static analysis view hunting duplicate code, dead code, code smells, and security vulnerabilities — with lint and formatter autofixes that feed errors straight back to the agent. A kanban view where the agent's plan and todos render as cards, updating in realtime. A database view over the app's own SQLite store, live. An agent view where multiple windows stream several runs at once. And an AI debugging plan that goes where humans rarely look: running projects on a debug port and analyzing internal state through the Debug Adapter Protocol, so the model reads the program's insides instead of guessing from stack traces.
+Everything lives in one app-owned SQLite database (`eThangAgent.Storage.ACL`, schema changes via versioned migrations): full transcripts including tool calls and results, durable workspace state keys, the curated-memory store, and the agent graph. Three consequences:
 
-The surrounding machinery gets the same ambition. A background maintenance process polls for hung agents — agents that stopped without finishing — and restarts or reprompts them, with deadlock detection that kills the deadlock and reports the kill back to the model. MCP support. Local models through LM Studio and Ollama, queried and listed like any hosted provider. Agents that trigger their own context compaction when a milestone completes or the conversation turns redundant. Even formal methods: temporary TLA+ specifications written and checked to validate concurrency plans during the planning phase.
+1. **Resume** — any session can be reopened from the Sessions menu and replayed in full, on its original provider and workspace, with history carried into the next turn.
+2. **Recall** — `memory.recall` searches prior transcripts for decisions, errors, and context, so work from earlier sessions is retrievable rather than gone.
+3. **Curation** — a separate versioned, tagged, full-text store holds durable facts (conventions, failed approaches), with turn-boundary nudges prompting the model to write things down.
 
-The same roadmap subtracts as readily as it adds. The general file-search tool is slated for deletion, on the grounds that in-process scripting already covers the need. Structured clarifying prompts go too, so the model formats its own questions. A harness confident enough in one general instrument to keep removing the special cases around it is the trajectory worth watching.
+API keys sit in the same database, DPAPI-encrypted with current-user scope — plaintext never touches disk, and only the Windows user who wrote them can read them back.
 
-The scaffolding is not a static frame around a model; it is the actual product, and this one is being shaped toward an environment where the machinery stays inspectable even as it grows.
+## Safety properties
 
-## The part that has to tell the truth
+Delegated power is rationed explicitly:
 
-Every harness faces the same trade. Hide the machinery and the model feels magical; keep the machinery legible and the work becomes trustworthy. eThang Agent chooses legible — budgets on every action, errors with names and recovery paths, memory you can resume, a ledger of what the agent may not do. The model is the easy part. The harness is the part that has to tell the truth.
+- The database tools are read-only on a read-only connection — writes, multiple statements, and `ATTACH`/`DETACH` are rejected.
+- Sub-agents spawn with a hard depth limit and concurrency caps; children inherit the same tool ledger.
+- Input typed mid-turn goes to a session inbox and reaches the model at the next safe point — never splitting a tool call from its results.
+- Stop hard-cancels the turn and all of the session's sub-agents, and repairs half-finished tool batches in place so the transcript stays valid.
+- `git_commit` validates messages against the user's chosen commit style and returns a typed error naming the violated rule.
+
+## The test strategy
+
+Tests mirror the architecture — the solution's 18 projects all have mirror-image test projects, xUnit v3 on Microsoft.Testing.Platform, in three tiers: domain unit tests use fakes only and never touch Roslyn, HTTP, or SQLite; integration tests exercise the real ACL implementations; E2E tests drive the desktop app headless against a local mock provider server shaped like OpenRouter and z.ai. Because external dependencies live behind ACLs, each tier tests exactly one boundary — which is the practical payoff of the architecture, not just its aesthetics.
+
+## Where it is going
+
+The public roadmap is ambitious. The desktop is headed toward a fullscreen IDE — by its own description inspired by JetBrains, not a chat box or an editor clone — with a file explorer with live syntax highlighting driven by a file watcher, a git view with realtime diffing plus PR and CI management, a static analysis view (duplicate code, dead code, code smells, security vulnerabilities) whose autofixes feed errors straight back to the agent, a realtime kanban view of agent plans and todos, a live database view, and a multi-window agent view for watching several runs stream at once. An AI debugging plan goes further: running projects on a debug port and analyzing internal state through the Debug Adapter Protocol, so the model reads program state instead of inferring it from stack traces.
+
+Around the IDE: a background maintenance process that polls for hung or silently-stopped agents and restarts or reprompts them, with deadlock detection that kills the deadlock and reports back to the model. MCP support. Local model providers (LM Studio, Ollama) queried and listed like hosted ones. Agent-triggered compaction at milestones. Even formal methods: temporary TLA+ specifications written and checked to validate concurrency plans during the planning phase. And, remarkably for a planning document, subtraction: deleting the general file-search tool because in-process scripting covers it, deleting structured clarify prompts in favor of the model formatting its own questions.
+
+## Wrap-up
+
+The interesting engineering in an agent product is almost never the model. It is the budgets that keep a hung call from hanging a session, the contracts that make every failure recoverable, the persistence that makes every session resumable, and the architecture that makes all of it testable. [eThang Agent](https://github.com/eglove/ethang-agent) is a working, Windows-native take on that problem, and its repository is open if you want to pull on any of these threads.
