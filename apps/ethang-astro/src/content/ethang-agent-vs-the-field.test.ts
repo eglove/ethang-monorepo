@@ -10,16 +10,16 @@ const pubDate = "2026-08-30T18:06:00Z";
 const updatedDate = "2026-08-30T18:38:02Z";
 
 const imagePaths = {
+  dbDiagram: new URL(
+    "blog/ethang-agent-vs-the-field/images/ethang-agent-db.png",
+    import.meta.url
+  ),
   execCalls: new URL(
     "blog/ethang-agent-vs-the-field/images/exec-calls.png",
     import.meta.url
   ),
   statusLine: new URL(
     "blog/ethang-agent-vs-the-field/images/statusline.png",
-    import.meta.url
-  ),
-  dbDiagram: new URL(
-    "blog/ethang-agent-vs-the-field/images/ethang-agent-db.png",
     import.meta.url
   )
 };
@@ -94,7 +94,10 @@ describe("eThang Agent vs the field", () => {
     expect(post).toContain('blogCategory: "Blog"');
     expect(post).toContain(`pubDate: "${pubDate}"`);
     expect(post).toContain(`updatedDate: "${updatedDate}"`);
-    expect(post).not.toContain("featuredImage:");
+    expect(post).toContain("featuredImage: ./images/exec-calls.png");
+    expect(post).toContain(
+      'featuredImageAlt: "The eThang Agent desktop transcript with exec tool calls rendered as expandable cards, the program on the call and the full result below."'
+    );
   });
 
   it.each(requiredSnippets)("makes the claim %s", async (snippet) => {
@@ -103,11 +106,14 @@ describe("eThang Agent vs the field", () => {
     expect(post).toContain(snippet);
   });
 
-  it.each(requiredImageSnippets)("embeds the screenshot %s", async (snippet) => {
-    const post = await readFile(postPath, "utf8");
+  it.each(requiredImageSnippets)(
+    "embeds the screenshot %s",
+    async (snippet) => {
+      const post = await readFile(postPath, "utf8");
 
-    expect(post).toContain(snippet);
-  });
+      expect(post).toContain(snippet);
+    }
+  );
 
   it("ships the screenshots as valid PNGs", async () => {
     const [execCalls, statusLine, dbDiagram] = await Promise.all([
@@ -132,6 +138,6 @@ describe("eThang Agent vs the field", () => {
 
     expect(post).not.toContain("do not use it as a guide");
     expect(post).not.toContain("grand-plan.md");
-    expect(post).not.toContain("C:\\Users");
+    expect(post).not.toContain(String.raw`C:\Users`);
   });
 });
