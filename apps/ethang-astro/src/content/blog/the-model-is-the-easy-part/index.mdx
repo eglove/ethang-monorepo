@@ -15,11 +15,33 @@ eThang Agent begins from that inversion. It is an agent harness for Windows: the
 
 Most harnesses hand the model a long menu of narrow utilities — one for searching, one for editing, one for every special case. Each utility is a fresh place to be surprised. eThang Agent hands the model one general instrument instead: `exec`, which compiles and runs a C# program in-process through Roslyn. There is no shell intermediary to inject characters the model never typed; each argument becomes one token of a native command line, re-parsed with Windows argv rules so the process receives what the model intended. File system work, LINQ queries over the workspace, external commands, tool calls from inside the script — all of it is the same surface.
 
-The details show the attitude. When output runs past 50,000 characters, nothing is dropped: both ends are preserved and the full text is saved as an artifact the model can read back with a follow-up call. An argument missing its budget is not a silent default; it is an immediate error telling the model exactly which parameter to correct.
+The loop inside the tool reads like its contract — parse, reject, and only then act:
+
+```csharp
+Result<ExecToolInput> parsed = ExecToolInput.Create(input.JsonArguments);
+if (!parsed.IsSuccess)
+{
+  return Task.FromResult(new ToolResult(
+      $"Error [{parsed.Error.Code}]: {parsed.Error.Message}", true));
+}
+
+Result<ToolCallEnvelope> budget = ToolCallEnvelopeParser.Parse(input.Name, input.JsonArguments);
+```
+
+A malformed call never reaches the compiler. It comes back as a typed error naming the rule it broke, and the model corrects the call from the error's own words.
+
+The details show the attitude. When output runs past 50,000 characters, nothing is dropped: both ends are preserved and the full text is saved as an artifact the model can read back with a follow-up call.
 
 ## A budget on every action
 
-That budget is the harness's spine. Every tool call carries a mandatory `timeoutSeconds`, a whole number between 1 and 3600. Exceed it and the call fails as `Error [ToolTimeout]` — a visible error, not a hang, and the model gets a fresh decision: re-issue with a larger budget if the work genuinely needs it, or find another route. Nothing spins until a human notices the spinning. The agent's own loop runs uncapped until it answers without tool calls, and cancellation is honored at every turn boundary, so Stop means stop.
+That budget is the harness's spine. Every tool call carries a mandatory `timeoutSeconds`, a whole number between 1 and 3600, declared in every tool definition as a required parameter with its floor written where the parser can enforce it:
+
+```csharp
+new ToolParameter(ToolTimeout.ParameterName, ToolParameterType.WholeNumber,
+    ToolTimeout.ParameterDescription, Minimum: 1)
+```
+
+Exceed it and the call fails as `Error [ToolTimeout]` — a visible error, not a hang, and the model gets a fresh decision: re-issue with a larger budget if the work genuinely needs it, or find another route. Nothing spins until a human notices the spinning. The agent's own loop runs uncapped until it answers without tool calls, and cancellation is honored at every turn boundary, so Stop means stop.
 
 A stuck call is the classic way agent runs die quietly. Here the failure has a name, a type, and a recovery path — which is the difference between a tool and a liability.
 
@@ -31,7 +53,16 @@ The API keys that drive it all sit in the same database, DPAPI-encrypted with cu
 
 ## The safety ledger
 
-Power concentrates quickly in an agent, so the harness rations it on purpose. The database tools are read-only — a statement that writes, chains, or attaches a foreign database is rejected outright. `write` refuses to clobber an existing file behind an explicit overwrite gate. `git_commit` validates every message against the user's chosen commit style and returns a typed error naming the exact rule when the type is wrong or an emoji sneaks in where it is forbidden.
+Power concentrates quickly in an agent, so the harness rations it on purpose. The database tools are read-only — a statement that writes, chains, or attaches a foreign database is rejected outright. `git_commit` validates every message against the user's chosen commit style and returns a typed error naming the exact rule when the type is wrong or an emoji sneaks in where it is forbidden.
+
+`write` refuses to clobber an existing file: the call fails if the file exists unless overwrite is exactly true — it will never silently replace anything. The gate is not policy prose; it is a declared parameter:
+
+```csharp
+new ToolParameter("overwrite", ToolParameterType.Flag,
+    "Optional. Defaults to refusing replacement of an existing file; true replaces it.")
+```
+
+Create-only by default. Replacement is a decision the model has to state out loud.
 
 Delegation stays a tree, not a flood: sub-agents spawn with a hard depth limit and concurrency caps, and each one inherits the same ledger. Input typed mid-turn is never dropped — it waits in a session inbox and reaches the model at the next safe point, never splitting a tool call from its results. Stop hard-cancels the turn and every child, and half-finished tool batches are repaired in place so the conversation history stays valid for whatever comes next.
 
@@ -43,9 +74,11 @@ Context gets the same treatment. The status bar shows live utilization; when it 
 
 ## The draft on the wall
 
-In the repository root sits `grand-plan.md`, the place the harness admits it is not finished. The file opens by warning that it is a rough idea of future plans, then aims high: a fullscreen IDE by every definition, inspired by JetBrains rather than a chat box; a background maintenance process that polls for hung agents and reprompts them; MCP support; local models through LM Studio and Ollama; agents that trigger their own compaction at milestones; even TLA+ written to validate concurrency plans during the planning phase. And it proposes subtraction too — deleting the general search tool where in-process scripting already covers it, deleting structured clarify prompts and letting the model format its own questions.
+The ambitions are kept in the open, in the project's own words. The roadmap opens with a warning that it is "a rough idea of future plans, do not use it as a guide for implementation," then aims high: a fullscreen IDE — "by every definition," inspired by JetBrains rather than a chat box or a VS Code clone. A background maintenance process that polls for hung agents, agents that stopped without finishing, and restarts or reprompts them, with deadlock detection that kills the deadlock and reports the kill back to the model. MCP support. Local models through LM Studio and Ollama, queried and listed like any hosted provider. Agents that trigger their own context compaction when a milestone completes or the conversation turns redundant. Even formal methods: temporary TLA+ specifications written and checked to validate concurrency plans during the planning phase.
 
-That is the trajectory worth watching. The scaffolding is not a static frame around a model; it is the actual product, and this one is being shaped toward an environment where the machinery stays inspectable even as it grows.
+The same roadmap subtracts as readily as it adds. The general file-search tool is slated for deletion, on the grounds that in-process scripting already covers the need. Structured clarifying prompts go too, so the model formats its own questions. A harness confident enough in one general instrument to keep removing the special cases around it is the trajectory worth watching.
+
+The scaffolding is not a static frame around a model; it is the actual product, and this one is being shaped toward an environment where the machinery stays inspectable even as it grows.
 
 ## The part that has to tell the truth
 

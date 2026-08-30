@@ -20,7 +20,9 @@ const requiredSnippets = [
   "SQLite",
   "DPAPI",
   "depth limit",
-  "grand-plan.md",
+  "ToolCallEnvelopeParser",
+  "Minimum: 1",
+  "overwrite is exactly true",
   "JetBrains",
   "MCP",
   "Ollama",
@@ -47,6 +49,13 @@ describe("The Model Is the Easy Part blog post", () => {
     const post = await readFile(postPath, "utf8");
 
     expect(post).toContain(snippet);
+  });
+
+  it("is public-safe: no local machine paths", async () => {
+    const post = await readFile(postPath, "utf8");
+
+    expect(post).not.toContain("grand-plan.md");
+    expect(post).not.toContain(String.raw`C:\Users`);
   });
 
   it("keeps the reader-centric voice with no first-person framing", async () => {
