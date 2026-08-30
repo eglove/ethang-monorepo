@@ -89,7 +89,9 @@ A few behaviors worth stealing:
 
 The persistence design is easiest to see as its tables. The database groups cleanly along the same bounded-context lines as the code — one set of tables per context, with foreign keys reaching across:
 
-<PostImage src={DbDiagram} alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables" caption="The app database: tables grouped by bounded context, foreign keys crossing where contexts meet." />
+<div className="rounded-lg" style={{ backgroundColor: "#ffffff", padding: "0.5rem" }}>
+  <PostImage src={DbDiagram} alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables" caption="The app database: tables grouped by bounded context, foreign keys crossing where contexts meet." />
+</div>
 
 Everything lives in one app-owned SQLite database (`eThangAgent.Storage.ACL`, schema changes via versioned migrations): full transcripts including tool calls and results, durable workspace state keys, the curated-memory store, and the agent graph. Three consequences:
 

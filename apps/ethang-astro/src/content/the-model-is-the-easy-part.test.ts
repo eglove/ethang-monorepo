@@ -76,7 +76,9 @@ const requiredImageSnippets = [
   'alt="The status bar showing a live context utilization readout for the open session"',
   'import DbDiagram from "./images/ethang-agent-db.png";',
   "<PostImage src={DbDiagram}",
-  'alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables"'
+  'alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables"',
+  '<div className="rounded-lg"',
+  'style={{ backgroundColor: "#ffffff", padding: "0.5rem" }}'
 ] as const;
 
 describe("The Model Is the Easy Part blog post", () => {
