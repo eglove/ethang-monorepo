@@ -14,7 +14,7 @@ import ExecCalls from "./images/exec-calls.png";
 import StatusLine from "./images/statusline.png";
 import DbDiagram from "./images/ethang-agent-db.png";
 
-Agent harnesses have converged. Claude Code, OpenAI Codex, and Gemini CLI live in the terminal; Cursor and Windsurf wrap VS Code; OpenCode runs anywhere a terminal does. Strip the chrome and they mostly do the same job: stream a model, offer file and shell tools, keep a session. [eThang Agent](https://github.com/eglove/ethang-agent), a Windows-native harness — the scaffolding an AI model acts through, built on .NET 10 and Avalonia — refuses the convergence on three points. It makes the model earn every file edit through type-safe code rather than free-text tool calls. It keeps every session and memory in a database the agent itself can query, not a log file it cannot. And it is building toward a full-fledged IDE designed for agent work — not a VS Code fork that is a text editor with plugins slapped on top.
+Agent harnesses have converged. Claude Code, OpenAI Codex, and Gemini CLI live in the terminal; Cursor and Windsurf wrap VS Code; OpenCode runs anywhere a terminal does. Strip the chrome and they mostly do the same job: stream a model, offer file and shell tools, keep a session. [eThang Agent](https://github.com/eglove/ethang-agent), a Windows-native harness — the scaffolding an AI model acts through, built on .NET 10 and Avalonia — refuses the convergence on three points. It makes the model earn every file edit through type-safe code rather than free-text tool calls. It keeps every session and memory in a database the agent itself can query, not a log file it cannot. And it is building toward a full-fledged IDE designed for agent work — not a VS Code fork that is a text editor with plugins slapped on top. And it does all of this without dirtying your filesystem — never asks your project to carry dot-directories or skill folders on its behalf.
 
 Those three bets are the story of what sets it apart. What sets it apart is that no mainstream harness makes all three together — so the field becomes contrast, not structure.
 
@@ -76,8 +76,12 @@ The roadmap's destination is a fullscreen IDE designed for agent work — by its
 
 Around the IDE, the plans keep the same shape: a maintenance process polling for hung agents with deadlock detection that kills and reports back; MCP support; local providers like LM Studio and Ollama treated as first-class; even TLA+ specifications checked to validate concurrency plans before implementation. The codebase is already shaped for it — one project per bounded context with an anti-corruption layer per external dependency (`eThangAgent.Roslyn.ACL`, `eThangAgent.Composition`, `eThangAgent.Desktop`) — which is why "build the IDE" is a credible plan rather than a screenshot.
 
-## The honest ledger
+## Your filesystem stays yours
 
-Credit where the field leads. Claude Code and Codex have frontier models tuned into their harnesses; Cursor and Windsurf have years of editor polish and enormous user bases; OpenCode has community scale and cross-platform reach. eThang Agent is Windows-first by choice, younger than its competitors, and its community is smaller. Those are real costs.
+There is a quieter difference that compounds daily. Many harnesses colonize a project: a `.claude` directory here, `.agents` or `.antigravity` conventions there, skills that only work from one particular folder, config files scattered at the repo root. eThang Agent keeps its entire apparatus in a single database. Sessions, curated memory, plans and specs, even the built-in skills live there — not in your repository. The workspace is the project's; the harness's state is its own. Nothing in the repo exists to serve the agent.
+
+That discipline extends to flexibility. Skills will be loadable from any number of directories you choose, persisted to that same database rather than discovered by hunting fixed skill directories. The agent adapts to where you keep your knowledge; your project never adapts to the agent.
+
+## The honest ledger
 
 What buys is differentiation with a spine. Provider-neutral model access — [OpenRouter](https://openrouter.ai/) with an auto-selection pipeline, [z.ai](https://z.ai/), each behind its own anti-corruption layer — instead of a bundled ecosystem. Sub-agent spawning with a hard depth limit and concurrency caps. Validated tool contracts everywhere, from `git_commit`'s style enforcement to read-only database access. And the three bets above, which no mainstream harness currently makes together: type-safe execution for every edit, memory that is a queryable database rather than a log, and an agent-native IDE on the roadmap. The repository is open — pull on any of these threads and see.
