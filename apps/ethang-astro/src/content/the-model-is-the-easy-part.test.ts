@@ -46,8 +46,9 @@ const requiredSnippets = [
   "MCP",
   "Ollama",
   "TLA+",
-  "https://openrouter.ai/",
-  "https://z.ai/"
+  "[eThang Agent](https://github.com/eglove/ethang-agent)",
+  "[OpenRouter](https://openrouter.ai/)",
+  "[z.ai](https://z.ai/)"
 ] as const;
 
 const requiredImageSnippets = [
