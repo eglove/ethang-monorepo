@@ -1,0 +1,146 @@
+@startuml ethang-agent-db
+skinparam backgroundColor transparent
+skinparam linetype ortho
+skinparam entity {
+  BackgroundColor #1e2430
+  BorderColor #4a5568
+  FontColor #e2e8f0
+}
+hide circle
+skinparam defaultFontName monospaced
+skinparam defaultFontSize 11
+
+entity "**agents**" as agents {
+  * **id** : TEXT <<PK>>
+  --
+  parent_id : TEXT <<FK>>
+  depth : INTEGER
+  status : INTEGER
+  failure_reason : INTEGER
+  model_used : TEXT
+  label : TEXT
+  task_prompt : TEXT
+  # created_at : TEXT
+  # completed_at : TEXT
+  final_report : TEXT
+  workspace_id : TEXT
+  provider : TEXT
+}
+
+entity "**agent_messages**" as agent_messages {
+  * **agent_id** : TEXT <<PK,FK>>
+  * **seq** : INTEGER <<PK>>
+  --
+  role : TEXT
+  content : TEXT
+  meta_json : TEXT
+}
+
+entity "**agent_events**" as agent_events {
+  * **id** : INTEGER <<PK>>
+  --
+  agent_id : TEXT
+  occurred_at : TEXT
+  type : TEXT
+  payload_json : TEXT
+}
+
+entity "**state_keys**" as state_keys {
+  * **workspace_id** : TEXT <<PK>>
+  * **ns** : TEXT <<PK>>
+  * **name** : TEXT <<PK>>
+  --
+  value : TEXT
+  version : INTEGER
+  updated_at : TEXT
+}
+
+entity "**state_events**" as state_events {
+  * **id** : INTEGER <<PK>>
+  --
+  workspace_id : TEXT
+  kind : TEXT
+  payload_json : TEXT
+  occurred_at : TEXT
+}
+
+entity "**transitions**" as transitions {
+  * **id** : TEXT <<PK>>
+  --
+  workspace_id : TEXT
+  from_state : TEXT
+  to_state : TEXT
+  summary : TEXT
+  evidence_json : TEXT
+  status : TEXT
+  created_at : TEXT
+}
+
+entity "**curated_memories**" as curated_memories {
+  * **id** : TEXT <<PK>>
+  --
+  workspace_id : TEXT
+  category : TEXT
+  tags : TEXT
+  content : TEXT
+  usage_hint : TEXT
+  scope : TEXT
+  provenance : TEXT
+  version : INTEGER
+  created_at : TEXT
+  updated_at : TEXT
+}
+
+entity "**learned_skills**" as learned_skills {
+  * **name** : TEXT <<PK>>
+  --
+  description : TEXT
+  body : TEXT
+  version : INTEGER
+  provenance_session : TEXT
+  created_at : TEXT
+  updated_at : TEXT
+}
+
+entity "**skill_versions**" as skill_versions {
+  * **name** : TEXT <<PK>>
+  * **version** : INTEGER <<PK>>
+  --
+  description : TEXT
+  body : TEXT
+  created_at : TEXT
+}
+
+entity "**skill_usage**" as skill_usage {
+  * **id** : INTEGER <<PK>>
+  --
+  skill_name : TEXT
+  viewed_at : TEXT
+}
+
+entity "**app_preferences**" as app_preferences {
+  * **key** : TEXT <<PK>>
+  --
+  value : TEXT
+  updated_at : TEXT
+}
+
+entity "**provider_exclusions**" as provider_exclusions {
+  * **model_provider_key** : TEXT <<PK>>
+  * **workspace_id** : TEXT <<PK>>
+  --
+  expires_at : TEXT
+  created_at : TEXT
+}
+
+agent_messages }o--|| agents : agent_id
+agent_events }o--|| agents : agent_id
+agents }o--|| agents : parent_id
+skill_usage }o--|| learned_skills : skill_name
+skill_versions |o--o{ learned_skills : name
+learned_skills }o--|| learned_skills : provenance_session
+transitions }o--|| state_keys : workspace_id
+state_events }o--|| state_keys : workspace_id
+curated_memories }o--|| state_keys : workspace_id
+provider_exclusions }o--|| state_keys : workspace_id
+@enduml

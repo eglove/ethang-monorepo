@@ -1,0 +1,86 @@
+---
+blogCategory: "Blog"
+featuredImage: ./images/exec-calls.png
+featuredImageAlt: "The eThang Agent desktop transcript with exec tool calls rendered as expandable cards, the program on the call and the full result below."
+description: "Three design bets set the eThang Agent harness apart from Claude Code, Cursor, and the rest of the field: type-safe scripted execution for every change, a SQLite memory the agent itself can read, and a built-from-scratch IDE on the roadmap."
+pubDate: "2026-08-30T18:06:00Z"
+slug: "what-sets-ethang-agent-apart"
+title: "What Sets eThang Agent Apart"
+updatedDate: "2026-08-30T19:05:36Z"
+---
+
+import PostImage from "../../../components/ui/PostImage.astro";
+import ExecCalls from "./images/exec-calls.png";
+import StatusLine from "./images/statusline.png";
+import DbDiagram from "./images/ethang-agent-db.png";
+
+Agent harnesses have converged. Claude Code, OpenAI Codex, and Gemini CLI live in the terminal; Cursor and Windsurf wrap VS Code; OpenCode runs anywhere a terminal does. Strip the chrome and they mostly do the same job: stream a model, offer file and shell tools, keep a session. [eThang Agent](https://github.com/eglove/ethang-agent), a Windows-native harness — the scaffolding an AI model acts through, built on .NET 10 and Avalonia — refuses the convergence on three points. It makes the model earn every file edit through type-safe code rather than free-text tool calls. It keeps every session and memory in a database the agent itself can query, not a log file it cannot. And it is building toward a full-fledged IDE designed for agent work — not a VS Code fork that is a text editor with plugins slapped on top. And it does all of this without dirtying your filesystem — never asks your project to carry dot-directories or skill folders on its behalf.
+
+Those three bets are the story of what sets it apart. What sets it apart is that no mainstream harness makes all three together — so the field becomes contrast, not structure.
+
+## 1. Every edit runs as type-safe code
+
+The common pattern across the field is discrete, narrow tool calls: one call to read a file, one to patch it, one to run a command — the harness orchestrating a loop of free-text invocations. eThang Agent flips the responsibility. The model writes a C# program, the harness compiles it in-process through Roslyn, and the edit happens inside that program. The model does not *call* tools so much as *code against them* — in exec mode, every manipulation of the workspace is real, type-checked code.
+
+Compile errors come back with line and column before anything runs; wrong argument shapes return typed errors the model can fix directly. The tools it codes against are declared, not implied:
+
+```csharp
+new ToolParameter("overwrite", ToolParameterType.Flag,
+    "Optional. Defaults to refusing replacement of an existing file; true replaces it.")
+```
+
+That is `write`'s overwrite gate: the call fails if the file exists unless overwrite is exactly true — it will never silently replace anything. And under everything sits a hard budget: every tool call carries a mandatory `timeoutSeconds` (1–3600, floor declared `Minimum: 1`, enforced by `ToolCallEnvelopeParser`). Exceed it and the call fails as `Error [ToolTimeout]` — a recoverable, named error, never a silent hang.
+
+The payoff shows in the transcript. Each exec call renders as a card — program on the call, full result below:
+
+<PostImage src={ExecCalls} alt="The desktop transcript with exec tool calls rendered as expandable cards" caption="Exec calls in the transcript: the program on the call card, the full result on the result card." />
+
+The composition is the point — read, patch, test, commit conditionally, all inside one compiled, budgeted call:
+
+```csharp
+var head = Tools.read(new { path = "src/App.ts", startLine = 1, endLine = 50 });
+Tools.edit(new { path = "src/App.ts", old = "render()", replacement = "renderApp()", occurrences = 1 });
+var tests = Shell("dotnet", "test");
+if (tests.ExitCode == 0)
+  Tools.Invoke("git_commit", new { type = "fix", description = "mount App once" });
+```
+
+Cursor's Composer plans multi-step work, and terminal agents chain tool calls, but both orchestrate from outside. Here the model is the orchestrator — inside one budgeted, compiled call — and a malformed program fails loudly at compile time instead of subtly at run time.
+
+## 2. A database the agent itself can read
+
+Most harnesses keep sessions as local transcript files, and the model never sees them again unless a human pastes them back. eThang Agent's memory is a first-class subsystem: one app-owned SQLite database holding full transcripts (tool calls and results included), durable workspace state, curated versioned memory, and the agent graph — and the agent has tools over all of it. `memory.recall` searches past sessions for decisions and failures; curated memory is versioned, tagged, full-text searchable; `db_schema` and `db_query` give read-only SQL over the app's own store — writes, multi-statement batches, and `ATTACH` are rejected outright.
+
+The database groups along the same bounded-context lines as the code — conversations, memory, state, skills — with foreign keys crossing where contexts meet:
+
+<div className="rounded-lg" style={{ backgroundColor: "#ffffff", padding: "0.5rem" }}>
+  <PostImage src={DbDiagram} alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables" caption="The app database: tables grouped by bounded context, foreign keys crossing where contexts meet." />
+</div>
+
+Sessions resume from a menu with full transcript replay, on the original provider and workspace. API keys sit in the same database, DPAPI-encrypted with current-user scope. And compaction — the thing that kills most long agent runs — is handled head-on: when context utilization crosses 80% at a turn boundary, the oldest conversation is summarized by a dedicated compaction model and replaced by the handoff; the session continues, and the status bar shows live utilization the whole time:
+
+<PostImage src={StatusLine} alt="The status bar showing a live context utilization readout for the open session" caption="The status bar: live context utilization for the open session." />
+
+The contrast with the field is a difference in kind, not degree: other harnesses archive the session for the human; eThang Agent makes the database part of the agent's own working memory, with read access, versioning, and curated recall.
+
+## 3. An IDE being built, not bolted on
+
+The roadmap's destination is a fullscreen IDE designed for agent work — by its own description inspired by JetBrains, not a VS Code fork that is a text editor with some plugins slapped on top. The distinction matters. Fork-based tools inherit an editor designed for humans reading code and retrofit agent surfaces into it. Building the IDE for the agent's workflow means the agent-native views are first-class, not panels:
+
+- A **file explorer** with live syntax highlighting driven by a file watcher, and a **git view** with realtime diffing, PR management, and CI status
+- A **static analysis** view for duplicate code, dead code, code smells, and security vulnerabilities — whose autofixes feed errors straight back to the agent
+- **Realtime kanban** of the agent's plans and todos, and a **live database view** over the app's own store
+- **Agent view**: multi-window streaming of several runs at once
+- **AI debugging**: running projects on a debug port and reading internal state through the Debug Adapter Protocol — the model reads program state instead of inferring it from stack traces
+
+Around the IDE, the plans keep the same shape: a maintenance process polling for hung agents with deadlock detection that kills and reports back; MCP support; local providers like LM Studio and Ollama treated as first-class; even TLA+ specifications checked to validate concurrency plans before implementation. The codebase is already shaped for it — one project per bounded context with an anti-corruption layer per external dependency (`eThangAgent.Roslyn.ACL`, `eThangAgent.Composition`, `eThangAgent.Desktop`) — which is why "build the IDE" is a credible plan rather than a screenshot.
+
+## Your filesystem stays yours
+
+There is a quieter difference that compounds daily. Many harnesses colonize a project: a `.claude` directory here, `.agents` or `.antigravity` conventions there, skills that only work from one particular folder, config files scattered at the repo root. eThang Agent keeps its entire apparatus in a single database. Sessions, curated memory, plans and specs, even the built-in skills live there — not in your repository. The workspace is the project's; the harness's state is its own. Nothing in the repo exists to serve the agent.
+
+That discipline extends to flexibility. Skills will be loadable from any number of directories you choose, persisted to that same database rather than discovered by hunting fixed skill directories. The agent adapts to where you keep your knowledge; your project never adapts to the agent.
+
+## The honest ledger
+
+What buys is differentiation with a spine. Provider-neutral model access — [OpenRouter](https://openrouter.ai/) with an auto-selection pipeline, [z.ai](https://z.ai/), each behind its own anti-corruption layer — instead of a bundled ecosystem. Sub-agent spawning with a hard depth limit and concurrency caps. Validated tool contracts everywhere, from `git_commit`'s style enforcement to read-only database access. And the three bets above, which no mainstream harness currently makes together: type-safe execution for every edit, memory that is a queryable database rather than a log, and an agent-native IDE on the roadmap. The repository is open — pull on any of these threads and see.
