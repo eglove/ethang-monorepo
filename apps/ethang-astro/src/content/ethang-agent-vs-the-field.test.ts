@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 const postPath = new URL(
-  "blog/the-model-is-the-easy-part/index.mdx",
+  "blog/ethang-agent-vs-the-field/index.mdx",
   import.meta.url
 );
 
@@ -10,34 +10,36 @@ const pubDate = "2026-08-30T18:06:00Z";
 const updatedDate = "2026-08-30T18:38:02Z";
 
 const imagePaths = {
-  dbDiagram: new URL(
-    "blog/the-model-is-the-easy-part/images/ethang-agent-db.png",
-    import.meta.url
-  ),
   execCalls: new URL(
-    "blog/the-model-is-the-easy-part/images/exec-calls.png",
+    "blog/ethang-agent-vs-the-field/images/exec-calls.png",
     import.meta.url
   ),
   statusLine: new URL(
-    "blog/the-model-is-the-easy-part/images/statusline.png",
+    "blog/ethang-agent-vs-the-field/images/statusline.png",
+    import.meta.url
+  ),
+  dbDiagram: new URL(
+    "blog/ethang-agent-vs-the-field/images/ethang-agent-db.png",
     import.meta.url
   )
 };
 
 const requiredSnippets = [
-  "eThang Agent",
+  "ethang-agent-vs-the-field",
   "the scaffolding an AI model acts through",
+  "Claude Code",
+  "OpenAI Codex",
+  "Gemini CLI",
+  "Cursor",
+  "Windsurf",
+  "OpenCode",
   "one project per bounded context",
   "eThangAgent.Tool.Domain",
   "eThangAgent.Roslyn.ACL",
   "eThangAgent.Composition",
   "eThangAgent.Desktop",
   "anti-corruption layer",
-  "mirror-image test projects",
-  "fakes only",
-  "mock provider server",
-  "xUnit v3",
-  "The harness exposes discrete tools",
+  "eThang Agent exposes discrete tools",
   "working_diff",
   "sub-agent spawning",
   "timeoutSeconds",
@@ -70,24 +72,24 @@ const requiredImageSnippets = [
   'import PostImage from "../../../components/ui/PostImage.astro";',
   'import ExecCalls from "./images/exec-calls.png";',
   'import StatusLine from "./images/statusline.png";',
+  'import DbDiagram from "./images/ethang-agent-db.png";',
   "<PostImage src={ExecCalls}",
   "<PostImage src={StatusLine}",
+  "<PostImage src={DbDiagram}",
   'alt="The desktop transcript with exec tool calls rendered as expandable cards"',
   'alt="The status bar showing a live context utilization readout for the open session"',
-  'import DbDiagram from "./images/ethang-agent-db.png";',
-  "<PostImage src={DbDiagram}",
   'alt="Diagram of the eThang Agent SQLite database, grouped by bounded context with foreign-key relationships between tables"',
   '<div className="rounded-lg"',
   'style={{ backgroundColor: "#ffffff", padding: "0.5rem" }}'
 ] as const;
 
-describe("The Model Is the Easy Part blog post", () => {
+describe("eThang Agent vs the field", () => {
   it("exists with the agreed metadata", async () => {
     const post = await readFile(postPath, "utf8");
 
-    expect(post).toContain('slug: "the-model-is-the-easy-part"');
+    expect(post).toContain('slug: "ethang-agent-vs-the-field"');
     expect(post).toContain(
-      'title: "The Model Is the Easy Part: Inside the eThang Agent Harness"'
+      'title: "eThang Agent vs the Field: How a Windows-Native Harness Compares"'
     );
     expect(post).toContain('blogCategory: "Blog"');
     expect(post).toContain(`pubDate: "${pubDate}"`);
@@ -101,14 +103,11 @@ describe("The Model Is the Easy Part blog post", () => {
     expect(post).toContain(snippet);
   });
 
-  it.each(requiredImageSnippets)(
-    "embeds the screenshot %s",
-    async (snippet) => {
-      const post = await readFile(postPath, "utf8");
+  it.each(requiredImageSnippets)("embeds the screenshot %s", async (snippet) => {
+    const post = await readFile(postPath, "utf8");
 
-      expect(post).toContain(snippet);
-    }
-  );
+    expect(post).toContain(snippet);
+  });
 
   it("ships the screenshots as valid PNGs", async () => {
     const [execCalls, statusLine, dbDiagram] = await Promise.all([
@@ -133,6 +132,6 @@ describe("The Model Is the Easy Part blog post", () => {
 
     expect(post).not.toContain("do not use it as a guide");
     expect(post).not.toContain("grand-plan.md");
-    expect(post).not.toContain(String.raw`C:\Users`);
+    expect(post).not.toContain("C:\\Users");
   });
 });
