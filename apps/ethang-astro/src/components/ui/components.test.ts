@@ -176,6 +176,13 @@ describe("Pagination", () => {
     href: "/applications?date=2026-07-30",
     label: "Jul 30, 2026"
   };
+  const ENTRY_THREE = {
+    href: "/applications?date=2026-06-15",
+    label: "Jun 15, 2026"
+  };
+  const ARIA_CURRENT_PAGE = 'aria-current="page"';
+  const REL_PREV = 'rel="prev"';
+  const REL_NEXT = 'rel="next"';
 
   it("renders nothing for a single entry", async () => {
     const html = await render(
@@ -222,12 +229,89 @@ describe("Pagination", () => {
       } as never
     );
 
-    expect(html).toContain('aria-current="page"');
-    expect(html).toContain("Jul 30, 2026");
-    expect(html).toContain("Aug 1, 2026");
-    expect(html).toContain('rel="prev"');
-    expect(html).not.toContain('rel="next"');
+    expect(html).toContain(ARIA_CURRENT_PAGE);
+    expect(html).toContain(ENTRY_TWO.label);
+    expect(html).toContain(ENTRY_ONE.label);
+    expect(html).toContain(REL_PREV);
+    expect(html).not.toContain(REL_NEXT);
     expect(html).toContain("rsaquo");
+  });
+
+  it("renders only the current entry between active prev and next edges when currentOnly is set", async () => {
+    const html = await render(
+      Pagination as never,
+      {
+        props: {
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 1,
+          currentOnly: true,
+          entries: [ENTRY_ONE, ENTRY_TWO, ENTRY_THREE]
+        }
+      } as never
+    );
+
+    expect(html).toContain("<nav");
+    expect(html).toContain(ARIA_CURRENT_PAGE);
+    expect(html).toContain(ENTRY_TWO.label);
+    expect(html).not.toContain(ENTRY_ONE.label);
+    expect(html).not.toContain(ENTRY_THREE.label);
+    expect(html).toContain(REL_PREV);
+    expect(html).toContain(REL_NEXT);
+  });
+
+  it("renders only the first entry with a disabled prev edge when currentOnly is set on the first page", async () => {
+    const html = await render(
+      Pagination as never,
+      {
+        props: {
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 0,
+          currentOnly: true,
+          entries: [ENTRY_ONE, ENTRY_TWO]
+        }
+      } as never
+    );
+
+    expect(html).toContain(ENTRY_ONE.label);
+    expect(html).not.toContain(ENTRY_TWO.label);
+    expect(html).not.toContain(REL_PREV);
+    expect(html).toContain(REL_NEXT);
+  });
+
+  it("renders only the last entry with a disabled next edge when currentOnly is set on the last page", async () => {
+    const html = await render(
+      Pagination as never,
+      {
+        props: {
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 1,
+          currentOnly: true,
+          entries: [ENTRY_ONE, ENTRY_TWO]
+        }
+      } as never
+    );
+
+    expect(html).toContain(ARIA_CURRENT_PAGE);
+    expect(html).toContain(ENTRY_TWO.label);
+    expect(html).not.toContain(ENTRY_ONE.label);
+    expect(html).toContain(REL_PREV);
+    expect(html).not.toContain(REL_NEXT);
+  });
+
+  it("renders nothing when currentOnly is set with a single entry", async () => {
+    const html = await render(
+      Pagination as never,
+      {
+        props: {
+          ariaLabel: ARIA_LABEL,
+          currentIndex: 0,
+          currentOnly: true,
+          entries: [ENTRY_ONE]
+        }
+      } as never
+    );
+
+    expect(html).not.toContain("<nav");
   });
 });
 

@@ -12,9 +12,18 @@ interface Props {
     ariaLabel: string;
     currentIndex: number;
     entries: readonly PaginationEntry[];
+    currentOnly?: boolean;
 }
 
-const { ariaLabel, currentIndex, entries } = Astro.props;
+const { ariaLabel, currentIndex, currentOnly = false, entries } =
+    Astro.props;
+const entriesWithIndex = entries.map((entry, index) => ({
+    entry,
+    index,
+}));
+const renderedEntries = currentOnly
+    ? entriesWithIndex.filter((item) => item.index === currentIndex)
+    : entriesWithIndex;
 ---
 
 {
@@ -38,7 +47,7 @@ const { ariaLabel, currentIndex, entries } = Astro.props;
             }
 
             {
-                map(entries, (entry, index) => (
+                map(renderedEntries, ({ entry, index }) => (
                     <a
                         href={entry.href}
                         aria-current={
