@@ -41,6 +41,7 @@ const TOKEN = "token";
 const LOGIN_REDIRECT = "/login?redirect=%2Fapplications";
 const DATE_LATEST = "2026-08-01";
 const DATE_PREVIOUS = "2026-07-30";
+const DATE_LATEST_LABEL = "Aug 1, 2026";
 const INVALID_TOKEN = "invalid token";
 const SESSION = JSON.stringify({
   email: "ada@example.com",
@@ -435,7 +436,7 @@ describe("applications page rendering", () => {
     expect(html).toContain(
       '<option value="screening" selected>screening</option>'
     );
-    expect(html).toContain("Aug 1, 2026");
+    expect(html).toContain(DATE_LATEST_LABEL);
     expect(html).toContain("Aug 15, 2026");
     expect(html).toContain(`href="${APPLICATION_URL}"`);
     expect(html).toContain('href="/applications/application-1/resume"');
@@ -552,20 +553,41 @@ describe("applications page rendering", () => {
     expect(html).not.toContain("/applications/application-1/resume");
   });
 
-  it("renders date navigation linking every applied date", async () => {
+  it("renders date navigation with only the current date between edges", async () => {
     jobApplications.listAppliedDates.mockResolvedValue({
       ok: true,
       value: [DATE_LATEST, DATE_PREVIOUS]
     });
 
     const html = await render(APPLICATIONS_URL);
+    const navigation =
+      /<nav[^>]*aria-label="Applications pagination"[\s\S]*?<\/nav>/u.exec(
+        html
+      )?.[0] ?? "";
 
     // These hrefs are produced exclusively by the date pagination control.
-    expect(html).toContain(`href="/applications?date=${DATE_LATEST}"`);
-    expect(html).toContain(`href="/applications?date=${DATE_PREVIOUS}"`);
-    expect(html).toContain('aria-label="Applications pagination"');
-    expect(html).toContain("Aug 1, 2026");
-    expect(html).toContain('aria-current="page"');
+    expect(navigation).toContain(`href="/applications?date=${DATE_LATEST}"`);
+    expect(navigation).toContain(DATE_LATEST_LABEL);
+    expect(navigation).toContain('aria-current="page"');
+    expect(navigation).not.toContain('rel="prev"');
+    expect(navigation).toContain('rel="next"');
+  });
+
+  it("does not render the non-current date entries in the navigation", async () => {
+    jobApplications.listAppliedDates.mockResolvedValue({
+      ok: true,
+      value: [DATE_LATEST, DATE_PREVIOUS]
+    });
+
+    const html = await render(APPLICATIONS_URL);
+    const navigation =
+      /<nav[^>]*aria-label="Applications pagination"[\s\S]*?<\/nav>/u.exec(
+        html
+      )?.[0] ?? "";
+
+    expect(navigation).not.toBe("");
+    expect(navigation).toContain(DATE_LATEST_LABEL);
+    expect(navigation).not.toContain("Jul 30, 2026");
   });
 
   it("does not add applications to the navigation links", async () => {
