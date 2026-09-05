@@ -1,0 +1,251 @@
+---
+blogCategory: "Engineering"
+description: "One idea — the root session is itself an agent record — grows into eThang Agent's whole subagent system: persisted spawn contracts, privilege that cannot grow down the tree, steering mailboxes, a watchdog with no wall-clock timeouts, fan-out graphs, and children that outlive the app."
+featuredImage: ./images/spawn-tree.svg
+featuredImageAlt: "Diagram of the eThang Agent spawn tree: a root session at depth zero, children at depth one, and a grandchild at depth two, with the effective tool set narrowing at every level down to the depth limit"
+pubDate: "2026-09-05T12:00:00Z"
+slug: "sessions-are-agents"
+title: "Sessions Are Agents: The eThang Agent Subagent System"
+updatedDate: "2026-09-05T12:00:00Z"
+---
+
+Most agent harnesses treat subagents as a convenience feature: a Task tool that blocks until done, a prompt forwarded verbatim, no memory of what the child was allowed to do, and a timeout guessed from vibes. [eThang Agent](https://github.com/eglove/ethang-agent) — the Windows-native harness I have been building, the scaffolding an AI model acts through, written in C# on .NET 10 and Avalonia — treats subagents as a subsystem in their own right. Children carry contracts. Privilege only narrows. Messages arrive in mailboxes. A watchdog sits above it all with no clock to blame. Children can even outlive the application that spawned them.
+
+The whole thing rests on a single idea, and everything else follows from taking it seriously: **sessions are agents**. The conversation you are typing into is not a special object that occasionally spawns helpers — it is just an agent at depth zero. Once the root and its descendants are the same kind of thing, contracts, supervision, and audit stop being bolted-on features and become properties of the tree itself.
+
+## 1. Sessions are agents
+
+In the Agent domain there is one persisted aggregate shape, `AgentRecord`, and the root conversation is itself an `AgentRecord` at depth-0. A spawned child is the same shape with a `ParentId` and a `Depth` of one more than its parent. Nothing about the child's row says "subagent" — no parallel table, no side-car metadata file:
+
+```csharp
+public static AgentRecord Spawned(AgentId id, AgentId? parentId, int depth,
+    string modelUsed, string? label, string taskPrompt,
+    DateTimeOffset createdAt, SpawnContract? contract = null)
+    => new(id, parentId, depth, AgentStatus.Running, null, modelUsed, label,
+        taskPrompt, createdAt, null, null, Contract: SpawnContract.Encode(contract));
+```
+
+The rows carry `Status`, `FailureReason`, `Attempts`, and `Phase`, and they are written in a deliberate order: records are born un-attempted — the spawn command persists the record first, and the runtime attaches attempt metadata only when it actually starts the run. That sequencing is what makes the audit trail honest; you can distinguish "wanted to run" from "ran" from "failed while running".
+
+Every row also carries its `Contract` column — the serialized agreement the run started under — so resume and audit see the contract the run started with, not whatever happens to be in memory today. The record is self-describing. That word will do a lot of work later in this post: a record that fully describes its own grants, budgets, and expected result shape can be handed to a *separate process*, which can then enforce exactly the same rules without any shared in-memory state.
+
+Uniformity pays off everywhere. Resume replays a child transcript the same way it replays a root session. The watchdog supervises the root and its descendants through the same lens. Audit reads one table. There is no special case to maintain, because there is no special case.
+
+## 2. Ten actions, one capability
+
+There are no agent-definition markdown files in this system. A subagent is not a named persona declared somewhere; it is whatever its spawn contract says it is. The model creates children through a single capability provider whose entire action vocabulary fits on two lines:
+
+```csharp
+public static readonly string[] ActionNames =
+    ["spawn", "status", "result", "wait", "send", "route", "escalate", "fanout",
+     "notify-subtree", "notify-ancestors"];
+```
+
+Ten actions: create a child, inspect it, read its report, block until it settles, send it a message, route a message through a named link, escalate up the tree, fan out a graph of children, broadcast down the tree, broadcast up the tree. Each action's model-facing description ends in a verbatim output contract — `spawn`, for instance, promises exactly one line:
+
+```text
+id=<id> status=running
+```
+
+That line deserves a pause. Spawn does not return the child's answer, and it does not block; it returns a handle and an admission that the child is running. The design pushes everything else — results, failures, steering — through explicit actions.
+
+When an action cannot be honored, it fails with a canonical, self-describing error line, not an exception the model cannot interpret: `Error [InvalidSpawnRequest]` for a malformed request, `Error [DepthExceeded]` when the tree is too deep, `Error [MissingModel]` when no model can be resolved, `Error [ConcurrencyCapReached]` when the runtime is saturated. Errors are information, not crashes — each one is a lever the model can pull to self-correct: narrow the request, pick a different model, wait for capacity.
+
+## 3. The spawn contract
+
+A spawn request is small — a required task prompt, an optional model, an optional label, a priority — but it unfolds into a `SpawnContract`, the agreement that governs the child's entire run:
+
+- **`ResultSchema`** — an optional JSON Schema the child's final report must validate against
+- **Capability grants** — `tool.allow` and `tool.deny` lists, resolved against the parent's effective set into the enforced **`EffectiveTools`**
+- **`BudgetCeilings`** — hard limits on tokens, cost, and tool calls
+- **`MaxUrgency`** — the loudest message this child may send
+- **`PreemptGrant`** — whether this child may interrupt others (more on that below)
+
+Grants look like this on the wire:
+
+```json
+{"tool.allow": "read; exec", "tool.deny": "web_fetch"}
+```
+
+The contract is persisted in the record's `Contract` column at spawn time, before anything runs. This is the difference between a convention and a fact. A convention lives in the spawning code and evaporates with the process; a fact lives in the database and survives restarts, retries, and audits. When a child is later re-hydrated in an out-of-process host, the host does not *trust* the parent's claims about what the child may do — it reads the contract and enforces it.
+
+## 4. Privilege cannot grow down the tree
+
+The headline rule of grant resolution fits in six words: privilege cannot grow down the tree. A child's grants may only *narrow* what its parent could do; a spawn that tries to widen the effective set fails outright. The root session's effective set is whatever the user configured; depth one can subtract from it; depth two can subtract from that. There is no path, anywhere in the API, for a subtree to grant itself something its ancestor lacked.
+
+The spawn command (`StartSpawnHandler`) validates the request through specifications before anything else — `NonEmptyTaskPromptSpecification` and `ValidModelReferenceSpecification` are exactly what they sound like — then resolves grants under the narrowing rule, then checks depth, where widening fails the spawn with a canonical error. It is never silently clipped, because a silent clip would leave the model reasoning about permissions it does not have.
+
+Model selection is a five-step chain, resolved per spawn: an explicitly requested model, then the session's model preference, then the configured default, then an `IModelSelector` that picks based on the task prompt itself — a cheap fast model for a summarization fan-out, a stronger one for a gnarly debugging task — and finally the fallback model. Children do not have to inherit their parent's brain.
+
+Enforcement happens twice. At spawn time the contract is resolved into `EffectiveTools`. At dispatch time — every single tool call the child attempts — the child's tool registry is wrapped in a `FilteredToolRegistry` (and its capability registry in a `FilteredCapabilityRegistry`), which checks the call against the effective set. A denied call is returned to the child as an error and audited as a `GrantViolation`. The wrapper is applied idempotently so a watchdog retry cannot double-wrap. The rule is not a check performed once at the door; it is a property of the doorknob.
+
+<figure className="my-4">
+  <img
+    src="/images/blog/sessions-are-agents/spawn-tree.svg"
+    alt="Diagram of the eThang Agent spawn tree: a root session at depth zero, children at depth one, and a grandchild at depth two, with the effective tool set narrowing at every level down to the depth limit"
+    loading="lazy"
+    className="w-full rounded-lg object-cover"
+  />
+  <figcaption className="text-xs text-night-owl-muted text-center mt-1">
+    The spawn tree: each spawn may only narrow the effective tool set, and depth is capped.
+  </figcaption>
+</figure>
+
+## 5. Spawn returns immediately
+
+`spawn` is non-blocking by design. The child is persisted, admitted to the runtime, and the parent gets its `id=<id> status=running` line and goes on with its turn. When every concurrency slot is taken, the spawn is not rejected — it is parked in a priority-then-FIFO waiter queue (contracts carrying a `PreemptGrant` wait at higher priority) and is push-woken the instant a slot frees. The model never sees a capacity error it cannot fix; it sees an accepted child that starts when capacity arrives.
+
+Waiting is its own action, and the documented idiom is `agent.wait`: one await over the runtime's `WhenSettledAsync` completion — a `TaskCompletionSource` per child, resolved exactly once when the child settles. There is deliberately no polling story here. `agent.status` exists, but status is a projection for humans, not a poll target — the codebase's own phrasing, and a real design commitment. A model that wants the child's outcome awaits it; a UI that wants to show progress subscribes to events.
+
+The wait is unbounded on purpose. Something else guards the child — the watchdog, covered below — so `agent.wait` does not need a timeout, and the user's Stop button cancels the wait cleanly as `Error [Cancelled]`.
+
+## 6. How a child runs
+
+The in-process execution of a child lives in `SubAgentSpawner`, which implements the domain's `IAgentRunner` seam. A few rules shape the run:
+
+**The context window is looked up, never guessed.** The child model's window is resolved from the model catalog before the run starts; an unknown window means the run cannot proceed, because a guessed window silently corrupts compaction and budget math. A composition wiring fault fails loudly.
+
+**Children run on their own budgets.** The child's model config sets its own ceiling and temperature:
+
+```csharp
+ChildMaxTokens = 32 * 1024,
+ChildTemperature = 0.7f
+```
+
+And each child gets its own `ContextAccountant` — two children must never share totals. One child's runaway loop must not eat its sibling's budget or the root's context.
+
+**Interrupted children resume as themselves.** If the spawner hydrates a persisted transcript, this run is a restart of an interrupted child: it receives only the wrap-up nudge, not the original task prompt, and only messages this run adds are appended — the seed is never duplicated. The child's history stays coherent across retries.
+
+**Nesting resolves its parent ambiently.** An `AsyncLocal<AgentRecord>` called `RunningChild` carries the identity of whichever agent is executing on the current async flow. When a *child* calls `agent.spawn`, the parent of the new grandchild is resolved from that ambient context, not from the composition root's static idea of "the" root — which is how the tree grows more than two levels without anyone threading a parent parameter through every call.
+
+**Structured results get exactly one repair round.** If the contract carries a `ResultSchema`, the child's report is validated against it; on failure the validation errors are fed back to the child once, and it tries again. A second failure marks the run `Error [InvalidResult]`. Invalid results never reach the parent as success — the parent either gets a report that honors the schema or a failure it can reason about, never a plausible-looking lie.
+
+**Oversize reports are annotated, not truncated silently.** A report over 50 KB earns a `ReportOverflowAnnotation` so the parent knows it is reading an abnormally large result. And the events published to the UI carry report *bytes*, never content — the transcript stays the single source of truth for what was said.
+
+## 7. Children never talk to humans
+
+Strip away the contracts and the accounting, and there is exactly one structural difference between a root session and a child: the child's tool surface has the human-facing actions removed. The composition builds the child surface as the full provider set minus `HumanFacingActions`, which contains one entry — `clarify` — because a machine-owned child must neither wait on nor interrupt the user. It cannot stop mid-task to ask a question no one is there to answer, and it cannot grab the user's attention away from the session that owns the screen.
+
+That is the whole difference. Same tools otherwise, same loop, same persistence. Root and child differ in what they may *do* (the contract), not in what they *are* — which is the entire thesis of this system, holding at the tool-surface level too.
+
+## 8. Steering with mailboxes
+
+A running child is not a black box until it settles; it can be steered. Every agent carries a bounded mailbox, persisted through `IMailboxStore` and rehydrated on resume, so a message sent to a child that is mid-restart is not lost — it is waiting when the child comes back.
+
+`agent.send` delivers a `PendingMessage` carrying its text, a timestamp, the sender, and an urgency drawn from three levels — `Normal, Attention, Urgent` — bounded by the sender's `MaxUrgency`. Delivery is always pushed by the runtime, never discovered by polling. And delivery failures flow back to the *sender* as tool results, where they belong: `Error [MailboxFull]` when the bounded box is at capacity, `Error [NotRunning]` when the recipient has settled, `Error [UrgencyNotGranted]` when the sender is trying to shout louder than its contract allows.
+
+The receiving side drains its mailbox at safe points in its agent loop — messages sent via `agent.send` land as User messages between iterations, never between a tool call and its results. The middle of a tool call is the one place where injecting a message would corrupt the transcript's grammar, so it is precisely where the system refuses to inject one. A completed drain publishes `MailboxDrainedEvent`, which — as we will see — is a fact the supervision layer deliberately does *not* treat as progress.
+
+<figure className="my-4">
+  <img
+    src="/images/blog/sessions-are-agents/steering-map.svg"
+    alt="Diagram of steering in the eThang Agent subagent system: mailbox delivery with urgency levels and preemption, subtree and ancestor broadcasts with per-hop receipts, and a consented link carrying a routed message outside the spawn tree"
+    loading="lazy"
+    className="w-full rounded-lg object-cover"
+  />
+  <figcaption className="text-xs text-night-owl-muted text-center mt-1">
+    Steering a running child: mailboxes for direct sends, broadcasts up and down the tree, and consented links for leaving it entirely.
+  </figcaption>
+</figure>
+
+## 9. Preemption, consent-gated
+
+Attention-level messages wait for the next safe point, like everything else. `Urgent` messages do not — but only when the sender has earned it. If the sender's contract carries a `PreemptGrant`, an urgent delivery interrupts the recipient's turn *immediately*: turn repair cancels the in-flight turn and re-forms a valid boundary in the transcript, and the urgent message is injected there.
+
+Preemption is consent-gated and audited. It cannot be improvised, because a grant is part of the persisted contract, and it cannot be quiet, because every preemption is published as an event. Interruption is a sharp instrument; the system's answer is not to ban it but to make it deliberate and on the record.
+
+## 10. Broadcasts up and down the tree
+
+One-to-one sends do not cover every steering need, so the action vocabulary includes the two directions of the tree. `notify-subtree` walks downward — a BFS over the persisted `ParentId` links, the same chains a subtree interrupt tears down — delivering a message to every descendant. `notify-ancestors` and `agent.escalate` walk upward, hop by hop, for the "the child wants the parent to know" case without a child needing to know exactly who its ancestors are.
+
+Both directions answer with per-hop receipts, one line per recipient:
+
+```text
+hop=1 to=b7e delivered
+hop=2 to=c91 MailboxFull
+reached=4 delivered=3
+```
+
+The model sees exactly which agents got the message and which did not — and the canonical reason for each miss — instead of a vague success count.
+
+## 11. Links: leaving the tree
+
+Everything above stays inside one spawn tree. The only route to agents outside the local tree is the `AgentLinkRegistry`: named, explicitly consented, revocable links — isolation by default is a permanent property of the system. A link is created by the *user*, in the desktop app's per-tab Links dialog, not by the model. Models cannot consent to each other; people consent for them.
+
+Links are store-backed (a persisted `agent_links` table) and workspace-scoped, so an `agent.route` works across sessions — a message can reach an agent that belongs to a conversation from last Tuesday. Resolution is privacy-preserving by construction: resolving a link reveals only the address tuple, never the consent state or its metadata. Cross-container delivery rides a mailbox-locator seam — same-process lookups through `ProcessMailboxLocator`, wire delivery to the out-of-process host through `RemoteMailboxProxy` — with one contract-level scope rule: delivery reaches agents in *this process*; a second concurrently running app instance is a different container and reports `Error [NotRunning]`, because "running" means running where the link's container can actually deliver.
+
+## 12. Three ways to die, no clocks
+
+Every cancellation in the child system has one of exactly three sources: an explicit interrupt from an actor that can name the target, a watchdog terminal decision, or the budget hard ceiling. That is the complete list. There is deliberately no wall-clock timeout on a child — `ChildTimeout was deleted` is not an accident of refactoring but a recorded design ruling, and the rationale is stated flatly in the domain: wall-clock is never a cancellation source.
+
+A time limit does not know whether a child is hung or legitimately grinding through a long build; it only knows that time passed. The system replaces the clock with *facts* — idle evidence, budget consumption, explicit human intent — each of which is a defensible reason to stop a run. When a whole subtree must come down, `InterruptSubtree` tears it down deepest-first: the leaves cancel before their parents, so nothing is left waiting on a child that will never settle.
+
+## 13. Supervision: facts, not guesses
+
+The facts come from a supervision layer built like a telemetry contract. One `ChildSupervisor` exists per running child, holding an idle clock fed by event beats, the child's current phase, a token accumulator with soft thresholds (alerts start firing at 0.8 of budget), a wrap-up attempt count, and a hard-ceiling-reached flag. Registration lives in a `ChildSupervisorRegistry` that stays O(running) — there is no central sweep over all history.
+
+The translation from raw child events to supervisor facts is its own component, `SupervisorFeed`, and its per-kind contract is pinned by tests because the distinctions are load-bearing. Progress events beat the idle clock; a child streaming tokens or tool calls is alive by definition. Budget alerts, preemptions, mail deliveries, and drains never beat — a child being messaged is not a child making progress. And idle alerts never feed the supervisor: they are published while holding the supervisor's non-reentrant lock, and an echo would not merely waste a cycle — it would self-deadlock and clear the very alert being raised. The one non-obvious rule in the system exists because of a deadlock that was designed away on paper.
+
+## 14. The watchdog
+
+Above the supervisors sits the watchdog, split cleanly into policy and enactment. `WatchdogPolicy` is a pure, immutable decision function — `Decide(isChild, idleAge, wrapUpAttempts)` returning `Watch`, `RetryWrapUp`, or `TerminalReport` — with defaults of a 15-minute idle threshold, a 60-second settle wait, and one wrap-up attempt. Being pure, it is exhaustively table-tested: every idle age crossed with every attempt count, no runtime anywhere near it.
+
+`AgentWatchdog` enacts those decisions per tick, and the enactment is a ladder, not a switch:
+
+<figure className="my-4">
+  <img
+    src="/images/blog/sessions-are-agents/watchdog-ladder.svg"
+    alt="Diagram of the watchdog ladder in eThang Agent: idle detection escalates from watching to an interrupt, a same-id retry with a wrap-up nudge, and a final Failed(Hung) verdict, with only three cancellation sources"
+    loading="lazy"
+    className="w-full rounded-lg object-cover"
+  />
+  <figcaption className="text-xs text-night-owl-muted text-center mt-1">
+    The watchdog ladder: interrupt, give the child one chance to wrap up on its own terms, then fail it with the truth.
+  </figcaption>
+</figure>
+
+1. **Watch.** Supervisors report idle facts; nothing happens until the policy's idle threshold crosses.
+2. **Interrupt.** The child's turn is cancelled — the same mechanism as a user's Stop. Before acting, the watchdog checks heartbeat presence: it never acts on a row this process cannot actually cancel, so a stale or remote record is never "handled" by wishful thinking.
+3. **Settle.** The runtime observes whether the child settles within the settle window.
+4. **Retry, same identity.** On a first breach the watchdog restarts the child *under the same id* with a wrap-up nudge — "[watchdog] You showed no activity for N minutes — wrap up now" — and the partial transcript preserved. The same-id retry reuses the original completion source, so every existing waiter, fan-out join, and `agent.wait` survives untouched. The child wakes up as itself, told to finish.
+5. **Terminal report.** A second breach marks the record `Failed(Hung)` — a truthful verdict, not a timeout — and the joiners see a well-formed failure.
+
+Every decision the watchdog makes is an append-only row in the `watchdog_events` table, which also carries observe-only records (breaches of the app's own RSS budgets, for instance) and grant-violation audits. The watchdog never throws: internal failures degrade to rate-limited `WatchdogErrored` events rather than taking the loop down. The loop itself, `WatchdogLoop`, is one periodic timer per process, and the desktop app attaches a per-session watchdog as tabs open and detaches it as they close — supervision exists exactly where there is something to supervise.
+
+Remote children get the same treatment from the other side of the pipe: a `HostChildWatchdog` inside the child host enacts the same policy through the host's own runtime, so a hung-but-under-budget remote child is retried or failed *locally*, next to the child. The app never guesses from absent beats.
+
+## 15. Fan-out, fanned in
+
+`agent.fanout` turns one action into a spawn graph: a set of children, created together, joined together. The implementation is deliberately boring — `SpawnGraphHandler` materializes each member through the normal spawn command and joins on `WhenSettledAsync`: no new runtime machinery. The graph gets contracts, grants, queueing, supervision, and the watchdog for free, because it is made of the same parts as every other child.
+
+The join has two failure modes, handled differently and honestly. If a member *fails to start* — depth exceeded, concurrency cap, invalid request — the join fails immediately with that member's error verbatim; `Error [DepthExceeded]` stays `Error [DepthExceeded]`, so the model can fix the actual problem. If a member *starts but settles badly*, the join collects it and keeps going, then fails at the end with the full set of member receipts: `<id>=COMPLETED|FAILED(reason)` — one line per member, the whole graph's outcome on the record.
+
+## 16. Children that outlive the app
+
+In-process children die with the process — that is what "in-process" means. For work that should survive the app closing, the same domain seam has an opt-in remote mode: `SubAgent:RemoteHost` swaps the in-process runtime for `RemoteAgentRuntime`, which translates the identical `IAgentRuntime` interface into wire envelopes over a named pipe, with at-least-once delivery acknowledgment and *declared* connection-loss failures — the runtime never wonders whether a message arrived; the protocol says so, or says it does not know.
+
+The other end is `ChildHost`, a small supervised executable whose accept loop keeps accepted children running across app restarts. When the app comes back and re-attaches, the host reports its declared live set — the ids it is actually running — so orphan repair is *exact*: a record still marked Running survives only if its id is live in-process or in that set; anything else is marked `Failed(Interrupted)` with an audit row. No guesses, no heuristics, no "probably dead after N minutes."
+
+Even the concurrency design of this seam was proven before it was written: the resolution logic was modeled in TLA+, and a TLC-proven deadlock in the specification was fixed on paper before the C# existed. The cheapest place to find a deadlock is a model checker.
+
+## 17. Configuration that refuses to guess
+
+The subsystem's configuration is bound strictly — values are validated, never coerced or clamped. `SubAgent:MaxConcurrentAgents` is required and must be at least 1. `SubAgent:RemoteHost` flips the runtime seam. `SubAgent:Watchdog:TickInterval`, `IdleThreshold`, and `MaxWrapUpAttempts` must be written as constant-format durations (`00:00:02`), and a bare integer is rejected with an error explaining that TimeSpan would parse them as days — a real .NET trap, caught at startup instead of in month-long idle thresholds. `MaxDepth` defaults to 3, and when no default model is configured, children inherit the host's root model rather than failing every spawn with `Error [MissingModel]`.
+
+This is strictness as a kindness: every misconfiguration is a loud, specific startup error instead of a quietly wrong-running system discovered later.
+
+## The dogmas under the tree
+
+Zoom out and the subsystem is a handful of commitments applied without exception.
+
+**Push, never poll.** Capacity frees with a waker, settlement resolves a completion source, messages are delivered, events are published — push-not-poll all the way down. Polling appears exactly once — `agent.status` — and it exists for humans; status is a projection for humans, not a poll target.
+
+**Strictness at the boundaries.** Unknown JSON members are rejected by name, unknown context windows fail the run, misconfiguration fails startup, and every model-facing error is a canonical line the model can act on. Strict correctness at the boundaries is what makes the interior calm.
+
+**Policy apart from enactment.** The watchdog's decisions are a pure function; the supervisors' feed contract is pinned by tests; enforcement lives in wrappers, not conventions. Decisions you can table-test and enactment you can audit.
+
+**Records over vibes.** The tree is rows in a database — records are born un-attempted, contracts are persisted, watchdog decisions are append-only, fan-out joins end in receipts. When something goes wrong, the system can show you its work.
+
+And underneath all of it, the mirror-image test suites that pin every one of these behaviors — a domain test suite that never knows Roslyn, HTTP, or OpenRouter exist, application tests on manual clocks, wire-level tests against a real child host. The design is the argument; the tests are the receipts.
+
+The whole subsystem is one idea, taken seriously at every layer: a session is an agent, so its children can be nothing less. The repository is open — [pull on any of these threads](https://github.com/eglove/ethang-agent) and see.
