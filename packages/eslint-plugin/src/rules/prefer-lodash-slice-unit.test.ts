@@ -158,10 +158,11 @@ describe("getProgram (via live fixer)", () => {
     const program = parseProgram("arr.slice(0, 2);");
     linkParents(program);
     const [statement] = program.body;
-    if (AST_NODE_TYPES.ExpressionStatement === statement?.type) {
-      const match = detectSlicePattern(statement.expression);
-      expect(match).not.toBeNull();
+    if (AST_NODE_TYPES.ExpressionStatement !== statement?.type) {
+      return;
     }
+    const match = detectSlicePattern(statement.expression);
+    expect(match).not.toBeNull();
   });
 });
 

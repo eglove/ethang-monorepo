@@ -21,46 +21,38 @@ export const isMathMemberCall = (
   node: TSESTree.Node,
   method: string
 ): node is TSESTree.MemberExpression => {
-  if (AST_NODE_TYPES.MemberExpression !== node.type) {
-    return false;
-  }
-  if (node.computed) {
+  if (AST_NODE_TYPES.MemberExpression !== node.type || node.computed) {
     return false;
   }
   const { object } = node;
-  if (AST_NODE_TYPES.Identifier !== object.type) {
-    return false;
-  }
-  if ("Math" !== object.name) {
+  if (AST_NODE_TYPES.Identifier !== object.type || "Math" !== object.name) {
     return false;
   }
   const { property } = node;
-  if (AST_NODE_TYPES.Identifier !== property.type) {
-    return false;
-  }
-  return method === property.name;
+  return (
+    AST_NODE_TYPES.Identifier === property.type && method === property.name
+  );
 };
 
 export const isMathMinCall = (node: TSESTree.Node) => {
-  if (AST_NODE_TYPES.CallExpression !== node.type) {
-    return false;
-  }
-  return isMathMemberCall(node.callee, "min");
+  return (
+    AST_NODE_TYPES.CallExpression === node.type &&
+    isMathMemberCall(node.callee, "min")
+  );
 };
 
 export const isMathMaxCall = (node: TSESTree.Node) => {
-  if (AST_NODE_TYPES.CallExpression !== node.type) {
-    return false;
-  }
-  return isMathMemberCall(node.callee, "max");
+  return (
+    AST_NODE_TYPES.CallExpression === node.type &&
+    isMathMemberCall(node.callee, "max")
+  );
 };
 
 export const isNestedMathCall = (node: TSESTree.Node) => {
-  if (AST_NODE_TYPES.CallExpression !== node.type) {
-    return false;
-  }
   return (
-    isMathMemberCall(node.callee, "min") || isMathMemberCall(node.callee, "max")
+    AST_NODE_TYPES.CallExpression === node.type &&
+    (isMathMemberCall(node.callee, "min") ||
+      isMathMemberCall(node.callee, "max"))
   );
 };
 
@@ -85,16 +77,12 @@ export const readInnerCall = (
     return null;
   }
   const [bound, value] = innerCall.arguments;
-  if (!bound || !value) {
+  if (!bound || !value || !isExpression(bound) || !isExpression(value)) {
     return null;
   }
-  if (!isExpression(bound) || !isExpression(value)) {
-    return null;
-  }
-  if (isNestedMathCall(bound) || isNestedMathCall(value)) {
-    return null;
-  }
-  return { bound, value };
+  return isNestedMathCall(bound) || isNestedMathCall(value)
+    ? null
+    : { bound, value };
 };
 
 type ClampShape = {
@@ -131,13 +119,12 @@ export const tryShape = (
   const outerIndex = outerSideIndex(shape);
   const outerBound = argumentList[outerIndex];
   const innerArgument = argumentList[shape.innerIndex];
-  if (!outerBound || !innerArgument) {
-    return null;
-  }
-  if (!isExpression(outerBound)) {
-    return null;
-  }
-  if (AST_NODE_TYPES.CallExpression !== innerArgument.type) {
+  if (
+    !outerBound ||
+    !innerArgument ||
+    !isExpression(outerBound) ||
+    AST_NODE_TYPES.CallExpression !== innerArgument.type
+  ) {
     return null;
   }
   const inner = readInnerCall(innerArgument, shape.innerKind);
@@ -176,14 +163,11 @@ export const detectClampPattern = (node: TSESTree.Node) => {
 };
 
 const isTwoArgumentMathMinMaxCall = (node: TSESTree.Node) => {
-  if (AST_NODE_TYPES.CallExpression !== node.type) {
-    return false;
-  }
-  if (2 !== node.arguments.length) {
-    return false;
-  }
   return (
-    isMathMemberCall(node.callee, "min") || isMathMemberCall(node.callee, "max")
+    AST_NODE_TYPES.CallExpression === node.type &&
+    2 === node.arguments.length &&
+    (isMathMemberCall(node.callee, "min") ||
+      isMathMemberCall(node.callee, "max"))
   );
 };
 
@@ -195,10 +179,7 @@ const isTwoArgumentMathMinMaxCall = (node: TSESTree.Node) => {
 // handled as a whole (or not at all) by the rule.
 export const isInsideMathMinMaxCall = (node: TSESTree.Node) => {
   const advance = (current: TSESTree.Node) => {
-    if (!current.parent) {
-      return null;
-    }
-    return current.parent;
+    return current.parent ?? null;
   };
   let current: null | TSESTree.Node = advance(node);
   while (current) {

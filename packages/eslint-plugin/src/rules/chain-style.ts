@@ -39,11 +39,9 @@ export const getParentCall = (node: TSESTree.Node) => {
     return null;
   }
 
-  if (isCallExpression(grandParent) && isMethodCall(grandParent)) {
-    return grandParent;
-  }
-
-  return null;
+  return isCallExpression(grandParent) && isMethodCall(grandParent)
+    ? grandParent
+    : null;
 };
 
 export const reportAsNeeded = (
@@ -84,11 +82,7 @@ export const reportExplicit = (
   context: ChainStyleContext,
   program: TSESTree.Program
 ) => {
-  if (isExplicitChainStart(node)) {
-    return;
-  }
-
-  if (!isLodashCall(node, program)) {
+  if (isExplicitChainStart(node) || !isLodashCall(node, program)) {
     return;
   }
 

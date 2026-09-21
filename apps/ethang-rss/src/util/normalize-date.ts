@@ -18,9 +18,7 @@ export const normalizeDate = (dateString?: null | string) => {
   }
 
   const timestamp = Date.parse(cleanedString);
-  if (!Number.isNaN(timestamp)) {
-    return DateTime.formatIso(DateTime.unsafeMake(timestamp));
-  }
-
-  return DateTime.formatIso(DateTime.unsafeNow());
+  return Number.isNaN(timestamp)
+    ? DateTime.formatIso(DateTime.unsafeNow())
+    : DateTime.formatIso(DateTime.unsafeMake(timestamp));
 };

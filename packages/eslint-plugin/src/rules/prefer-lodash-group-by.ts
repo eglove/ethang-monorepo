@@ -27,10 +27,9 @@ type MessageIds = "preferLodashGroupBy";
 type Options = [];
 
 const isEmptyArray = (node: TSESTree.Node) => {
-  if (AST_NODE_TYPES.ArrayExpression !== node.type) {
-    return false;
-  }
-  return 0 === node.elements.length;
+  return (
+    AST_NODE_TYPES.ArrayExpression === node.type && 0 === node.elements.length
+  );
 };
 
 function extractGroupByKey(
@@ -52,52 +51,49 @@ function extractGroupByKey(
 
   const argument = expression.arguments[0];
 
-  if (!argument || !isIdentifier(argument) || argument.name !== itemName) {
-    return null;
-  }
-
-  return getAssignmentKey(callee.object, itemName, accumulatorName);
+  return !argument || !isIdentifier(argument) || argument.name !== itemName
+    ? null
+    : getAssignmentKey(callee.object, itemName, accumulatorName);
 }
+
+// The reduce step must re-initialize the accumulator to an empty array
+// (`acc ||= []`) for the item to be keyed into it — anything else is a
+// shape this rule leaves alone.
+const isEmptyArrayAssignment = (
+  object: TSESTree.Node
+): object is TSESTree.AssignmentExpression => {
+  return (
+    AST_NODE_TYPES.AssignmentExpression === object.type &&
+    "||=" === object.operator &&
+    isEmptyArray(object.right)
+  );
+};
 
 function getAssignmentKey(
   object: TSESTree.Expression,
   itemName: string,
   accumulatorName: string
 ) {
-  if (AST_NODE_TYPES.AssignmentExpression !== object.type) {
-    return null;
-  }
-
-  if ("||=" !== object.operator) {
-    return null;
-  }
-
-  if (!isEmptyArray(object.right)) {
-    return null;
-  }
-
-  if (!isMemberAccumulator(object.left, accumulatorName)) {
-    return null;
-  }
-  return extractKeyFromMember(object.left, itemName);
+  return isEmptyArrayAssignment(object) &&
+    isMemberAccumulator(object.left, accumulatorName)
+    ? extractKeyFromMember(object.left, itemName)
+    : null;
 }
 
 function getPushCallee(call: TSESTree.CallExpression) {
   const { callee } = call;
 
-  if (!isMemberExpression(callee) || callee.computed) {
-    return null;
-  }
-
-  if ("push" !== callee.property.name || 1 !== call.arguments.length) {
+  if (
+    !isMemberExpression(callee) ||
+    callee.computed ||
+    "push" !== callee.property.name ||
+    1 !== call.arguments.length
+  ) {
     return null;
   }
   const [argument] = call.arguments;
 
-  if (!argument || !isIdentifier(argument)) {
-    return null;
-  }
-  return callee;
+  return !argument || !isIdentifier(argument) ? null : callee;
 }
 
 export const detectGroupByPattern = (node: TSESTree.Node) => {
@@ -133,11 +129,7 @@ export const detectGroupByPattern = (node: TSESTree.Node) => {
     callbackInfo.accumulatorName,
     callbackInfo.itemName
   );
-  if (isNil(key)) {
-    return null;
-  }
-
-  return { arr: arrayInfo.arr, key };
+  return isNil(key) ? null : { arr: arrayInfo.arr, key };
 };
 
 export const preferLodashGroupByRule = createRule<Options, MessageIds>({

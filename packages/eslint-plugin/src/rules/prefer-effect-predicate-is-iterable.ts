@@ -29,13 +29,12 @@ export const detectSymbolIteratorIn = (node: TSESTree.Node) => {
     return false;
   }
   const { left } = binary;
-  if (!isIdentifier(left.object)) {
-    return false;
-  }
-  if (!isIdentifier(left.property)) {
-    return false;
-  }
-  return "Symbol" === left.object.name && "iterator" === left.property.name;
+  return (
+    isIdentifier(left.object) &&
+    isIdentifier(left.property) &&
+    "Symbol" === left.object.name &&
+    "iterator" === left.property.name
+  );
 };
 
 export const preferEffectPredicateIsIterableRule = createRule<

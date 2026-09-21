@@ -190,11 +190,7 @@ const linkFromEntries = (
     return "";
   }
 
-  if (isString(alternate)) {
-    return alternate;
-  }
-
-  return alternate["@_href"] ?? "";
+  return isString(alternate) ? alternate : (alternate["@_href"] ?? "");
 };
 
 const parseFeedItems = (xml: string) => {
@@ -231,11 +227,9 @@ export const normalizeGuid = (item: FeedItem, link: string) => {
     return item.guid;
   }
 
-  if (isTextObject(item.guid)) {
-    return item.guid["#text"] ?? link;
-  }
-
-  return item.id ?? link;
+  return isTextObject(item.guid)
+    ? (item.guid["#text"] ?? link)
+    : (item.id ?? link);
 };
 
 export const normalizeContent = (item: FeedItem) => {
@@ -247,11 +241,9 @@ export const normalizeContent = (item: FeedItem) => {
     return item.content;
   }
 
-  if (isTextObject(item.content)) {
-    return item.content["#text"] ?? "";
-  }
-
-  return item.summary ?? "";
+  return isTextObject(item.content)
+    ? (item.content["#text"] ?? "")
+    : (item.summary ?? "");
 };
 
 export const normalizeTitle = (item: FeedItem) => {
@@ -259,11 +251,9 @@ export const normalizeTitle = (item: FeedItem) => {
     return item.title;
   }
 
-  if (isTextObject(item.title)) {
-    return item.title["#text"] ?? "No Title";
-  }
-
-  return "No Title";
+  return isTextObject(item.title)
+    ? (item.title["#text"] ?? "No Title")
+    : "No Title";
 };
 
 export class FetchFeedsWorkflow extends WorkflowEntrypoint<Env> {

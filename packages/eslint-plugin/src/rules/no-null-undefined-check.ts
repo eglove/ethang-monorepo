@@ -120,18 +120,21 @@ export const noNullUndefinedCheckRule = createRule<Options, MessageIds>({
         }
 
         const typeofResult = checkTypeofUndefined(node, sourceCode);
-        if (typeofResult) {
-          const { isNegated, variable } = typeofResult;
-          const suggestion = isNegated
-            ? `!isNil(${variable})`
-            : `isNil(${variable})`;
 
-          context.report({
-            data: { suggestion },
-            messageId: "noNullUndefinedCheck",
-            node
-          });
+        if (isNil(typeofResult)) {
+          return;
         }
+
+        const { isNegated, variable } = typeofResult;
+        const suggestion = isNegated
+          ? `!isNil(${variable})`
+          : `isNil(${variable})`;
+
+        context.report({
+          data: { suggestion },
+          messageId: "noNullUndefinedCheck",
+          node
+        });
       }
     };
   },

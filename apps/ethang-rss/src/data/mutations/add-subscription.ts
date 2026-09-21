@@ -24,17 +24,19 @@ const fetchDerivedMetadata = async (xmlAddress: string) => {
       try: async () => {
         const response = await globalThis.fetch(xmlAddress);
 
-        if (response.ok) {
-          const xmlText = await response.text();
-          const parsedMeta = parseFeedMetadata(xmlText);
+        if (!response.ok) {
+          return;
+        }
 
-          if (parsedMeta.title) {
-            derived.title = parsedMeta.title;
-          }
+        const xmlText = await response.text();
+        const parsedMeta = parseFeedMetadata(xmlText);
 
-          if (parsedMeta.website) {
-            derived.website = parsedMeta.website;
-          }
+        if (parsedMeta.title) {
+          derived.title = parsedMeta.title;
+        }
+
+        if (parsedMeta.website) {
+          derived.website = parsedMeta.website;
         }
       }
     }).pipe(Effect.ignoreLogged)
@@ -71,13 +73,15 @@ const fetchIconUrl = async (website: string) => {
       try: async () => {
         const websiteResponse = await globalThis.fetch(website);
 
-        if (websiteResponse.ok) {
-          const html = await websiteResponse.text();
-          const extracted = extractIconUrl(html, website);
+        if (!websiteResponse.ok) {
+          return;
+        }
 
-          if (!isNil(extracted)) {
-            iconUrl = extracted;
-          }
+        const html = await websiteResponse.text();
+        const extracted = extractIconUrl(html, website);
+
+        if (!isNil(extracted)) {
+          iconUrl = extracted;
         }
       }
     }).pipe(Effect.ignoreLogged)

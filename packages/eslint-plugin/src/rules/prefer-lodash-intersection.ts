@@ -4,6 +4,7 @@ import {
   type TSESLint,
   type TSESTree
 } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import {
   isArrowFunctionExpression,
@@ -26,17 +27,11 @@ export const isFilterCall = (node: TSESTree.Node) => {
     return false;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  if (callee.computed) {
+  if (!isMemberExpression(callee) || callee.computed) {
     return false;
   }
   const { property } = callee;
-  if (!isIdentifier(property)) {
-    return false;
-  }
-  return "filter" === property.name;
+  return isIdentifier(property) && "filter" === property.name;
 };
 
 export const getFilterCallTarget = (node: TSESTree.Node) => {
@@ -49,39 +44,31 @@ export const getFilterCallTarget = (node: TSESTree.Node) => {
 
 export const getFirstIdentifierArgument = (node: TSESTree.CallExpression) => {
   const [first] = node.arguments;
-  if (!first || !isIdentifier(first)) {
-    return null;
-  }
-  return first;
+  return !first || !isIdentifier(first) ? null : first;
 };
 
 export const getFirstArrowCallbackArgument = (
   node: TSESTree.CallExpression
 ) => {
   const [first] = node.arguments;
-  if (!first || !isArrowFunctionExpression(first)) {
-    return null;
-  }
-  return first;
+  return !first || !isArrowFunctionExpression(first) ? null : first;
 };
 
 export const getSingleIdentifierArrowParameter = (
   callback: TSESTree.ArrowFunctionExpression
 ) => {
   const [first] = callback.params;
-  if (!first || 1 !== callback.params.length || !isIdentifier(first)) {
-    return null;
-  }
-  return first;
+  return !first || 1 !== callback.params.length || !isIdentifier(first)
+    ? null
+    : first;
 };
 
 export const getExpressionBody = (
   callback: TSESTree.ArrowFunctionExpression
 ) => {
-  if (AST_NODE_TYPES.BlockStatement === callback.body.type) {
-    return null;
-  }
-  return callback.body;
+  return AST_NODE_TYPES.BlockStatement === callback.body.type
+    ? null
+    : callback.body;
 };
 
 // Check if the callee.object is a safe expression (identifier or member expr, not the param itself).
@@ -89,10 +76,9 @@ const isSafeCalleeObject = (
   calleeObject: TSESTree.Expression,
   parameterName: string
 ) => {
-  if (isIdentifier(calleeObject)) {
-    return calleeObject.name !== parameterName;
-  }
-  return isMemberExpression(calleeObject);
+  return isIdentifier(calleeObject)
+    ? calleeObject.name !== parameterName
+    : isMemberExpression(calleeObject);
 };
 
 // Check if `body` is `arr2.includes(param)` where `param` matches the arrow parameter.
@@ -117,10 +103,12 @@ export const isIncludesCallWithParameter = (
   }
   // Check that the argument is the parameter identifier
   const [argument] = body.arguments;
-  if (!argument || !isIdentifier(argument) || argument.name !== parameterName) {
-    return false;
-  }
-  return isSafeCalleeObject(callee.object, parameterName);
+  return (
+    !isNil(argument) &&
+    isIdentifier(argument) &&
+    argument.name === parameterName &&
+    isSafeCalleeObject(callee.object, parameterName)
+  );
 };
 
 export type IntersectionMatch = {
@@ -145,10 +133,7 @@ export const detectIntersectionPattern = (node: TSESTree.CallExpression) => {
     return null;
   }
   const body = getExpressionBody(callback);
-  if (!body) {
-    return null;
-  }
-  if (!isIncludesCallWithParameter(body, parameter.name)) {
+  if (!body || !isIncludesCallWithParameter(body, parameter.name)) {
     return null;
   }
   // body.callee and filterCallee are MemberExpressions since guards passed

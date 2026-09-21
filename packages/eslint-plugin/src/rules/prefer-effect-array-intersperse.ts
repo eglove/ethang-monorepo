@@ -29,16 +29,12 @@ export const isFlatMapCall = (
     return false;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  if (callee.computed) {
-    return false;
-  }
-  if (!isIdentifier(callee.property) || "flatMap" !== callee.property.name) {
-    return false;
-  }
-  return true;
+  return (
+    isMemberExpression(callee) &&
+    !callee.computed &&
+    isIdentifier(callee.property) &&
+    "flatMap" === callee.property.name
+  );
 };
 
 // Extract body expression from function (block with single return or expression body)
@@ -55,15 +51,14 @@ const extractCallbackBody = (
   }
   const [statement] = block.body;
 
-  if (!statement) {
-    return null;
-  }
+  return statement?.type === AST_NODE_TYPES.ReturnStatement
+    ? (statement.argument ?? null)
+    : null;
+};
 
-  if (AST_NODE_TYPES.ReturnStatement !== statement.type) {
-    return null;
-  }
-
-  return statement.argument ?? null;
+// Check if the node is the numeric literal `0`
+const isZeroLiteral = (node: TSESTree.Node) => {
+  return isLiteral(node) && 0 === node.value;
 };
 
 // Check if the ternary test is `indexName === 0`
@@ -72,22 +67,12 @@ const isIndexEqualsZero = (test: TSESTree.Node, indexName: string) => {
     return false;
   }
   const binary = test;
-  if ("===" !== binary.operator) {
-    return false;
-  }
-  // Must be indexName === 0 (left is identifier matching index, right is literal 0)
-  if (!isIdentifier(binary.left)) {
-    return false;
-  }
-
-  if (indexName !== binary.left.name) {
-    return false;
-  }
-
-  if (!isLiteral(binary.right)) {
-    return false;
-  }
-  return 0 === binary.right.value;
+  return (
+    "===" === binary.operator &&
+    isIdentifier(binary.left) &&
+    indexName === binary.left.name &&
+    isZeroLiteral(binary.right)
+  );
 };
 
 // Check if consequent is `[elementName]` (single-element array with the element identifier)
@@ -100,17 +85,12 @@ const validateConsequent = (consequent: TSESTree.Node, elementName: string) => {
     return false;
   }
   const [element] = array.elements;
-  if (isNil(element)) {
-    return false;
-  }
-  if (AST_NODE_TYPES.SpreadElement === element.type) {
-    return false;
-  }
-  if (!isIdentifier(element)) {
-    return false;
-  }
-
-  return elementName === element.name;
+  return (
+    !isNil(element) &&
+    AST_NODE_TYPES.SpreadElement !== element.type &&
+    isIdentifier(element) &&
+    elementName === element.name
+  );
 };
 
 // Check if alternate is `[sep, elementName]` (two-element array with some separator and the element identifier)
@@ -132,16 +112,10 @@ const validateAlternate = (alternate: TSESTree.Node, elementName: string) => {
     return null;
   }
 
-  if (isNil(second)) {
+  if (isNil(second) || !isIdentifier(second)) {
     return null;
   }
-  if (!isIdentifier(second)) {
-    return null;
-  }
-  if (elementName !== second.name) {
-    return null;
-  }
-  return first;
+  return elementName === second.name ? first : null;
 };
 
 export type IntersperseMatch = {
@@ -209,11 +183,7 @@ export const validateIntersperseCallback = (
   }
 
   const separator = validateTernaryBody(body, indexName, elementName);
-  if (isNil(separator)) {
-    return null;
-  }
-
-  return { elementName, separator };
+  return isNil(separator) ? null : { elementName, separator };
 };
 
 // Detect the flatMap intersperse pattern

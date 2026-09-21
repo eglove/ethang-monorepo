@@ -27,13 +27,9 @@ export const getSingleElementArray = (node: TSESTree.Node) => {
     return null;
   }
   const [element] = arrayNode.elements;
-  if (isNil(element)) {
-    return null;
-  }
-  if (AST_NODE_TYPES.SpreadElement === element.type) {
-    return null;
-  }
-  return element;
+  return isNil(element) || AST_NODE_TYPES.SpreadElement === element.type
+    ? null
+    : element;
 };
 
 // Extract the array expression from a callback body (arrow implicit return
@@ -43,10 +39,9 @@ const extractArrayFromCallbackBody = (callbackBody: TSESTree.Node) => {
   if (AST_NODE_TYPES.ArrayExpression === callbackBody.type) {
     return callbackBody;
   }
-  if (AST_NODE_TYPES.BlockStatement !== callbackBody.type) {
-    return null;
-  }
-  return extractArrayFromBlockBody(callbackBody);
+  return AST_NODE_TYPES.BlockStatement === callbackBody.type
+    ? extractArrayFromBlockBody(callbackBody)
+    : null;
 };
 
 // Extract the array expression from a block statement body.
@@ -64,13 +59,10 @@ const extractArrayFromBlockBody = (block: TSESTree.BlockStatement) => {
     return null;
   }
   const returnStatement = statement;
-  if (isNil(returnStatement.argument)) {
-    return null;
-  }
-  if (AST_NODE_TYPES.ArrayExpression !== returnStatement.argument.type) {
-    return null;
-  }
-  return returnStatement.argument;
+  return isNil(returnStatement.argument) ||
+    AST_NODE_TYPES.ArrayExpression !== returnStatement.argument.type
+    ? null
+    : returnStatement.argument;
 };
 
 // Check if an array expression matches the `[...acc, <body>]` shape where
@@ -83,26 +75,19 @@ const validateScanArrayShape = (
     return null;
   }
   const [first, second] = arrayExpression.elements;
-  if (isNil(first)) {
-    return null;
-  }
-  if (AST_NODE_TYPES.SpreadElement !== first.type) {
+  if (isNil(first) || AST_NODE_TYPES.SpreadElement !== first.type) {
     return null;
   }
   const spread = first;
-  if (!isIdentifier(spread.argument)) {
+  if (
+    !isIdentifier(spread.argument) ||
+    accumulatorName !== spread.argument.name
+  ) {
     return null;
   }
-  if (accumulatorName !== spread.argument.name) {
-    return null;
-  }
-  if (isNil(second)) {
-    return null;
-  }
-  if (AST_NODE_TYPES.SpreadElement === second.type) {
-    return null;
-  }
-  return second;
+  return isNil(second) || AST_NODE_TYPES.SpreadElement === second.type
+    ? null
+    : second;
 };
 
 // Check if a return statement or arrow function body returns an array
@@ -113,10 +98,9 @@ export const getScanBody = (
   accumulatorName: string
 ) => {
   const arrayExpression = extractArrayFromCallbackBody(callbackBody);
-  if (isNil(arrayExpression)) {
-    return null;
-  }
-  return validateScanArrayShape(arrayExpression, accumulatorName);
+  return isNil(arrayExpression)
+    ? null
+    : validateScanArrayShape(arrayExpression, accumulatorName);
 };
 
 // Validate the reduce call target: must be a member expression accessing
@@ -126,13 +110,9 @@ const validateReduceTarget = (call: TSESTree.CallExpression) => {
     return null;
   }
   const member = call.callee;
-  if (!isIdentifier(member.property)) {
-    return null;
-  }
-  if ("reduce" !== member.property.name) {
-    return null;
-  }
-  return member;
+  return !isIdentifier(member.property) || "reduce" !== member.property.name
+    ? null
+    : member;
 };
 
 // Validate the callback argument: must be an arrow or function expression with at least 2 parameters where the first is an identifier.
@@ -157,10 +137,9 @@ const validateCallback = (
   if (isNil(accumulatorParameter)) {
     return null;
   }
-  if (!isIdentifier(accumulatorParameter)) {
-    return null;
-  }
-  return { accName: accumulatorParameter.name, callback };
+  return isIdentifier(accumulatorParameter)
+    ? { accName: accumulatorParameter.name, callback }
+    : null;
 };
 
 // Detect the `.reduce((acc, x) => [...acc, <body>], [<init>])` pattern.

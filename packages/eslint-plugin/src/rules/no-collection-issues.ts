@@ -79,11 +79,9 @@ const getMethodName = (callee: TSESTree.Expression) => {
     return callee.name;
   }
 
-  if (isMemberExpression(callee) && isIdentifier(callee.property)) {
-    return callee.property.name;
-  }
-
-  return null;
+  return isMemberExpression(callee) && isIdentifier(callee.property)
+    ? callee.property.name
+    : null;
 };
 
 // Check if a function body always returns a value.

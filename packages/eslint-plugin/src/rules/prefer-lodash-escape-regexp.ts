@@ -22,16 +22,12 @@ export const isReplaceCall = (
     return false;
   }
   const { callee } = node;
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (callee.computed) {
-    return false;
-  }
-  if (AST_NODE_TYPES.Identifier !== callee.property.type) {
-    return false;
-  }
-  return "replace" === callee.property.name;
+  return (
+    AST_NODE_TYPES.MemberExpression === callee.type &&
+    !callee.computed &&
+    AST_NODE_TYPES.Identifier === callee.property.type &&
+    "replace" === callee.property.name
+  );
 };
 
 // @typescript-eslint/parser returns regex literals as Literal, not RegExpLiteral.
@@ -69,16 +65,28 @@ export const hasGlobalFlag = (regex: TSESTree.Literal) => {
   return flags.includes("g");
 };
 
+// Check if the regex literal is `/[...]/g` shaped: a regex literal carrying a
+// character class and the global flag — the only form the escapeRegExp
+// rewrite handles.
+const isGlobalCharacterClassRegex = (
+  argument: TSESTree.CallExpressionArgument
+): argument is TSESTree.Literal => {
+  return (
+    isRegexLiteral(argument) &&
+    hasCharacterClass(argument) &&
+    hasGlobalFlag(argument)
+  );
+};
+
 // Check if a Literal string contains the escaped match backreference $& or $0.
 export const isEscapeReplacement = (node: TSESTree.Node) => {
   if (AST_NODE_TYPES.Literal !== node.type) {
     return false;
   }
   const value = node.value;
-  if ("string" !== typeof value) {
-    return false;
-  }
-  return value.includes("$&") || value.includes("$0");
+  return (
+    "string" === typeof value && (value.includes("$&") || value.includes("$0"))
+  );
 };
 
 export type EscapeRegexpMatch = {
@@ -91,28 +99,20 @@ export const detectEscapeRegexpPattern = (node: TSESTree.Node) => {
     return null;
   }
   const [firstArgument, secondArgument] = node.arguments;
-  if (!firstArgument || !secondArgument) {
-    return null;
-  }
-  if (!isRegexLiteral(firstArgument)) {
-    return null;
-  }
-  if (!hasCharacterClass(firstArgument)) {
-    return null;
-  }
-  if (!hasGlobalFlag(firstArgument)) {
-    return null;
-  }
-  if (!isEscapeReplacement(secondArgument)) {
+  if (
+    !firstArgument ||
+    !secondArgument ||
+    !isGlobalCharacterClassRegex(firstArgument) ||
+    !isEscapeReplacement(secondArgument)
+  ) {
     return null;
   }
   // Unreachable: isReplaceCall already guarantees callee is MemberExpression.
   // isReplaceCall checks AST_NODE_TYPES.MemberExpression !== callee.type and returns false if not, so by the time we reach here callee.type is always MemberExpression. This guard exists for TypeScript type narrowing.
 
-  if (AST_NODE_TYPES.MemberExpression !== node.callee.type) {
-    return null;
-  }
-  return { call: node, stringExpr: node.callee.object };
+  return AST_NODE_TYPES.MemberExpression === node.callee.type
+    ? { call: node, stringExpr: node.callee.object }
+    : null;
 };
 
 const UMBRELLA_DISABLE_COMMENT = `// eslint-disable-next-line @ethang/prefer-lodash`;

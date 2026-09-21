@@ -30,14 +30,15 @@ describe("prefer-lodash-uniq", () => {
     ])(RETURNS_FMT, (code, expectation) => {
       const arrayExpression = findArrayExpression(code);
       expect(arrayExpression).not.toBeNull();
-      if (arrayExpression) {
-        const result = getSpreadOfNewSet(arrayExpression);
-        if (MATCH === expectation) {
-          expect(result).not.toBeNull();
-          expect(result?.arrayExpr).toBe(arrayExpression);
-        } else {
-          expect(result).toBeNull();
-        }
+      if (!arrayExpression) {
+        return;
+      }
+      const result = getSpreadOfNewSet(arrayExpression);
+      if (MATCH === expectation) {
+        expect(result).not.toBeNull();
+        expect(result?.arrayExpr).toBe(arrayExpression);
+      } else {
+        expect(result).toBeNull();
       }
     });
   });
@@ -72,13 +73,14 @@ describe("prefer-lodash-uniq", () => {
     ])(RETURNS_FMT, (code, expectation) => {
       const { call } = findCall(code);
       const [newSetNode] = call.arguments;
-      if (newSetNode && isNewExpression(newSetNode)) {
-        const inner = getSetArgument(newSetNode);
-        if (NULL === expectation) {
-          expect(inner).toBeNull();
-        } else {
-          expect(inner).not.toBeNull();
-        }
+      if (!newSetNode || !isNewExpression(newSetNode)) {
+        return;
+      }
+      const inner = getSetArgument(newSetNode);
+      if (NULL === expectation) {
+        expect(inner).toBeNull();
+      } else {
+        expect(inner).not.toBeNull();
       }
     });
   });

@@ -47,11 +47,9 @@ export const eventRangeFormat = (start: string, end: string) => {
   const isSameDay =
     DateTime.formatIsoDate(startDt) === DateTime.formatIsoDate(endDt);
 
-  if (isSameDay) {
-    return `${startZoned} – ${DateTime.format(endDt, { timeStyle: "short", timeZone: CHICAGO })}`;
-  }
-
-  return `${startZoned} – ${endZoned}`;
+  return isSameDay
+    ? `${startZoned} – ${DateTime.format(endDt, { timeStyle: "short", timeZone: CHICAGO })}`
+    : `${startZoned} – ${endZoned}`;
 };
 
 export const getRelativeDate = (date: string) => {
@@ -64,9 +62,9 @@ export const getRelativeDate = (date: string) => {
 
   const rtf = new Intl.RelativeTimeFormat("en-US", { numeric: "auto" });
   if (7 > Math.abs(diffDays)) return rtf.format(diffDays, "day");
-  if (30 > Math.abs(diffDays))
-    return rtf.format(Math.round(diffDays / 7), "week");
-  return rtf.format(Math.round(diffDays / 30), "month");
+  return 30 > Math.abs(diffDays)
+    ? rtf.format(Math.round(diffDays / 7), "week")
+    : rtf.format(Math.round(diffDays / 30), "month");
 };
 
 export const getNewsAndEvents = async () => {

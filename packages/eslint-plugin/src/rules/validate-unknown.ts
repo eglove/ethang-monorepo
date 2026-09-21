@@ -39,13 +39,11 @@ const isInsideSchemaDecodeChain = (
   // direct form (`Schema.decode*(value)`) is short-circuited in the
   // CallExpression listener before we ever walk ancestors here.
   return ancestors.some((ancestor) => {
-    if (AST_NODE_TYPES.CallExpression !== ancestor.type) {
-      return false;
-    }
-    if (!ancestor.arguments.includes(node)) {
-      return false;
-    }
-    return isSchemaDecodeCallee(ancestor.callee);
+    return (
+      AST_NODE_TYPES.CallExpression === ancestor.type &&
+      ancestor.arguments.includes(node) &&
+      isSchemaDecodeCallee(ancestor.callee)
+    );
   });
 };
 
@@ -97,13 +95,11 @@ export const validateUnknownRule = createRule<Options, MessageIds>({
     const listener: TSESLint.RuleListener = {
       AwaitExpression(node) {
         const ancestors = context.sourceCode.getAncestors(node);
-        if (isResultDiscarded(ancestors)) {
-          return;
-        }
-        if (isInsideSchemaDecodeChain(node, ancestors)) {
-          return;
-        }
-        if (!isUnknownOrAny(getAwaitedTypeFlags(checker, services, node))) {
+        if (
+          isResultDiscarded(ancestors) ||
+          isInsideSchemaDecodeChain(node, ancestors) ||
+          !isUnknownOrAny(getAwaitedTypeFlags(checker, services, node))
+        ) {
           return;
         }
         context.report({
@@ -123,13 +119,11 @@ export const validateUnknownRule = createRule<Options, MessageIds>({
           return;
         }
         const ancestors = context.sourceCode.getAncestors(node);
-        if (isResultDiscarded(ancestors)) {
-          return;
-        }
-        if (isInsideSchemaDecodeChain(node, ancestors)) {
-          return;
-        }
-        if (!isUnknownOrAny(getReturnTypeFlags(checker, services, node))) {
+        if (
+          isResultDiscarded(ancestors) ||
+          isInsideSchemaDecodeChain(node, ancestors) ||
+          !isUnknownOrAny(getReturnTypeFlags(checker, services, node))
+        ) {
           return;
         }
         context.report({

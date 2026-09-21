@@ -23,11 +23,9 @@ const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
 
-      if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-        return first.argument ?? null;
-      }
-
-      return null;
+      return first?.type === AST_NODE_TYPES.ReturnStatement
+        ? (first.argument ?? null)
+        : null;
     }
 
     return node.body;
@@ -67,6 +65,16 @@ const isExplicitIdentityFunction = (iteratee: null | TSESTree.Expression) => {
   );
 };
 
+const isLodashIdentityProperty = (
+  object: TSESTree.Identifier,
+  property: TSESTree.Identifier
+) => {
+  return (
+    ("_" === object.name || "lodash" === object.name) &&
+    "identity" === property.name
+  );
+};
+
 const isLodashIdentityMember = (iteratee: null | TSESTree.Expression) => {
   if (iteratee?.type !== AST_NODE_TYPES.MemberExpression) {
     return false;
@@ -74,16 +82,10 @@ const isLodashIdentityMember = (iteratee: null | TSESTree.Expression) => {
 
   const { object, property } = iteratee;
 
-  if (
-    object.type !== AST_NODE_TYPES.Identifier ||
-    property.type !== AST_NODE_TYPES.Identifier
-  ) {
-    return false;
-  }
-
   return (
-    ("_" === object.name || "lodash" === object.name) &&
-    "identity" === property.name
+    object.type === AST_NODE_TYPES.Identifier &&
+    property.type === AST_NODE_TYPES.Identifier &&
+    isLodashIdentityProperty(object, property)
   );
 };
 

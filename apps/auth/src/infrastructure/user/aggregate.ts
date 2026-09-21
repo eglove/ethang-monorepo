@@ -65,12 +65,11 @@ const assertValidCredentials = (
 ) => {
   return Effect.gen(function* () {
     const isValid = yield* passwordService.compare(password, hash);
-    if (!isValid) {
-      return yield* Effect.fail(
-        new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
-      );
-    }
-    return null;
+    return isValid
+      ? null
+      : yield* Effect.fail(
+          new InvalidCredentialsError(auth.INVALID_CREDENTIALS)
+        );
   });
 };
 

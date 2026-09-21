@@ -25,6 +25,16 @@ type Options = [Mode?, { onlyLiterals?: boolean }?];
 
 const DEFAULT_MAX_PROPERTY_PATH_LENGTH = 3;
 
+const isLodashMatchesPropertyMember = (
+  object: TSESTree.Identifier,
+  property: TSESTree.Identifier
+) => {
+  return (
+    ("_" === object.name || "lodash" === object.name) &&
+    "matchesProperty" === property.name
+  );
+};
+
 // Checks if the iteratee is _.matchesProperty(path, value) or lodash.matchesProperty(path, value).
 export const isLodashMatchesPropertyCall = (
   iteratee: null | TSESTree.Expression
@@ -41,16 +51,10 @@ export const isLodashMatchesPropertyCall = (
 
   const { object, property } = callee;
 
-  if (
-    object.type !== AST_NODE_TYPES.Identifier ||
-    property.type !== AST_NODE_TYPES.Identifier
-  ) {
-    return false;
-  }
-
   return (
-    ("_" === object.name || "lodash" === object.name) &&
-    "matchesProperty" === property.name
+    object.type === AST_NODE_TYPES.Identifier &&
+    property.type === AST_NODE_TYPES.Identifier &&
+    isLodashMatchesPropertyMember(object, property)
   );
 };
 

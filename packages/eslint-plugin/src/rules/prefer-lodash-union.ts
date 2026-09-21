@@ -19,23 +19,18 @@ type Options = [];
 
 // Extract the expression from a spread element: `...expr` -> expr
 export const getSpreadArgument = (node: TSESTree.Node) => {
-  if (AST_NODE_TYPES.SpreadElement !== node.type) {
-    return null;
-  }
-  return node.argument;
+  return AST_NODE_TYPES.SpreadElement === node.type ? node.argument : null;
 };
 
 // Check if a NewExpression is `new Set(...)`
 export const isNewSetCall = (
   node: TSESTree.Node
 ): node is TSESTree.NewExpression => {
-  if (AST_NODE_TYPES.NewExpression !== node.type) {
-    return false;
-  }
-  if (!isIdentifier(node.callee)) {
-    return false;
-  }
-  return "Set" === node.callee.name;
+  return (
+    AST_NODE_TYPES.NewExpression === node.type &&
+    isIdentifier(node.callee) &&
+    "Set" === node.callee.name
+  );
 };
 
 // Extract array expressions from spread elements in an array: [...a, ...b] -> [a, b]
@@ -62,10 +57,7 @@ export type UnionMatch = {
 
 // Validate the outer spread is a new Set call with one argument
 const validateOuterSpread = (spreadArgument: TSESTree.Expression) => {
-  if (!isNewSetCall(spreadArgument)) {
-    return null;
-  }
-  if (1 !== spreadArgument.arguments.length) {
+  if (!isNewSetCall(spreadArgument) || 1 !== spreadArgument.arguments.length) {
     return null;
   }
   const [firstArgument] = spreadArgument.arguments;
@@ -74,10 +66,7 @@ const validateOuterSpread = (spreadArgument: TSESTree.Expression) => {
   if (!firstArgument) {
     return null;
   }
-  if (!isArrayExpression(firstArgument)) {
-    return null;
-  }
-  return firstArgument;
+  return isArrayExpression(firstArgument) ? firstArgument : null;
 };
 
 // Detect `[...new Set([...a, ...b])]` pattern

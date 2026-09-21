@@ -57,10 +57,7 @@ export const getPathArgumentIndex = (method: string) => {
   if (isRegularPathMethod(method)) {
     return 1;
   }
-  if (isHigherOrderPathMethod(method)) {
-    return 0;
-  }
-  return -1;
+  return isHigherOrderPathMethod(method) ? 0 : -1;
 };
 
 const isPropertyAccessCharacter = (char: string) => {
@@ -75,6 +72,22 @@ const isStartsWithPropertyAccess = (value: string) => {
   return isPropertyAccessCharacter(value[0] ?? "");
 };
 
+const isLiteralEndingWithPropertyAccess = (node: TSESTree.Node) => {
+  return (
+    isLiteral(node) &&
+    isString(node.value) &&
+    isEndsWithPropertyAccess(node.value)
+  );
+};
+
+const isLiteralStartingWithPropertyAccess = (node: TSESTree.Node) => {
+  return (
+    isLiteral(node) &&
+    isString(node.value) &&
+    isStartsWithPropertyAccess(node.value)
+  );
+};
+
 export const isStringConcatWithVariableProperties = (node: TSESTree.Node) => {
   if (node.type !== AST_NODE_TYPES.BinaryExpression || "+" !== node.operator) {
     return false;
@@ -83,18 +96,9 @@ export const isStringConcatWithVariableProperties = (node: TSESTree.Node) => {
   const binary = node as TSESTree.BinaryExpression;
   const { left, right } = binary;
 
-  if (
-    isLiteral(left) &&
-    isString(left.value) &&
-    isEndsWithPropertyAccess(left.value)
-  ) {
-    return true;
-  }
-
   return (
-    isLiteral(right) &&
-    isString(right.value) &&
-    isStartsWithPropertyAccess(right.value)
+    isLiteralEndingWithPropertyAccess(left) ||
+    isLiteralStartingWithPropertyAccess(right)
   );
 };
 
@@ -167,11 +171,9 @@ export const convertToStringStyle = (node: TSESTree.ArrayExpression) => {
 
     const stringValue = String(element.value);
 
-    if (isString(element.value) && canBeDotNotation(stringValue)) {
-      return `.${stringValue}`;
-    }
-
-    return `[${stringValue}]`;
+    return isString(element.value) && canBeDotNotation(stringValue)
+      ? `.${stringValue}`
+      : `[${stringValue}]`;
   });
 
   return `'${replace(join(parts, ""), /^\./u, "")}'`;

@@ -49,11 +49,10 @@ export default defineType({
             DateTime.unsafeMake(expireDate)
           );
 
-          if (expireDateValue.getTime() < dateFieldValue.getTime()) {
-            return "Expiration date must be at least one day after the date";
-          }
-
-          return true;
+          return (
+            expireDateValue.getTime() >= dateFieldValue.getTime() ||
+            "Expiration date must be at least one day after the date"
+          );
         });
       }
     },

@@ -46,10 +46,9 @@ export const getReturnedValue = (
     if (AST_NODE_TYPES.ReturnStatement === returned?.type) {
       return returned.argument;
     }
-    if (AST_NODE_TYPES.ExpressionStatement === returned?.type) {
-      return returned.expression;
-    }
-    return null;
+    return AST_NODE_TYPES.ExpressionStatement === returned?.type
+      ? returned.expression
+      : null;
   }
   return iteratee.body;
 };
@@ -60,21 +59,20 @@ export const getReturnedValue = (
 export const isValidUniqArgument = (
   argument: null | TSESTree.CallExpressionArgument | undefined
 ) => {
-  if (isNil(argument)) {
-    return false;
-  }
   return (
-    isIdentifier(argument) ||
-    isMemberExpression(argument) ||
-    isCallExpression(argument)
+    !isNil(argument) &&
+    (isIdentifier(argument) ||
+      isMemberExpression(argument) ||
+      isCallExpression(argument))
   );
 };
 
 export const shouldPreferUniq = (node: TSESTree.NewExpression) => {
-  if (!isIdentifier(node.callee) || "Set" !== node.callee.name) {
-    return false;
-  }
-  if (1 !== node.arguments.length) {
+  if (
+    !isIdentifier(node.callee) ||
+    "Set" !== node.callee.name ||
+    1 !== node.arguments.length
+  ) {
     return false;
   }
   const argument = node.arguments.at(0);
@@ -92,23 +90,24 @@ export const shouldPreferUniq = (node: TSESTree.NewExpression) => {
 // Detects `<arr>[0].map((_, i) => <arr>.map(r => r[i]))` (unzip) and the
 // array-of-arrays variant (zip). Both share the same AST shape.
 
+// Check if the inner access is a computed `[0]` literal index (unzip shape)
+const isZeroLiteralIndex = (inner: TSESTree.MemberExpression) => {
+  return (
+    inner.computed &&
+    AST_NODE_TYPES.Literal === inner.property.type &&
+    0 === inner.property.value
+  );
+};
+
 export const getZeroIndexedReceiver = (node: TSESTree.CallExpression) => {
   const { callee } = node;
   if (!isMemberExpression(callee) || !isMemberExpression(callee.object)) {
     return null;
   }
   const inner = callee.object;
-  if (
-    !inner.computed ||
-    AST_NODE_TYPES.Literal !== inner.property.type ||
-    0 !== inner.property.value
-  ) {
-    return null;
-  }
-  if (!isIdentifier(inner.object)) {
-    return null;
-  }
-  return { arrayName: inner.object.name, receiver: inner };
+  return isZeroLiteralIndex(inner) && isIdentifier(inner.object)
+    ? { arrayName: inner.object.name, receiver: inner }
+    : null;
 };
 
 export const isMapMethod = (node: TSESTree.CallExpression) => {
@@ -119,49 +118,54 @@ export const isMapMethod = (node: TSESTree.CallExpression) => {
   );
 };
 
+// Check if the node is a function expression (arrow or function expression)
+const isFunctionExpressionLike = (
+  node: null | TSESTree.Node | undefined
+): node is TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression => {
+  return (
+    !isNil(node) &&
+    (isArrowFunctionExpression(node) || isFunctionExpression(node))
+  );
+};
+
 export const getTwoParameterArrow = (
   node: null | TSESTree.Node | undefined
 ) => {
-  if (
-    isNil(node) ||
-    (!isArrowFunctionExpression(node) && !isFunctionExpression(node)) ||
-    2 !== node.params.length
-  ) {
-    return null;
-  }
-  return node;
+  return !isFunctionExpressionLike(node) || 2 !== node.params.length
+    ? null
+    : node;
 };
 
 export const getOneParameterArrow = (
   node: null | TSESTree.Node | undefined
 ) => {
-  if (
-    isNil(node) ||
-    (!isArrowFunctionExpression(node) && !isFunctionExpression(node)) ||
-    1 !== node.params.length
-  ) {
-    return null;
-  }
-  return node;
+  return !isFunctionExpressionLike(node) || 1 !== node.params.length
+    ? null
+    : node;
+};
+
+// Check if the node is a computed member access on the given parameter
+// (e.g. `r[i]` in an unzip inner map iteratee).
+const isComputedMemberOfParameter = (
+  node: TSESTree.Node,
+  parameterName: string
+): node is TSESTree.MemberExpression => {
+  return (
+    AST_NODE_TYPES.MemberExpression === node.type &&
+    node.computed &&
+    isIdentifier(node.object) &&
+    node.object.name === parameterName
+  );
 };
 
 export const isMatchingIndexedAccess = (
   node: TSESTree.Node,
   parameterName: string
 ) => {
-  if (AST_NODE_TYPES.MemberExpression !== node.type) {
-    return false;
-  }
-  if (!node.computed) {
-    return false;
-  }
-  if (!isIdentifier(node.object)) {
-    return false;
-  }
-  if (node.object.name !== parameterName) {
-    return false;
-  }
-  return isIdentifier(node.property);
+  return (
+    isComputedMemberOfParameter(node, parameterName) &&
+    isIdentifier(node.property)
+  );
 };
 
 export const getIndexedByParameter = (
@@ -177,18 +181,16 @@ export const getIndexedByParameter = (
   }
   const member = node;
 
-  if (!isIdentifier(member.property)) {
-    return null;
-  }
-  return { member, propertyName: member.property.name };
+  return isIdentifier(member.property)
+    ? { member, propertyName: member.property.name }
+    : null;
 };
 
 export const getUnzipInnerArrayName = (body: TSESTree.CallExpression) => {
   const innerCallee = body.callee;
-  if (!isMemberExpression(innerCallee) || !isIdentifier(innerCallee.object)) {
-    return null;
-  }
-  return innerCallee.object.name;
+  return !isMemberExpression(innerCallee) || !isIdentifier(innerCallee.object)
+    ? null
+    : innerCallee.object.name;
 };
 
 export const getUnzipIndexName = (
@@ -212,13 +214,9 @@ export const getUnzipIndexName = (
     getReturnedValue(oneParameterIteratee),
     innerParameter.name
   );
-  if (isNil(indexed)) {
-    return null;
-  }
-  if (indexed.propertyName !== outerIndexName) {
-    return null;
-  }
-  return { arrayName, innerParameter };
+  return isNil(indexed) || indexed.propertyName !== outerIndexName
+    ? null
+    : { arrayName, innerParameter };
 };
 
 export const getUnzipOuterIndex = (
@@ -226,10 +224,9 @@ export const getUnzipOuterIndex = (
     TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression
 ) => {
   const outerIndex = twoParameterIteratee.params.at(1);
-  if (isNil(outerIndex) || !isIdentifier(outerIndex)) {
-    return null;
-  }
-  return outerIndex.name;
+  return isNil(outerIndex) || !isIdentifier(outerIndex)
+    ? null
+    : outerIndex.name;
 };
 
 export const isUnzipStyleOuter = (node: TSESTree.CallExpression) => {
@@ -254,10 +251,11 @@ export const isUnzipStyleOuter = (node: TSESTree.CallExpression) => {
     return false;
   }
   const innerArrayName = getUnzipInnerArrayName(body);
-  if (isNil(innerArrayName) || innerArrayName !== zeroIndexed.arrayName) {
-    return false;
-  }
-  return !isNil(getUnzipIndexName(body, zeroIndexed.arrayName, outerIndexName));
+  return (
+    !isNil(innerArrayName) &&
+    innerArrayName === zeroIndexed.arrayName &&
+    !isNil(getUnzipIndexName(body, zeroIndexed.arrayName, outerIndexName))
+  );
 };
 
 export const shouldPreferUnzip = (node: TSESTree.CallExpression) => {
@@ -273,14 +271,11 @@ export const shouldPreferZip = (node: TSESTree.CallExpression) => {
 // form when a sibling statement contains the negated form.
 
 export const getFilterCallReceiver = (node: TSESTree.CallExpression) => {
-  if (
-    !isMemberExpression(node.callee) ||
+  return !isMemberExpression(node.callee) ||
     !isIdentifier(node.callee.property) ||
     "filter" !== node.callee.property.name
-  ) {
-    return null;
-  }
-  return node.callee.object;
+    ? null
+    : node.callee.object;
 };
 
 export const getCallToPredicate = (node: null | TSESTree.Node | undefined) => {
@@ -293,19 +288,18 @@ export const getCallToPredicate = (node: null | TSESTree.Node | undefined) => {
     return null;
   }
   const argument = node.arguments.at(0);
-  if (isNil(argument) || !isIdentifier(argument)) {
-    return null;
-  }
-  return { parameterName: argument.name, predName: node.callee.name };
+  return isNil(argument) || !isIdentifier(argument)
+    ? null
+    : { parameterName: argument.name, predName: node.callee.name };
 };
 
 export const isSingleParameterArrowBody = (
   node: TSESTree.ArrowFunctionExpression | TSESTree.FunctionExpression
 ) => {
-  if (AST_NODE_TYPES.BlockStatement === node.body.type) {
-    return false;
-  }
-  if (1 !== node.params.length) {
+  if (
+    AST_NODE_TYPES.BlockStatement === node.body.type ||
+    1 !== node.params.length
+  ) {
     return false;
   }
   const parameter = node.params.at(0);
@@ -321,10 +315,7 @@ export const getSingleParameterArrow = (
   if (!isArrowFunctionExpression(node) && !isFunctionExpression(node)) {
     return null;
   }
-  if (!isSingleParameterArrowBody(node)) {
-    return null;
-  }
-  return node;
+  return isSingleParameterArrowBody(node) ? node : null;
 };
 
 export const hasMatchingVariableDeclarator = (
@@ -335,10 +326,11 @@ export const hasMatchingVariableDeclarator = (
 ) => {
   return some(statement.declarations, (declaration) => {
     const { init } = declaration;
-    if (isNil(init) || !isCallExpression(init)) {
-      return false;
-    }
-    return isMatchingNegatedFilter(init, receiver, predName, parameterName);
+    return (
+      !isNil(init) &&
+      isCallExpression(init) &&
+      isMatchingNegatedFilter(init, receiver, predName, parameterName)
+    );
   });
 };
 
@@ -366,53 +358,50 @@ export const isProgramWithNegatedFilter = (
   parameterName: string
 ) => {
   return some(program.body, (statement) => {
-    if (AST_NODE_TYPES.VariableDeclaration === statement.type) {
-      return hasMatchingVariableDeclarator(
-        statement,
-        receiver,
-        predName,
-        parameterName
-      );
-    }
-    if (!isExpressionStatement(statement)) {
-      return false;
-    }
-    return hasMatchingExpressionStatement(
-      statement,
-      receiver,
-      predName,
-      parameterName
-    );
+    return AST_NODE_TYPES.VariableDeclaration === statement.type
+      ? hasMatchingVariableDeclarator(
+          statement,
+          receiver,
+          predName,
+          parameterName
+        )
+      : isExpressionStatement(statement) &&
+          hasMatchingExpressionStatement(
+            statement,
+            receiver,
+            predName,
+            parameterName
+          );
   });
+};
+
+// Check if `body` is `!callee(...)` — a unary negation wrapping a call
+const isNegatedCall = (
+  body: TSESTree.Node
+): body is {
+  readonly argument: TSESTree.CallExpression;
+} & TSESTree.UnaryExpression => {
+  return (
+    AST_NODE_TYPES.UnaryExpression === body.type &&
+    "!" === body.operator &&
+    isCallExpression(body.argument)
+  );
 };
 
 export const getNegatedPredicateArgument = (
   body: TSESTree.Node,
   predName: string
 ) => {
-  if (AST_NODE_TYPES.UnaryExpression !== body.type) {
-    return null;
-  }
-  if ("!" !== body.operator) {
-    return null;
-  }
-  if (!isCallExpression(body.argument)) {
-    return null;
-  }
-  if (!isIdentifier(body.argument.callee)) {
-    return null;
-  }
-  if (body.argument.callee.name !== predName) {
-    return null;
-  }
-  if (1 !== body.argument.arguments.length) {
+  if (
+    !isNegatedCall(body) ||
+    !isIdentifier(body.argument.callee) ||
+    body.argument.callee.name !== predName ||
+    1 !== body.argument.arguments.length
+  ) {
     return null;
   }
   const argument = body.argument.arguments.at(0);
-  if (isNil(argument) || !isIdentifier(argument)) {
-    return null;
-  }
-  return argument;
+  return isNil(argument) || !isIdentifier(argument) ? null : argument;
 };
 
 export const isNegatedPredicateCall = (
@@ -424,10 +413,7 @@ export const isNegatedPredicateCall = (
     return false;
   }
   const argument = getNegatedPredicateArgument(body, predName);
-  if (isNil(argument)) {
-    return false;
-  }
-  return argument.name === parameterName;
+  return !isNil(argument) && argument.name === parameterName;
 };
 
 export const isMatchingNegatedFilter = (
@@ -439,11 +425,9 @@ export const isMatchingNegatedFilter = (
   if (
     !isMemberExpression(call.callee) ||
     !isIdentifier(call.callee.property) ||
-    "filter" !== call.callee.property.name
+    "filter" !== call.callee.property.name ||
+    !isSameReceiverNode(call.callee.object, receiver)
   ) {
-    return false;
-  }
-  if (!isSameReceiverNode(call.callee.object, receiver)) {
     return false;
   }
   const iteratee = call.arguments.at(0);
@@ -456,10 +440,11 @@ export const isMatchingNegatedFilter = (
   }
   const parameter = singleParameterIteratee.params.at(0);
 
-  if (isNil(parameter) || !isIdentifier(parameter)) {
-    return false;
-  }
-  if (parameter.name !== parameterName) {
+  if (
+    isNil(parameter) ||
+    !isIdentifier(parameter) ||
+    parameter.name !== parameterName
+  ) {
     return false;
   }
   const body = getReturnedValue(singleParameterIteratee);
@@ -473,10 +458,11 @@ export const isSameReceiverNode = (a: TSESTree.Node, b: TSESTree.Node) => {
     currentA = currentA.object;
     currentB = currentB.object;
   }
-  if (isIdentifier(currentA) && isIdentifier(currentB)) {
-    return currentA.name === currentB.name;
-  }
-  return false;
+  return (
+    isIdentifier(currentA) &&
+    isIdentifier(currentB) &&
+    currentA.name === currentB.name
+  );
 };
 
 export const getPartitionIterateeInfo = (node: TSESTree.CallExpression) => {
@@ -502,13 +488,9 @@ export const getPartitionIterateeInfo = (node: TSESTree.CallExpression) => {
   }
   const body = getReturnedValue(singleParameterIteratee);
   const predicateCall = getCallToPredicate(body);
-  if (isNil(predicateCall)) {
-    return null;
-  }
-  if (predicateCall.parameterName !== parameter.name) {
-    return null;
-  }
-  return { parameter, predicateCall, receiver };
+  return isNil(predicateCall) || predicateCall.parameterName !== parameter.name
+    ? null
+    : { parameter, predicateCall, receiver };
 };
 
 export const shouldPreferPartition = (
@@ -516,20 +498,34 @@ export const shouldPreferPartition = (
   program: TSESTree.Program
 ) => {
   const info = getPartitionIterateeInfo(node);
-  if (isNil(info)) {
-    return false;
-  }
-  return isProgramWithNegatedFilter(
-    program,
-    info.receiver,
-    info.predicateCall.predName,
-    info.predicateCall.parameterName
+  return (
+    !isNil(info) &&
+    isProgramWithNegatedFilter(
+      program,
+      info.receiver,
+      info.predicateCall.predName,
+      info.predicateCall.parameterName
+    )
   );
 };
 
 // --- prefer-count-by / prefer-key-by ---
 // Detects `arr.reduce((acc, x) => { ... acc[expr] = (acc[expr] ?? 0) + 1; ... }, {})`
 // for countBy, and the no-`+1` variant for keyBy.
+
+// Check if the assignment target is a computed member on the accumulator
+// (e.g. `acc[key] = ...` in a reduce callback).
+const isComputedAccumulatorMember = (
+  left: TSESTree.Node,
+  accumulatorName: string
+): left is TSESTree.MemberExpression => {
+  return (
+    AST_NODE_TYPES.MemberExpression === left.type &&
+    left.computed &&
+    isIdentifier(left.object) &&
+    left.object.name === accumulatorName
+  );
+};
 
 export const getAccumulatorAssignment = (
   statement: TSESTree.Statement,
@@ -542,25 +538,15 @@ export const getAccumulatorAssignment = (
     return null;
   }
   const assign = statement.expression;
-  if (
-    AST_NODE_TYPES.MemberExpression !== assign.left.type ||
-    !isIdentifier(assign.left.object) ||
-    assign.left.object.name !== accumulatorName ||
-    !assign.left.computed
-  ) {
-    return null;
-  }
-  return assign;
+  return isComputedAccumulatorMember(assign.left, accumulatorName)
+    ? assign
+    : null;
 };
 
 export const isCountByAssignment = (assign: TSESTree.AssignmentExpression) => {
-  if (AST_NODE_TYPES.BinaryExpression !== assign.right.type) {
-    return false;
-  }
-  if ("+" !== assign.right.operator) {
-    return false;
-  }
   return (
+    AST_NODE_TYPES.BinaryExpression === assign.right.type &&
+    "+" === assign.right.operator &&
     AST_NODE_TYPES.Literal === assign.right.right.type &&
     1 === assign.right.right.value
   );
@@ -572,10 +558,7 @@ export const isCountByShape = (
 ) => {
   return some(body.body, (statement) => {
     const assign = getAccumulatorAssignment(statement, accumulatorName);
-    if (isNil(assign)) {
-      return false;
-    }
-    return isCountByAssignment(assign);
+    return !isNil(assign) && isCountByAssignment(assign);
   });
 };
 
@@ -598,47 +581,38 @@ export const getReduceCallInitial = (node: TSESTree.CallExpression) => {
   if (
     !isMemberExpression(node.callee) ||
     !isIdentifier(node.callee.property) ||
-    "reduce" !== node.callee.property.name
+    "reduce" !== node.callee.property.name ||
+    2 !== node.arguments.length
   ) {
-    return null;
-  }
-  if (2 !== node.arguments.length) {
     return null;
   }
   const initial = node.arguments.at(1);
-  if (
-    isNil(initial) ||
+  return isNil(initial) ||
     AST_NODE_TYPES.ObjectExpression !== initial.type ||
     0 !== initial.properties.length
-  ) {
-    return null;
-  }
-  return node.arguments.at(0);
+    ? null
+    : node.arguments.at(0);
 };
 
 export const getBlockBodyTwoParameterCallback = (callback: TSESTree.Node) => {
   if (!isArrowFunctionExpression(callback) && !isFunctionExpression(callback)) {
     return null;
   }
-  if (AST_NODE_TYPES.BlockStatement !== callback.body.type) {
-    return null;
-  }
-  if (2 !== callback.params.length) {
+  if (
+    AST_NODE_TYPES.BlockStatement !== callback.body.type ||
+    2 !== callback.params.length
+  ) {
     return null;
   }
   const accumulator = callback.params.at(0);
-  if (isNil(accumulator) || !isIdentifier(accumulator)) {
-    return null;
-  }
-  return { accumulatorName: accumulator.name, body: callback.body };
+  return isNil(accumulator) || !isIdentifier(accumulator)
+    ? null
+    : { accumulatorName: accumulator.name, body: callback.body };
 };
 
 export const getReduceCallback = (node: TSESTree.CallExpression) => {
   const first = getReduceCallInitial(node);
-  if (isNil(first)) {
-    return null;
-  }
-  return getBlockBodyTwoParameterCallback(first);
+  return isNil(first) ? null : getBlockBodyTwoParameterCallback(first);
 };
 
 export const isCountOrKeyByPattern = (
@@ -671,10 +645,11 @@ export const isChunkSliceOffsetBinary = (
   first: TSESTree.Identifier,
   second: TSESTree.Node
 ) => {
-  if (AST_NODE_TYPES.BinaryExpression !== second.type) {
-    return false;
-  }
-  if (!isIdentifier(second.left) || second.left.name !== first.name) {
+  if (
+    AST_NODE_TYPES.BinaryExpression !== second.type ||
+    !isIdentifier(second.left) ||
+    second.left.name !== first.name
+  ) {
     return false;
   }
   // Accept `i + size` (Identifier) or `i + N` (Literal number) as the offset.
@@ -690,22 +665,23 @@ export const isChunkSliceFirstArgument = (
   if (!isIdentifier(first)) {
     return false;
   }
-  if (AST_NODE_TYPES.BinaryExpression === second.type) {
-    return isChunkSliceOffsetBinary(first, second);
-  }
-  return isIdentifier(second) && first.name !== second.name;
+  return AST_NODE_TYPES.BinaryExpression === second.type
+    ? isChunkSliceOffsetBinary(first, second)
+    : isIdentifier(second) && first.name !== second.name;
+};
+
+// Check if the callee is a `.slice()` member call on a plain identifier
+const isSliceMemberCall = (node: TSESTree.CallExpression) => {
+  return (
+    isMemberExpression(node.callee) &&
+    isIdentifier(node.callee.property) &&
+    "slice" === node.callee.property.name &&
+    isIdentifier(node.callee.object)
+  );
 };
 
 export const isChunkSliceCall = (node: TSESTree.CallExpression) => {
-  if (
-    !isMemberExpression(node.callee) ||
-    !isIdentifier(node.callee.property) ||
-    "slice" !== node.callee.property.name ||
-    !isIdentifier(node.callee.object)
-  ) {
-    return false;
-  }
-  if (2 !== node.arguments.length) {
+  if (!isSliceMemberCall(node) || 2 !== node.arguments.length) {
     return false;
   }
   const first = node.arguments.at(0);
@@ -749,10 +725,12 @@ export const isChunkBlockBody = (block: TSESTree.BlockStatement) => {
   const first = block.body.at(0);
   const second = block.body.at(1);
 
-  if (isNil(first) || isNil(second)) {
-    return false;
-  }
-  return isChunkPushStatement(first) && isChunkIncrementStatement(second);
+  return (
+    !isNil(first) &&
+    !isNil(second) &&
+    isChunkPushStatement(first) &&
+    isChunkIncrementStatement(second)
+  );
 };
 
 export const shouldPreferChunk = (node: TSESTree.CallExpression) => {
@@ -770,10 +748,7 @@ export const shouldPreferChunk = (node: TSESTree.CallExpression) => {
     return false;
   }
   const block = pushStatement.parent;
-  if (!isBlockStatement(block)) {
-    return false;
-  }
-  if (!isChunkBlockBody(block)) {
+  if (!isBlockStatement(block) || !isChunkBlockBody(block)) {
     return false;
   }
   const loop = block.parent;
@@ -786,35 +761,41 @@ export const shouldPreferChunk = (node: TSESTree.CallExpression) => {
 // --- prefer-is-empty (BinaryExpression) ---
 
 export const shouldPreferIsEmpty = (node: TSESTree.BinaryExpression) => {
-  if ("===" !== node.operator && "!==" !== node.operator) {
-    return false;
-  }
-  return isLengthEqualsZero(node) || isObjectKeysLengthEqualsZero(node);
+  return (
+    ("===" === node.operator || "!==" === node.operator) &&
+    (isLengthEqualsZero(node) || isObjectKeysLengthEqualsZero(node))
+  );
+};
+
+// Check the mirrored `0 === xs.length` form of an isEmpty comparison
+const isZeroLengthOnRight = (node: TSESTree.BinaryExpression) => {
+  const { left, right } = node;
+  return (
+    isLengthMemberAccess(right) &&
+    isZeroLiteral(left) &&
+    isValidIsEmptyReceiver(right.object)
+  );
 };
 
 export const isLengthEqualsZero = (node: TSESTree.BinaryExpression) => {
   const { left, right } = node;
-  if (isLengthMemberAccess(left) && isZeroLiteral(right)) {
-    return isValidIsEmptyReceiver(left.object);
-  }
-  if (isLengthMemberAccess(right) && isZeroLiteral(left)) {
-    return isValidIsEmptyReceiver(right.object);
-  }
-  return false;
+  return isLengthMemberAccess(left) && isZeroLiteral(right)
+    ? isValidIsEmptyReceiver(left.object)
+    : isZeroLengthOnRight(node);
 };
 
 export const getObjectKeysArgument = (innerCall: TSESTree.CallExpression) => {
   const { callee } = innerCall;
-  if (!isMemberExpression(callee) || !isIdentifier(callee.property)) {
+  if (
+    !isMemberExpression(callee) ||
+    !isIdentifier(callee.property) ||
+    "keys" !== callee.property.name
+  ) {
     return null;
   }
-  if ("keys" !== callee.property.name) {
-    return null;
-  }
-  if (!isIdentifier(callee.object) || "Object" !== callee.object.name) {
-    return null;
-  }
-  return innerCall.arguments.at(0);
+  return !isIdentifier(callee.object) || "Object" !== callee.object.name
+    ? null
+    : innerCall.arguments.at(0);
 };
 
 export const isObjectKeysLengthEqualsZero = (
@@ -839,11 +820,9 @@ export const getIsEmptyReceiver = (node: TSESTree.BinaryExpression) => {
       return left.object;
     }
 
-    if (isLengthMemberAccess(right) && isZeroLiteral(left)) {
-      return right.object;
-    }
-
-    return null;
+    return isLengthMemberAccess(right) && isZeroLiteral(left)
+      ? right.object
+      : null;
   }
   if (isObjectKeysLengthEqualsZero(node) && isLengthMemberAccess(node.left)) {
     const innerCall = node.left.object;

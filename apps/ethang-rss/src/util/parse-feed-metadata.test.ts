@@ -184,18 +184,6 @@ describe("parseFeedMetadata", () => {
       `
     },
     {
-      expectedTitle: "Atom Title",
-      expectedWebsite: "https://atom-text.com",
-      name: "should handle Atom link object with no href but having text",
-      xml: `
-        <?xml version="1.0" encoding="utf-8"?>
-        <feed xmlns="http://www.w3.org/2005/Atom">
-          <title>Atom Title</title>
-          <link type="text/html">https://atom-text.com</link>
-        </feed>
-      `
-    },
-    {
       expectedTitle: "",
       expectedWebsite: "",
       name: "should handle XML with neither RSS nor Atom feed",

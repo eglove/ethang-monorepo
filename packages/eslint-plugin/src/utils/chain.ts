@@ -40,10 +40,7 @@ export const isMemberCallOn = (
 export const getMemberObject = (node: TSESTree.CallExpression) => {
   const { callee } = node;
 
-  if (!isMemberExpression(callee)) {
-    return null;
-  }
-  return callee.object;
+  return isMemberExpression(callee) ? callee.object : null;
 };
 
 // Trace back through a chain of method calls to see if the root is a chain
@@ -75,17 +72,21 @@ export const isLodashChain = (node: TSESTree.CallExpression) => {
   return isChainStarterCall(node) || isTraceableToChainStarter(node);
 };
 
+// Check if the callee is a member access on a chain starter (e.g. `_.map`)
+const isChainStarterMemberCallee = (callee: TSESTree.Expression) => {
+  return (
+    isMemberExpression(callee) &&
+    isIdentifier(callee.object) &&
+    isChainStarter(callee.object.name)
+  );
+};
+
 // Check if a callee is a chain starter or traces to one at the top level.
 const isCalleeChainStarter = (callee: TSESTree.Expression) => {
-  if (isIdentifier(callee) && isChainStarter(callee.name)) {
-    return true;
-  }
-
-  if (isMemberExpression(callee) && isIdentifier(callee.object)) {
-    return isChainStarter(callee.object.name);
-  }
-
-  return false;
+  return (
+    (isIdentifier(callee) && isChainStarter(callee.name)) ||
+    isChainStarterMemberCallee(callee)
+  );
 };
 
 // Count chain methods (e.g. .map(fn).filter(fn) = 2 chain methods).
@@ -156,20 +157,12 @@ export const getMethodName = (node: TSESTree.CallExpression) => {
     }
   }
 
-  if (isIdentifier(node.callee)) {
-    return node.callee.name;
-  }
-
-  return null;
+  return isIdentifier(node.callee) ? node.callee.name : null;
 };
 
 // Gets the callee object of a member-expression call.
 export const getCaller = (node: TSESTree.CallExpression) => {
-  if (isMemberExpression(node.callee)) {
-    return node.callee.object;
-  }
-
-  return null;
+  return isMemberExpression(node.callee) ? node.callee.object : null;
 };
 
 // Returns true if the node is a method call (member expression callee).
@@ -202,11 +195,7 @@ export const isChainBreaker = (node: TSESTree.CallExpression) => {
 
   const name = getMethodName(node);
 
-  if (isNil(name)) {
-    return false;
-  }
-
-  return isChainBreakerMethod(name);
+  return !isNil(name) && isChainBreakerMethod(name);
 };
 
 // Returns true if the method call is chainable.
@@ -217,11 +206,7 @@ export const isChainable = (node: TSESTree.CallExpression) => {
 
   const name = getMethodName(node);
 
-  if (isNil(name)) {
-    return false;
-  }
-
-  return isChainableMethod(name);
+  return !isNil(name) && isChainableMethod(name);
 };
 
 // Walks up the chain from a chain start and returns the end node.
@@ -240,10 +225,7 @@ const getNextInChain = (
     return null;
   }
   const next = currentParent.parent;
-  if (getCaller(next) !== current || !isStillInChain(current)) {
-    return null;
-  }
-  return next;
+  return getCaller(next) !== current || !isStillInChain(current) ? null : next;
 };
 
 export const getEndOfChain = (
@@ -288,10 +270,6 @@ export const isCallToMethod = (
 ) => {
   const name = getMethodName(node);
 
-  if (isNil(name)) {
-    return false;
-  }
-
-  return method === name;
+  return !isNil(name) && method === name;
 };
 import flatMap from "lodash/flatMap.js";

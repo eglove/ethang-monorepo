@@ -1,6 +1,6 @@
 import noop from "lodash/noop.js";
 import repeat from "lodash/repeat.js";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { MockWorkflowEntrypoint } from "../test-utilities/mock-workflow-entrypoint.ts";
 import {
@@ -42,6 +42,10 @@ const mockSelect = vi.fn();
 const mockInsert = vi.fn();
 const mockUpdate = vi.fn();
 const mockDelete = vi.fn();
+
+// Fixture pubDates are absolute; pin "now" so the 90-day retention window
+// keeps them inserted regardless of when the suite runs.
+const FIXED_TEST_NOW = Date.parse("2026-06-20T00:00:00Z");
 
 vi.mock("drizzle-orm/d1", () => {
   return {
@@ -223,11 +227,16 @@ describe("normalizeTitle", () => {
 // eslint-disable-next-line sonar/max-lines-per-function
 describe("FetchFeedsWorkflow", () => {
   beforeEach(() => {
+    vi.useFakeTimers({ now: FIXED_TEST_NOW, toFake: ["Date"] });
     vi.restoreAllMocks();
     mockSelect.mockReset();
     mockInsert.mockReset();
     mockUpdate.mockReset();
     mockDelete.mockReset();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("runs the workflow successfully, fetches feed and inserts into DB", async () => {
@@ -493,11 +502,16 @@ describe("FetchFeedsWorkflow", () => {
 // eslint-disable-next-line sonar/max-lines-per-function
 describe("FetchFeedsWorkflow - error and normalization", () => {
   beforeEach(() => {
+    vi.useFakeTimers({ now: FIXED_TEST_NOW, toFake: ["Date"] });
     vi.restoreAllMocks();
     mockSelect.mockReset();
     mockInsert.mockReset();
     mockUpdate.mockReset();
     mockDelete.mockReset();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("handles fetch error and throws inside step.do", async () => {

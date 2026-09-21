@@ -1621,10 +1621,7 @@ flag on chained calls. Methods like `groupBy`, `keyBy` have no native alias
 and should NOT be flagged on chained (CallExpression) receivers.
 */
 export const hasNativeArrayAlias = (name: string) => {
-  if (!isLodashFunction(name)) {
-    return false;
-  }
-  return 0 < lodashApi[name].nativeAliases.length;
+  return isLodashFunction(name) && 0 < lodashApi[name].nativeAliases.length;
 };
 
 // Lodash functions that are NOT Array.prototype methods and therefore should only be flagged when called on an identifier receiver if the receiver's type does not actually have a method with that name.

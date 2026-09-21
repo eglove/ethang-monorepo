@@ -9,9 +9,5 @@ export const combineFilters = (
     return second;
   }
 
-  if (isNil(second)) {
-    return first;
-  }
-
-  return and(first, second);
+  return isNil(second) ? first : and(first, second);
 };

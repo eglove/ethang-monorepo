@@ -17,6 +17,3 @@ allowBuilds:
   sharp: true
   workerd: true
 minimumReleaseAge: 0
-overrides:
-  "@sanity/orderable-document-list": 2.0.20
-  "sharp-ico>sharp": 0.33.5

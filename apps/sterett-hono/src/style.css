@@ -1,3 +1,4 @@
+/* eslint-disable-next-line unicorn/no-missing-local-resource -- package import resolved by the tailwind vite plugin */
 @import "tailwindcss";
 
 @plugin "@tailwindcss/typography";

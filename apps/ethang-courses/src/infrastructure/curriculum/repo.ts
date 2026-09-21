@@ -66,12 +66,9 @@ export const createCurriculumRepo = (database: Database) => {
               return insertCurriculumStatement;
             }
           });
-          if (!result) {
-            return yield* Effect.fail(
-              new SaveError("Failed to create curriculum")
-            );
-          }
-          return toCurriculum(result);
+          return result
+            ? toCurriculum(result)
+            : yield* Effect.fail(new SaveError("Failed to create curriculum"));
         }
 
         const relationshipInserts = map(

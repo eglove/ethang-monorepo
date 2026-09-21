@@ -20,9 +20,5 @@ export const getLatestReact = async () => {
     )
   );
 
-  if (Exit.isFailure(result)) {
-    return null;
-  }
-
-  return result.value;
+  return Exit.isFailure(result) ? null : result.value;
 };

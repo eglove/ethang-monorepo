@@ -12,13 +12,17 @@ describe("authenticate", () => {
     const request = new Request(EXAMPLE_URL);
     const exit = await Effect.runPromiseExit(authenticate(request));
     expect(exit._tag).toBe("Failure");
-    if ("Failure" === exit._tag) {
-      expect(exit.cause._tag).toBe("Fail");
-      if ("Fail" === exit.cause._tag) {
-        expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
-        expect(exit.cause.error.message).toBe(UNAUTHORIZED);
-      }
+    if ("Failure" !== exit._tag) {
+      return;
     }
+
+    expect(exit.cause._tag).toBe("Fail");
+    if ("Fail" !== exit.cause._tag) {
+      return;
+    }
+
+    expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
+    expect(exit.cause.error.message).toBe(UNAUTHORIZED);
   });
 
   it("should fail if auth response is not ok", async () => {
@@ -30,13 +34,17 @@ describe("authenticate", () => {
 
     const exit = await Effect.runPromiseExit(authenticate(request));
     expect(exit._tag).toBe("Failure");
-    if ("Failure" === exit._tag) {
-      expect(exit.cause._tag).toBe("Fail");
-      if ("Fail" === exit.cause._tag) {
-        expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
-        expect(exit.cause.error.message).toBe(UNAUTHORIZED);
-      }
+    if ("Failure" !== exit._tag) {
+      return;
     }
+
+    expect(exit.cause._tag).toBe("Fail");
+    if ("Fail" !== exit.cause._tag) {
+      return;
+    }
+
+    expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
+    expect(exit.cause.error.message).toBe(UNAUTHORIZED);
   });
 
   it("should fail if token is expired", async () => {
@@ -64,13 +72,17 @@ describe("authenticate", () => {
 
     const exit = await Effect.runPromiseExit(authenticate(request));
     expect(exit._tag).toBe("Failure");
-    if ("Failure" === exit._tag) {
-      expect(exit.cause._tag).toBe("Fail");
-      if ("Fail" === exit.cause._tag) {
-        expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
-        expect(exit.cause.error.message).toBe(UNAUTHORIZED);
-      }
+    if ("Failure" !== exit._tag) {
+      return;
     }
+
+    expect(exit.cause._tag).toBe("Fail");
+    if ("Fail" !== exit.cause._tag) {
+      return;
+    }
+
+    expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
+    expect(exit.cause.error.message).toBe(UNAUTHORIZED);
   });
 
   it("should fail if fetch throws", async () => {
@@ -82,13 +94,17 @@ describe("authenticate", () => {
 
     const exit = await Effect.runPromiseExit(authenticate(request));
     expect(exit._tag).toBe("Failure");
-    if ("Failure" === exit._tag) {
-      expect(exit.cause._tag).toBe("Fail");
-      if ("Fail" === exit.cause._tag) {
-        expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
-        expect(exit.cause.error.message).toBe(UNAUTHORIZED);
-      }
+    if ("Failure" !== exit._tag) {
+      return;
     }
+
+    expect(exit.cause._tag).toBe("Fail");
+    if ("Fail" !== exit.cause._tag) {
+      return;
+    }
+
+    expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
+    expect(exit.cause.error.message).toBe(UNAUTHORIZED);
   });
 
   it("should fail if response.json throws", async () => {
@@ -107,13 +123,17 @@ describe("authenticate", () => {
 
     const exit = await Effect.runPromiseExit(authenticate(request));
     expect(exit._tag).toBe("Failure");
-    if ("Failure" === exit._tag) {
-      expect(exit.cause._tag).toBe("Fail");
-      if ("Fail" === exit.cause._tag) {
-        expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
-        expect(exit.cause.error.message).toBe(UNAUTHORIZED);
-      }
+    if ("Failure" !== exit._tag) {
+      return;
     }
+
+    expect(exit.cause._tag).toBe("Fail");
+    if ("Fail" !== exit.cause._tag) {
+      return;
+    }
+
+    expect(exit.cause.error).toBeInstanceOf(UnauthorizedError);
+    expect(exit.cause.error.message).toBe(UNAUTHORIZED);
   });
 
   it("should return user if token is valid", async () => {

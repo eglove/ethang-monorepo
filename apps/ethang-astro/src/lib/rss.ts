@@ -52,10 +52,9 @@ export const getPageNumber = (
     return 1;
   }
   const parsed = EffectNumber.parse(raw);
-  if (Option.isNone(parsed) || !Number.isSafeInteger(parsed.value)) {
-    return 1;
-  }
-  return EffectNumber.clamp({ maximum: MAX_PAGE, minimum: 1 })(parsed.value);
+  return Option.isNone(parsed) || !Number.isSafeInteger(parsed.value)
+    ? 1
+    : EffectNumber.clamp({ maximum: MAX_PAGE, minimum: 1 })(parsed.value);
 };
 
 export const getFirst = (page: number) => {

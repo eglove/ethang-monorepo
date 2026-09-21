@@ -49,15 +49,12 @@ const isEffectQualifiedName: (node: TSESTree.TSQualifiedName) => boolean = (
   node
 ) => {
   const { left, right } = node;
-  if (left.type === AST_NODE_TYPES.Identifier) {
-    return isRootEffectName(left, right);
-  }
-
-  if (left.type === AST_NODE_TYPES.TSQualifiedName) {
-    return isNamespaceEffectName(left, right);
-  }
-
-  return false;
+  return (
+    (left.type === AST_NODE_TYPES.Identifier &&
+      isRootEffectName(left, right)) ||
+    (left.type === AST_NODE_TYPES.TSQualifiedName &&
+      isNamespaceEffectName(left, right))
+  );
 };
 
 const isEffectReturnType: (typeNode: TSESTree.TypeNode) => boolean = (

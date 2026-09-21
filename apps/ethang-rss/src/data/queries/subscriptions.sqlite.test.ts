@@ -45,11 +45,7 @@ const createDatabase = () => {
         return Object.values(row);
       });
 
-    if ("get" === method) {
-      return { rows: slice(rows, 0, 1) };
-    }
-
-    return { rows };
+    return { rows: "get" === method ? slice(rows, 0, 1) : rows };
   };
 
   const orm = drizzle(query as never, {

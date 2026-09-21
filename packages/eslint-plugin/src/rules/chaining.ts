@@ -39,11 +39,9 @@ const isLodashIdentifierCall = (
 const getFirstArgumentCall = (node: TSESTree.CallExpression) => {
   const [firstArgument] = node.arguments;
 
-  if (!isNil(firstArgument) && isCallExpression(firstArgument)) {
-    return firstArgument;
-  }
-
-  return null;
+  return !isNil(firstArgument) && isCallExpression(firstArgument)
+    ? firstArgument
+    : null;
 };
 
 export const isNestedNLevels = (

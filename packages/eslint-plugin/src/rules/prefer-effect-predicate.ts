@@ -54,13 +54,10 @@ export const isTypeofExpression = (expression: TSESTree.Node) => {
 };
 
 export const getStringLiteral = (expression: TSESTree.Node) => {
-  if (AST_NODE_TYPES.Literal !== expression.type) {
-    return null;
-  }
-  if (!isString(expression.value)) {
-    return null;
-  }
-  return expression.value;
+  return AST_NODE_TYPES.Literal !== expression.type ||
+    !isString(expression.value)
+    ? null
+    : expression.value;
 };
 
 export const getTypeofLiteral = (node: TSESTree.BinaryExpression) => {
@@ -72,29 +69,21 @@ export const getTypeofLiteral = (node: TSESTree.BinaryExpression) => {
     return getStringLiteral(node.right);
   }
 
-  if (isTypeofExpression(node.right)) {
-    return getStringLiteral(node.left);
-  }
-
-  return null;
+  return isTypeofExpression(node.right) ? getStringLiteral(node.left) : null;
 };
 
 export const resolveTypeofPredicate = (node: TSESTree.BinaryExpression) => {
   const literal = getTypeofLiteral(node);
-  if (!isString(literal) || !isTypeofPredicateLiteral(literal)) {
-    return null;
-  }
-  return { messageId: TYPEOF_MESSAGE_IDS[literal], node };
+  return !isString(literal) || !isTypeofPredicateLiteral(literal)
+    ? null
+    : { messageId: TYPEOF_MESSAGE_IDS[literal], node };
 };
 
 export const detectPredicateRecommendation = (
   node: TSESTree.BinaryExpression
 ) => {
   const typeofResult = resolveTypeofPredicate(node);
-  if (typeofResult) {
-    return typeofResult;
-  }
-  return detectInstanceofPredicate(node);
+  return typeofResult ?? detectInstanceofPredicate(node);
 };
 
 // `x instanceof <Name>` → `Predicate.is<Name>(x)` for the set of
@@ -129,10 +118,9 @@ export const detectInstanceofPredicate = (node: TSESTree.Node) => {
     return null;
   }
   const { name } = right;
-  if (!isInstanceofPredicateLiteral(name)) {
-    return null;
-  }
-  return { messageId: INSTANCEOF_MESSAGE_IDS[name], node: binary };
+  return isInstanceofPredicateLiteral(name)
+    ? { messageId: INSTANCEOF_MESSAGE_IDS[name], node: binary }
+    : null;
 };
 
 export const preferEffectPredicateRule = createRule<Options, MessageIds>({

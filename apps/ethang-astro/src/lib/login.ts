@@ -23,12 +23,11 @@ const hasNoBackslash = (value: string) => {
 };
 
 const isSafeLoginRedirect = (value: null | string | undefined) => {
-  if (!isString(value)) {
-    return false;
-  }
-
   return (
-    isLocalPath(value) && isNotProtocolRelative(value) && hasNoBackslash(value)
+    isString(value) &&
+    isLocalPath(value) &&
+    isNotProtocolRelative(value) &&
+    hasNoBackslash(value)
   );
 };
 

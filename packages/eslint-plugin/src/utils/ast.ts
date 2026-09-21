@@ -113,11 +113,7 @@ const classifyImport = (node: TSESTree.Node) => {
     return "effect";
   }
 
-  if (isLodashDefaultImport(source)) {
-    return "lodash";
-  }
-
-  return "none";
+  return isLodashDefaultImport(source) ? "lodash" : "none";
 };
 
 const detectImportKind = (program: TSESTree.Program) => {
@@ -127,11 +123,7 @@ const detectImportKind = (program: TSESTree.Program) => {
     return "effect";
   }
 
-  if (includes(kinds, "lodash")) {
-    return "lodash";
-  }
-
-  return "none";
+  return includes(kinds, "lodash") ? "lodash" : "none";
 };
 
 export const getImportedKind = (context: {
@@ -141,10 +133,10 @@ export const getImportedKind = (context: {
 };
 
 const isLodashDeepImportNode = (node: TSESTree.Node, importName: string) => {
-  if (AST_NODE_TYPES.ImportDeclaration !== node.type) {
-    return false;
-  }
-  return node.source.value === `lodash/${importName}.js`;
+  return (
+    AST_NODE_TYPES.ImportDeclaration === node.type &&
+    node.source.value === `lodash/${importName}.js`
+  );
 };
 
 const hasLodashDeepImport = (program: TSESTree.Program, importName: string) => {
@@ -170,19 +162,17 @@ const insertImportAfterLastImport = (
   }
 
   const [firstNode] = program.body;
-  if (firstNode) {
-    return fixer.insertTextBefore(firstNode, text);
-  }
-
-  return fixer.insertTextBeforeRange(program.range, text);
+  return firstNode
+    ? fixer.insertTextBefore(firstNode, text)
+    : fixer.insertTextBeforeRange(program.range, text);
 };
 
 const hasArraySpecifier = (importDeclaration: TSESTree.ImportDeclaration) => {
   return importDeclaration.specifiers.some((spec) => {
-    if (AST_NODE_TYPES.ImportSpecifier === spec.type) {
-      return "Array" === spec.local.name;
-    }
-    return false;
+    return (
+      AST_NODE_TYPES.ImportSpecifier === spec.type &&
+      "Array" === spec.local.name
+    );
   });
 };
 
@@ -190,17 +180,16 @@ const ensureEffectImportForDeclaration = (
   importDeclaration: TSESTree.ImportDeclaration,
   fixer: RuleFixer
 ) => {
-  if ("effect" !== importDeclaration.source.value) {
-    return null;
-  }
-  if (hasArraySpecifier(importDeclaration)) {
+  if (
+    "effect" !== importDeclaration.source.value ||
+    hasArraySpecifier(importDeclaration)
+  ) {
     return null;
   }
   const lastSpecifier = importDeclaration.specifiers.at(-1);
-  if (!lastSpecifier) {
-    return fixer.insertTextAfter(importDeclaration.source, " { Array }");
-  }
-  return fixer.insertTextAfter(lastSpecifier, ", Array");
+  return lastSpecifier
+    ? fixer.insertTextAfter(lastSpecifier, ", Array")
+    : fixer.insertTextAfter(importDeclaration.source, " { Array }");
 };
 
 export const ensureEffectImport = (
@@ -229,15 +218,13 @@ export const ensureLodashImport = (
   importName: string,
   fixer: RuleFixer
 ) => {
-  if (hasLodashDeepImport(program, importName)) {
-    return null;
-  }
-
-  return insertImportAfterLastImport(
-    program,
-    fixer,
-    `import ${importName} from "lodash/${importName}.js";\n`
-  );
+  return hasLodashDeepImport(program, importName)
+    ? null
+    : insertImportAfterLastImport(
+        program,
+        fixer,
+        `import ${importName} from "lodash/${importName}.js";\n`
+      );
 };
 
 export type CallKind =
@@ -289,10 +276,10 @@ const resolveEffectArray = (
   callee: TSESTree.MemberExpression,
   methodName: string
 ) => {
-  if (AST_NODE_TYPES.Identifier !== callee.object.type) {
-    return null;
-  }
-  if (!isIdentifierNamed(callee.object, EFFECT_ARRAY_IDENTIFIERS)) {
+  if (
+    AST_NODE_TYPES.Identifier !== callee.object.type ||
+    !isIdentifierNamed(callee.object, EFFECT_ARRAY_IDENTIFIERS)
+  ) {
     return null;
   }
   const result: ResolvedCall = {
@@ -310,10 +297,10 @@ const resolveEffectCore = (
   callee: TSESTree.MemberExpression,
   methodName: string
 ) => {
-  if (AST_NODE_TYPES.Identifier !== callee.object.type) {
-    return null;
-  }
-  if (!isIdentifierNamed(callee.object, ["Effect", "Effect$"])) {
+  if (
+    AST_NODE_TYPES.Identifier !== callee.object.type ||
+    !isIdentifierNamed(callee.object, ["Effect", "Effect$"])
+  ) {
     return null;
   }
   const result: ResolvedCall = {
@@ -395,17 +382,17 @@ export const isEffectImportedIdentifier = (
   }
   const { name } = node;
   return some(program.body, (statement) => {
-    if (AST_NODE_TYPES.ImportDeclaration !== statement.type) {
-      return false;
-    }
-    if (!isEffectSource(statement.source.value)) {
+    if (
+      AST_NODE_TYPES.ImportDeclaration !== statement.type ||
+      !isEffectSource(statement.source.value)
+    ) {
       return false;
     }
     return some(statement.specifiers, (spec) => {
-      if (AST_NODE_TYPES.ImportSpecifier !== spec.type) {
-        return false;
-      }
-      return includes([name], spec.local.name);
+      return (
+        AST_NODE_TYPES.ImportSpecifier === spec.type &&
+        includes([name], spec.local.name)
+      );
     });
   });
 };
@@ -434,13 +421,11 @@ const isChainedArrayLike = (
   // legitimate chain like `xs.map(fn).filter(fn)`.
   const isUnknownReceiver = UNKNOWN_MEMBER_KIND === innerResolved.kind;
   const hasNativeAlias = hasNativeArrayAlias(methodName);
-  if (!hasNativeAlias) {
-    return false;
-  }
-  if (isUnknownReceiver && isPlaywrightLocatorMethod(methodName)) {
-    return false;
-  }
-  return isLodashOrEffectMethod;
+  return (
+    hasNativeAlias &&
+    !(isUnknownReceiver && isPlaywrightLocatorMethod(methodName)) &&
+    isLodashOrEffectMethod
+  );
 };
 
 const isReceiverArrayLike = (
@@ -480,14 +465,11 @@ const isReceiverArrayLike = (
   // name with a common user-defined method.
   // Methods in NON_ARRAY_NATIVE_METHOD_NAMES (like `orderBy`, `get`, `set`)
   // exist on non-array native objects and should not be classified as array.
-  if (isNonArrayNativeMethod) {
-    return false;
-  }
-  if (isLodashArrayFunction(methodName)) {
-    return true;
-  }
-
-  return isLodashOrEffectMethod && !isCommonUserMethodName(methodName);
+  return (
+    !isNonArrayNativeMethod &&
+    (isLodashArrayFunction(methodName) ||
+      (isLodashOrEffectMethod && !isCommonUserMethodName(methodName)))
+  );
 };
 
 const resolveArrayCall = (
@@ -631,10 +613,9 @@ export const resolveCall = (
   node: TSESTree.CallExpression,
   program: TSESTree.Program
 ) => {
-  if (AST_NODE_TYPES.MemberExpression === node.callee.type) {
-    return resolveMemberExpressionCall(node, program);
-  }
-  return resolveIdentifierCall(node);
+  return AST_NODE_TYPES.MemberExpression === node.callee.type
+    ? resolveMemberExpressionCall(node, program)
+    : resolveIdentifierCall(node);
 };
 
 export const isLodashCall = (
@@ -649,10 +630,7 @@ export const lodashDeepImport = (name: string) => {
 };
 
 export const lookupLodashEntry = (name: string) => {
-  if (isLodashFunction(name)) {
-    return lodashApi[name];
-  }
-  return null;
+  return isLodashFunction(name) ? lodashApi[name] : null;
 };
 
 export const markInnerCallExpressions = (

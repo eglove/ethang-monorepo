@@ -57,10 +57,10 @@ export const preferEffectLogRule = createRule<Options, MessageIds>({
     const listener: TSESLint.RuleListener = {
       CallExpression: (node) => {
         const { callee } = node;
-        if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-          return;
-        }
-        if (!isConsoleIdentifier(callee.object)) {
+        if (
+          AST_NODE_TYPES.MemberExpression !== callee.type ||
+          !isConsoleIdentifier(callee.object)
+        ) {
           return;
         }
         if (callee.computed || !isIdentifier(callee.property)) {

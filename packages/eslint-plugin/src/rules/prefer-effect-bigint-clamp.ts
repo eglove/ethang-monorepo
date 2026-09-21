@@ -30,10 +30,9 @@ const isComparison = (
   node: TSESTree.Node,
   operator: "<" | ">"
 ): node is TSESTree.BinaryExpression => {
-  if (AST_NODE_TYPES.BinaryExpression !== node.type) {
-    return false;
-  }
-  return operator === node.operator;
+  return (
+    AST_NODE_TYPES.BinaryExpression === node.type && operator === node.operator
+  );
 };
 
 type ClampMatch = {
@@ -165,11 +164,7 @@ export const detectBigIntClampPattern = (
   }
 
   const match2 = tryMatchPattern2(ternary, sourceText);
-  if (match2) {
-    return match2;
-  }
-
-  return null;
+  return match2 ?? null;
 };
 
 export const buildBigIntClampFix = (

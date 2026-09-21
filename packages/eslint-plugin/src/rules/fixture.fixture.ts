@@ -1,1 +1,1 @@
-const f = () => 5;
+function f(): unknown { return x; }

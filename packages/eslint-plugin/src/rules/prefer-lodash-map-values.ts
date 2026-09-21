@@ -38,21 +38,16 @@ export const validateReturnArray = (
     return null;
   }
   const [first, second] = arrayExpression.elements;
-  if (isNil(first) || AST_NODE_TYPES.Identifier !== first.type) {
-    return null;
-  }
-  if (first.name !== keyName) {
-    return null;
-  }
-
-  if (!second) {
+  if (
+    !second ||
+    isNil(first) ||
+    AST_NODE_TYPES.Identifier !== first.type ||
+    first.name !== keyName
+  ) {
     return null;
   }
   // Reject SpreadElement — mapValues callback returns a plain expression
-  if (AST_NODE_TYPES.SpreadElement === second.type) {
-    return null;
-  }
-  return second;
+  return AST_NODE_TYPES.SpreadElement === second.type ? null : second;
 };
 
 // Check if the callback returns [key, newValue] where key is the same identifier passed through

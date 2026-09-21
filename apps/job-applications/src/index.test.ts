@@ -67,10 +67,12 @@ describe("JobApplicationsService RPC", () => {
       token: await sign()
     });
     expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.value.status).toBe("applied");
-      expect(result.value.email).toBe(EMAIL);
+    if (!result.ok) {
+      return;
     }
+
+    expect(result.value.status).toBe("applied");
+    expect(result.value.email).toBe(EMAIL);
   });
 
   it("createApplication returns DUPLICATE for a repeat (email, url)", async () => {
@@ -241,14 +243,16 @@ describe("JobApplicationsService RPC (applications list)", () => {
       token
     });
     expect(list.ok).toBe(true);
-    if (list.ok) {
-      expect(list.value.items).toHaveLength(2);
-      expect(
-        Object.keys(list.value).toSorted((x, y) => {
-          return x.localeCompare(y);
-        })
-      ).toStrictEqual(["items"]);
+    if (!list.ok) {
+      return;
     }
+
+    expect(list.value.items).toHaveLength(2);
+    expect(
+      Object.keys(list.value).toSorted((x, y) => {
+        return x.localeCompare(y);
+      })
+    ).toStrictEqual(["items"]);
   });
 
   it("listAppliedDates returns the owner's distinct dates newest first", async () => {

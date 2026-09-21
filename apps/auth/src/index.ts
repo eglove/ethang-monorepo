@@ -189,10 +189,9 @@ app.post("/verify", async (context) => {
   );
   const result = await Effect.runPromise(effect);
 
-  if ("error" in result) {
-    return json({ error: result.error }, 401);
-  }
-  return json(result, 200);
+  return "error" in result
+    ? json({ error: result.error }, 401)
+    : json(result, 200);
 });
 
 export { app };

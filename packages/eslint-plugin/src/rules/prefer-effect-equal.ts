@@ -12,6 +12,17 @@ type MessageIds = "preferEffectEqual";
 
 type Options = [];
 
+// True when `callee` is a member access on the global `JSON` identifier.
+const isJsonMemberAccess = (
+  callee: TSESTree.Expression
+): callee is TSESTree.MemberExpression => {
+  return (
+    AST_NODE_TYPES.MemberExpression === callee.type &&
+    AST_NODE_TYPES.Identifier === callee.object.type &&
+    "JSON" === callee.object.name
+  );
+};
+
 // Check if a node is a CallExpression calling JSON.stringify
 export const isJsonStringifyCall = (
   node: TSESTree.Node
@@ -21,23 +32,11 @@ export const isJsonStringifyCall = (
   }
 
   const callee = node.callee;
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-
-  if (AST_NODE_TYPES.Identifier !== callee.object.type) {
-    return false;
-  }
-
-  if ("JSON" !== callee.object.name) {
-    return false;
-  }
-
-  if (AST_NODE_TYPES.Identifier !== callee.property.type) {
-    return false;
-  }
-
-  return "stringify" === callee.property.name;
+  return (
+    isJsonMemberAccess(callee) &&
+    AST_NODE_TYPES.Identifier === callee.property.type &&
+    "stringify" === callee.property.name
+  );
 };
 
 export const detectEqualPattern = (

@@ -35,10 +35,9 @@ export const createFakeRepository = (initial: readonly JobApp[] = []) => {
     findById: (id, email) => {
       const row = rows.get(id);
       // eslint-disable-next-line no-undefined, @typescript-eslint/prefer-optional-chain
-      if (row === undefined || row.email !== email) {
-        return Effect.succeed(null);
-      }
-      return Effect.succeed(row);
+      return row === undefined || row.email !== email
+        ? Effect.succeed(null)
+        : Effect.succeed(row);
     },
     insert: (app) => {
       for (const row of rows.values()) {

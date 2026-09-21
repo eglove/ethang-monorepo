@@ -15,6 +15,7 @@ vi.mock(import("./get-react-version.ts"), () => {
 
 const TEST_FILE_NAME = "config.test.js";
 const TEST_PLUGIN_IMPORT = 'import testPlugin from "test-plugin";';
+const TS_NOCHECK = "// @ts-nocheck";
 
 const makePlugin = (
   overrides: Partial<ConstructorParameters<typeof Plugin>[0]> = {}
@@ -69,13 +70,30 @@ describe(createConfigFile, () => {
 
       const content = getWrittenContent();
 
-      expect(content).toContain("// @ts-nocheck");
+      expect(content).toContain(TS_NOCHECK);
       expect(content).toContain(
         'import { defineConfig, globalIgnores } from "eslint/config";'
       );
       expect(content).toContain(TEST_PLUGIN_IMPORT);
       expect(content).toContain('files: ["**/*.ts"]');
       expect(content).toContain('"test": testPlugin');
+    });
+
+    it("prepends a generated-file banner warning against direct edits", async () => {
+      const output = new OutputConfig({
+        fileName: TEST_FILE_NAME,
+        plugins: [makePlugin()]
+      });
+
+      await createConfigFile(output);
+
+      const content = getWrittenContent();
+
+      expect(
+        content.startsWith("// GENERATED FILE — DO NOT EDIT DIRECTLY")
+      ).toBe(true);
+      expect(content).toContain("update-rules.ts");
+      expect(content).toContain(TS_NOCHECK);
     });
 
     it("generates file with plugin rules and defineConfig export", async () => {
@@ -360,7 +378,7 @@ describe(`${createConfigFile.name} — plugin-specific config block fields`, () 
 
     const content = getWrittenContent();
 
-    expect(content).toContain("// @ts-nocheck");
+    expect(content).toContain(TS_NOCHECK);
     expect(content).not.toContain(TEST_PLUGIN_IMPORT);
   });
 

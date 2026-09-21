@@ -1,3 +1,4 @@
+/* eslint-disable-next-line unicorn/no-missing-local-resource -- package import resolved by the tailwind vite plugin */
 @import "tailwindcss";
 
 @theme inline {
@@ -232,4 +233,10 @@ h6 {
 /* Astro fenced-code blocks (shiki night-owl) fill the palette too. */
 .blog-prose .astro-code {
   background-color: var(--color-night-owl-bg);
+}
+
+/* KaTeX display equations (rehype-katex ships the rest of the styles). */
+.blog-prose .katex-display {
+  margin: 1.5rem 0;
+  overflow-inline: auto;
 }

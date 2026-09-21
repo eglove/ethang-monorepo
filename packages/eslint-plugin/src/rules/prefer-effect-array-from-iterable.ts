@@ -34,10 +34,7 @@ export const detectSpreadPattern = (node: TSESTree.Node) => {
     return null;
   }
   const element = array.elements[0];
-  if (isNil(element) || !isSpreadElement(element)) {
-    return null;
-  }
-  return array;
+  return isNil(element) || !isSpreadElement(element) ? null : array;
 };
 
 // Check callee is Array.from method access
@@ -46,10 +43,12 @@ const isArrayFromCallee = (callee: TSESTree.Expression) => {
     return false;
   }
   const member = callee;
-  if (!isIdentifier(member.object) || "Array" !== member.object.name) {
-    return false;
-  }
-  return isIdentifier(member.property) && "from" === member.property.name;
+  return (
+    isIdentifier(member.object) &&
+    "Array" === member.object.name &&
+    isIdentifier(member.property) &&
+    "from" === member.property.name
+  );
 };
 
 // Check node is Array.from({ length: n }, callback) pattern
@@ -60,10 +59,7 @@ export const detectArrayFromWithLengthObject = (node: TSESTree.Node) => {
     return null;
   }
   const call = node;
-  if (!isArrayFromCallee(call.callee)) {
-    return null;
-  }
-  if (2 !== call.arguments.length) {
+  if (!isArrayFromCallee(call.callee) || 2 !== call.arguments.length) {
     return null;
   }
 
@@ -81,10 +77,11 @@ export const detectArrayFromWithLengthObject = (node: TSESTree.Node) => {
   }
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
   const theProperty = object.properties[0]!;
-  if (!("value" in theProperty) || !isIdentifier(theProperty.key)) {
-    return null;
-  }
-  if ("length" !== theProperty.key.name) {
+  if (
+    !("value" in theProperty) ||
+    !isIdentifier(theProperty.key) ||
+    "length" !== theProperty.key.name
+  ) {
     return null;
   }
   // Second arg must be callback with at least 2 params
@@ -176,10 +173,9 @@ export const detectAllocatePattern = (node: TSESTree.Node) => {
     return null;
   }
   const lengthArgument = newExpression.arguments[0];
-  if (isNil(lengthArgument)) {
-    return null;
-  }
-  return { arrayCall: newExpression, valueExpression };
+  return isNil(lengthArgument)
+    ? null
+    : { arrayCall: newExpression, valueExpression };
 };
 
 // Extract Array.make fix details from a [...Array(n)].map(fn) pattern match
@@ -246,39 +242,40 @@ export const preferEffectArrayFromIterableRule = createRule<
         }
         // Don't autofix if the spread argument could have side effects
         const element = spread.elements[0];
-        if (!isNil(element) && isSpreadElement(element)) {
-          const spreadElement = element;
-          if (AST_NODE_TYPES.CallExpression === spreadElement.argument.type) {
-            context.report({
-              messageId: "preferEffectArrayFromIterable",
-              node
-            });
-            return;
-          }
-          // Safe to autofix - simple identifier or member expression
-          const iterExpression = spreadElement.argument;
-          const isSafeIter =
-            isIdentifier(iterExpression) || isMemberExpression(iterExpression);
-          if (isSafeIter) {
-            const iterText = sourceCode.getText(iterExpression);
-            context.report({
-              fix: (fixer) => {
-                const replace = fixer.replaceText(
-                  node,
-                  `Array.fromIterable(${iterText})`
-                );
-                const importFix = ensureEffectImport(program, fixer);
-                return importFix ? [replace, importFix] : replace;
-              },
-              messageId: "preferEffectArrayFromIterable",
-              node
-            });
-          } else {
-            context.report({
-              messageId: "preferEffectArrayFromIterable",
-              node
-            });
-          }
+        if (isNil(element) || !isSpreadElement(element)) {
+          return;
+        }
+        const spreadElement = element;
+        if (AST_NODE_TYPES.CallExpression === spreadElement.argument.type) {
+          context.report({
+            messageId: "preferEffectArrayFromIterable",
+            node
+          });
+          return;
+        }
+        // Safe to autofix - simple identifier or member expression
+        const iterExpression = spreadElement.argument;
+        const isSafeIter =
+          isIdentifier(iterExpression) || isMemberExpression(iterExpression);
+        if (isSafeIter) {
+          const iterText = sourceCode.getText(iterExpression);
+          context.report({
+            fix: (fixer) => {
+              const replace = fixer.replaceText(
+                node,
+                `Array.fromIterable(${iterText})`
+              );
+              const importFix = ensureEffectImport(program, fixer);
+              return importFix ? [replace, importFix] : replace;
+            },
+            messageId: "preferEffectArrayFromIterable",
+            node
+          });
+        } else {
+          context.report({
+            messageId: "preferEffectArrayFromIterable",
+            node
+          });
         }
       },
       // eslint-disable-next-line sonar/cyclomatic-complexity -- complex AST traversal
@@ -367,25 +364,26 @@ export const preferEffectArrayFromIterableRule = createRule<
 
         // Check for new Array(n).fill(v) pattern
         const allocateMatch = detectAllocatePattern(node);
-        if (!isNil(allocateMatch)) {
-          const { arrayCall, valueExpression } = allocateMatch;
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
-          const lengthArgument = arrayCall.arguments[0]!;
-          const lengthText = sourceCode.getText(lengthArgument);
-          const valueText = sourceCode.getText(valueExpression);
-          context.report({
-            fix: (fixer) => {
-              const replace = fixer.replaceText(
-                node,
-                `Array.allocate(${lengthText})(${valueText})`
-              );
-              const importFix = ensureEffectImport(program, fixer);
-              return importFix ? [replace, importFix] : replace;
-            },
-            messageId: "preferEffectAllocate",
-            node
-          });
+        if (isNil(allocateMatch)) {
+          return;
         }
+        const { arrayCall, valueExpression } = allocateMatch;
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- checked above
+        const lengthArgument = arrayCall.arguments[0]!;
+        const lengthText = sourceCode.getText(lengthArgument);
+        const valueText = sourceCode.getText(valueExpression);
+        context.report({
+          fix: (fixer) => {
+            const replace = fixer.replaceText(
+              node,
+              `Array.allocate(${lengthText})(${valueText})`
+            );
+            const importFix = ensureEffectImport(program, fixer);
+            return importFix ? [replace, importFix] : replace;
+          },
+          messageId: "preferEffectAllocate",
+          node
+        });
       }
     };
   },
