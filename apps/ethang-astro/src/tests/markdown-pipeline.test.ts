@@ -44,6 +44,8 @@ const excludedLanguages = isObject(syntaxHighlight)
   ? (syntaxHighlight.excludeLangs ?? [])
   : [];
 
+const katexDisplayClass = "katex-display";
+
 /*
  * Mirrors the order the unified processor applies markdown config: GFM, user
  * remark plugins, remark-rehype, syntax highlighting, then user rehype
@@ -71,9 +73,15 @@ const renderMarkdown = async (markdown: string) => {
 describe("markdown math pipeline", () => {
   it.each([
     {
-      expected: "katex-display",
+      expected: katexDisplayClass,
       markdown: "$$\n\\int_0^1 x^2 \\,dx = \\frac{1}{3}\n$$\n",
       name: "display math"
+    },
+    {
+      expected: katexDisplayClass,
+      markdown:
+        "In a sentence $$\\int_0^1 x^2 \\,dx = \\frac{1}{3}$$ mid-paragraph.\n",
+      name: "$$-delimited math inside a paragraph"
     },
     {
       expected: "katex",
@@ -98,6 +106,13 @@ describe("markdown math pipeline", () => {
     const html = await renderMarkdown(markdown);
 
     expect(html).not.toContain("katex");
+  });
+
+  it("leaves single-dollar inline math inline", async () => {
+    const html = await renderMarkdown("A short $x^2$ span.");
+
+    expect(html).toContain("katex");
+    expect(html).not.toContain(katexDisplayClass);
   });
 
   /*
