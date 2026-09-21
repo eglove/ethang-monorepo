@@ -230,6 +230,26 @@ h6 {
   border-color: var(--color-primary);
 }
 
+/* Preflight strips list-style, margin, and padding; restore them for MDX lists.
+   list-style-type longhand on purpose: the minifier rewrites the `disc`
+   shorthand to `list-style: outside`, which preflight's `none` then beats. */
+.blog-prose ul {
+  list-style-type: disc;
+  margin: 0.75rem 0;
+  padding-inline-start: 1.5rem;
+}
+.blog-prose ol {
+  list-style-type: decimal;
+  margin: 0.75rem 0;
+  padding-inline-start: 1.5rem;
+}
+.blog-prose li {
+  margin: 0.375rem 0;
+}
+.blog-prose li::marker {
+  color: var(--color-night-owl-mint);
+}
+
 /* Astro fenced-code blocks (shiki night-owl) fill the palette too. */
 .blog-prose .astro-code {
   background-color: var(--color-night-owl-bg);
