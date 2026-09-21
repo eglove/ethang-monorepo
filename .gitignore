@@ -21,6 +21,8 @@ docs/.obsidian
 .pi
 .superpowers
 .playwright-cli
+.zcode
+.zcodeignore
 
 # Created by https://www.toptal.com/developers/gitignore/api/node,react,jetbrains+all,visualstudiocode,storybookjs
 # Edit at https://www.toptal.com/developers/gitignore?templates=node,react,jetbrains+all,visualstudiocode,storybookjs
