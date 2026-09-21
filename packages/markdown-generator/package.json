@@ -5,7 +5,7 @@
     "extends browserslist-config-baseline"
   ],
   "dependencies": {
-    "effect": "^3.22.1",
+    "effect": "^3.22.2",
     "lodash": "^4.18.1"
   },
   "description": "Markdown Generator following GitHub syntax.",
@@ -15,9 +15,9 @@
     "@types/lodash": "^4.17.25",
     "@vitest/coverage-v8": "^4.1.11",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.9.0",
+    "eslint": "^10.11.0",
     "typescript": "^6.0.3",
-    "vite": "^8.2.2",
+    "vite": "^8.3.0",
     "vitest": "^4.1.11"
   },
   "engines": {

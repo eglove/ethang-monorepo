@@ -5,15 +5,15 @@
   ],
   "dependencies": {
     "@portabletext/to-html": "^6.0.0",
-    "@sanity/client": "^8.2.0",
+    "@sanity/client": "^8.6.2",
     "@sanity/image-url": "^2.1.1",
     "@tailwindcss/cli": "^4.3.3",
-    "calendar-link": "^2.11.4",
-    "effect": "^3.22.1",
+    "calendar-link": "^2.11.5",
+    "effect": "^3.22.2",
     "esbuild": "^0.28.2",
-    "hono": "^4.13.3",
+    "hono": "^4.13.8",
     "lodash": "^4.18.1",
-    "tailwind-merge": "^3.6.0",
+    "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
@@ -23,14 +23,14 @@
     "@tailwindcss/typography": "^0.5.20",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/lodash": "^4.17.25",
-    "@types/node": "^26.1.2",
+    "@types/node": "^26.6.2",
     "@vitest/coverage-v8": "^4.1.11",
     "browserslist-config-baseline": "^0.5.0",
-    "eslint": "^10.9.0",
-    "tsx": "^4.23.12",
+    "eslint": "^10.11.0",
+    "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "vitest": "^4.1.11",
-    "wrangler": "^4.125.0"
+    "wrangler": "^4.136.0"
   },
   "engines": {
     "node": ">=24"
