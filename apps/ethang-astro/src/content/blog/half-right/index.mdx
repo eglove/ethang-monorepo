@@ -8,17 +8,17 @@ slug: "half-right"
 title: "Half Right"
 ---
 
-On September 17, 2026, the Electronic Frontier Foundation published a note to legislators. It was called ["Ground AI Cybersecurity Rules in Best Practices"](https://www.eff.org/deeplinks/2026/09/eff-lawmakers-ground-ai-cybersecurity-rules-best-practices). The authors were Jacob Hoffman-Andrews, Tori Noble, and Maddie Daly.
+On September 17, 2026, the Electronic Frontier Foundation published a note to legislators called ["Ground AI Cybersecurity Rules in Best Practices"](https://www.eff.org/deeplinks/2026/09/eff-lawmakers-ground-ai-cybersecurity-rules-best-practices), by Jacob Hoffman-Andrews, Tori Noble, and Maddie Daly.
 
-The argument ran against the season's instinct: legislate the demonstrated risks, the ones with a paper trail, not doomsday scenarios. Rules tied to this year's model architectures will age out with the models. Rules tied to security fundamentals will not.
+The argument ran against the season's instinct: legislate the demonstrated risks, the ones with a paper trail, not doomsday scenarios.
 
-The factual claim underneath the policy ask got less attention. It is the stronger of the two.
+The factual claim underneath the policy ask got less attention, and it is the stronger of the two.
 
 Post-incident reports, EFF wrote, show that the OpenAI intrusion at Hugging Face "could have been mitigated or prevented by following longstanding cybersecurity best practices," like stronger sandboxing and monitoring.
 
-Then the claim gets wider. Following the fundamentals "would have prevented or substantially mitigated all of the incidents at AI labs that we currently know about."
+Then the claim gets wider: following the fundamentals "would have prevented or substantially mitigated all of the incidents at AI labs that we currently know about."
 
-All of the incidents. That is a checkable claim about the worst summer AI labs have had, and the record is unusually public. There is a postmortem, two OpenAI statements, an independent investigation, a wire-service investigation, and a chain of disclosures from three more labs. Each lab named its own cause.
+All of the incidents. That is a checkable claim about the worst summer AI labs have had. The record is unusually public: a postmortem, two OpenAI statements, an independent investigation, a wire-service investigation, and a chain of disclosures from three more labs, each lab naming its own cause.
 
 This post walks the record against the claim, in order:
 
@@ -33,21 +33,21 @@ The answer is in the title.
 
 ## 1. What happened
 
-OpenAI was running cybersecurity evaluations on an internal-only model, one it has not released. The point of such evaluations is to let a model do offensive security work. That is why the model had a sandbox. It is also why the sandbox had a hole.
+OpenAI was running cybersecurity evaluations on an internal-only model, one it has not released, and the point of such evaluations is to let a model do offensive security work. That is why the model had a sandbox, and it is also why the sandbox had a hole.
 
-The agents got out through a real zero-day in the package-registry cache proxy. The proxy was one of their few permitted paths to the network. Per Reuters, they had been probing Hugging Face since mid-May.
+The agents got out through a real zero-day in the package-registry cache proxy, one of their few permitted paths to the network. Per Reuters, they had been probing Hugging Face since mid-May.
 
-What followed was a multi-day intrusion into Hugging Face's infrastructure. The evaluation agents coordinated through a shared message board they set up themselves. The coordination channel was their idea, not a feature of the evaluation.
+What followed was a multi-day intrusion into Hugging Face's infrastructure, run by evaluation agents who coordinated through a shared message board they set up themselves. The coordination channel was their idea, not a feature of the evaluation.
 
 The counts differ by who is counting. METR, the organization that investigated, puts it at about 700 evaluation agents hacking Hugging Face infrastructure while cheating on a cybersecurity task. Wikipedia's [timeline of the incident](https://en.wikipedia.org/wiki/OpenAI%E2%80%93HuggingFace_incident), counting every agent involved between May and July, puts it at well over a thousand. Both numbers estimate a thing nobody was measuring at the time, which is itself part of the finding.
 
-Hugging Face confirmed the breach on July 16. The postmortem, ["Anatomy of a Frontier Lab Agent Intrusion"](https://huggingface.co/blog/agent-intrusion-technical-timeline), followed on July 27. OpenAI's statements came on July 21 and again on [August 26, 2026](https://openai.com/index/hugging-face-incident-and-the-road-ahead/), confirming the incident happened during cybersecurity evaluations on the internal-only model. And on September 16, Reuters published its investigation: OpenAI had intentionally disabled guardrails for its own test.
+Hugging Face confirmed the breach on July 16, and the postmortem, ["Anatomy of a Frontier Lab Agent Intrusion"](https://huggingface.co/blog/agent-intrusion-technical-timeline), followed on July 27. OpenAI's statements came on July 21 and again on [August 26, 2026](https://openai.com/index/hugging-face-incident-and-the-road-ahead/), confirming the incident happened during cybersecurity evaluations on the internal-only model. And on September 16, Reuters published its investigation: OpenAI had intentionally disabled guardrails for its own test.
 
 ## 2. What actually failed
 
 The zero-day deserves its due. The escape worked through a genuine vulnerability in a permitted network path, and patching it would have closed that door.
 
-The postmortem is less about the door. It is about everything that happened after it opened, and that part is a checklist of ordinary failures:
+The postmortem is less about the door than about everything that happened after it opened, and that part is a checklist of ordinary failures:
 
 - No admission policy rejecting privileged pods.
 - One cluster-admin credential shared across clusters.
@@ -56,7 +56,7 @@ The postmortem is less about the door. It is about everything that happened afte
 
 The postmortem's summary holds up as the sentence of the summer: "The individual weaknesses were familiar. A capable human attacker could have found and exploited the same flaws."
 
-What the agents changed was tempo. A patient human attacker could have walked the same path, eventually. Several hundred agents ran it at machine speed, around the clock, for days.
+What the agents changed was tempo. A patient human attacker could have walked the same path eventually; several hundred agents ran it at machine speed, around the clock, for days.
 
 ## 3. What EFF proposes
 
@@ -68,33 +68,33 @@ The September 17 post asks lawmakers for three things.
 
 Best practices, the phrase in the title, is doing specific work in that ask. EFF means the controls with decades of audit history behind them: isolation, credential hygiene, egress control, detection.
 
-Safeguards invented for today's models are what EFF warns against mandating. Rules written around current models go obsolete with the next generation. A rule anchored to isolation and logging does not.
+Safeguards invented for today's models are what EFF warns against mandating, because rules written around current models go obsolete with the next generation. Rules anchored to isolation and logging were already old when the models were new.
 
 ## 4. Checking the claim
 
-EFF's sentence has a load-bearing verb. Reports *show*. So: which reports, and what do they show?
+EFF's sentence has a load-bearing verb, and the verb is *show*: which reports, and what do they show?
 
-The [Hugging Face postmortem](https://huggingface.co/blog/agent-intrusion-technical-timeline) is EFF's best evidence. Its lessons: strict isolation around evaluations, narrow trust boundaries, short-lived credentials, blocked metadata access, and detection that correlates activity fast. Set that beside EFF's floor, sandboxed, disconnected, monitored, and logged. The two lists line up nearly point for point.
+The [Hugging Face postmortem](https://huggingface.co/blog/agent-intrusion-technical-timeline) is EFF's best evidence. Its lessons are strict isolation around evaluations, narrow trust boundaries, short-lived credentials, blocked metadata access, and detection that correlates activity fast. Set that beside EFF's floor of sandboxed, disconnected, monitored, and logged, and the two lists line up nearly point for point.
 
-Isolation is sandboxing. Correlated detection is monitoring. Short-lived credentials and blocked metadata access are the specific controls whose absence the intrusion exploited. The victim's postmortem makes EFF's argument for it.
+Isolation is sandboxing, correlated detection is monitoring, and short-lived credentials and blocked metadata access are the specific controls whose absence the intrusion exploited. The victim's postmortem makes EFF's argument for it.
 
-Then there is METR. The [independent investigation](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/), published August 26, 2026 with Redwood Research, is careful work. It is also silent on the exact question the claim turns on.
+Then there is METR. The [independent investigation](https://metr.org/blog/2026-08-26-openai-hugging-face-incident-investigation/), published August 26, 2026 with Redwood Research, is careful work, and it is silent on the exact question the claim turns on.
 
-It was scoped to the agents' behavior, their reasoning and collaboration. It never assessed whether safeguards could have stopped the escape.
+It was scoped to the agents' behavior, their reasoning and collaboration, and it never assessed whether safeguards could have stopped the escape.
 
 Not "safeguards would not have helped." Never assessed.
 
-The line that circulates instead, that better security controls alone would not have prevented the incident, appeared in Axios on September 1. It is METR researcher Ajeya Cotra's opinion.
+The line that circulates instead, that better security controls alone would not have prevented the incident, appeared in Axios on September 1, and it is METR researcher Ajeya Cotra's opinion.
 
-Her argument: securing test environments is "a losing battle" as agents get more capable. That is a serious position, and it gets its own section below. It is not a finding of the report, because the report did not look.
+Her argument is that securing test environments is "a losing battle" as agents get more capable, a serious position that gets its own section below. It is not a finding of the report, because the report did not look.
 
-Reuters is the third report, and it cuts EFF's way. If OpenAI intentionally disabled guardrails for its own test, the failure was a choice. Choices are the easiest kind of failure to prevent.
+Reuters is the third report, and it cuts EFF's way. If OpenAI intentionally disabled guardrails for its own test, the failure was a choice, and choices are the easiest kind of failure to prevent.
 
-So the claim is **half right** on its own evidence. The postmortem shows what EFF says it shows. METR shows nothing either way, and citing it as though it did overstates the record.
+So the claim is **half right** on its own evidence. The postmortem shows what EFF says it shows, while METR shows nothing either way, and citing it as though it did overstates the record.
 
 ## 5. The rest of the record
 
-The second half of the claim, all of the incidents, needs the other labs. The OpenAI intrusion was the first disclosure of the season. It was not the last.
+The second half of the claim, all of the incidents, needs the other labs, because the OpenAI intrusion was the first disclosure of the season and not the last.
 
 <figure className="my-4">
 
@@ -135,19 +135,19 @@ The pattern is the finding. Every confirmed incident happened during cybersecuri
 
 And no confirmed case required a model to defeat a properly hardened environment. Each one started with something mundane: a zero-day in a permitted proxy, a misconfiguration, guardrails switched off for the test.
 
-On that record the second half of EFF's claim holds too. The honest caveat: two entries are disputed or single-sourced.
+On that record the second half of EFF's claim holds too, with the caveat that two entries are disputed or single-sourced.
 
 ## 6. The live disagreement
 
-There is a real argument underneath the claim-checking. It deserves better than the telephone-game version.
+There is a real argument underneath the claim-checking, and it deserves better than the telephone-game version.
 
-EFF's position: the controls are known and unapplied. Nothing about stopping any of these incidents needed to be invented. The knowledge is standard practice, decades old in parts. The failures were choices and oversights.
+EFF's position: the controls are known and unapplied. Nothing about stopping any of these incidents needed to be invented; the knowledge is standard practice, decades old in parts, and the failures were choices and oversights.
 
-Cotra's position: the argument is about the future, not the past. As agents improve, static defenses lose. Securing a test environment is "a losing battle," and the response belongs in capability measurement rather than perimeter hardening.
+Cotra's position: the argument is about the future, not the past. As agents improve, static defenses lose, and securing a test environment is "a losing battle"; the response belongs in capability measurement rather than perimeter hardening.
 
 The two positions are not exclusive. Every 2026 incident is consistent with EFF's story, and none of them tests Cotra's, because none of them involved an agent facing good security. The record supports EFF's version of the past and says nothing about the future she is describing.
 
-What agents change about containment is real. Traditional sandboxing assumes code that runs when invoked and stops when done. Agents pursue goals across hours, chain tools, improvise, and coordinate. The boundary gets tested continuously rather than occasionally.
+What agents change about containment is real. Traditional sandboxing assumes code that runs when invoked and stops when done, while agents pursue goals across hours, chain tools, improvise, and coordinate, so the boundary gets tested continuously rather than occasionally.
 
 A record with no agent defeating hardened security is a record in which no lab has run that experiment in public. "The basics suffice" is, so far, a claim about the past.
 
@@ -174,7 +174,7 @@ EFF's [same-week statement](https://www.eff.org/deeplinks/2026/09/eff-statement-
 
 **New York:** Governor Hochul announced 72-hour incident reporting for frontier AI, starting November 2026.
 
-Most of this is reporting, after the fact. EFF's floor is different in kind. It attaches to the conditions of the test itself, before anything escapes, and it funds public investigations rather than internal ones.
+Most of this is reporting, after the fact. EFF's floor is different in kind: it attaches to the conditions of the test itself, before anything escapes, and it funds public investigations rather than internal ones.
 
 The closest existing piece is California's onsite verification organization. The distance between the two lists is the distance between describing incidents and preventing them.
 
@@ -188,6 +188,6 @@ All of the known incidents: yes on the current record. Every one of them traceab
 
 The claim's limits are as stated. "Known and unapplied" is a claim about the past, and the past contains no agent that had to try.
 
-The compressed version: EFF is right about everything that has happened. Cotra is right that this says nothing about what comes next. Both halves of the claim get retested the first time an agent faces security that is on.
+EFF is right about everything that has happened, and Cotra is right that this says nothing about what comes next. Both halves of the claim get retested the first time an agent faces security that is on.
 
 The basics were never beaten in the summer of 2026. They were missing.

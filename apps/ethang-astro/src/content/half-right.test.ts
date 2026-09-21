@@ -1,4 +1,5 @@
 import compact from "lodash/compact.js";
+import every from "lodash/every.js";
 import filter from "lodash/filter.js";
 import flatMap from "lodash/flatMap.js";
 import map from "lodash/map.js";
@@ -225,6 +226,29 @@ describe("Half Right reading comfort", () => {
     );
 
     expect(longSentences).toEqual([]);
+  });
+
+  /*
+   * The short-sentence ceilings above are maximums, not a style. A paragraph
+   * made only of very short sentences reads as staccato, so three or more
+   * sentences in one paragraph may not all sit at fourteen words or fewer.
+   */
+  it("varies sentence lengths: no paragraph runs only short sentences", async () => {
+    const post = await readFile(postPath, "utf8");
+    const punchyParagraphs = filter(
+      filter(blocksOf(post), isProseParagraph),
+      (block) => {
+        const lengths = map(sentencesOf(block), wordCount);
+        return (
+          3 <= size(lengths) &&
+          every(lengths, (length) => {
+            return 14 >= length;
+          })
+        );
+      }
+    );
+
+    expect(punchyParagraphs).toEqual([]);
   });
 
   it("presents the record and the policy sections as scannable labeled lists", async () => {
