@@ -253,10 +253,9 @@ describe("getSafeBodyAccesses", () => {
   const safeAccesses = (code: string) => {
     const arrow = arrowExpression(code);
     const { body } = arrow;
-    if (AST_NODE_TYPES.BlockStatement === body.type) {
-      return null;
-    }
-    return getSafeBodyAccesses(body, OBJ_NAME, KEY_NAME);
+    return AST_NODE_TYPES.BlockStatement === body.type
+      ? null
+      : getSafeBodyAccesses(body, OBJ_NAME, KEY_NAME);
   };
   it("returns the accesses for a valid body", () => {
     expect(safeAccesses(OBJ_K_EQ_V)?.length).toBe(1);

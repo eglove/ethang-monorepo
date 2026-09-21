@@ -114,10 +114,10 @@ export const getNodeType = (
       program.getTypeChecker()
     );
     const checker = Option.getOrNull(checkerOption);
-    if (isNil(checker)) {
-      return { checker: { typeToString: String }, type };
-    }
-    return { checker, type };
+    return {
+      checker: isNil(checker) ? { typeToString: String } : checker,
+      type
+    };
   }
   return null;
 };
@@ -146,10 +146,7 @@ const resolveClassicType = (
     getTypeAtLocation(target)
   );
   const type = Option.getOrNull(typeOption);
-  if (isNil(type)) {
-    return null;
-  }
-  return { checker, type };
+  return isNil(type) ? null : { checker, type };
 };
 
 // A type is treated as a string when its rendered form is `string`, a string
@@ -209,10 +206,7 @@ export const isSliceCall = (
     return false;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  if (callee.computed) {
+  if (!isMemberExpression(callee) || callee.computed) {
     return false;
   }
   const { object } = callee;
@@ -223,10 +217,7 @@ export const isSliceCall = (
   // A non-computed member expression always has an `Identifier` property, so
   // this branch is unreachable for any legal input.
 
-  if (!isIdentifier(property)) {
-    return false;
-  }
-  return "slice" === property.name;
+  return isIdentifier(property) && "slice" === property.name;
 };
 
 export type SliceArguments = {
@@ -252,15 +243,11 @@ export const getNegativeCountText = (node: TSESTree.Node) => {
   }
   const { argument } = node;
   if (AST_NODE_TYPES.Literal === argument.type) {
-    if ("number" !== typeof argument.value || 0 >= argument.value) {
-      return null;
-    }
-    return String(argument.value);
+    return "number" !== typeof argument.value || 0 >= argument.value
+      ? null
+      : String(argument.value);
   }
-  if (isIdentifier(argument)) {
-    return argument.name;
-  }
-  return null;
+  return isIdentifier(argument) ? argument.name : null;
 };
 
 const isZeroLiteral = (node: TSESTree.Node) => {

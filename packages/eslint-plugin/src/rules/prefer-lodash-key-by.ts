@@ -29,11 +29,10 @@ function getKeyByAssignment(
 ) {
   const { expression } = expressionStatement;
 
-  if (AST_NODE_TYPES.AssignmentExpression !== expression.type) {
-    return null;
-  }
-
-  if ("=" !== expression.operator) {
+  if (
+    AST_NODE_TYPES.AssignmentExpression !== expression.type ||
+    "=" !== expression.operator
+  ) {
     return null;
   }
   const assign = expression;
@@ -43,15 +42,9 @@ function getKeyByAssignment(
   }
   const member = assign.left;
 
-  if (!isIdentifier(assign.right)) {
-    return null;
-  }
-
-  if (itemName !== assign.right.name) {
-    return null;
-  }
-
-  return extractKeyFromMember(member, itemName);
+  return !isIdentifier(assign.right) || itemName !== assign.right.name
+    ? null
+    : extractKeyFromMember(member, itemName);
 }
 
 export const detectKeyByPattern = (node: TSESTree.Node) => {
@@ -88,11 +81,7 @@ export const detectKeyByPattern = (node: TSESTree.Node) => {
     callbackInfo.accumulatorName,
     callbackInfo.itemName
   );
-  if (isNil(key)) {
-    return null;
-  }
-
-  return { arr: arrayInfo.arr, key };
+  return isNil(key) ? null : { arr: arrayInfo.arr, key };
 };
 
 export const preferLodashKeyByRule = createRule<Options, MessageIds>({

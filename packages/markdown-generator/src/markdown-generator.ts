@@ -1,4 +1,5 @@
 import { Effect } from "effect";
+import compact from "lodash/compact.js";
 import endsWith from "lodash/endsWith.js";
 import includes from "lodash/includes.js";
 import isNil from "lodash/isNil.js";
@@ -113,29 +114,37 @@ const yamlScalar = (value: string) => {
   return `"${escaped}"`;
 };
 
+const renderFrontmatterLine = (
+  frontmatter: Record<string, boolean | number | string>,
+  key: string
+) => {
+  const value = frontmatter[key];
+  if (isNil(value)) {
+    return null;
+  }
+  const valueString = String(value);
+  assertNoNewline(valueString, key);
+
+  return `${key}: ${yamlScalar(valueString)}`;
+};
+
 const renderFrontmatter = (
   frontmatter: Record<string, boolean | number | string>
 ) => {
-  const lines: string[] = [];
   const sortedKeys = keys(frontmatter).toSorted((a, b) => {
     if ("title" === a) {
       return -1;
     }
 
-    if ("title" === b) {
-      return 1;
-    }
-    return a.localeCompare(b);
+    return "title" === b ? 1 : a.localeCompare(b);
   });
 
-  for (const key of sortedKeys) {
-    const value = frontmatter[key];
-    if (!isNil(value)) {
-      const valueString = String(value);
-      assertNoNewline(valueString, key);
-      lines.push(`${key}: ${yamlScalar(valueString)}`);
-    }
-  }
+  const lines = compact(
+    map(sortedKeys, (key) => {
+      return renderFrontmatterLine(frontmatter, key);
+    })
+  );
+
   return `---\n${lines.join("\n")}\n---\n`;
 };
 
@@ -192,10 +201,7 @@ const renderTable = (block: TableBlock) => {
     if ("left" === h.align) {
       return ":---";
     }
-    if ("center" === h.align) {
-      return ":---:";
-    }
-    return "---:";
+    return "center" === h.align ? ":---:" : "---:";
   });
   const dividerLine = `| ${dividers.join(" | ")} |`;
 

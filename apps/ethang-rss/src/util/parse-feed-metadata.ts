@@ -53,10 +53,7 @@ const FeedMetadataSchema = Schema.Struct({
 });
 
 const extractText = (value: null | TextOrTextObject) => {
-  if (isString(value)) {
-    return value;
-  }
-  return value?.["#text"] ?? "";
+  return isString(value) ? value : (value?.["#text"] ?? "");
 };
 
 const isLinkObject = (entry: FeedLinkEntry): entry is LinkObject => {
@@ -87,10 +84,7 @@ const findNonSelf = (links: readonly FeedLinkEntry[]) => {
 };
 
 const linkHref = (entry: FeedLinkEntry | null) => {
-  if (isString(entry)) {
-    return entry;
-  }
-  return entry?.["@_href"] ?? "";
+  return isString(entry) ? entry : (entry?.["@_href"] ?? "");
 };
 
 const objectHrefOrText = (entry: LinkObject) => {
@@ -110,10 +104,7 @@ const extractAtomWebsite = (link: FeedLink | null) => {
   if (isString(link)) {
     return link;
   }
-  if (isLinkArray(link)) {
-    return chooseArrayLink(link);
-  }
-  return objectHrefOrText(link);
+  return isLinkArray(link) ? chooseArrayLink(link) : objectHrefOrText(link);
 };
 
 const parser = new XMLParser({

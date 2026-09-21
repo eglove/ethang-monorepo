@@ -187,7 +187,7 @@ export default defineConfig(
 
   writeFileSync(
     path.join(import.meta.dirname, "../README.md"),
-    generateMarkdown({ blocks }),
+    `<!-- GENERATED FILE — DO NOT EDIT DIRECTLY; regenerate with: pnpm --filter @ethang/eslint-config build -->\n${generateMarkdown({ blocks })}`,
     "utf8"
   );
 };

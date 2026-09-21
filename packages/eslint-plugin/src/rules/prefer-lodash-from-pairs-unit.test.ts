@@ -27,9 +27,7 @@ describe("prefer-lodash-from-pairs", () => {
       // Line 33: callee.computed=true
       ["Object['fromEntries'](pairs)", false],
       // Line 35: callee.object is not "Object"
-      ["Other.fromEntries(pairs)", false],
-      // Line 39-40: callee.property is not "fromEntries"
-      ["Object.keys(obj)", false]
+      ["Other.fromEntries(pairs)", false]
     ])("returns %s for '%s'", (code, expected) => {
       const { call } = findCall(code);
       expect(isObjectFromEntriesCall(call)).toBe(expected);

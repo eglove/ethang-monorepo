@@ -66,10 +66,9 @@ const requireText = (
   value: string,
   field: string
 ): Effect.Effect<string, ValidationError> => {
-  if (isEmpty(value)) {
-    return Effect.fail(new ValidationError(`${field} must not be empty`));
-  }
-  return Effect.succeed(value);
+  return isEmpty(value)
+    ? Effect.fail(new ValidationError(`${field} must not be empty`))
+    : Effect.succeed(value);
 };
 
 const requireStatus = (
@@ -83,10 +82,9 @@ const requireStatus = (
 };
 
 const requireDate = (value: string): Effect.Effect<string, ValidationError> => {
-  if (!isIsoDate(value)) {
-    return Effect.fail(new ValidationError("appliedDate must be YYYY-MM-DD"));
-  }
-  return Effect.succeed(value);
+  return isIsoDate(value)
+    ? Effect.succeed(value)
+    : Effect.fail(new ValidationError("appliedDate must be YYYY-MM-DD"));
 };
 
 const optional = <T>(value: null | T | undefined) => {
@@ -131,30 +129,25 @@ const validateChangeField = (
   currentValue: string,
   fieldName: string
 ): Effect.Effect<string, ValidationError> => {
-  if (isNil(newValue)) {
-    return Effect.succeed(currentValue);
-  }
-  return requireText(newValue, fieldName);
+  return isNil(newValue)
+    ? Effect.succeed(currentValue)
+    : requireText(newValue, fieldName);
 };
 
 const validateChangeDateField = (
   newValue: null | string | undefined,
   currentValue: string
 ): Effect.Effect<string, ValidationError> => {
-  if (isNil(newValue)) {
-    return Effect.succeed(currentValue);
-  }
-  return requireDate(newValue);
+  return isNil(newValue) ? Effect.succeed(currentValue) : requireDate(newValue);
 };
 
 const validateChangeStatusField = (
   newValue: null | Status | undefined,
   currentValue: Status
 ): Effect.Effect<Status, ValidationError> => {
-  if (isNil(newValue)) {
-    return Effect.succeed(currentValue);
-  }
-  return requireStatus(newValue);
+  return isNil(newValue)
+    ? Effect.succeed(currentValue)
+    : requireStatus(newValue);
 };
 
 // Semantics: distinguish undefined (keep current) from null (clear to null).
@@ -208,12 +201,11 @@ export const withChanges = (
 
 export const advanceStatus = (app: JobApplication) => {
   const next = nextStatus(app.status);
-  if (isNil(next)) {
-    return Effect.fail(
-      new InvalidStatusTransitionError(`cannot advance from ${app.status}`)
-    );
-  }
-  return Effect.succeed({ ...app, status: next, updatedAt: nowIso() });
+  return isNil(next)
+    ? Effect.fail(
+        new InvalidStatusTransitionError(`cannot advance from ${app.status}`)
+      )
+    : Effect.succeed({ ...app, status: next, updatedAt: nowIso() });
 };
 
 export const attachResume = (

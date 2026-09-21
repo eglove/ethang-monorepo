@@ -44,10 +44,12 @@ export const getBufferFromArguments = (node: TSESTree.Node) => {
     return null;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee) || callee.computed) {
-    return null;
-  }
-  if (!isIdentifier(callee.object) || BUFFER !== callee.object.name) {
+  if (
+    !isMemberExpression(callee) ||
+    callee.computed ||
+    !isIdentifier(callee.object) ||
+    BUFFER !== callee.object.name
+  ) {
     return null;
   }
 
@@ -86,10 +88,9 @@ export const getFirstBufferFromArgument = (
     return null;
   }
   const [argument] = argumentList;
-  if (!argument || AST_NODE_TYPES.SpreadElement === argument.type) {
-    return null;
-  }
-  return argument;
+  return !argument || AST_NODE_TYPES.SpreadElement === argument.type
+    ? null
+    : argument;
 };
 
 // Exported for testing: getBase64BufferFromDataArgument
@@ -103,10 +104,9 @@ export const getBase64BufferFromDataArgument = (
   if (!input || AST_NODE_TYPES.SpreadElement === input.type) {
     return null;
   }
-  if (!innerEncoding || !isLiteralWithValue(innerEncoding, BASE64)) {
-    return null;
-  }
-  return input;
+  return !innerEncoding || !isLiteralWithValue(innerEncoding, BASE64)
+    ? null
+    : input;
 };
 
 // `Buffer.from(x).toString("base64")` -> { kind: "encode", arg: x }

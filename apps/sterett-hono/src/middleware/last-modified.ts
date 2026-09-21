@@ -31,11 +31,10 @@ export const lastModifiedMiddleware: MiddlewareHandler = async (
   next
 ) => {
   await next();
-  if (!context.res.body) {
-    return;
-  }
-
-  if (!includes(context.res.headers.get("content-type") ?? "", "text/html")) {
+  if (
+    !context.res.body ||
+    !includes(context.res.headers.get("content-type") ?? "", "text/html")
+  ) {
     return;
   }
 

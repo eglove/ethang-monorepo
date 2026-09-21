@@ -110,13 +110,11 @@ const isBoundFunction = (node: TSESTree.Node) => {
     return false;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  if (!isIdentifier(callee.property)) {
-    return false;
-  }
-  return "bind" === callee.property.name;
+  return (
+    isMemberExpression(callee) &&
+    isIdentifier(callee.property) &&
+    "bind" === callee.property.name
+  );
 };
 
 const checkNoCommit = (
@@ -179,11 +177,7 @@ const checkNoUnboundThis = (
   context: TSESLint.RuleContext<MessageIds, Options>,
   node: TSESTree.CallExpression
 ) => {
-  if (!isLodashIdentifierCall(node)) {
-    return;
-  }
-
-  if (2 > node.arguments.length) {
+  if (!isLodashIdentifierCall(node) || 2 > node.arguments.length) {
     return;
   }
 

@@ -3,9 +3,5 @@ export const unwrapRpc = async <T>(
 ) => {
   const data = await result;
 
-  if (data instanceof Response) {
-    return (await data.json()) as T;
-  }
-
-  return data as T;
+  return data instanceof Response ? ((await data.json()) as T) : (data as T);
 };

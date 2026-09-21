@@ -21,21 +21,18 @@ export const encodeCursor = (value: [null | string, string]) => {
   const bytes = encoder.encode(json) as Uint8ArrayWithBase64;
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  if (isFunction(bytes.toBase64)) {
-    return bytes.toBase64();
-  }
-
-  return Encoding.encodeBase64(bytes);
+  return isFunction(bytes.toBase64)
+    ? bytes.toBase64()
+    : Encoding.encodeBase64(bytes);
 };
 
 const decodeBase64ToBytes = (cursor: string) => {
   const ctor = Uint8Array as Uint8ArrayConstructorWithBase64;
 
   // eslint-disable-next-line @typescript-eslint/unbound-method
-  if (isFunction(ctor.fromBase64)) {
-    return ctor.fromBase64(cursor);
-  }
-  return Either.getOrThrow(Encoding.decodeBase64(cursor));
+  return isFunction(ctor.fromBase64)
+    ? ctor.fromBase64(cursor)
+    : Either.getOrThrow(Encoding.decodeBase64(cursor));
 };
 
 const safeDecode = (cursor: string): Effect.Effect<string, unknown> => {

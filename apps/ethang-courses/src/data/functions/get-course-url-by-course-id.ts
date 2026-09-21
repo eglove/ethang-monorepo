@@ -26,9 +26,8 @@ export const getCourseUrlByCourseId = (
       }
     });
     const [row] = course;
-    if (!row) {
-      return yield* Effect.fail(new NotFoundError(courses.COURSE_NOT_FOUND));
-    }
-    return row.url;
+    return row
+      ? row.url
+      : yield* Effect.fail(new NotFoundError(courses.COURSE_NOT_FOUND));
   });
 };

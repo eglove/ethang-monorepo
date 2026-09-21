@@ -17,7 +17,6 @@ describe("isBarrelFilename", () => {
     [String.raw`src\index.ts`, true],
     ["not-index.ts", false],
     ["", false],
-    ["", false],
     ["\0", false],
     ["index", false]
   ])("returns %s for %s", (filename, expected) => {

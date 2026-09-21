@@ -43,10 +43,9 @@ const addToDateMap = (
 
 const extractChicagoDateKey = (iso: string) => {
   const maybeZoned = DateTime.makeZoned(iso, { timeZone: CHICAGO });
-  if (Option.isNone(maybeZoned)) {
-    return "";
-  }
-  return DateTime.formatIsoDate(maybeZoned.value);
+  return Option.isNone(maybeZoned)
+    ? ""
+    : DateTime.formatIsoDate(maybeZoned.value);
 };
 
 export const buildEventsByDate = (events: CalendarEventRecord[]) => {

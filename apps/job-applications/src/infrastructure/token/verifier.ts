@@ -20,12 +20,9 @@ export const createTokenVerifierLayer = (secret: string) => {
             return payload["email"];
           }
         });
-        if (!isString(email)) {
-          return yield* Effect.fail(
-            new TokenError("token is missing email claim")
-          );
-        }
-        return email;
+        return isString(email)
+          ? email
+          : yield* Effect.fail(new TokenError("token is missing email claim"));
       });
     }
   });

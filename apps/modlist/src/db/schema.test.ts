@@ -28,10 +28,12 @@ for "returning" queries we let the defaultFn callbacks actually execute.
 function makeProxyDatabase(returnedRows: unknown[]) {
   return drizzle(
     async (querySql, _parameters, _method) => {
-      if (-1 !== querySql.search("returning")) {
-        return { rows: returnedRows as never };
-      }
-      return { rows: [] as unknown[] };
+      return {
+        rows:
+          -1 === querySql.search("returning")
+            ? ([] as unknown[])
+            : (returnedRows as never)
+      };
     },
     { schema: schema as never }
   );

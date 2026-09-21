@@ -65,10 +65,9 @@ const getSymbolForNode = (
 ) => {
   const tsNode = services.esTreeNodeToTSNodeMap.get(node);
 
-  if (!services.program) {
-    return null;
-  }
-  return services.program.getTypeChecker().getSymbolAtLocation(tsNode);
+  return services.program
+    ? services.program.getTypeChecker().getSymbolAtLocation(tsNode)
+    : null;
 };
 
 const isGlobalDeclarationSourceFile = (sourceFile: SourceFile) => {
@@ -78,11 +77,9 @@ const isGlobalDeclarationSourceFile = (sourceFile: SourceFile) => {
 const getFirstDeclaration = (symbol: TsSymbol) => {
   const declarations = symbol.getDeclarations();
 
-  if (isNil(declarations) || 0 === declarations.length) {
-    return null;
-  }
-
-  return declarations[0] ?? null;
+  return isNil(declarations) || 0 === declarations.length
+    ? null
+    : (declarations[0] ?? null);
 };
 
 const resolveSymbolOrigin = (
@@ -109,10 +106,7 @@ const isGlobalOriginIdentifier = (
 ) => {
   const origin = resolveSymbolOrigin(services, node);
 
-  if ("unknown" === origin) {
-    return true;
-  }
-  return "global" === origin;
+  return "unknown" === origin || "global" === origin;
 };
 
 const isGlobalDateIdentifier = (
@@ -122,10 +116,7 @@ const isGlobalDateIdentifier = (
     identifier: TSESTree.Identifier
   ) => boolean = isDateIdentifier
 ) => {
-  if (!isDateShadowsGlobal(node)) {
-    return false;
-  }
-  return isGlobalOriginIdentifier(services, node);
+  return isDateShadowsGlobal(node) && isGlobalOriginIdentifier(services, node);
 };
 
 const isGlobalTemporalIdentifier = (
@@ -140,13 +131,11 @@ const checkNewDateExpression = (
   services: ReturnType<typeof getParserServices>,
   node: TSESTree.NewExpression
 ) => {
-  if (!isIdentifier(node.callee)) {
-    return;
-  }
-  if (!isDateIdentifier(node.callee)) {
-    return;
-  }
-  if (!isGlobalDateIdentifier(services, node.callee)) {
+  if (
+    !isIdentifier(node.callee) ||
+    !isDateIdentifier(node.callee) ||
+    !isGlobalDateIdentifier(services, node.callee)
+  ) {
     return;
   }
   context.report({
@@ -157,10 +146,10 @@ const checkNewDateExpression = (
 };
 
 const staticMethodTarget = (propertyName: DateStaticMethod) => {
-  if ("now" === propertyName) {
-    return formatTarget("DateTime", "now");
-  }
-  return formatTarget("DateTime", "unsafeMakeZoned");
+  return formatTarget(
+    "DateTime",
+    "now" === propertyName ? "now" : "unsafeMakeZoned"
+  );
 };
 
 const checkDateCallExpression = (
@@ -172,10 +161,10 @@ const checkDateCallExpression = (
 
   // `Date(...)` (no `new`) is treated as a constructor call as well.
   if (isIdentifier(callee)) {
-    if (!isDateIdentifier(callee)) {
-      return;
-    }
-    if (!isGlobalDateIdentifier(services, callee)) {
+    if (
+      !isDateIdentifier(callee) ||
+      !isGlobalDateIdentifier(services, callee)
+    ) {
       return;
     }
     context.report({
@@ -190,13 +179,12 @@ const checkDateCallExpression = (
   if (!isMemberExpression(callee)) {
     return;
   }
-  if (!isIdentifier(callee.object) || !isDateIdentifier(callee.object)) {
-    return;
-  }
-  if (!isGlobalDateIdentifier(services, callee.object)) {
-    return;
-  }
-  if (!isIdentifier(callee.property)) {
+  if (
+    !isIdentifier(callee.object) ||
+    !isDateIdentifier(callee.object) ||
+    !isGlobalDateIdentifier(services, callee.object) ||
+    !isIdentifier(callee.property)
+  ) {
     return;
   }
 
@@ -226,13 +214,12 @@ const checkTemporalMemberExpression = (
   services: ReturnType<typeof getParserServices>,
   node: TSESTree.MemberExpression
 ) => {
-  if (!isIdentifier(node.object) || !isTemporalIdentifier(node.object)) {
-    return;
-  }
-  if (!isGlobalTemporalIdentifier(services, node.object)) {
-    return;
-  }
-  if (!isIdentifier(node.property)) {
+  if (
+    !isIdentifier(node.object) ||
+    !isTemporalIdentifier(node.object) ||
+    !isGlobalTemporalIdentifier(services, node.object) ||
+    !isIdentifier(node.property)
+  ) {
     return;
   }
   context.report({
@@ -273,13 +260,9 @@ const isQualifiedNameDate = (
   left: TSESTree.TSQualifiedName["left"],
   right: TSESTree.TSQualifiedName["right"]
 ) => {
-  if ("Date" !== right.name) {
-    return false;
-  }
-  if (!isIdentifierNode(left)) {
-    return false;
-  }
-  return "Temporal" !== left.name;
+  return (
+    "Date" === right.name && isIdentifierNode(left) && "Temporal" !== left.name
+  );
 };
 
 const isDateTypeReference = (node: TSESTree.TSTypeReference) => {
@@ -296,10 +279,9 @@ const isDateTypeReference = (node: TSESTree.TSTypeReference) => {
   ) {
     return false;
   }
-  if (AST_NODE_TYPES.Identifier === node.typeName.type) {
-    return isDateIdentifier(node.typeName);
-  }
-  return isQualifiedNameDate(node.typeName.left, node.typeName.right);
+  return AST_NODE_TYPES.Identifier === node.typeName.type
+    ? isDateIdentifier(node.typeName)
+    : isQualifiedNameDate(node.typeName.left, node.typeName.right);
 };
 
 const checkTSTypeReference = (
@@ -334,10 +316,9 @@ const getTypeForNode = (
 ) => {
   const tsNode = services.esTreeNodeToTSNodeMap.get(node);
 
-  if (!services.program) {
-    return null;
-  }
-  return services.program.getTypeChecker().getTypeAtLocation(tsNode);
+  return services.program
+    ? services.program.getTypeChecker().getTypeAtLocation(tsNode)
+    : null;
 };
 
 const symbolNameOf = (type: Type) => {
@@ -388,37 +369,28 @@ const isDateProducingMethod = (name: string): name is DateProducingMethod => {
   return includes(DATE_PRODUCING_METHODS, name);
 };
 
-// True iff `node` is a CallExpression of the form
-// `DateTime.toDate(...)` / `DateTime.toDateUtc(...)`. The namespace
+// True when `callee` is a `DateTime.<method>` member access. The namespace
 // identifier `DateTime` is matched by name only; if a project shadows it
 // the type checker will still route the receiver to a non-`Date` type
 // and the upstream guard will not fire.
+const isDateTimeMemberCallee = (
+  callee: TSESTree.Expression
+): callee is TSESTree.MemberExpression => {
+  return (
+    isMemberExpression(callee) &&
+    isIdentifier(callee.object) &&
+    "DateTime" === callee.object.name
+  );
+};
+
+// True iff `node` is a CallExpression of the form
+// `DateTime.toDate(...)` / `DateTime.toDateUtc(...)`.
 const isDateProducingCallExpression = (node: TSESTree.CallExpression) => {
-  // The four guard branches below are exercised by the
-  // `date-instance-bridge-miss-*` invalid tests, but v8's branch
-  // instrumentation only tracks the fall-through (skip-if) edge of an
-  // `if (...) { return false; }` whose body is a single return — the
-  // entry edge has no separate jump target. The tests prove the if-bodies
-  // execute; the missing instrumentation is a v8 limitation, not a
-  // coverage gap, so the v8-ignore comments below are scoped to those
-  // edges.
-
-  if (!isMemberExpression(node.callee)) {
-    return false;
-  }
-
-  if (!isIdentifier(node.callee.object)) {
-    return false;
-  }
-
-  if ("DateTime" !== node.callee.object.name) {
-    return false;
-  }
-
-  if (!isIdentifier(node.callee.property)) {
-    return false;
-  }
-  return isDateProducingMethod(node.callee.property.name);
+  return (
+    isDateTimeMemberCallee(node.callee) &&
+    isIdentifier(node.callee.property) &&
+    isDateProducingMethod(node.callee.property.name)
+  );
 };
 
 // True iff `identifier` is bound to a CallExpression of the form
@@ -464,14 +436,11 @@ const isAssignedFromDateProducingCall = (
   }
   const declarator = definition.node;
 
-  if (isNil(declarator.init)) {
-    return false;
-  }
-
-  if (!isCallExpression(declarator.init)) {
-    return false;
-  }
-  return isDateProducingCallExpression(declarator.init);
+  return (
+    !isNil(declarator.init) &&
+    isCallExpression(declarator.init) &&
+    isDateProducingCallExpression(declarator.init)
+  );
 };
 
 // True when `callee.object` is a PascalCase identifier (not `Date`).
@@ -513,10 +482,7 @@ const checkDateInstanceMemberCall = (
   node: TSESTree.CallExpression
 ) => {
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return;
-  }
-  if (!isIdentifier(callee.property)) {
+  if (!isMemberExpression(callee) || !isIdentifier(callee.property)) {
     return;
   }
   // Avoid double-reporting `Date.now()` / `Date.UTC(...)` etc. — those are
@@ -528,13 +494,11 @@ const checkDateInstanceMemberCall = (
   if (isIdentifier(callee.object) && isDateIdentifier(callee.object)) {
     return;
   }
-  if (isPascalCaseIdentifier(callee.object)) {
-    return;
-  }
-  if (isBridgeReceiver(context, callee.object)) {
-    return;
-  }
-  if (!isReceiverIncludingDate(services, callee.object)) {
+  if (
+    isPascalCaseIdentifier(callee.object) ||
+    isBridgeReceiver(context, callee.object) ||
+    !isReceiverIncludingDate(services, callee.object)
+  ) {
     return;
   }
   context.report({

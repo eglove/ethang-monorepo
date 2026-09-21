@@ -14,10 +14,7 @@ const getCursorParameters = async (after: null | string) => {
     return [null, null] as const;
   }
   const decoded = await Effect.runPromise(decodeCursor(after));
-  if (isNil(decoded)) {
-    return [null, null] as const;
-  }
-  return decoded;
+  return isNil(decoded) ? ([null, null] as const) : decoded;
 };
 
 const getSortWhereCondition = (

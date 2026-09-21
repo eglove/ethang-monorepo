@@ -153,10 +153,7 @@ afterEach(() => {
 
 const lastSetCookie = () => {
   const list = asGlobal().__capturedCookies;
-  if (list === undefined || isEmpty(list)) {
-    return null;
-  }
-  return list.at(-1) ?? null;
+  return list === undefined || isEmpty(list) ? null : (list.at(-1) ?? null);
 };
 
 type RequestInit = {

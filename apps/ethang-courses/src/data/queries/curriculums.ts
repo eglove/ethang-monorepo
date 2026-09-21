@@ -107,11 +107,7 @@ const populateCurriculumLps = async (
     map(curriculumLearningPaths, async (clp) => {
       const lpRecord = lpMap.get(clp.learningPathId);
 
-      if (!lpRecord) {
-        return null;
-      }
-
-      return populateLpWithCourses(database, lpRecord);
+      return lpRecord ? populateLpWithCourses(database, lpRecord) : null;
     })
   );
 

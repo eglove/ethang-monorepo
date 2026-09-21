@@ -23,41 +23,21 @@ type MessageIds = "preferLodashCountBy";
 type Options = [];
 
 const isPlusOne = (node: TSESTree.Node): node is TSESTree.BinaryExpression => {
-  if (AST_NODE_TYPES.BinaryExpression !== node.type) {
-    return false;
-  }
-
-  if ("+" !== node.operator) {
-    return false;
-  }
-
-  if (AST_NODE_TYPES.Literal !== node.right.type) {
-    return false;
-  }
-
-  if (1 !== node.right.value) {
-    return false;
-  }
-  return true;
+  return (
+    AST_NODE_TYPES.BinaryExpression === node.type &&
+    "+" === node.operator &&
+    AST_NODE_TYPES.Literal === node.right.type &&
+    1 === node.right.value
+  );
 };
 
 const isOrZero = (node: TSESTree.Node): node is TSESTree.LogicalExpression => {
-  if (AST_NODE_TYPES.LogicalExpression !== node.type) {
-    return false;
-  }
-
-  if ("||" !== node.operator) {
-    return false;
-  }
-
-  if (AST_NODE_TYPES.Literal !== node.right.type) {
-    return false;
-  }
-
-  if (0 !== node.right.value) {
-    return false;
-  }
-  return true;
+  return (
+    AST_NODE_TYPES.LogicalExpression === node.type &&
+    "||" === node.operator &&
+    AST_NODE_TYPES.Literal === node.right.type &&
+    0 === node.right.value
+  );
 };
 
 function extractCountByKey(
@@ -67,15 +47,11 @@ function extractCountByKey(
 ) {
   const { expression } = expressionStatement;
 
-  if (AST_NODE_TYPES.AssignmentExpression !== expression.type) {
-    return null;
-  }
-
-  if ("=" !== expression.operator) {
-    return null;
-  }
-
-  if (!isMemberAccumulator(expression.left, accumulatorName)) {
+  if (
+    AST_NODE_TYPES.AssignmentExpression !== expression.type ||
+    "=" !== expression.operator ||
+    !isMemberAccumulator(expression.left, accumulatorName)
+  ) {
     return null;
   }
   const member = expression.left;
@@ -85,11 +61,7 @@ function extractCountByKey(
   }
   const rightNode = expression.right;
 
-  if (!isPlusOne(rightNode)) {
-    return null;
-  }
-
-  if (!isOrZero(rightNode.left)) {
+  if (!isPlusOne(rightNode) || !isOrZero(rightNode.left)) {
     return null;
   }
   const logical = rightNode.left;
@@ -99,10 +71,7 @@ function extractCountByKey(
   }
   const logKey = extractKeyFromMember(logical.left, itemName);
 
-  if (logKey !== key || isNil(logKey)) {
-    return null;
-  }
-  return key;
+  return logKey !== key || isNil(logKey) ? null : key;
 }
 
 export const detectCountByPattern = (node: TSESTree.Node) => {
@@ -134,10 +103,7 @@ export const detectCountByPattern = (node: TSESTree.Node) => {
     callbackInfo.accumulatorName,
     callbackInfo.itemName
   );
-  if (isNil(key)) {
-    return null;
-  }
-  return { arr: arrayInfo.arr, key };
+  return isNil(key) ? null : { arr: arrayInfo.arr, key };
 };
 
 export const preferLodashCountByRule = createRule<Options, MessageIds>({

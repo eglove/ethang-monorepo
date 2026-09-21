@@ -116,7 +116,8 @@ export const isSafeApplicationUrl = (value: null | string | undefined) => {
   }
 
   const parsed = URL.parse(value);
-  return isNil(parsed)
-    ? false
-    : "http:" === parsed.protocol || "https:" === parsed.protocol;
+  return (
+    !isNil(parsed) &&
+    ("http:" === parsed.protocol || "https:" === parsed.protocol)
+  );
 };

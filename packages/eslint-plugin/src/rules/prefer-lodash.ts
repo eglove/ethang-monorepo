@@ -12,7 +12,8 @@ import {
   ensureLodashImport,
   markInnerCallExpressions,
   NATIVE_EQUIVALENT_METHODS,
-  resolveCall
+  resolveCall,
+  type ResolvedCall
 } from "../utils/ast.ts";
 import { isLodashFunction } from "../utils/lodash-api.ts";
 import {
@@ -169,6 +170,22 @@ const reportArray = (
   });
 };
 
+// The umbrella reporter only claims plain array-method calls that no
+// dedicated prefer-* pattern or the native-equivalent list has already
+// handled.
+const isReportableArrayCall = (
+  node: TSESTree.CallExpression,
+  resolvedCall: ResolvedCall,
+  handledCallNodes: WeakSet<TSESTree.CallExpression>
+) => {
+  return (
+    "array" === resolvedCall.kind &&
+    !handledCallNodes.has(node) &&
+    !PATTERN_HANDLED_METHODS.has(resolvedCall.methodName) &&
+    !NATIVE_EQUIVALENT_METHODS.has(resolvedCall.methodName)
+  );
+};
+
 const reportCallExpression = (
   context: RuleContext,
   node: TSESTree.CallExpression,
@@ -178,35 +195,16 @@ const reportCallExpression = (
   const program = context.sourceCode.ast;
   const resolvedCall = resolveCall(node, program);
 
-  if ("lodash" === resolvedCall.kind) {
+  if (!isReportableArrayCall(node, resolvedCall, handledCallNodes)) {
     return;
   }
-
-  if (
-    "effect-core" === resolvedCall.kind ||
-    "effect-array" === resolvedCall.kind
-  ) {
+  // Skip cursor/index methods on potentially non-array receivers
+  // (e.g. Playwright Locator.nth(), .at()) — we cannot confirm at lint time
+  // that the receiver is actually an array.
+  if (NON_ARRAY_CURSOR_METHODS.has(resolvedCall.methodName)) {
     return;
   }
-
-  if ("array" === resolvedCall.kind) {
-    if (handledCallNodes.has(node)) {
-      return;
-    }
-    if (PATTERN_HANDLED_METHODS.has(resolvedCall.methodName)) {
-      return;
-    }
-    if (NATIVE_EQUIVALENT_METHODS.has(resolvedCall.methodName)) {
-      return;
-    }
-    // Skip cursor/index methods on potentially non-array receivers
-    // (e.g. Playwright Locator.nth(), .at()) — we cannot confirm at lint time
-    // that the receiver is actually an array.
-    if (NON_ARRAY_CURSOR_METHODS.has(resolvedCall.methodName)) {
-      return;
-    }
-    reportArray(context, node, resolvedCall.methodName, importStyle);
-  }
+  reportArray(context, node, resolvedCall.methodName, importStyle);
 };
 
 type CallCheckContext = {
@@ -357,16 +355,17 @@ const checkLogicalExpression = (
   }
 
   // prefer-get: a && a.b && a.b.c
-  if (shouldPreferGet(node)) {
-    const { parent } = node;
-    if (
-      parent.type === AST_NODE_TYPES.LogicalExpression &&
-      "&&" === parent.operator
-    ) {
-      return;
-    }
-    context.report({ messageId: "preferGet", node });
+  if (!shouldPreferGet(node)) {
+    return;
   }
+  const { parent } = node;
+  if (
+    parent.type === AST_NODE_TYPES.LogicalExpression &&
+    "&&" === parent.operator
+  ) {
+    return;
+  }
+  context.report({ messageId: "preferGet", node });
 };
 
 const checkBinaryExpression = (
@@ -403,26 +402,27 @@ const checkBinaryExpression = (
   }
 
   // prefer-is-empty
-  if (shouldPreferIsEmpty(node)) {
-    const receiver = getIsEmptyReceiver(node);
-    // getIsEmptyReceiver only returns null when shouldPreferIsEmpty returns
-    // false (mutually exclusive by construction).
+  if (!shouldPreferIsEmpty(node)) {
+    return;
+  }
+  const receiver = getIsEmptyReceiver(node);
+  // getIsEmptyReceiver only returns null when shouldPreferIsEmpty returns
+  // false (mutually exclusive by construction).
 
-    if (isNil(receiver)) {
-      context.report({ messageId: "preferIsEmpty", node });
-    } else {
-      const receiverText = context.sourceCode.getText(receiver);
-      context.report({
-        fix: (fixer) => {
-          const replace = fixer.replaceText(node, `isEmpty(${receiverText})`);
-          const program = context.sourceCode.ast;
-          const importFix = ensureLodashImport(program, "isEmpty", fixer);
-          return importFix ? [replace, importFix] : replace;
-        },
-        messageId: "preferIsEmpty",
-        node
-      });
-    }
+  if (isNil(receiver)) {
+    context.report({ messageId: "preferIsEmpty", node });
+  } else {
+    const receiverText = context.sourceCode.getText(receiver);
+    context.report({
+      fix: (fixer) => {
+        const replace = fixer.replaceText(node, `isEmpty(${receiverText})`);
+        const program = context.sourceCode.ast;
+        const importFix = ensureLodashImport(program, "isEmpty", fixer);
+        return importFix ? [replace, importFix] : replace;
+      },
+      messageId: "preferIsEmpty",
+      node
+    });
   }
 };
 
@@ -454,24 +454,20 @@ const checkLodashChain = (
   }
 
   const firstCallee = node.object.callee;
-  if (AST_NODE_TYPES.MemberExpression !== firstCallee.type) {
-    return;
-  }
-  if (AST_NODE_TYPES.Identifier !== firstCallee.property.type) {
-    return;
-  }
-  if (AST_NODE_TYPES.Identifier !== node.property.type) {
+  if (
+    AST_NODE_TYPES.MemberExpression !== firstCallee.type ||
+    AST_NODE_TYPES.Identifier !== firstCallee.property.type ||
+    AST_NODE_TYPES.Identifier !== node.property.type
+  ) {
     return;
   }
 
   const firstName = firstCallee.property.name;
   const secondName = node.property.name;
 
-  if (!isLodashFunction(firstName) || !isLodashFunction(secondName)) {
-    return;
-  }
-
   if (
+    !isLodashFunction(firstName) ||
+    !isLodashFunction(secondName) ||
     NON_ARRAY_NATIVE_METHODS.has(firstName) ||
     NON_ARRAY_NATIVE_METHODS.has(secondName)
   ) {

@@ -16,10 +16,9 @@ import { SaveError } from "../../errors/save-error.ts";
 type Row = typeof jobApplicationsTable.$inferSelect;
 
 const parseStatus = (value: string) => {
-  if (isStatus(value)) {
-    return value;
-  }
-  return Effect.runSync(Effect.die(new Error(`Unknown status: ${value}`)));
+  return isStatus(value)
+    ? value
+    : Effect.runSync(Effect.die(new Error(`Unknown status: ${value}`)));
 };
 
 const toAggregate = (row: Row) => {
@@ -67,17 +66,15 @@ const toRow = (application: JobApplication) => {
 const UNIQUE_CONSTRAINT_MSG = "UNIQUE constraint failed";
 
 const isUniqueViolation = (cause: unknown) => {
-  if (!Error.isError(cause)) {
-    return String(cause).includes(UNIQUE_CONSTRAINT_MSG);
+  let current = cause;
+  while (Error.isError(current)) {
+    if (current.message.includes(UNIQUE_CONSTRAINT_MSG)) {
+      return true;
+    }
+    current = current.cause;
   }
-  if (cause.message.includes(UNIQUE_CONSTRAINT_MSG)) {
-    return true;
-  }
-  // Miniflare wraps the SQLite error in a parent error; check the cause chain
-  if (Error.isError(cause.cause)) {
-    return isUniqueViolation(cause.cause);
-  }
-  return String(cause).includes(UNIQUE_CONSTRAINT_MSG);
+
+  return String(current).includes(UNIQUE_CONSTRAINT_MSG);
 };
 
 export const createJobApplicationRepositoryLayer = (database: D1Database) => {
@@ -141,22 +138,18 @@ export const createJobApplicationRepositoryLayer = (database: D1Database) => {
     insert: (application) => {
       return Effect.tryPromise({
         catch: (cause) => {
-          if (isUniqueViolation(cause)) {
-            return new DuplicateApplicationError("application already exists");
-          }
-          return new SaveError(String(cause));
+          return isUniqueViolation(cause)
+            ? new DuplicateApplicationError("application already exists")
+            : new SaveError(String(cause));
         },
         try: async () => {
           const [row] = await db
             .insert(jobApplicationsTable)
             .values(toRow(application))
             .returning();
-          if (!row) {
-            return Effect.runSync(
-              Effect.die(new Error("insert returned no rows"))
-            );
-          }
-          return toAggregate(row);
+          return row
+            ? toAggregate(row)
+            : Effect.runSync(Effect.die(new Error("insert returned no rows")));
         }
       });
     },

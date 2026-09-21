@@ -3,6 +3,7 @@ import keys from "lodash/keys.js";
 
 import { Plugin } from "../build/plugin.ts";
 import { genRules, getNonDeprecatedRules } from "./gen-rules.js";
+import { unicornCssRules } from "./unicorn.ts";
 
 const ruleNames = keys(getNonDeprecatedRules(css.rules));
 
@@ -28,9 +29,11 @@ export const cssPlugin = new Plugin({
   url: "https://github.com/eslint/css"
 });
 
-// The unicorn rule is a JS-AST rule; registering it on the CSS block lets ESLint run it
-// against CSS files parsed by @eslint/css. It is turned off for JS/TS in unicorn.ts.
-export const unicornViewportPlugin = new Plugin({
+// Unicorn rules that declare CSS support are derived from the plugin's own
+// rule metadata (see unicorn.ts) and enabled here so they run against CSS
+// files parsed by @eslint/css. The css-only subset is turned off for JS/TS
+// in unicorn.ts.
+export const unicornCssPlugin = new Plugin({
   files: "**/*.css",
   importString: 'import unicorn from "eslint-plugin-unicorn";',
   language: "css/css",
@@ -38,8 +41,6 @@ export const unicornViewportPlugin = new Plugin({
   order: 0,
   pluginName: "unicorn",
   pluginValue: "unicorn",
-  rules: {
-    "unicorn/prefer-explicit-viewport-units": "error"
-  },
+  rules: unicornCssRules,
   url: "https://github.com/sindresorhus/eslint-plugin-unicorn"
 });

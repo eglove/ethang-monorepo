@@ -25,18 +25,14 @@ const isReExport = (node: TSESTree.Node) => {
     return false;
   }
 
-  if (
+  const isNamedExportWithDeclaration =
     AST_NODE_TYPES.ExportNamedDeclaration === node.type &&
-    !isNil(node.declaration)
-  ) {
-    return false;
-  }
+    !isNil(node.declaration);
 
-  if (AST_NODE_TYPES.ExportAllDeclaration === node.type) {
-    return true;
-  }
-
-  return !isNil(node.source);
+  return (
+    !isNamedExportWithDeclaration &&
+    (AST_NODE_TYPES.ExportAllDeclaration === node.type || !isNil(node.source))
+  );
 };
 
 export const noBarrelFileRule = createRule<Options, MessageIds>({

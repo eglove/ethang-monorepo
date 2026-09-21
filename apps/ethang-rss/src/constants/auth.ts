@@ -1,7 +1,7 @@
 export const auth = {
   EMAIL: "test@test.com",
   FAILED_TO_SIGN_IN: "Failed to sign in",
-  // eslint-disable-next-line sonar/no-hardcoded-passwords
+
   HASHED_PASSWORD: "hashed-password",
   INVALID_CREDENTIALS: "Invalid Credentials",
   INVALID_RESPONSE: "Invalid response from server",

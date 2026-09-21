@@ -25,10 +25,7 @@ type MessageIds = "preferLodashUniq";
 type Options = [];
 
 const getSetCalleeName = (newExpression: TSESTree.NewExpression) => {
-  if (!isIdentifier(newExpression.callee)) {
-    return null;
-  }
-  return newExpression.callee.name;
+  return isIdentifier(newExpression.callee) ? newExpression.callee.name : null;
 };
 
 // Detect `[...new Set(expr)]` spread-of-set pattern. Returns the outer
@@ -39,16 +36,16 @@ export const getSpreadOfNewSet = (node: TSESTree.Node) => {
   }
   const { elements } = node;
   const [only] = elements;
-  if (isNil(only) || !isSpreadElement(only)) {
+  if (
+    isNil(only) ||
+    !isSpreadElement(only) ||
+    AST_NODE_TYPES.NewExpression !== only.argument.type
+  ) {
     return null;
   }
-  if (AST_NODE_TYPES.NewExpression !== only.argument.type) {
-    return null;
-  }
-  if ("Set" !== getSetCalleeName(only.argument)) {
-    return null;
-  }
-  return { arrayExpr: node, newSet: only.argument };
+  return "Set" === getSetCalleeName(only.argument)
+    ? { arrayExpr: node, newSet: only.argument }
+    : null;
 };
 
 // Whether `callee` is exactly `Array.from` (a non-computed MemberExpression
@@ -56,10 +53,7 @@ export const getSpreadOfNewSet = (node: TSESTree.Node) => {
 const isArrayFromCallee = (
   callee: TSESTree.Node
 ): callee is TSESTree.MemberExpression => {
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (callee.computed) {
+  if (AST_NODE_TYPES.MemberExpression !== callee.type || callee.computed) {
     return false;
   }
   const { object, property } = callee;
@@ -79,35 +73,26 @@ export const getArrayFromNewSet = (node: TSESTree.Node) => {
   }
   const { arguments: callArguments, callee } = node;
   const [firstArgument] = callArguments;
-  if (isNil(firstArgument)) {
+  if (
+    isNil(firstArgument) ||
+    1 !== callArguments.length ||
+    !isArrayFromCallee(callee) ||
+    !isNewExpression(firstArgument)
+  ) {
     return null;
   }
-  if (1 !== callArguments.length) {
-    return null;
-  }
-  if (!isArrayFromCallee(callee)) {
-    return null;
-  }
-  if (!isNewExpression(firstArgument)) {
-    return null;
-  }
-  if ("Set" !== getSetCalleeName(firstArgument)) {
-    return null;
-  }
-  return { callExpr: node, newSet: firstArgument };
+  return "Set" === getSetCalleeName(firstArgument)
+    ? { callExpr: node, newSet: firstArgument }
+    : null;
 };
 
 // Extract the inner expression from `new Set(expr)` (the `expr`),
 // or null when the Set call has no usable argument.
 export const getSetArgument = (newExpression: TSESTree.NewExpression) => {
   const [argument] = newExpression.arguments;
-  if (isNil(argument)) {
-    return null;
-  }
-  if (AST_NODE_TYPES.SpreadElement === argument.type) {
-    return null;
-  }
-  return argument;
+  return isNil(argument) || AST_NODE_TYPES.SpreadElement === argument.type
+    ? null
+    : argument;
 };
 
 export type UniqMatch =

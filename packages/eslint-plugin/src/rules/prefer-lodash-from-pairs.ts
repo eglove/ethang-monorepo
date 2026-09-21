@@ -15,6 +15,19 @@ type MessageIds = "preferLodashFromPairs";
 
 type Options = [];
 
+// The callee must be a non-computed member access on the literal `Object`
+// global — `Object.fromEntries(...)`, not a shadowed or computed variant.
+const isObjectGlobalCallee = (
+  callee: TSESTree.Node
+): callee is TSESTree.MemberExpression => {
+  return (
+    AST_NODE_TYPES.MemberExpression === callee.type &&
+    !callee.computed &&
+    isIdentifier(callee.object) &&
+    "Object" === callee.object.name
+  );
+};
+
 // Detect `Object.fromEntries(pairs)` pattern
 export const isObjectFromEntriesCall = (
   node: TSESTree.Node
@@ -23,16 +36,7 @@ export const isObjectFromEntriesCall = (
     return false;
   }
   const { arguments: callArguments, callee } = node;
-  if (1 !== callArguments.length) {
-    return false;
-  }
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (callee.computed) {
-    return false;
-  }
-  if (!isIdentifier(callee.object) || "Object" !== callee.object.name) {
+  if (1 !== callArguments.length || !isObjectGlobalCallee(callee)) {
     return false;
   }
 

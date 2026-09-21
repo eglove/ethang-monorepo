@@ -53,10 +53,7 @@ const inputToString = (input: FetchInput) => {
   if (isString(input)) {
     return input;
   }
-  if (input instanceof URL) {
-    return input.href;
-  }
-  return input.url;
+  return input instanceof URL ? input.href : input.url;
 };
 
 const buildFetchMock = (websiteHandler: (input: FetchInput) => Response) => {
@@ -65,10 +62,9 @@ const buildFetchMock = (websiteHandler: (input: FetchInput) => Response) => {
     if (value === XML_ADDRESS) {
       return rssResponse();
     }
-    if (value === WEBSITE) {
-      return websiteHandler(input);
-    }
-    return new Response("", { status: 404 });
+    return value === WEBSITE
+      ? websiteHandler(input)
+      : new Response("", { status: 404 });
   };
   return fetchImplementation;
 };
@@ -217,10 +213,7 @@ describe("addSubscriptionMutation - icon URL extraction", () => {
         if (value === XML_ADDRESS) {
           return rssResponse();
         }
-        if (value === WEBSITE) {
-          return new Response("", { status: 500 });
-        }
-        return new Response("", { status: 404 });
+        return new Response("", { status: value === WEBSITE ? 500 : 404 });
       }
     );
 

@@ -45,13 +45,11 @@ export const validateReturnArray = (
   if (AST_NODE_TYPES.SpreadElement === first.type) {
     return null;
   }
-  if (isNil(second) || AST_NODE_TYPES.Identifier !== second.type) {
-    return null;
-  }
-  if (second.name !== valueName) {
-    return null;
-  }
-  return first;
+  return isNil(second) ||
+    AST_NODE_TYPES.Identifier !== second.type ||
+    second.name !== valueName
+    ? null
+    : first;
 };
 
 // Check if the callback returns [newKey, val] where val is the same identifier passed through

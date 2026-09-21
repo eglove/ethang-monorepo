@@ -1,55 +1,50 @@
 import { AST_NODE_TYPES, type TSESTree } from "@typescript-eslint/utils";
+import isNil from "lodash/isNil.js";
 
 import { isCallExpression, isIdentifier } from "./type-guards.ts";
 
-// Check if callee is Object.entries
-export const isObjectEntriesCall = (
-  node: TSESTree.Node
+// Check if the callee is a non-computed member expression on the `Object`
+// identifier (i.e. a static `Object.<method>` access).
+const isObjectMemberCallee = (
+  callee: TSESTree.Node
+): callee is TSESTree.MemberExpression => {
+  return (
+    AST_NODE_TYPES.MemberExpression === callee.type &&
+    !callee.computed &&
+    isIdentifier(callee.object) &&
+    "Object" === callee.object.name
+  );
+};
+
+// Shared detection for `Object.<methodName>(...)` static calls
+const isObjectStaticMethodCall = (
+  node: TSESTree.Node,
+  methodName: string
 ): node is TSESTree.CallExpression => {
   if (!isCallExpression(node)) {
     return false;
   }
   const { callee } = node;
 
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (callee.computed) {
-    return false;
-  }
-  if (!isIdentifier(callee.object) || "Object" !== callee.object.name) {
-    return false;
-  }
-  if (!isIdentifier(callee.property) || "entries" !== callee.property.name) {
-    return false;
-  }
-  return true;
+  return (
+    isObjectMemberCallee(callee) &&
+    isIdentifier(callee.property) &&
+    methodName === callee.property.name
+  );
+};
+
+// Check if callee is Object.entries
+export const isObjectEntriesCall = (
+  node: TSESTree.Node
+): node is TSESTree.CallExpression => {
+  return isObjectStaticMethodCall(node, "entries");
 };
 
 // Check if callee is Object.fromEntries
 export const isObjectFromEntriesCall = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
-  if (!isCallExpression(node)) {
-    return false;
-  }
-  const { callee } = node;
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (callee.computed) {
-    return false;
-  }
-  if (!isIdentifier(callee.object) || "Object" !== callee.object.name) {
-    return false;
-  }
-  if (
-    !isIdentifier(callee.property) ||
-    "fromEntries" !== callee.property.name
-  ) {
-    return false;
-  }
-  return true;
+  return isObjectStaticMethodCall(node, "fromEntries");
 };
 
 // Check if a CallExpression is a .map() call
@@ -60,16 +55,12 @@ export const isMapCall = (
     return false;
   }
   const { callee } = node;
-  if (AST_NODE_TYPES.MemberExpression !== callee.type) {
-    return false;
-  }
-  if (callee.computed) {
-    return false;
-  }
-  if (!isIdentifier(callee.property) || "map" !== callee.property.name) {
-    return false;
-  }
-  return true;
+  return (
+    AST_NODE_TYPES.MemberExpression === callee.type &&
+    !callee.computed &&
+    isIdentifier(callee.property) &&
+    "map" === callee.property.name
+  );
 };
 
 // Extract body expression from function (block with single return or expression body)
@@ -86,13 +77,16 @@ export const extractBodyExpression = (
   }
   const [statement] = block.body;
 
-  if (!statement) {
-    return null;
-  }
-  if (AST_NODE_TYPES.ReturnStatement !== statement.type) {
-    return null;
-  }
-  return statement.argument ?? null;
+  return AST_NODE_TYPES.ReturnStatement === statement?.type
+    ? (statement.argument ?? null)
+    : null;
+};
+
+// Check if a destructuring element is a plain Identifier pattern
+const isIdentifierPattern = (
+  pattern: null | TSESTree.Node | undefined
+): pattern is TSESTree.Identifier => {
+  return !isNil(pattern) && AST_NODE_TYPES.Identifier === pattern.type;
 };
 
 // Check if the callback param is [key, val] pattern with both as identifiers
@@ -101,16 +95,9 @@ export const validateArrayParameter = (parameter: TSESTree.Node) => {
     return null;
   }
   const [keyPat, valuePat] = parameter.elements;
-  if (!keyPat || !valuePat) {
-    return null;
-  }
-  if (
-    AST_NODE_TYPES.Identifier !== keyPat.type ||
-    AST_NODE_TYPES.Identifier !== valuePat.type
-  ) {
-    return null;
-  }
-  return { keyName: keyPat.name, valueName: valuePat.name };
+  return isIdentifierPattern(keyPat) && isIdentifierPattern(valuePat)
+    ? { keyName: keyPat.name, valueName: valuePat.name }
+    : null;
 };
 
 export type EntriesMapPattern = {

@@ -24,11 +24,9 @@ export const getValueReturnedInFirstStatement = (node: TSESTree.Expression) => {
     if (node.body.type === AST_NODE_TYPES.BlockStatement) {
       const [first] = node.body.body;
 
-      if (first?.type === AST_NODE_TYPES.ReturnStatement) {
-        return first.argument ?? null;
-      }
-
-      return null;
+      return first?.type === AST_NODE_TYPES.ReturnStatement
+        ? (first.argument ?? null)
+        : null;
     }
 
     return node.body;
@@ -114,6 +112,16 @@ export const isExplicitPropertyFunction = (
   return isMemberExpressionOf(returned, firstParameterName);
 };
 
+const isLodashPropertyMember = (
+  object: TSESTree.Identifier,
+  property: TSESTree.Identifier
+) => {
+  return (
+    ("_" === object.name || "lodash" === object.name) &&
+    "property" === property.name
+  );
+};
+
 // Checks if the iteratee is _.property('name') or lodash.property('name').
 export const isLodashPropertyCall = (iteratee: null | TSESTree.Expression) => {
   if (iteratee?.type !== AST_NODE_TYPES.CallExpression) {
@@ -128,16 +136,10 @@ export const isLodashPropertyCall = (iteratee: null | TSESTree.Expression) => {
 
   const { object, property } = callee;
 
-  if (
-    object.type !== AST_NODE_TYPES.Identifier ||
-    property.type !== AST_NODE_TYPES.Identifier
-  ) {
-    return false;
-  }
-
   return (
-    ("_" === object.name || "lodash" === object.name) &&
-    "property" === property.name
+    object.type === AST_NODE_TYPES.Identifier &&
+    property.type === AST_NODE_TYPES.Identifier &&
+    isLodashPropertyMember(object, property)
   );
 };
 

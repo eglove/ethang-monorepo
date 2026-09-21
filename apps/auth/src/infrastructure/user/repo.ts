@@ -70,10 +70,9 @@ export const createUserRepo = (database: ReturnType<typeof getDatabase>) => {
               return row ?? null;
             }
           });
-          if (isNil(record)) {
-            return yield* Effect.fail(new SaveError("Insert returned no rows"));
-          }
-          return toState(record);
+          return isNil(record)
+            ? yield* Effect.fail(new SaveError("Insert returned no rows"))
+            : toState(record);
         }
 
         yield* Effect.tryPromise({

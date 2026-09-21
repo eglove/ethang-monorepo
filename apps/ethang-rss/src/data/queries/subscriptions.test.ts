@@ -49,10 +49,9 @@ const encodeTestCursor = (value: [string, string]) => {
   const encoder = new TextEncoder();
   const bytes = encoder.encode(json) as Uint8ArrayWithBase64;
 
-  if (isFunction(bytes.toBase64)) {
-    return bytes.toBase64();
-  }
-  return Encoding.encodeBase64(bytes);
+  return isFunction(bytes.toBase64)
+    ? bytes.toBase64()
+    : Encoding.encodeBase64(bytes);
 };
 
 const decodeTestCursor = (cursor: string) => {

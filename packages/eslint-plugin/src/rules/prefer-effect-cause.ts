@@ -27,13 +27,11 @@ export const isInstanceofError = (
     return false;
   }
   const binary = node;
-  if ("instanceof" !== binary.operator) {
-    return false;
-  }
-  if (!isIdentifier(binary.right)) {
-    return false;
-  }
-  return binary.right.name.endsWith("Error");
+  return (
+    "instanceof" === binary.operator &&
+    isIdentifier(binary.right) &&
+    binary.right.name.endsWith("Error")
+  );
 };
 
 export const preferEffectCauseRule = createRule<Options, MessageIds>({

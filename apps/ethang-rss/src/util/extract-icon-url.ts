@@ -1,8 +1,11 @@
 import { Effect, Number, Option } from "effect";
+import compact from "lodash/compact.js";
 import constant from "lodash/constant.js";
 import endsWith from "lodash/endsWith.js";
 import isNil from "lodash/isNil.js";
 import isString from "lodash/isString.js";
+import map from "lodash/map.js";
+import reduce from "lodash/reduce.js";
 import some from "lodash/some.js";
 import startsWith from "lodash/startsWith.js";
 import toLower from "lodash/toLower.js";
@@ -22,13 +25,11 @@ const ICON_REL_ALTERNATIVES = [
 const isIconRelationship = (relationshipValue: string) => {
   const normalized = toLower(relationshipValue);
   return some(ICON_REL_ALTERNATIVES, (alt) => {
-    if (normalized === alt) {
-      return true;
-    }
-    if (startsWith(normalized, `${alt} `)) {
-      return true;
-    }
-    return endsWith(normalized, ` ${alt}`);
+    return (
+      normalized === alt ||
+      startsWith(normalized, `${alt} `) ||
+      endsWith(normalized, ` ${alt}`)
+    );
   });
 };
 
@@ -42,13 +43,10 @@ const parseSizeValue = (sizes: null | string) => {
   }
   const [, width, height] = match;
 
-  if (!isString(width) || !isString(height)) {
-    return 0;
-  }
-  return (
-    Option.getOrElse(Number.parse(width), constant(0)) *
-    Option.getOrElse(Number.parse(height), constant(0))
-  );
+  return !isString(width) || !isString(height)
+    ? 0
+    : Option.getOrElse(Number.parse(width), constant(0)) *
+        Option.getOrElse(Number.parse(height), constant(0));
 };
 
 const returnNull = constant(null);
@@ -83,10 +81,7 @@ const buildFaviconFallback = (baseUrl: string) => {
       })
     )
   );
-  if (isNil(originValue)) {
-    return null;
-  }
-  return `${originValue}/favicon.ico`;
+  return isNil(originValue) ? null : `${originValue}/favicon.ico`;
 };
 
 const readLinkTag = (tag: string) => {
@@ -111,27 +106,30 @@ const readLinkTag = (tag: string) => {
   };
 };
 
+type ParsedIcon = {
+  area: number;
+  href: string;
+  index: number;
+};
+
 const pickBestIcon = (matches: string[]) => {
-  let bestIndex = -1;
-  let bestArea = 0;
-  let bestHref: null | string = null;
+  const parsedIcons = compact(
+    map(matches, (tag, index) => {
+      const parsed = readLinkTag(tag);
 
-  for (const [index, tag] of matches.entries()) {
-    const parsed = readLinkTag(tag);
-    if (!isNil(parsed)) {
-      const area = parseSizeValue(parsed.sizes);
-      if (-1 === bestIndex || area > bestArea) {
-        bestIndex = index;
-        bestArea = area;
-        bestHref = parsed.href;
-      }
-    }
-  }
+      return isNil(parsed)
+        ? null
+        : { ...parsed, area: parseSizeValue(parsed.sizes), index };
+    })
+  );
 
-  if (-1 === bestIndex || isNil(bestHref)) {
-    return null;
-  }
-  return { href: bestHref, index: bestIndex };
+  return reduce(
+    parsedIcons,
+    (best: null | ParsedIcon, icon) => {
+      return isNil(best) || icon.area > best.area ? icon : best;
+    },
+    null
+  );
 };
 
 export const extractIconUrl = (html: string, baseUrl: string) => {
@@ -150,8 +148,5 @@ export const extractIconUrl = (html: string, baseUrl: string) => {
   }
 
   const fallback = buildFaviconFallback(baseUrl);
-  if (isNil(fallback)) {
-    return null;
-  }
-  return fallback;
+  return isNil(fallback) ? null : fallback;
 };

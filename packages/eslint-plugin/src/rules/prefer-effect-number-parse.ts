@@ -21,55 +21,39 @@ const PARSE_FLOAT = "parseFloat";
 const isNumberCallExpression = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
-  if (!isCallExpression(node)) {
-    return false;
-  }
-  if (!isIdentifier(node.callee)) {
-    return false;
-  }
-  return NUMBER === node.callee.name;
+  return (
+    isCallExpression(node) &&
+    isIdentifier(node.callee) &&
+    NUMBER === node.callee.name
+  );
 };
 
 const isParseFloatCallExpression = (
   node: TSESTree.Node
 ): node is TSESTree.CallExpression => {
-  if (!isCallExpression(node)) {
-    return false;
-  }
-  if (!isIdentifier(node.callee)) {
-    return false;
-  }
-  return PARSE_FLOAT === node.callee.name;
+  return (
+    isCallExpression(node) &&
+    isIdentifier(node.callee) &&
+    PARSE_FLOAT === node.callee.name
+  );
 };
 
 // True when `node` is `Number(arg)` with exactly one non-spread argument.
 export const detectNumberCoercion = (node: TSESTree.Node) => {
-  if (!isNumberCallExpression(node)) {
-    return null;
-  }
-  if (1 !== node.arguments.length) {
+  if (!isNumberCallExpression(node) || 1 !== node.arguments.length) {
     return null;
   }
   const argument = node.arguments[0];
-  if (argument?.type === AST_NODE_TYPES.SpreadElement) {
-    return null;
-  }
-  return argument;
+  return argument?.type === AST_NODE_TYPES.SpreadElement ? null : argument;
 };
 
 // True when `node` is `parseFloat(arg)` with exactly one non-spread argument.
 export const detectParseFloat = (node: TSESTree.Node) => {
-  if (!isParseFloatCallExpression(node)) {
-    return null;
-  }
-  if (1 !== node.arguments.length) {
+  if (!isParseFloatCallExpression(node) || 1 !== node.arguments.length) {
     return null;
   }
   const argument = node.arguments[0];
-  if (argument?.type === AST_NODE_TYPES.SpreadElement) {
-    return null;
-  }
-  return argument;
+  return argument?.type === AST_NODE_TYPES.SpreadElement ? null : argument;
 };
 
 export const preferEffectNumberParseRule = createRule<Options, MessageIds>({

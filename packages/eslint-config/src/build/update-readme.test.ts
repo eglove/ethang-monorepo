@@ -21,6 +21,18 @@ describe("update-readme", () => {
     expect(content).toContain("config.vitest.js");
   });
 
+  it("should prepend a generated-file banner warning against direct edits", () => {
+    updateReadme();
+
+    const call = (writeFileSync as unknown as { mock: { calls: string[][] } })
+      .mock.calls[0];
+    const content = call?.[1];
+
+    expect(
+      content?.startsWith("<!-- GENERATED FILE — DO NOT EDIT DIRECTLY")
+    ).toBe(true);
+  });
+
   it("should execute if it is the main module", async () => {
     const originalFilename = import.meta.filename;
     const [, script] = process.argv;

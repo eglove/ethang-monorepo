@@ -38,13 +38,11 @@ export const isNegatedIncludesCallWithParameter = (
   body: TSESTree.Node,
   parameterName: string
 ): body is TSESTree.UnaryExpression => {
-  if (AST_NODE_TYPES.UnaryExpression !== body.type) {
-    return false;
-  }
-  if ("!" !== body.operator) {
-    return false;
-  }
-  return isIncludesCallWithParameter(body.argument, parameterName);
+  return (
+    AST_NODE_TYPES.UnaryExpression === body.type &&
+    "!" === body.operator &&
+    isIncludesCallWithParameter(body.argument, parameterName)
+  );
 };
 
 export type DifferenceMatch = {
@@ -68,10 +66,7 @@ export const detectDifferencePattern = (node: TSESTree.CallExpression) => {
     return null;
   }
   const body = getExpressionBody(callback);
-  if (!body) {
-    return null;
-  }
-  if (!isNegatedIncludesCallWithParameter(body, parameter.name)) {
+  if (!body || !isNegatedIncludesCallWithParameter(body, parameter.name)) {
     return null;
   }
   // body.argument is the includes call since isNegatedIncludesCallWithParameter passed

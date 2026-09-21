@@ -29,10 +29,7 @@ export const isObjectKeysCall = (node: TSESTree.Node) => {
     return false;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  if (callee.computed) {
+  if (!isMemberExpression(callee) || callee.computed) {
     return false;
   }
   const { object } = callee;
@@ -40,10 +37,11 @@ export const isObjectKeysCall = (node: TSESTree.Node) => {
     return false;
   }
   const { property } = callee;
-  if (!isIdentifier(property)) {
-    return false;
-  }
-  return "Object" === object.name && "keys" === property.name;
+  return (
+    isIdentifier(property) &&
+    "Object" === object.name &&
+    "keys" === property.name
+  );
 };
 
 export const isFindCall = (node: TSESTree.Node) => {
@@ -51,17 +49,11 @@ export const isFindCall = (node: TSESTree.Node) => {
     return false;
   }
   const { callee } = node;
-  if (!isMemberExpression(callee)) {
-    return false;
-  }
-  if (callee.computed) {
+  if (!isMemberExpression(callee) || callee.computed) {
     return false;
   }
   const { property } = callee;
-  if (!isIdentifier(property)) {
-    return false;
-  }
-  return "find" === property.name;
+  return isIdentifier(property) && "find" === property.name;
 };
 
 export const getMemberExpressionCallee = (node: TSESTree.CallExpression) => {
@@ -69,10 +61,18 @@ export const getMemberExpressionCallee = (node: TSESTree.CallExpression) => {
 };
 
 export const getFindCallTarget = (node: TSESTree.Node) => {
-  if (!isCallExpression(node) || !isFindCall(node)) {
-    return null;
-  }
-  return getMemberExpressionCallee(node);
+  return !isCallExpression(node) || !isFindCall(node)
+    ? null
+    : getMemberExpressionCallee(node);
+};
+
+// An identifier whose name matches exactly — used twice when validating the
+// `obj[param]` access shape below.
+const isNamedIdentifier = (
+  node: TSESTree.Node,
+  name: string
+): node is TSESTree.Identifier => {
+  return isIdentifier(node) && node.name === name;
 };
 
 // Computed-member shape `<objectName>[<parameterName>]` — the only form
@@ -82,19 +82,12 @@ export const isObjectParameterAccess = (
   objectName: string,
   parameterName: string
 ): node is TSESTree.MemberExpression => {
-  if (!isMemberExpression(node)) {
-    return false;
-  }
-  if (!node.computed) {
-    return false;
-  }
-  if (!isIdentifier(node.object) || node.object.name !== objectName) {
-    return false;
-  }
-  if (!isIdentifier(node.property) || node.property.name !== parameterName) {
-    return false;
-  }
-  return true;
+  return (
+    isMemberExpression(node) &&
+    node.computed &&
+    isNamedIdentifier(node.object, objectName) &&
+    isNamedIdentifier(node.property, parameterName)
+  );
 };
 
 // True iff `body` references the parameter identifier *outside* of an
@@ -165,37 +158,29 @@ export const getSingleIdentifierArrowParameter = (
   callback: TSESTree.ArrowFunctionExpression
 ) => {
   const [first] = callback.params;
-  if (!first || 1 !== callback.params.length || !isIdentifier(first)) {
-    return null;
-  }
-  return first;
+  return !first || 1 !== callback.params.length || !isIdentifier(first)
+    ? null
+    : first;
 };
 
 export const getExpressionBody = (
   callback: TSESTree.ArrowFunctionExpression
 ) => {
-  if (AST_NODE_TYPES.BlockStatement === callback.body.type) {
-    return null;
-  }
-  return callback.body;
+  return AST_NODE_TYPES.BlockStatement === callback.body.type
+    ? null
+    : callback.body;
 };
 
 export const getFirstIdentifierArgument = (node: TSESTree.CallExpression) => {
   const [first] = node.arguments;
-  if (!first || !isIdentifier(first)) {
-    return null;
-  }
-  return first;
+  return !first || !isIdentifier(first) ? null : first;
 };
 
 export const getFirstArrowCallbackArgument = (
   node: TSESTree.CallExpression
 ) => {
   const [first] = node.arguments;
-  if (!first || !isArrowFunctionExpression(first)) {
-    return null;
-  }
-  return first;
+  return !first || !isArrowFunctionExpression(first) ? null : first;
 };
 
 export const resolveObjectKeysInner = (innerCall: TSESTree.Node) => {
@@ -216,13 +201,10 @@ export const getSafeBodyAccesses = (
     objectName,
     parameterName
   );
-  if (0 === accesses.length) {
-    return null;
-  }
-  if (bodyUsesParameterOutsideObjectAccess(body, objectName, parameterName)) {
-    return null;
-  }
-  return accesses;
+  return 0 === accesses.length ||
+    bodyUsesParameterOutsideObjectAccess(body, objectName, parameterName)
+    ? null
+    : accesses;
 };
 
 export const detectFindKeyPattern = (node: TSESTree.CallExpression) => {
