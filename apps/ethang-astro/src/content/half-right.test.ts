@@ -1,3 +1,11 @@
+import compact from "lodash/compact.js";
+import filter from "lodash/filter.js";
+import flatMap from "lodash/flatMap.js";
+import map from "lodash/map.js";
+import replace from "lodash/replace.js";
+import size from "lodash/size.js";
+import split from "lodash/split.js";
+import trim from "lodash/trim.js";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
@@ -106,6 +114,57 @@ const requiredSnippets = [
   "a claim about the past"
 ] as const;
 
+/*
+ * Abbreviation dots (H.R., Rep., Sept.) are not sentence ends; pinning the
+ * space behind them keeps the fragment counters honest.
+ */
+const NO_BREAK = "\u{E000}";
+
+const bodyWithoutScaffolding = (post: string) => {
+  return replace(
+    replace(post, /^---[\s\S]*?---\s*/u, ""),
+    /```[\s\S]*?```/gu,
+    ""
+  );
+};
+
+const blocksOf = (post: string) => {
+  return compact(map(split(bodyWithoutScaffolding(post), /\n\s*\n/u), trim));
+};
+
+const isProseParagraph = (block: string) => {
+  return (
+    !block.startsWith("#") &&
+    !block.startsWith("-") &&
+    !block.startsWith("<") &&
+    !/^\d+\./u.test(block)
+  );
+};
+
+const guardAbbreviations = (block: string) => {
+  return replace(
+    block,
+    /(\b(?:H\.R\.|Rep\.|Sen\.|Mr\.|Ms\.|Mrs\.|Dr\.|Jan\.|Feb\.|Mar\.|Apr\.|Jun\.|Jul\.|Aug\.|Sept?\.|Oct\.|Nov\.|Dec\.)) /gu,
+    `$1${NO_BREAK}`
+  );
+};
+
+const sentencesOf = (block: string) => {
+  return compact(
+    map(split(guardAbbreviations(block), /(?<=[.!?])\s+/u), (fragment) => {
+      return replace(fragment, /\u{E000}/gu, " ");
+    })
+  );
+};
+
+const sentenceCount = (block: string) => {
+  return size(sentencesOf(block));
+};
+
+const wordCount = (sentence: string) => {
+  return size(split(trim(sentence), /\s+/u));
+};
+
 describe("Half Right", () => {
   it("exists with the agreed metadata", async () => {
     const post = await readFile(postPath, "utf8");
@@ -140,5 +199,41 @@ describe("Half Right", () => {
 
     expect(post).not.toContain(String.raw`C:\Users`);
     expect(post).not.toContain("personal-vault");
+  });
+});
+
+describe("Half Right reading comfort", () => {
+  it("keeps prose paragraphs to four sentences or fewer", async () => {
+    const post = await readFile(postPath, "utf8");
+    const longParagraphs = filter(
+      filter(blocksOf(post), isProseParagraph),
+      (block) => {
+        return 4 < sentenceCount(block);
+      }
+    );
+
+    expect(longParagraphs).toEqual([]);
+  });
+
+  it("keeps every sentence under forty words", async () => {
+    const post = await readFile(postPath, "utf8");
+    const longSentences = filter(
+      flatMap(blocksOf(post), sentencesOf),
+      (sentence) => {
+        return 40 < wordCount(sentence);
+      }
+    );
+
+    expect(longSentences).toEqual([]);
+  });
+
+  it("presents the record and the policy sections as scannable labeled lists", async () => {
+    const post = await readFile(postPath, "utf8");
+
+    expect(post).toContain("- **Anthropic, July 30:**");
+    expect(post).toContain("- **Meta, August 5:**");
+    expect(post).toContain("**Federal:**");
+    expect(post).toContain("**California:**");
+    expect(post).toContain("**New York:**");
   });
 });
