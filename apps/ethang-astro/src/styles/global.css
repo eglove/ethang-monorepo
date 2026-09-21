@@ -233,3 +233,9 @@ h6 {
 .blog-prose .astro-code {
   background-color: var(--color-night-owl-bg);
 }
+
+/* KaTeX display equations (rehype-katex ships the rest of the styles). */
+.blog-prose .katex-display {
+  margin: 1.5rem 0;
+  overflow-inline: auto;
+}

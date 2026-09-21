@@ -1,9 +1,13 @@
 import cloudflare from "@astrojs/cloudflare";
+import { unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
+import rehypeKatex from "rehype-katex";
+import rehypeMermaid from "rehype-mermaid";
+import remarkMath from "remark-math";
 
 const SITE = "https://ethang.dev";
 
@@ -31,7 +35,26 @@ export default defineConfig({
   ],
   image: {},
   integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
-  markdown: { shikiConfig: { theme: "night-owl" } },
+  markdown: {
+    /*
+     * Math and diagrams render at build time: KaTeX emits HTML in the rehype
+     * step, and rehype-mermaid replaces ```mermaid fences with inline SVGs
+     * (strategy "inline-svg"), so neither costs client-side JavaScript. The
+     * dark mermaid theme matches the Night Owl palette; diagram rendering
+     * needs a Playwright Chromium install (`npx playwright install chromium`).
+     */
+    processor: unified({
+      rehypePlugins: [
+        [rehypeMermaid, { mermaidConfig: { theme: "dark" } }],
+        rehypeKatex
+      ],
+      remarkPlugins: [remarkMath]
+    }),
+    shikiConfig: { theme: "night-owl" },
+    // Astro highlights fences before user rehype plugins run, so mermaid must
+    // be excluded or rehype-mermaid never sees the language-mermaid class.
+    syntaxHighlight: { excludeLangs: ["mermaid"], type: "shiki" }
+  },
   site: SITE,
   vite: {
     plugins: [tailwindcss()]
