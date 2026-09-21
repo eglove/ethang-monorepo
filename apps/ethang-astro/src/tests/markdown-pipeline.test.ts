@@ -111,6 +111,32 @@ describe("markdown math pipeline", () => {
   });
 });
 
+describe("markdown external links", () => {
+  const targetBlank = 'target="_blank"';
+  const relNoopener = 'rel="noopener noreferrer"';
+
+  it("opens external links in a new tab", async () => {
+    const html = await renderMarkdown(
+      "[a study](https://www.nature.com/articles/srep40700)"
+    );
+
+    expect(html).toContain(targetBlank);
+    expect(html).toContain(relNoopener);
+  });
+
+  it("leaves internal links alone", async () => {
+    const html = await renderMarkdown("[a post](/blog/some-post)");
+
+    expect(html).not.toContain(targetBlank);
+  });
+
+  it("leaves anchor links alone", async () => {
+    const html = await renderMarkdown("[a section](#a-section)");
+
+    expect(html).not.toContain(targetBlank);
+  });
+});
+
 describe("markdown mermaid pipeline", () => {
   it(
     "renders a fenced mermaid diagram as an inline SVG",

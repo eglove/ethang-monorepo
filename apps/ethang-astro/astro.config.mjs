@@ -11,6 +11,42 @@ import remarkMath from "remark-math";
 
 const SITE = "https://ethang.dev";
 
+/**
+Walks a hast tree and opens every absolute http(s) link in a new tab.
+Relative and anchor links stay in the same tab. Member types are declared
+inline because the app does not depend on @types/hast; only `a` elements
+reach the properties access, and hast elements always carry properties.
+
+@param {object} node
+@param {string} [node.type]
+@param {string} [node.tagName]
+@param {Record<string, unknown>} node.properties
+@param {Array<object>} [node.children]
+*/
+const openExternalLinksInNewTab = (node) => {
+  if (
+    "element" === node.type &&
+    "a" === node.tagName &&
+    /^https?:/iu.test(String(node.properties.href))
+  ) {
+    node.properties.target = "_blank";
+    node.properties.rel = "noopener noreferrer";
+  }
+  if (Array.isArray(node.children)) {
+    for (const child of node.children) {
+      openExternalLinksInNewTab(child);
+    }
+  }
+};
+
+/*
+ * Unified calls a plugin once to produce its transformer, so the walker is
+ * wrapped in an attacher. Runs over every markdown and MDX document.
+ */
+const externalLinksNewTab = () => {
+  return openExternalLinksInNewTab;
+};
+
 // The Cloudflare adapter registers a worker Vite environment that conflicts
 // with Vitest's SSR environment. Tests render components through the Astro
 // container API, which does not need the adapter, so skip it under the test
@@ -46,7 +82,8 @@ export default defineConfig({
     processor: unified({
       rehypePlugins: [
         [rehypeMermaid, { mermaidConfig: { theme: "dark" } }],
-        rehypeKatex
+        rehypeKatex,
+        externalLinksNewTab
       ],
       remarkPlugins: [remarkMath]
     }),
