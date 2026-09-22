@@ -23,11 +23,9 @@ describe("blog prose list styles", () => {
     expect(css).toMatch(/\.blog-prose li\s*\{[^}]*margin:[^;}]+/u);
   });
 
-  it("colors markers with the palette's bullet token", async () => {
+  it("styles lists without non-baseline selectors like ::marker", async () => {
     const css = await readFile(stylesheetPath, "utf8");
 
-    expect(css).toMatch(
-      /\.blog-prose li::marker\s*\{[^}]*color:\s*var\(--color-night-owl-mint\)/u
-    );
+    expect(css).not.toContain("::marker");
   });
 });

@@ -246,9 +246,6 @@ h6 {
 .blog-prose li {
   margin: 0.375rem 0;
 }
-.blog-prose li::marker {
-  color: var(--color-night-owl-mint);
-}
 
 /* Astro fenced-code blocks (shiki night-owl) fill the palette too. */
 .blog-prose .astro-code {
