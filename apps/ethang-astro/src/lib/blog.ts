@@ -9,6 +9,7 @@ import { BLOG_PAGE_SIZE, toMaxPages } from "./blog-pagination.ts";
 export type BlogListPost = {
   data: {
     blogCategory?: string;
+    pubDate: DateTime.Utc;
     slug: string;
     title: string;
     updatedDate?: DateTime.Utc;
@@ -27,6 +28,7 @@ const allPostsDesc = async () => {
     const updatedDate = post.data.updatedDate;
     return {
       data: {
+        pubDate: DateTime.unsafeMake(post.data.pubDate),
         slug: post.data.slug,
         title: post.data.title,
         ...(!isNil(post.data.blogCategory) && {

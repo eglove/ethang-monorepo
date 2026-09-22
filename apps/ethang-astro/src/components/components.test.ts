@@ -74,7 +74,22 @@ describe("BlogList", () => {
     expect(html).toContain("Updated");
   });
 
-  it("omits the updated date when absent", async () => {
+  it("shows the published date as Updated when no updated date is present", async () => {
+    const html = await render({
+      maxPages: 1,
+      page: 1,
+      posts: [
+        post({
+          pubDate: DateTime.unsafeMake(new Date(2024, 0, 1)),
+          title: "X"
+        })
+      ]
+    });
+
+    expect(html).toContain("Updated");
+  });
+
+  it("omits Updated only when a post has no date at all", async () => {
     const html = await render({
       maxPages: 1,
       page: 1,

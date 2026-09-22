@@ -17,7 +17,9 @@ import remarkRehype from "remark-rehype";
 import { type Pluggable, unified } from "unified";
 import { describe, expect, it } from "vitest";
 
-import astroConfig from "../../astro.config.mjs";
+import astroConfig, {
+  isAstroHeadInjectDirectiveWarning
+} from "../../astro.config.mjs";
 
 const markdownOptions = astroConfig.markdown;
 const processor = markdownOptions?.processor;
@@ -188,5 +190,45 @@ describe("KaTeX stylesheet", () => {
 
     expect(stylesheet).toContain(".katex");
     expect(layout).toContain('import "katex/dist/katex.min.css"');
+  });
+});
+
+describe("vite build logger", () => {
+  it.each([
+    {
+      message:
+        'The semantics of the module level directive "use astro:head-inject" in "src/content/blog/the-blowup-half/index.mdx?astroPropagatedAssets" may not be preserved when bundling.',
+      name: "the astro content-assets wrapper"
+    },
+    {
+      message:
+        'The semantics of the module level directive "use astro:head-inject" in "src/content/blog/half-right/index.mdx?astroPropagatedAssets" may not be preserved when bundling.',
+      name: "any content entry with propagated assets"
+    }
+  ])("suppresses the vestigial directive warning for $name", ({ message }) => {
+    expect(isAstroHeadInjectDirectiveWarning(message)).toBe(true);
+  });
+
+  it.each([
+    { message: "", name: "an empty message" },
+    {
+      message:
+        'The semantics of the module level directive "use worker" in "src/worker.js" may not be preserved when bundling.',
+      name: "a different module-level directive"
+    },
+    {
+      message: 'Module "foo" externalized for browser compatibility.',
+      name: "an unrelated warning"
+    },
+    {
+      message: "Failed to resolve astro:head-inject import in entry.",
+      name: "the directive name outside a directive warning"
+    }
+  ])("passes through $name", ({ message }) => {
+    expect(isAstroHeadInjectDirectiveWarning(message)).toBe(false);
+  });
+
+  it("wires the filtered logger into the vite config", () => {
+    expect(astroConfig.vite?.customLogger).toBeDefined();
   });
 });

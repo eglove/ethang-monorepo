@@ -9,6 +9,7 @@ import isNil from "lodash/isNil.js";
 import rehypeKatex from "rehype-katex";
 import rehypeMermaid from "rehype-mermaid";
 import remarkMath from "remark-math";
+import { createLogger } from "vite";
 
 const SITE = "https://ethang.dev";
 
@@ -126,6 +127,54 @@ const upgradeDisplayMath = () => {
 // flag set by vitest.config.ts.
 const isTest = "1" === process.env.ASTRO_TEST;
 
+/*
+ * Astro's content-assets plugin stamps "use astro:head-inject" onto the
+ * ?astroPropagatedAssets wrapper it generates for every content entry with
+ * images, and rolldown-vite warns that the directive may not survive
+ * bundling. Nothing consumes the directive anymore: the wrapper carries the
+ * propagation payload as named exports (__astroPropagation, collectedLinks,
+ * collectedStyles), and no code in astro or @astrojs reads the directive
+ * back. Drop exactly that warning and leave every other one visible; remove
+ * this filter when Astro stops emitting the directive.
+ */
+/**
+@param {string} message
+@returns {boolean}
+*/
+export const isAstroHeadInjectDirectiveWarning = (message) => {
+  return message.includes('module level directive "use astro:head-inject"');
+};
+
+/**
+@type {import("vite").Logger}
+*/
+const viteLogger = createLogger();
+
+/**
+@type {import("vite").Logger}
+*/
+const filteredLogger = {
+  ...viteLogger,
+  /**
+  @param {string} message
+  @param {import("vite").LogOptions} [options]
+  */
+  warn: (message, options) => {
+    if (!isAstroHeadInjectDirectiveWarning(message)) {
+      viteLogger.warn(message, options);
+    }
+  },
+  /**
+  @param {string} message
+  @param {import("vite").LogOptions} [options]
+  */
+  warnOnce: (message, options) => {
+    if (!isAstroHeadInjectDirectiveWarning(message)) {
+      viteLogger.warnOnce(message, options);
+    }
+  }
+};
+
 // https://astro.build/config
 export default defineConfig({
   // eslint-disable-next-line no-undefined
@@ -181,6 +230,7 @@ export default defineConfig({
   },
   site: SITE,
   vite: {
+    customLogger: filteredLogger,
     plugins: [tailwindcss()]
   }
 });

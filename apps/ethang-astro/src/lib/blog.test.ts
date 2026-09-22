@@ -128,6 +128,7 @@ describe("post mapping", () => {
     setCollection([
       makePost({
         blogCategory: "tech",
+        pubDate: new Date(2024, 0, 1),
         slug: "with-meta",
         updatedDate: new Date(2024, 6, 1)
       })
@@ -139,12 +140,27 @@ describe("post mapping", () => {
     expect(posts[0]?.data).toHaveProperty("updatedDate");
   });
 
-  it("omits the category and updated date when absent", async () => {
-    setCollection([makePost({ slug: "bare" })]);
+  it("always passes the published date through for the Updated fallback", async () => {
+    setCollection([
+      makePost({
+        pubDate: new Date(2024, 2, 1),
+        slug: "with-update",
+        updatedDate: new Date(2024, 6, 1)
+      }),
+      makePost({ pubDate: new Date(2024, 3, 1), slug: "bare" })
+    ]);
 
     const { posts } = await fetchBlogPage(1);
 
-    expect(posts[0]?.data).not.toHaveProperty("blogCategory");
-    expect(posts[0]?.data).not.toHaveProperty("updatedDate");
+    const withUpdate = posts.find(({ data }) => {
+      return "with-update" === data.slug;
+    });
+    const bare = posts.find(({ data }) => {
+      return "bare" === data.slug;
+    });
+
+    expect(withUpdate?.data).toHaveProperty("pubDate");
+    expect(bare?.data).toHaveProperty("pubDate");
+    expect(bare?.data).not.toHaveProperty("updatedDate");
   });
 });
