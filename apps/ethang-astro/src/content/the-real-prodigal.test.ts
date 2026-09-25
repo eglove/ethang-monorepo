@@ -1,4 +1,5 @@
 import compact from "lodash/compact.js";
+import each from "lodash/each.js";
 import every from "lodash/every.js";
 import filter from "lodash/filter.js";
 import flatMap from "lodash/flatMap.js";
@@ -96,14 +97,12 @@ const blocksOf = (post: string) => {
   return compact(map(split(bodyWithoutScaffolding(post), /\n\s*\n/u), trim));
 };
 
+/* Headings, list items, blockquotes, JSX components, and ordered lists are
+   scaffolding, not prose paragraphs. */
+const nonProsePrefix = /^(?:[#><-]|\d+\.)/u;
+
 const isProseParagraph = (block: string) => {
-  return (
-    !block.startsWith("#") &&
-    !block.startsWith("-") &&
-    !block.startsWith(">") &&
-    !block.startsWith("<") &&
-    !/^\d+\./u.test(block)
-  );
+  return !nonProsePrefix.test(block);
 };
 
 const guardAbbreviations = (block: string) => {
@@ -178,8 +177,8 @@ describe("The Real Prodigal", () => {
     expect(post).toContain(
       'import Blockquote from "../../../components/ui/Blockquote.astro";'
     );
-    map(passages, (passage) => {
-      expect(post).toContain('<Blockquote source="' + passage + '">');
+    each(passages, (passage) => {
+      expect(post).toContain(`<Blockquote source="${passage}">`);
     });
     expect(size(post.match(/<\/Blockquote>/gu))).toBe(8);
     expect(post).not.toMatch(/\*Luke 15:/u);
@@ -189,7 +188,7 @@ describe("The Real Prodigal", () => {
     const post = await readFile(postPath, "utf8");
     const body = replace(post, /^---[\s\S]*?---\s*/u, "");
 
-    expect(body).not.toMatch(/[\u2014]|--/u);
+    expect(body).not.toMatch(/\u{2014}|--/u);
   });
 });
 

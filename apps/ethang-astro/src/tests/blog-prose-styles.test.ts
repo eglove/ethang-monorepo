@@ -41,7 +41,9 @@ describe("blog prose blockquote highlight", () => {
       /\.blog-prose blockquote\s*\{[^}]*background:\s*var\(--color-night-owl-bg\)/u
     );
     expect(css).toMatch(/\.blog-prose blockquote\s*\{[^}]*padding:[^;}]+/u);
-    expect(css).toMatch(/\.blog-prose blockquote\s*\{[^}]*border-radius:[^;}]+/u);
+    expect(css).toMatch(
+      /\.blog-prose blockquote\s*\{[^}]*border-radius:[^;}]+/u
+    );
   });
 
   it("tightens spacing between paragraphs inside a quotation", async () => {
