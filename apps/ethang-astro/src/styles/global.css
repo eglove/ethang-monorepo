@@ -226,8 +226,17 @@ h6 {
   background: transparent;
   padding: 0;
 }
+/* Quotations (scripture, cited passages) read as highlighted source
+   material: an accent bar on the reading-start edge plus a panel tint. */
 .blog-prose blockquote {
-  border-color: var(--color-primary);
+  border-inline-start: 3px solid var(--color-primary);
+  background: var(--color-night-owl-bg);
+  border-radius: 0.375rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+}
+.blog-prose blockquote p {
+  margin: 0.25rem 0;
 }
 
 /* Preflight strips list-style, margin, and padding; restore them for MDX lists.

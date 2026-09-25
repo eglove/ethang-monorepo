@@ -29,3 +29,24 @@ describe("blog prose list styles", () => {
     expect(css).not.toContain("::marker");
   });
 });
+
+describe("blog prose blockquote highlight", () => {
+  it("sets quotations off with an accent bar and a tinted panel", async () => {
+    const css = await readFile(stylesheetPath, "utf8");
+
+    expect(css).toMatch(
+      /\.blog-prose blockquote\s*\{[^}]*border-inline-start:\s*3px solid var\(--color-primary\)/u
+    );
+    expect(css).toMatch(
+      /\.blog-prose blockquote\s*\{[^}]*background:\s*var\(--color-night-owl-bg\)/u
+    );
+    expect(css).toMatch(/\.blog-prose blockquote\s*\{[^}]*padding:[^;}]+/u);
+    expect(css).toMatch(/\.blog-prose blockquote\s*\{[^}]*border-radius:[^;}]+/u);
+  });
+
+  it("tightens spacing between paragraphs inside a quotation", async () => {
+    const css = await readFile(stylesheetPath, "utf8");
+
+    expect(css).toMatch(/\.blog-prose blockquote p\s*\{[^}]*margin:[^;}]+/u);
+  });
+});
