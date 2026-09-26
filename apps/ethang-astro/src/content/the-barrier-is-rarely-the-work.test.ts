@@ -87,7 +87,10 @@ const requiredSnippets = [
   "The masking burnout loop: each pass through the cycle deepens the next, and years of it exits into burnout.",
   "The five defaults from this section, and the adjustment each one calls for.",
   "featuredImage: ./images/featured.jpg",
-  'featuredImageAlt: "A man pressing his palm against a glass pane etched with a maze pattern, meeting his own reflection on the other side."'
+  'featuredImageAlt: "A man pressing his palm against a glass pane etched with a maze pattern, meeting his own reflection on the other side."',
+  'updatedDate: "2026-09-25T12:00:00Z"',
+  "Update, September 25, 2026",
+  "](/blog/graded-as-morals)"
 ] as const;
 
 describe("The Barrier Is Rarely the Work", () => {
