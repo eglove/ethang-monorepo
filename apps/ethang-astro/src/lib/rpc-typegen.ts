@@ -13,6 +13,7 @@ of type checking. The sibling declarations are produced by
 regenerated via `pnpm cf-typegen` whenever a sibling's RPC surface changes.
 */
 
+import map from "lodash/map.js";
 export const BOUND_APPS = [
   "ethang-courses",
   "ethang-rss",
@@ -21,3 +22,29 @@ export const BOUND_APPS = [
 
 export const GENERATED_TYPES_PATH = ".cloudflare/types/index.d.ts";
 export const RPC_DECLARATIONS_DIR = "dist-types";
+
+export const AUGMENTATION_MARKER = "RPC bindings typed from sibling";
+
+/**
+Build the namespace-merge block appended to the generated types file.
+The import specifiers resolve from the app's src/ directory, where the
+generated types file lives two levels up.
+*/
+export const buildRpcAugmentation = (boundApps: readonly string[]) => {
+  const rpcBindingLines = map(boundApps, (app) => {
+    const bindingName = app.replaceAll("-", "_");
+    const specifier = `../../${app}/${RPC_DECLARATIONS_DIR}/src/index`;
+    return `\t\t${bindingName}: Service<typeof import(${JSON.stringify(specifier)}).default>;`;
+  });
+
+  return [
+    "",
+    `// ${AUGMENTATION_MARKER} declaration outputs (see src/lib/rpc-typegen.ts).`,
+    "declare namespace Cloudflare {",
+    "\tinterface Env {",
+    ...rpcBindingLines,
+    "\t}",
+    "}",
+    ""
+  ].join("\n");
+};
