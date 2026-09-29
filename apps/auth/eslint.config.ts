@@ -4,10 +4,12 @@ import { defineConfig, globalIgnores } from "eslint/config";
 export default defineConfig(
   globalIgnores([
     ".wrangler",
+    ".cloudflare",
     "node_modules",
     "**/*.d.ts",
     "generated",
-    "wrangler.jsonc",
+    "cloudflare.config.ts",
+    "wrangler.config.ts",
     "tsconfig.json",
     "migrations",
     "coverage"

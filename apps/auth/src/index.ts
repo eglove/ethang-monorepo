@@ -14,7 +14,7 @@ import { createPasswordService } from "./infrastructure/user/password-service.ts
 import { createUserRepo } from "./infrastructure/user/repo.ts";
 import { createTokenService } from "./infrastructure/user/token-service.ts";
 
-export type AuthContextObject = { Bindings: CloudflareBindings };
+export type AuthContextObject = { Bindings: Env };
 
 const AUTH_COOKIE_NAME = "ethang-auth-token";
 

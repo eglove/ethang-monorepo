@@ -22,6 +22,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.11",
     "browserslist-config-baseline": "^0.5.0",
+    "cf": "1.0.0-beta.5",
     "playwright": "^1.63.0",
     "rehype-stringify": "^10.0.1",
     "remark-gfm": "^4.0.1",
@@ -40,8 +41,8 @@
   "scripts": {
     "astro": "astro",
     "build": "astro build",
-    "cf-typegen": "wrangler types --config wrangler.jsonc --config ../ethang-courses/wrangler.jsonc --config ../ethang-rss/wrangler.jsonc --config ../job-applications/wrangler.jsonc && pnpm emit-rpc-declarations && pnpm rewrite-rpc-imports",
-    "deploy": "astro build && wrangler deploy",
+    "cf-typegen": "cf workers types && pnpm emit-rpc-declarations && pnpm rewrite-rpc-imports",
+    "deploy": "astro build && cf deploy",
     "dev": "astro dev",
     "emit-rpc-declarations": "node scripts/emit-rpc-declarations.ts",
     "generate-types": "wrangler types",

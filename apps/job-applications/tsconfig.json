@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "ignoreDeprecations": "6.0",
-    "types": ["@cloudflare/workers-types", "node"]
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["./.cloudflare/types/index.d.ts", "node"]
   },
   "exclude": ["coverage"],
   "extends": ["../../packages/tsconfig/tsconfig.base.json"]

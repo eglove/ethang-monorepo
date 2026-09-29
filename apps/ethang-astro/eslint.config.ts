@@ -10,6 +10,7 @@ export default defineConfig(
     "dev-dist",
     "dist",
     ".wrangler",
+    ".cloudflare",
     "**/*.d.ts",
     ".astro",
     "src/lib/rss.test.ts",

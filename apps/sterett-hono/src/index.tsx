@@ -17,7 +17,7 @@ import { NewsPage } from "./components/pages/news-page.tsx";
 import { TrusteesPage } from "./components/pages/trustees-page.tsx";
 import { lastModifiedMiddleware } from "./middleware/last-modified.ts";
 
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+const app = new Hono<{ Bindings: Env }>();
 
 app.use(lastModifiedMiddleware);
 

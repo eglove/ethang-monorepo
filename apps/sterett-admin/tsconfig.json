@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["vite/client", "./.cloudflare/types/index.d.ts"]
+  },
   "exclude": ["dist"],
   "extends": ["../../packages/tsconfig/tsconfig.react.json"]
 }
