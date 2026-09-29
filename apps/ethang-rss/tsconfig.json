@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "types": ["node"]
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["./.cloudflare/types/index.d.ts", "node"]
   },
   "extends": ["../../packages/tsconfig/tsconfig.base.json"]
 }

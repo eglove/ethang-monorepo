@@ -8,7 +8,8 @@ export default defineConfig(
     "dist",
     "node_modules",
     "tsconfig.json",
-    "wrangler.jsonc",
+    "cloudflare.config.ts",
+    "wrangler.config.ts",
     "coverage"
   ]),
   ...config,

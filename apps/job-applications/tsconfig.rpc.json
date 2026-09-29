@@ -4,9 +4,10 @@
     "emitDeclarationOnly": true,
     "noEmit": false,
     "outDir": "dist-types",
-    "rootDir": "src",
+    "rewriteRelativeImportExtensions": true,
+    "rootDir": ".",
     "skipLibCheck": true
   },
   "extends": "./tsconfig.json",
-  "include": ["src/index.ts", "src/**/*.d.ts", "worker-configuration.d.ts"]
+  "include": ["src/index.ts", "src/**/*.d.ts", ".cloudflare/types/index.d.ts"]
 }

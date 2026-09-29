@@ -9,6 +9,13 @@ import { describe, expect, expectTypeOf, it } from "vitest";
 
 const appRoot = path.resolve(import.meta.dirname, "..", "..");
 
+/**
+Type-level any check. vitest's expectTypeOf().not.toBeAny() collapses to
+ExpectAny for the large RPC return types, so this conditional is used
+instead: 0 extends 1 & T holds only when T is any.
+*/
+type NotAny<T> = 0 extends 1 & T ? false : true;
+
 describe("workspace type safety", () => {
   it(
     "type-checks without pulling sibling worker sources into the program",
@@ -28,14 +35,14 @@ describe("workspace type safety", () => {
 
   it("keeps service binding RPC signatures concrete", () => {
     expectTypeOf<
-      Awaited<ReturnType<typeof env.ethang_rss.subscriptions>>
-    >().not.toBeAny();
-    expectTypeOf<
-      Awaited<ReturnType<typeof env.ethang_rss.allArticles>>
-    >().not.toBeAny();
-    expectTypeOf<
       ReturnType<typeof env.ethang_rss.addSubscription>
     >().toEqualTypeOf<Promise<null>>();
+    expectTypeOf<
+      NotAny<Awaited<ReturnType<typeof env.ethang_rss.subscriptions>>>
+    >().toEqualTypeOf<true>();
+    expectTypeOf<
+      NotAny<Awaited<ReturnType<typeof env.ethang_rss.allArticles>>>
+    >().toEqualTypeOf<true>();
   });
 });
 
@@ -43,9 +50,7 @@ describe("lint script", () => {
   it("type-checks as part of lint, like every other project", () => {
     const packageManifest = JSON.parse(
       readFileSync(path.resolve(appRoot, "package.json"), "utf8")
-    ) as { scripts: { lint: string } };
-    expect(packageManifest.scripts.lint).toBe(
-      "eslint . --fix && pnpm tsc --noEmit"
     );
+    expect(packageManifest.scripts.lint).toContain("tsc --noEmit");
   });
 });

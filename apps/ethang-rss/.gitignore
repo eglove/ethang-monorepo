@@ -164,4 +164,5 @@ dist
 !.dev.vars.example
 .env*
 !.env.example
-.wrangler/
+.wrangler
+.cloudflare/

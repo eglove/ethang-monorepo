@@ -2,7 +2,9 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "types": ["./worker-configuration.d.ts", "node"]
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["./.cloudflare/types/index.d.ts", "node"]
   },
   "extends": ["../../packages/tsconfig/tsconfig.base.json"]
 }

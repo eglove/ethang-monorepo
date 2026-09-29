@@ -1,5 +1,9 @@
+type Environment = {
+  ASSETS: Fetcher;
+};
+
 export default {
-  async fetch(request, environment) {
+  async fetch(request: Request, environment: Environment) {
     const response = await environment.ASSETS.fetch(request);
 
     return 404 === response.status
