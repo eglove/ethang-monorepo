@@ -1,6 +1,5 @@
 **/.sanity/
 **/.wrangler/
-**/.cloudflare/
 .output.txt
 .claude/settings.local.json
 .worktrees/
