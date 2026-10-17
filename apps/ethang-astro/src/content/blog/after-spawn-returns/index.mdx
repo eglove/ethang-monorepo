@@ -1,0 +1,146 @@
+---
+blogCategory: "Engineering"
+description: "What happens after a helper agent is spawned: how the harness runs children so failures stay contained and work is never lost, and how automatic memory cleanup keeps long tasks alive when the model's context fills up."
+featuredImage: ./images/featured.jpg
+featuredImageAlt: "Abstract illustration of the memory pressure cycle: a glowing sawtooth utilization curve crossing amber, red, and cyan threshold lines, with a branching tree of glowing agent nodes growing from its peak"
+pubDate: "2026-10-17T12:00:00Z"
+slug: "after-spawn-returns"
+title: "After Spawn Returns: How eThang Agent Runs Subagents and Manages Their Memory"
+updatedDate: "2026-10-17T12:00:00Z"
+---
+
+import PostImage from "../../../components/ui/PostImage.astro";
+import PostTable from "../../../components/ui/PostTable.astro";
+
+The [previous post](/blog/sessions-are-agents) covered how [eThang Agent](https://github.com/eglove/ethang-agent), the Windows-native harness I have been building, lets a session spawn helper agents ("children"): each child gets a contract and narrowed permissions, and spawning returns immediately. This post is about what happens next, and what the design buys you.
+
+Two things happen after spawn returns. The child runs. And while it runs, its memory fills up. The harness has an answer for both, and the answers share one idea: when something goes wrong, the system produces a fact you can read, a saved record or a named error, instead of a crash or a silence.
+
+## What happens when a child runs
+
+Before a child sends its first request, the harness checks two things. Does the child have a model assigned? And does the app know that model's context window, the amount of text the model can work with at once? If either check fails, the child does not start. You get a clear error instead.
+
+The window check exists because a child once kept calling tools while never reaching its model, and every status view showed it as alive and busy. The stricter rule is newer: the app also refuses to start a child when it does not know the model's memory size. That sounds paranoid until you see what depends on the number. When memory counts as full, what cleanup may remove, how cost is tracked; all of it is computed from the window size. A wrong guess would quietly poison every one of those decisions. So the app refuses to guess.
+
+### Failures stay contained
+
+A child is a program talking to a live model over a network. Things fail. The rule: a child can fail in any way at all, and the session that spawned it keeps working. You press stop, the child ends as "interrupted". The provider errors out, the child ends as "provider error". Either way the parent receives a short, readable failure it can act on, never an exception that crashes its own turn.
+
+<div style={{ backgroundColor: "#011627", border: "1px solid rgba(127, 219, 202, 0.2)", borderRadius: "0.5rem", padding: "0.75rem 1rem", margin: "1rem 0", fontFamily: "monospace", fontSize: "0.85rem", lineHeight: "1.6" }}>
+  <div style={{ color: "#9aaebc", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>What the parent agent reads when a child settles</div>
+  <div style={{ color: "#c5e478" }}>id=b7e status=completed</div>
+  <div style={{ color: "#d6deeb" }}>report: tests pass, PR opened</div>
+  <div style={{ color: "#ff5874", marginTop: "0.5rem" }}>id=c91 status=failed reason=provider-error</div>
+  <div style={{ color: "#d6deeb" }}>report: child agent's model provider failed.</div>
+</div>
+
+### Work in progress is never lost
+
+While a child works, everything it says and does is saved the moment it happens, not at the end. If it is interrupted halfway through (you pressed stop, the app closed, the machine rebooted), the transcript survives up to that moment. Resume the run and the child wakes up as itself: same history, plus a short instruction to finish up. It does not start over, and it does not come back with amnesia.
+
+<div style={{ backgroundColor: "#011627", border: "1px solid rgba(127, 219, 202, 0.2)", borderRadius: "0.5rem", padding: "0.75rem 1rem", margin: "1rem 0", fontFamily: "monospace", fontSize: "0.85rem", lineHeight: "1.6" }}>
+  <div style={{ color: "#9aaebc", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>What the resumed child reads</div>
+  <div style={{ color: "#ecc48d" }}>[watchdog] You showed no activity for 17 minutes. Continue from where you stopped and wrap up now: finish any essential work and produce your final report as your next reply.</div>
+</div>
+
+### Bad answers cannot sneak through
+
+When a spawn asks for structured output, say JSON with specific fields, the harness checks the child's final answer against that shape. A mismatch earns one repair round: the child is told exactly what was wrong and tries again. If it fails a second time, the run is marked failed with the validation error attached. The parent gets either an answer that honors the shape or an honest failure. What it never gets is a plausible-looking answer that quietly violates the contract, because that is how a session ends up building on bad data.
+
+One small touch: when a child finishes, the harness checks whether it left scratch files in your workspace and lists them in its report. That check exists because fresh children left scratch files behind twice. Now the report says so.
+
+## When memory fills up
+
+Every model has a limit on how much it can pay attention to at once: the context window. Think of it as working memory. Long tasks fill it with tool results, file contents, and back-and-forth, and a filling window hurts twice. Before the hard limit, quality drops: models get measurably worse at recall and reasoning as the input grows. Chroma Research tested 18 models, including GPT-4.1, Claude, and Gemini, and found performance degrading with input length even on simple retrieval tasks, a problem researchers call [context rot](https://research.trychroma.com/context-rot). Anthropic's context engineering guide gives agents the working definition: as tokens accumulate, the model's ability to accurately recall information from its own context decreases. At the hard limit, requests fail outright.
+
+So the harness manages memory as a continuous pressure cycle. All of its numbers come from one fact: how large the model's window is.
+
+<PostTable
+  headers={["Window size", "Nudge at", "Cleanup at", "Cleanup lands at"]}
+  rows={[
+    ["up to 200K tokens", "70%", "80%", "40%"],
+    ["up to 500K", "60%", "70%", "35%"],
+    ["up to 1M", "50%", "60%", "30%"],
+    ["larger", "40%", "50%", "25%"],
+]}
+  caption="Compaction thresholds by context-window size: bigger windows act earlier and land lower."
+/>
+
+Read the pattern: the bigger the window, the earlier the harness acts. Large windows cost more to fill, and quality degrades well before they are full, so cleanup starts sooner and lands lower, leaving more headroom.
+
+Why derive the thresholds from window size instead of a per-model settings table? Because models change every month and settings tables go stale. A rule that asks "how big is this model's memory" cannot rot. There is nothing to configure and nothing to forget to update.
+
+### The three levels in practice
+
+**The nudge.** Crossing the soft level sends the model a one-time message like:
+
+<div style={{ backgroundColor: "#011627", border: "1px solid rgba(127, 219, 202, 0.2)", borderRadius: "0.5rem", padding: "0.75rem 1rem", margin: "1rem 0", fontFamily: "monospace", fontSize: "0.85rem", lineHeight: "1.6" }}>
+  <div style={{ color: "#9aaebc", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>What the model reads at the soft level</div>
+  <div style={{ color: "#ecc48d" }}>[context: 71% full — trim tool results you no longer need with context_trim; a forced cleanup runs at 80%.]</div>
+</div>
+
+It names the pressure, names the tool that fixes it, and names what happens if nothing is done. It is sent once, never repeated. In practice the model usually trims on its own, which is the point: let the model manage its own workspace when it can.
+
+<div style={{ backgroundColor: "#0b3553", borderRadius: "0.5rem", padding: "0.6rem 1rem", margin: "1rem 0", fontFamily: "monospace", fontSize: "0.85rem" }}>
+  <div style={{ color: "#9aaebc", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>The status bar while it happens</div>
+  <div style={{ color: "#d6deeb" }}>Ready&nbsp;&nbsp;CTX 58.4K/1M&nbsp;&nbsp;<span style={{ color: "#ecc48d" }}>71%</span>&nbsp;&nbsp;z.ai&nbsp;&nbsp;glm-5.3-flash&nbsp;&nbsp;effort: Model default</div>
+</div>
+
+**The cleanup.** If utilization still crosses the ceiling, the harness acts. This is not deleting the old half of the conversation. It is a careful replacement with three protections:
+
+- Your original instructions, and everything before them, are never touched. Previous cleanup summaries are protected the same way.
+- Old exchanges are removed whole. An exchange is a request plus everything that answered it, so a tool call is never separated from its result. The model is never left staring at a question nobody answered.
+- The removed part is replaced by a short handoff note: decisions made, files touched, current state, next steps. Recent work stays in full.
+
+The handoff note is written by a small, cheap model. You can pin a specific summarizer model in the app's settings; otherwise the app picks the cheapest capable model it knows, so cleanup costs a fraction of what the main model costs. The prompt is worth quoting, because it captures the philosophy:
+
+```text
+You are compacting an agent conversation. Produce a dense handoff summary
+of the evicted messages that lets work continue seamlessly: decisions made,
+files touched, current state, next steps. Keep concrete identifiers.
+Do not narrate.
+```
+
+A handoff, not meeting minutes. The model continuing the task does not need to know how the work unfolded. It needs to know where things stand. The wording is a direct answer to a failure Anthropic documented in their [long-running-agent harness research](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents): compaction alone does not always pass perfectly clear instructions to the next session, and the next agent then wastes substantial time guessing at what happened. A prompt that demands decisions, state, and next steps, and forbids narration, is the countermeasure.
+
+<figure className="my-4">
+  <img
+    src="/images/blog/after-spawn-returns/pressure-cycle.svg"
+    alt="Diagram of the eThang Agent memory pressure cycle: utilization rises past a one-time reminder and a cleanup ceiling, drops back to a target, and a side panel shows what one cleanup keeps, removes, and summarizes"
+    loading="lazy"
+    className="w-full rounded-lg object-cover"
+  />
+  <figcaption className="text-xs text-night-owl-muted text-center mt-1">
+    The pressure cycle: memory fills, the model gets one nudge, the harness cleans up at the ceiling, and the conversation lands back at the target.
+  </figcaption>
+</figure>
+
+**The safety net.** Thresholds read the previous request's usage report, so a large tool result that arrives between requests can slip past them. If the provider rejects a request because the window truly overflowed, the harness runs one forced cleanup and resends the same request once. The backstop has a backstop.
+
+## Why cleanup works this way
+
+Here is the decision I find most worth stealing: the model never decides what gets forgotten. Fixed rules compute the cleanup plan from the message list and the window size. The only step that uses a model is writing the handoff note, which is genuinely a language task.
+
+That split is the pattern worth copying in any harness. It also respects what the research says about long contexts: Alex Zhang's [recursive language models](https://alexzhang13.github.io/blog/2025/rlm/) argument is that naturally occurring text almost never reaches window-filling lengths, so bloated sessions sit outside what models were trained on, and no prompt recovers reliability that the distribution never taught. Keeping the window lean is not just a cost play; it keeps the model on terrain it actually knows:
+
+**Fixed rules can be tested; judgment cannot.** The cleanup plan is deterministic: same messages in, same plan out, every time. If it ever misbehaves, the bug reproduces and gets fixed. A model choosing what to forget would be an untestable coin flip deciding what your session remembers about its own work.
+
+**The rules protect what matters.** Anthropic's guide calls the keep-versus-discard decision [the art of compaction](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) and warns that overly aggressive compaction loses subtle context whose importance only shows up later. The rules here take that warning structurally: original instructions and prior summaries are never evicted, tool calls stay glued to their results, and every cleanup frees a meaningful amount, at least 15% of the window, or does nothing at all. No death by a thousand tiny trims.
+
+**It admits when it is stuck.** Some conversations cannot be cleaned by eviction, for example when the recent tool results alone are too large. Then the harness compresses those oversized results in place, replacing each with a short marker saying where the full text lives. Nothing else changes. If even that is impossible, the harness says so plainly: a named error, plus a system message explaining why nothing changed. A harness that pretends to maintain itself is worse than one that admits it is stuck.
+
+<div style={{ backgroundColor: "#011627", border: "1px solid rgba(255, 88, 116, 0.35)", borderRadius: "0.5rem", padding: "0.75rem 1rem", margin: "1rem 0", fontFamily: "monospace", fontSize: "0.85rem", lineHeight: "1.6" }}>
+  <div style={{ color: "#9aaebc", fontSize: "0.7rem", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.4rem" }}>What lands in the transcript when cleanup cannot help</div>
+  <div style={{ color: "#ff5874" }}>[Context compaction failed: CompactionImpossible Nothing outside the kept tail to evict.; continuing without compaction.]</div>
+  <div style={{ color: "#ff5874", marginTop: "0.5rem" }}>[turn failed] Error [CompactionUnavailable]: no compactor is wired; cannot recover from a context-window overflow.</div>
+</div>
+
+**It guards against phantom pressure.** Some providers report token counts that include machinery which never entered the conversation, server-side search results for instance. Before acting on a usage report, the harness compares it against the actual size of the messages. A report claiming several times more memory than the conversation could possibly hold is treated as accounting noise and ignored. Without that check, cleanup would fire on nearly empty conversations and spam the transcript with failure notices.
+
+## The through-line
+
+Both halves of this post are one commitment in two outfits: the harness keeps records, treats failures as information, and lets the model help itself before stepping in. A child that fails is a record with a reason. A cleanup that cannot help says so. A pressure the model can fix alone gets a nudge, not a takeover.
+
+The research backs the emphasis. The premise goes back to [SWE-agent](https://arxiv.org/abs/2405.15793) in 2024: the interface alone moves results with the model's weights frozen. This year's [HarnessTax](https://harnesstax.github.io/) study sharpened it into an economics argument: across 21 model-harness pairs, switching harnesses moved success rates only 2 to 5 points while moving cost up to 5x, which means a harness's real job is efficiency and reliability. And [SoL-Pi](https://arxiv.org/abs/2609.20519), an auto-research system that tested around 150 harness improvements and kept four, kept a compaction-timing change ([Online Context Compact](https://nvlabs.github.io/SoL-Pi/)) among them: its full pipeline cut token traffic by roughly half and API cost by a third on held-out tasks. Context management is where a long run's cost and survival are decided.
+
+eThang Agent decides them with fixed rules, cheap models, and honest errors. The repository is open, [pull on any of these threads](https://github.com/eglove/ethang-agent) and see.

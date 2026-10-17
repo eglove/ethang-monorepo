@@ -1,0 +1,37 @@
+---
+interface Row {
+  cells: string[];
+}
+
+interface Props {
+  headers: string[];
+  rows: string[][];
+  caption?: string;
+}
+
+const { headers, rows, caption } = Astro.props;
+const hasCaption = typeof caption === "string" && caption.length > 0;
+const cellCount = headers.length;
+---
+
+<figure class="my-4">
+  <div class="surface-card overflow-x-auto rounded-lg border border-night-owl-border bg-night-owl-surface/80">
+    <table class="w-full text-left text-sm">
+      <thead class="border-b border-night-owl-border text-xs uppercase tracking-wide text-night-owl-muted">
+        <tr>
+          {headers.map((header) => <th class="px-4 py-3">{header}</th>)}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr class="border-b border-night-owl-border/50 last:border-b-0">
+            {Array.from({ length: cellCount }, (_, i) => row[i] ?? "").map((cell) => (
+              <td class="px-4 py-3 align-top text-night-owl-fg">{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  {hasCaption ? <figcaption class="text-xs text-night-owl-muted text-center mt-1">{caption}</figcaption> : null}
+</figure>
