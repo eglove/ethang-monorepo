@@ -4,13 +4,13 @@
     "current node"
   ],
   "dependencies": {
-    "@astrojs/cloudflare": "^14.3.2",
+    "@astrojs/cloudflare": "^14.4.0",
     "@astrojs/markdown-remark": "^7.3.1",
     "@astrojs/mdx": "^8.0.1",
     "@astrojs/sitemap": "^3.7.4",
     "@cloudflare/vite-plugin": "^1.57.0",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.3",
+    "astro": "^7.4.0",
     "effect": "^3.22.2",
     "katex": "^0.18.7",
     "lucide-astro": "^0.556.0",
@@ -32,7 +32,7 @@
     "typescript": "^6.0.3",
     "unified": "^11.0.5",
     "vitest": "^4.1.11",
-    "wrangler": "^4.136.0"
+    "wrangler": "^4.151.1"
   },
   "engines": {
     "node": ">=24"
@@ -42,7 +42,7 @@
     "astro": "astro",
     "build": "astro build",
     "cf-typegen": "cf workers types && pnpm emit-rpc-declarations && pnpm rewrite-rpc-imports",
-    "deploy": "astro build && cf deploy",
+    "deploy": "wrangler deploy",
     "dev": "astro dev",
     "emit-rpc-declarations": "node scripts/emit-rpc-declarations.ts",
     "generate-types": "wrangler types",
