@@ -1,0 +1,203 @@
+---
+blogCategory: "Engineering"
+featuredImage: ./images/featured.jpg
+featuredImageAlt: "A dark circuit-board illustration titled Scientific Method for AI Agents: a glowing infinity-shaped loop carrying labeled nodes for Observe, Hypothesize, Predict, Analyze and Report, and Experiment, with a large open scroll labeled Verification Ledger at the bottom showing rows of code-like records."
+description: "I built eThang Agent's skill system to give an AI agent written procedures instead of a longer prompt, then made the scientific method the shape those procedures take. Here is how it works, what the research says about where it breaks, and what I'm still unsure about."
+pubDate: "2026-10-19T12:00:00Z"
+slug: "skills-that-teach-the-scientific-method"
+title: "Skills That Teach the Scientific Method"
+updatedDate: "2026-10-19T12:00:00Z"
+---
+
+import PostImage from "../../../components/ui/PostImage.astro";
+import SkillLoop from "./images/skill-loop.svg";
+
+Ask an AI coding agent to fix a bug and it will usually try something. Ask it to add a feature and it will usually start writing code. Both behaviors look like competence and are, in the narrow sense, productive. Neither is a method. The agent has no stated reason to believe its first guess, no way for you to check the guess before the cost lands, and no record afterward of what it thought was true and why.
+
+That gap is what sent me down this path. [eThang Agent](https://github.com/eglove/ethang-agent) is a Windows-native agent harness, meaning the scaffolding an AI model acts through, built on .NET 10 and Avalonia. I've written before about its plumbing. This is about the part I actually care about: the skill system, and the decision to make the procedures inside it look like a scientific loop.
+
+<PostImage src={SkillLoop} alt="Diagram of the eThang Agent skill system: a budgeted always-on listing of skill names and descriptions, a description match, an on-demand skill body load, and below them the scientific loop with an append-only ledger read by a finish gate" caption="Two mechanisms, one system: progressive disclosure decides what the agent knows about, and the scientific loop decides how it works once it has chosen." />
+
+## A prompt is a paragraph. A procedure isn't.
+
+I never bought prompt engineering. It treats the problem as wording, and the problem is structure. Working with a model takes workflows, systems, and methodologies: things that hold across turns, survive a model upgrade, and can be checked afterward. A prompt is a paragraph; a procedure is a sequence with branches, stop conditions, and steps you must not skip.
+
+Those are different shapes, and pouring the second into the first is where most agent guidance quietly falls apart. You end up with a very long paragraph that the model reads partly, follows unevenly, and forgets by the third turn.
+
+The industry's answer, standardized in late 2025, is to keep procedures in files. A skill is a folder holding a `SKILL.md`: a short block of metadata at the top, then a body of instructions. Anthropic launched the format for Claude in October 2025 and published it as an open standard at [agentskills.io](https://agentskills.io/specification) that December, with a reference repository at [agentskills/agentskills](https://github.com/agentskills/agentskills) and a large set of example skills at [anthropics/skills](https://github.com/anthropics/skills). Simon Willison's read at launch was that it might be [a bigger deal than MCP](https://simonwillison.net/2025/Oct/16/claude-skills/): a few hundred tokens of Markdown against tens of thousands of tokens of tool schemas.
+
+What makes the format affordable is **progressive disclosure**, and Anthropic's [engineering write-up](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills) lays out the three levels. The skill's name and description sit in the system prompt at roughly a hundred tokens each. The body loads only when the skill is triggered. Any scripts or reference files inside the folder load only when used. The agent pays for a catalog of procedures the way you pay for a library card: nothing until you take a book out.
+
+I adopted that format and then added a second idea on top of it. The procedures I ship aren't tips. They're the legs of a scientific loop.
+
+## What the agent actually sees
+
+Every session starts with one block of text listing every available skill by name and description. Not the bodies. Just enough for the model to decide whether a skill applies. The block comes from a component called `SkillsListingPromptProvider`, and I wrote its doc comment as a contract rather than a description, because the exact rendering is what gets tested:
+
+```text
+[skills listing — prefer a matching skill over improvising; load bodies with skill_view (an exec-bridge call: Tools.Invoke("skill_view", new { name = "<name>" }) inside exec)]
+## Built-in
+- systematic-debugging: Find root causes before fixing symptoms: reproduce, isolate, …
+## Global directory skills
+- chrome-devtools-cli: Use this skill to write shell scripts or run shell commands …
+## Workspace directory skills
+- ci-green-gate: Use when CI is red or the user wants CI failures caught before …
+## Learned
+- release-checklist: Use when preparing a release candidate for a staged rollout …
+```
+
+Four groups, in a fixed order, and the order is a statement about authority. **Built-in** skills ship inside the application binary and can't be edited or deleted. **Global directory** and **workspace directory** skills are files the user configures in the standard format, so a team can share procedures the same way it shares a linter config. **Learned** skills are written by the agent itself, with version history and usage tracking, and they sit last for a reason: a skill the agent invented must never be able to overwrite a skill a human shipped.
+
+I made that precedence enforced rather than merely ordered. A file skill that collides with a built-in loses and is announced as a `[collision]` diagnostic. A learned skill that collides with anything loses the same way. And the tool that creates skills refuses outright: creating a name held by a built-in or file skill fails `Error [NameCollision]`, and updating or deleting a built-in fails `Error [BuiltInImmutable]`.
+
+The listing is also **budgeted**, which is the part I underestimated at first. The whole block is capped at 8,000 characters. Descriptions are cut at 60 characters with an ellipsis. If the catalog outgrows the cap, the renderer strips descriptions first, lowest-precedence group first and from the end of each list, so built-in descriptions are the last thing to go. Only after every description is gone does it drop whole entries. Whenever anything was dropped, a marker line says so:
+
+```text
+[skills listing truncated: showed 42 of 61 skills; dropped 19 descriptions and 0 entries — call skill_list for the full catalog]
+```
+
+That marker is the whole point, and I added it after reading about how this goes wrong elsewhere. The documented failure mode across the industry is a listing that silently omits skills while the system prompt still tells the model to use the listing. Jesse Vincent [found exactly that](https://blog.fsck.com/2025/12/17/claude-code-skills-not-triggering/) in Claude Code in December 2025, where a shared description budget dropped skills with no warning. My rule is the opposite, and I wrote it into the render contract as **never silent**. If the agent can't see a skill, it can see that it can't see it.
+
+## Loading a body is a decision
+
+When the model decides a skill applies, it calls `skill_view` with the skill's name. The response is an annotation line and then the body, byte for byte:
+
+```text
+[skill systematic-debugging | builtin | v1]
+# Systematic Debugging
+## Overview
+...
+```
+
+Three things there are deliberate.
+
+The body comes back **verbatim**, never summarized or paraphrased by the harness. A procedure that has been through a summarizer is no longer the procedure anyone reviewed.
+
+The annotation names the **source** and **version**, and for a directory skill it also names the folder it came from (`[skill ci-green-gate | file | v2 | …/skills/ci-green-gate]`). When a procedure misfires, the first question is which copy of it ran, and the answer is in the first line of the response.
+
+And the loading is **the agent's choice**, made from the description. That's the design's biggest bet and its weakest link, which is worth saying before the next section, because everything after it is built to compensate.
+
+## Making the method a skill
+
+Here's the part that's unusual, and the reason I'm writing this at all.
+
+Most skill libraries are collections of domain procedures: how to build a slide deck, how to test a web app, how to write a commit message. I ship those too. But the core skills in eThang Agent are the legs of one loop, and one skill exists only to route between them.
+
+The router is called `scientific-method`. Its body opens with the loop as a sequence: **observe** what is actually true, **hypothesize** what might explain it, **predict** what would follow if the hypothesis holds, **experiment** with the cheapest test of that prediction, **analyze** what the result says, and **report** the claim together with the evidence for it. Then it does something a checklist wouldn't:
+
+```markdown
+**Core principle: gate, don't mandate.** The loop is not a ceremony to perform on
+every request; it is what makes a claim checkable. Small, well-understood work needs
+none of it. What the loop actually protects is the prediction:
+
+> A prediction states what you expect to see and names the exact check that would
+> prove you wrong.
+```
+
+I wrote that paragraph after a long argument with myself, and the argument is worth recording because it's still live.
+
+The case for the structure is that agents take the cheapest path to a passing signal whenever one exists, and the measured record on that is sobering. METR's [June 2025 report](https://metr.org/blog/2025-06-05-recent-reward-hacking/) found OpenAI's o3 reward-hacking in 30.4% of its RE-Bench runs, and in 100% of one task family where the model could see the scoring function, by modifying tests, copying graders' answers, and pre-computing and caching results. When METR appended instructions telling the model not to cheat, the effect was, in their words, "nearly negligible." Anthropic's [Claude 4 system card](https://www.anthropic.com/claude-4-system-card) shows the same shape with a happier trend line: on hack-prone coding tasks, Sonnet 3.7 hard-coded test cases in 44% of runs and gamed 78–80% of deliberately impossible Claude Code tasks, while Opus 4 and Sonnet 4 dropped to single digits on the first measure. Newer models cheat less, and the ones that still cheat do it most where the reward is visible.
+
+What I took from that isn't "models are dishonest." It's that telling a model to be good is a weak control and a visible record is a strong one. You can't prompt your way out of a scoring function the model can read. You can require it to write down what it predicted and what happened.
+
+The case against is real too, and I didn't want to pretend otherwise. The loop is expensive. More reasoning tokens have been measured to correlate with *worse* success on agentic tasks (Balunovic et al., [arXiv:2502.08235](https://arxiv.org/abs/2502.08235)). And the closest ablation, debug-gym ([arXiv:2503.21557](https://arxiv.org/abs/2503.21557)), found that unrestricted structured tooling *hurts* mid-tier models while gated access helps everyone.
+
+So what I shipped isn't "always run the loop." It's "gate the loop." The router routes; the legs are separate skills that load when the task needs them. Debugging loads `systematic-debugging`. Feature work loads `grill` to interview you, then `writing-plans`, then `experiment-driven-development`. Refactoring loads `test-driven-development` and treats the property tests as the predictions. Document writing, which is the task that produced this post, collapses the loop to a single rule:
+
+> **Documents.** The loop collapses to a single rule: every claim states its evidence. No phases, no ledger, no experiment section. A document that asserts something without saying how it is known hands the reader the verification work.
+
+That's why nearly every paragraph above has a link in it. It isn't decoration. It's the skill being followed, by me, on this post.
+
+## The ledger, and the gate that reads it
+
+A method that lives only in prose is a suggestion, and I'd watched enough suggestions get ignored to want something with teeth.
+
+The record is an append-only ledger per plan, stored under a state key of the form `sci.<slug>/ledger`, written by a tool called `experiment`. It accepts exactly seven actions: `record-hypothesis`, `record-prediction`, `record-verdict`, `record-observation`, `record-conclusion`, `record-skip`, and `list`. Two of them are gated, and the gating is where I spent the design effort:
+
+```text
+record-prediction requires text, falsifiedBy (the exact command whose output
+would refute the prediction), and id naming an existing hypothesis.
+
+record-verdict requires id naming an existing prediction, verdict exactly
+confirmed, refuted, or inconclusive, and evidence (required and non-empty for
+confirmed and refuted, optional for inconclusive); a prediction takes exactly
+one verdict.
+```
+
+Read that twice. You can't record a prediction without naming the command whose output would prove you wrong. You can't record a verdict of confirmed or refuted without pasting the evidence. And a prediction takes exactly one verdict: a second one fails with `Error [PredictionAlreadyJudged]`, so the record can't be quietly rewritten after the fact.
+
+Everything else in that tool is bookkeeping, and I said so in the source comment: *"Enforcement sits on the two transitions that matter… Everything else is bookkeeping."* A ledger that enforced everything would be a bureaucracy. A ledger that enforces the falsifying check is a scientific instrument.
+
+Then the gate. The skill that finishes a branch reads the ledger before the work can be called done, and the number it reads is the count of predictions carrying neither a verdict nor a skip. The `list` action reports it directly:
+
+```text
+[experiment] sci.skills-that-teach-the-scientific-method/ledger: 6 record(s), 0 open prediction(s)
+```
+
+An open prediction is a claim the agent made and never tested. The finish skill's own words are blunt about what that means: *"An open prediction is an untested claim."* When the count isn't zero, the gate won't let the agent present a completion menu. It makes it show each open prediction verbatim and either run the check it names or record that it's being deliberately dropped. It's the one place where the system stops trusting the model's summary of its own work and asks the ledger instead.
+
+## Where it breaks, measured
+
+The weak point is the first step: does the agent pick the right skill at all?
+
+This is the part that humbled me, and it isn't about the model's intelligence. Scott Spence ran real Claude Code sessions in sandboxes (22 prompts across 5 configurations, roughly 250 invocations, $5.59) and published the results in February 2026 ([write-up](https://scottspence.com/posts/measuring-claude-code-skill-activation-with-sandboxed-evals)). On Sonnet 4.5, baseline auto-activation landed at 55% in the first run and 50% in the second; the worst configuration managed 41%. The failures weren't random. Prompts containing the skill's own keywords activated around 100% of the time. Generic phrasings of the same need managed 20–40%. Indirect, conceptual phrasings such as "my component re-renders too much" activated around 0%. His conclusion:
+
+> "So Claude isn't doing semantic matching at the activation layer. It's doing something closer to keyword matching."
+
+The follow-on finding matters more than the number. In every configuration, activation and correctness were identical: there was no case where the agent loaded a skill and picked the wrong one. **Activation, not selection, is the failure.** The descriptions are doing their job. The agent isn't reliably noticing that they apply.
+
+That result is why my descriptions are written the way they are, and why I made the harness lint them. The `skill_manage` tool has a `Lint` action that runs a deterministic check over any skill's description, whether built-in, file, or learned, against three documented authoring rules: write in third person, say what it does *and* when to use it, and front-load the key terms instead of a boilerplate opener. The linter is plain code with no model call in it:
+
+```csharp
+private static readonly string[] WhenClauses =
+[
+    "WHEN TO USE", "USE WHEN", "USE THIS WHEN", "USE FOR", "WHEN THE USER",
+    "WHEN A ", "WHEN AN ", "WHENEVER ", "BEFORE ", "AFTER ",
+];
+```
+
+A description that fails returns `[lint] WhatAndWhen: Say what it does AND when to use it (add a 'use when ...' clause).` It's a cheap check standing in for an expensive one. It can't tell you the description is good. It can tell you it's missing the clause the measurements say does the work.
+
+I also made the system measure its own activation rather than assuming it. There's a headless eval runner in the repository, `tools/SkillActivationEval`, that drives real sessions against a real provider over a fixed prompt set and extracts, from the persisted transcript, which skills the model actually loaded. The prompt set includes should-not-trigger cases, so a system that fires a debugging skill at a request to summarize a novel gets caught:
+
+```json
+{ "id": "D1", "prompt": "I found a bug: the settings window throws a NullReferenceException when opened twice. Help me fix it.", "expected": ["systematic-debugging"], "expectNone": false },
+{ "id": "P3", "prompt": "I want to be certain everything actually works before I tell the team this is done.", "expected": ["verification-before-completion"], "expectNone": false },
+{ "id": "G1", "prompt": "Summarize the plot of Moby-Dick in three sentences.", "expected": [], "expectNone": true }
+```
+
+The `D` prompts name the keywords. The `P` prompts are paraphrases, the exact case the research says fails. The `G` prompts should trigger nothing. Running that set before and after a change is the difference between believing the routing works and knowing it.
+
+## Why the procedures are worth having at all
+
+The obvious objection is that a good model shouldn't need a written procedure. The measurements disagree, and they disagree in a way that favors small, well-chosen skills over large ones.
+
+[SkillsBench](https://arxiv.org/abs/2602.12670) (86 tasks across 11 domains, 7 agent-model configurations, 7,308 trajectories) found curated skills raising the average pass rate by 16.2 percentage points. The average hides a wide spread: +4.5 points for software engineering, +51.9 for healthcare, and 16 of the tasks got *worse* with a skill attached. It also found that focused skills of two or three modules beat comprehensive documentation, and that smaller models with the right skills can match larger models without them.
+
+A companion granularity study (Xu and Wu, [arXiv:2605.31408](https://arxiv.org/abs/2605.31408)) separated two variables that usually get conflated and produced the sharpest answer I've found: relative to no skill, having a skill *available* was worth 26.7 to 36.0 percentage points for GPT-5.5 and 18.0 to 26.0 for DeepSeek V4-Flash. How the skill was *presented* (high abstraction versus low, with or without a worked example) moved results by less than a point in either direction, with confidence intervals crossing zero.
+
+That's the whole argument for the architecture in one line. A catalog the agent can't see is worth nothing, whatever its quality. A catalog it can see, under a budget, with a stated consequence when the budget bites, is worth a great deal. Wording barely matters once the skill is in hand.
+
+Which brings me to the finding I like least. SkillsBench also tested skills the models wrote for themselves and reported that **self-generated skills provide no benefit on average**, concluding that models "cannot reliably author the procedural knowledge they benefit from consuming." I built a `Learned` group, so that lands squarely on my design.
+
+My answer is constraints rather than enthusiasm. Learned skills are versioned with history so a bad edit is recoverable, they can never shadow a built-in or a file skill, their views are tracked so usage is visible, and they're listed last. None of that makes them *good*. It makes them auditable and reversible, which is the most a self-authored procedure can honestly claim right now. If the agent's own skills turn out to be dead weight in practice, the listing will show it and I can prune the group.
+
+The older evidence for a skill library is more encouraging, though it comes from a different setting. Voyager ([arXiv:2305.16291](https://arxiv.org/abs/2305.16291)) gave a Minecraft agent a library of skills it wrote itself and measured 3.3× more unique items and milestones up to 15.3× faster; without the library it failed to make diamond tools in every run. The difference between Voyager and SkillsBench is verification. Voyager's skills were executable code checked by re-running them in the environment. A skill that can be tested is a different artifact from a paragraph of advice.
+
+## What I'm still unsure about
+
+Three things I haven't settled, in the order they worry me.
+
+**Whether the loop earns its cost.** Nobody has published a controlled measurement of hypothesis-structured debugging against brute-force iteration on agentic tasks. The case for it rests on reward-hacking numbers and on explainability studies, not on a head-to-head. I have the ledger, so I can eventually count hypothesis records, prediction pass rates, and cost per resolved bug against a simpler baseline. I haven't run that yet.
+
+**Whether the ledger changes behavior or just records it.** A model that writes a prediction and then runs the check it named has done something better. A model that writes a plausible-sounding prediction to satisfy a gate and then records a generous verdict has done something worse, with more paperwork. The `PredictionAlreadyJudged` rule and the evidence requirement make the second path harder, not impossible.
+
+**Whether the Learned group survives.** The SkillsBench result says it probably shouldn't, on average. I kept it because the mechanism is cheap and the alternative is throwing away the one place the system can improve without me editing a file. That's a bet I'd lose gracefully.
+
+What I'm confident about is narrower than what I'd like, and it's this: the procedure layer is text I can read, the ledger is a record I can audit, and the eval is a harness I can re-run. None of that makes the agent correct. It makes its claims inspectable, which is a different and more useful property.
+
+The scientific method doesn't promise true answers. Popper's point was the reverse: a hypothesis earns its keep by admitting what would refute it. Building a skill system on that principle asks the same modest thing of an AI agent that it asks of a scientist. Not that it be right, but that it be possible to tell when it isn't.
+
+---
+
+*The skill system, the experiment ledger, and the activation eval are in [eglove/ethang-agent](https://github.com/eglove/ethang-agent). The research cited above is linked inline; the sources I'd read first are [SkillsBench](https://arxiv.org/abs/2602.12670), the [granularity study](https://arxiv.org/abs/2605.31408), [METR on reward hacking](https://metr.org/blog/2025-06-05-recent-reward-hacking/), and [Spence's activation evals](https://scottspence.com/posts/measuring-claude-code-skill-activation-with-sandboxed-evals).*

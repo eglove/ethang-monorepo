@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="skillLoopTitle skillLoopDesc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="skillLoopTitle">The eThang Agent skill system: a budgeted listing of skill names and descriptions, a skill body loaded on demand, and a scientific loop whose falsifiable prediction is the load-bearing step</title>
+  <desc id="skillLoopDesc">A diagram in two bands. The top band shows progressive disclosure: a session starts with an always-on listing of skill names and descriptions capped at 8000 characters, the model matches the task to a description, loads one skill body with skill_view, and follows it. The bottom band shows the scientific loop running inside a skill: observe, hypothesize, predict with a named falsifying check, experiment, analyze, report, with the prediction and its verdict written to an append-only ledger that a finish gate reads.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#111a2e"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="700" fill="url(#bg)"/>
+
+  <text x="60" y="58" fill="#5eead4" font-size="20" font-weight="600" letter-spacing="2">PROGRESSIVE DISCLOSURE</text>
+  <text x="60" y="86" fill="#8fa0bd" font-size="16">Names and descriptions ride in every session. Bodies load only when a skill is chosen.</text>
+
+  <g>
+    <rect x="60" y="112" width="300" height="112" rx="10" fill="#16233c" stroke="#2b3d61"/>
+    <text x="80" y="142" fill="#e6edf7" font-size="17" font-weight="600">Always-on listing</text>
+    <text x="80" y="168" fill="#9fb0cc" font-size="14">name + description per skill</text>
+    <text x="80" y="190" fill="#9fb0cc" font-size="14">8,000-character budget</text>
+    <text x="80" y="212" fill="#6f809c" font-size="13">descriptions cut at 60 chars</text>
+  </g>
+
+  <g>
+    <rect x="420" y="112" width="300" height="112" rx="10" fill="#16233c" stroke="#2b3d61"/>
+    <text x="440" y="142" fill="#e6edf7" font-size="17" font-weight="600">Description match</text>
+    <text x="440" y="168" fill="#9fb0cc" font-size="14">the model picks a skill</text>
+    <text x="440" y="190" fill="#9fb0cc" font-size="14">or improvises without one</text>
+    <text x="440" y="212" fill="#6f809c" font-size="13">the measured weak point</text>
+  </g>
+
+  <g>
+    <rect x="780" y="112" width="360" height="112" rx="10" fill="#16233c" stroke="#5eead4" stroke-width="2"/>
+    <text x="800" y="142" fill="#e6edf7" font-size="17" font-weight="600">skill_view loads the body</text>
+    <text x="800" y="168" fill="#9fb0cc" font-size="14">one skill, on demand, byte for byte</text>
+    <text x="800" y="190" fill="#9fb0cc" font-size="14">a procedure, not a paragraph</text>
+    <text x="800" y="212" fill="#6f809c" font-size="13">built-in, directory, or learned</text>
+  </g>
+
+  <line x1="360" y1="168" x2="412" y2="168" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="720" y1="168" x2="772" y2="168" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <text x="60" y="262" fill="#8fa0bd" font-size="15">Three sources, one contract — and a built-in is never shadowed:</text>
+  <g font-size="14">
+    <rect x="60" y="276" width="230" height="40" rx="8" fill="#1b2b47" stroke="#2b3d61"/>
+    <text x="80" y="302" fill="#e6edf7">Built-in (ships with the app)</text>
+    <rect x="306" y="276" width="240" height="40" rx="8" fill="#1b2b47" stroke="#2b3d61"/>
+    <text x="326" y="302" fill="#e6edf7">Global directory skills</text>
+    <rect x="562" y="276" width="260" height="40" rx="8" fill="#1b2b47" stroke="#2b3d61"/>
+    <text x="582" y="302" fill="#e6edf7">Workspace directory skills</text>
+    <rect x="838" y="276" width="302" height="40" rx="8" fill="#1b2b47" stroke="#2b3d61"/>
+    <text x="858" y="302" fill="#e6edf7">Learned (written by the agent)</text>
+  </g>
+
+  <line x1="60" y1="348" x2="1140" y2="348" stroke="#22314e" stroke-width="1"/>
+
+  <text x="60" y="392" fill="#f7b267" font-size="20" font-weight="600" letter-spacing="2">THE SCIENTIFIC LOOP INSIDE A SKILL</text>
+  <text x="60" y="420" fill="#8fa0bd" font-size="16">The skill routes the work; the falsifiable prediction is the leg that carries it.</text>
+
+  <g font-size="15">
+    <rect x="60" y="446" width="150" height="58" rx="10" fill="#1a2740" stroke="#2b3d61"/>
+    <text x="80" y="472" fill="#e6edf7" font-weight="600">Observe</text>
+    <text x="80" y="492" fill="#8fa0bd" font-size="13">what is true</text>
+
+    <rect x="240" y="446" width="150" height="58" rx="10" fill="#1a2740" stroke="#2b3d61"/>
+    <text x="260" y="472" fill="#e6edf7" font-weight="600">Hypothesize</text>
+    <text x="260" y="492" fill="#8fa0bd" font-size="13">late, after evidence</text>
+
+    <rect x="420" y="446" width="190" height="58" rx="10" fill="#2a2113" stroke="#f7b267" stroke-width="2"/>
+    <text x="440" y="472" fill="#ffd9a0" font-weight="600">Predict</text>
+    <text x="440" y="492" fill="#c9a878" font-size="13">name the falsifying check</text>
+
+    <rect x="640" y="446" width="150" height="58" rx="10" fill="#1a2740" stroke="#2b3d61"/>
+    <text x="660" y="472" fill="#e6edf7" font-weight="600">Experiment</text>
+    <text x="660" y="492" fill="#8fa0bd" font-size="13">the cheapest test</text>
+
+    <rect x="820" y="446" width="140" height="58" rx="10" fill="#1a2740" stroke="#2b3d61"/>
+    <text x="840" y="472" fill="#e6edf7" font-weight="600">Analyze</text>
+    <text x="840" y="492" fill="#8fa0bd" font-size="13">confirm or refute</text>
+
+    <rect x="990" y="446" width="150" height="58" rx="10" fill="#1a2740" stroke="#2b3d61"/>
+    <text x="1010" y="472" fill="#e6edf7" font-weight="600">Report</text>
+    <text x="1010" y="492" fill="#8fa0bd" font-size="13">claim plus evidence</text>
+  </g>
+
+  <line x1="210" y1="475" x2="232" y2="475" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="390" y1="475" x2="412" y2="475" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="610" y1="475" x2="632" y2="475" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="790" y1="475" x2="812" y2="475" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="960" y1="475" x2="982" y2="475" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="420" y="556" width="420" height="104" rx="10" fill="#141f36" stroke="#2b3d61"/>
+    <text x="440" y="584" fill="#e6edf7" font-size="17" font-weight="600">Append-only ledger</text>
+    <text x="440" y="608" fill="#9fb0cc" font-size="14" font-family="Consolas, monospace">sci.&lt;slug&gt;/ledger</text>
+    <text x="440" y="630" fill="#9fb0cc" font-size="14">a prediction needs a falsifying check;</text>
+    <text x="440" y="650" fill="#9fb0cc" font-size="14">a verdict needs evidence</text>
+  </g>
+  <line x1="515" y1="506" x2="560" y2="548" stroke="#f7b267" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+  <line x1="890" y1="506" x2="820" y2="548" stroke="#f7b267" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+
+  <g>
+    <rect x="880" y="556" width="260" height="104" rx="10" fill="#16233c" stroke="#5eead4" stroke-width="2"/>
+    <text x="900" y="584" fill="#e6edf7" font-size="17" font-weight="600">Finish gate</text>
+    <text x="900" y="608" fill="#9fb0cc" font-size="14">reads the open-prediction</text>
+    <text x="900" y="628" fill="#9fb0cc" font-size="14">count before the work</text>
+    <text x="900" y="648" fill="#9fb0cc" font-size="14">is called finished</text>
+  </g>
+  <line x1="840" y1="608" x2="872" y2="608" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <text x="60" y="584" fill="#8fa0bd" font-size="14">Gate, don't mandate:</text>
+  <text x="60" y="606" fill="#6f809c" font-size="14">trivial work skips the loop</text>
+  <text x="60" y="628" fill="#6f809c" font-size="14">entirely. The loop is what</text>
+  <text x="60" y="650" fill="#6f809c" font-size="14">makes a claim checkable.</text>
+</svg>
