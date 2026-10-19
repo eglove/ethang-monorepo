@@ -231,6 +231,24 @@ export default defineConfig({
   site: SITE,
   vite: {
     customLogger: filteredLogger,
-    plugins: [tailwindcss()]
+    /*
+     * The SSR dependency optimizer (rolldown) walks into two native-binary
+     * packages and aborts before the dev server starts: @tailwindcss/oxide
+     * ships a platform .node binding that rolldown reads as UTF-8 JS, and
+     * wrangler's CLI pulls in blake3-wasm, whose optional './node.js' subpath
+     * resolves to nothing on this platform. Neither package is bundled at
+     * runtime: the Tailwind plugin and the Cloudflare adapter load them
+     * natively. Keep all three out of the optimizer. Only `astro dev` runs the
+     * SSR optimizer, so `astro build` passes without this and dev does not.
+     */
+    optimizeDeps: {
+      exclude: ["@tailwindcss/oxide", "blake3-wasm", "wrangler"]
+    },
+    plugins: [tailwindcss()],
+    ssr: {
+      optimizeDeps: {
+        exclude: ["@tailwindcss/oxide", "blake3-wasm", "wrangler"]
+      }
+    }
   }
 });
