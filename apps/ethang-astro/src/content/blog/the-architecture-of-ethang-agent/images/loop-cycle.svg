@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" role="img" aria-labelledby="loop-title loop-desc" font-family="Inter, sans-serif">
+  <title id="loop-title">The eThang Agent turn loop: drain inbox, manage context, send the request to the provider, then either finish without tool calls or execute the tool batch and loop again</title>
+  <desc id="loop-desc">A cycle diagram. The turn starts by draining the steering inbox and adding the user message. Each iteration then runs three steps in order: manage context pressure, snapshot the conversation into a model request, and send it through the provider seam. A response with no tool calls ends the turn and returns the answer. A response with tool calls appends the assistant message, executes each call under its timeout budget, appends each result, and returns to the top of the loop. There is no iteration cap; termination is the model's job, and cancellation is checked every round.</desc>
+  <defs>
+    <linearGradient id="lc-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#111a2e"/>
+    </linearGradient>
+    <marker id="lc-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4"/>
+    </marker>
+    <marker id="lc-arrow-exit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#38bdf8"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="640" fill="url(#lc-bg)"/>
+
+  <text x="60" y="58" fill="#5eead4" font-size="20" font-weight="600" letter-spacing="2">RUNTURNASYNC — ONE TURN, NO ITERATION CAP</text>
+  <text x="60" y="86" fill="#8fa0bd" font-size="16">Termination is the model's job. Cancellation is checked every round.</text>
+
+  <!-- entry -->
+  <rect x="60" y="120" width="340" height="72" rx="10" fill="#16233c" stroke="#2b3d61"/>
+  <text x="80" y="150" fill="#e6edf7" font-size="16" font-weight="600">Drain the steering inbox</text>
+  <text x="80" y="172" fill="#9fb0cc" font-size="13">user message + queued input, then add to conversation</text>
+
+  <line x1="400" y1="156" x2="452" y2="156" stroke="#5eead4" stroke-width="2" marker-end="url(#lc-arrow)"/>
+
+  <!-- loop body -->
+  <rect x="460" y="120" width="320" height="72" rx="10" fill="#1a2740" stroke="#5eead4" stroke-width="2"/>
+  <text x="480" y="150" fill="#e6edf7" font-size="16" font-weight="600">Manage context pressure</text>
+  <text x="480" y="172" fill="#9fb0cc" font-size="13">CompactionPolicy: soft nudge once, deep clean at the ceiling</text>
+
+  <line x1="780" y1="156" x2="832" y2="156" stroke="#5eead4" stroke-width="2" marker-end="url(#lc-arrow)"/>
+
+  <rect x="840" y="120" width="300" height="72" rx="10" fill="#1a2740" stroke="#2b3d61"/>
+  <text x="860" y="150" fill="#e6edf7" font-size="16" font-weight="600">Snapshot + send</text>
+  <text x="860" y="172" fill="#9fb0cc" font-size="13">ModelRequest through IModelProvider (streaming)</text>
+
+  <!-- decision -->
+  <path d="M 990 192 L 990 250" fill="none" stroke="#5eead4" stroke-width="2" marker-end="url(#lc-arrow)"/>
+  <text x="1006" y="226" fill="#bae6fd" font-size="14">tool calls?</text>
+
+  <!-- no: finish -->
+  <rect x="560" y="256" width="260" height="72" rx="10" fill="#0f2a1e" stroke="#4ade80" stroke-width="2"/>
+  <text x="580" y="286" fill="#bbf7d0" font-size="16" font-weight="600">No — the turn ends</text>
+  <text x="580" y="308" fill="#86efac" font-size="13">answer returns; transcript persisted</text>
+
+  <!-- yes: execute -->
+  <rect x="840" y="256" width="300" height="72" rx="10" fill="#2a2113" stroke="#f7b267" stroke-width="2"/>
+  <text x="860" y="286" fill="#ffd9a0" font-size="16" font-weight="600">Yes — execute the batch</text>
+  <text x="860" y="308" fill="#c9a878" font-size="13">each call under its timeoutSeconds budget</text>
+
+  <!-- guardrails box -->
+  <rect x="60" y="256" width="480" height="72" rx="10" fill="#16233c" stroke="#2b3d61"/>
+  <text x="80" y="286" fill="#e6edf7" font-size="16" font-weight="600">Guardrails around the loop</text>
+  <text x="80" y="308" fill="#9fb0cc" font-size="12.5">repeat guard · errors as results · inbox drains at safe points</text>
+
+  <!-- loop back arrow -->
+  <path d="M 990 328 L 990 400 L 548 400 L 548 200" fill="none" stroke="#5eead4" stroke-width="2.5" marker-end="url(#lc-arrow)"/>
+  <text x="660" y="420" fill="#bae6fd" font-size="14">results appended — go around again</text>
+
+  <!-- persistence band -->
+  <text x="60" y="448" fill="#f7b267" font-size="14" font-weight="700" letter-spacing="2">AT EVERY SAFE POINT</text>
+  <g font-size="14">
+    <rect x="60" y="462" width="340" height="64" rx="10" fill="#16233c" stroke="#2b3d61"/>
+    <text x="80" y="488" fill="#e6edf7" font-weight="600">Heartbeat beat</text>
+    <text x="80" y="508" fill="#9fb0cc" font-size="13">the watchdog's liveness input</text>
+
+    <rect x="430" y="462" width="340" height="64" rx="10" fill="#16233c" stroke="#2b3d61"/>
+    <text x="450" y="488" fill="#e6edf7" font-weight="600">Progress event</text>
+    <text x="450" y="508" fill="#9fb0cc" font-size="13">phase label, never content — feeds the UI</text>
+
+    <rect x="800" y="462" width="340" height="64" rx="10" fill="#16233c" stroke="#2b3d61"/>
+    <text x="820" y="488" fill="#e6edf7" font-weight="600">Incremental transcript persist</text>
+    <text x="820" y="508" fill="#9fb0cc" font-size="13">every message saved the moment it lands</text>
+  </g>
+
+  <text x="60" y="572" fill="#8fa0bd" font-size="14">Context overflow has its own path: the provider ACL maps the wire fault to a domain code,</text>
+  <text x="60" y="594" fill="#8fa0bd" font-size="14">the loop answers it with one forced compaction and one re-send — a second overflow fails the turn.</text>
+</svg>

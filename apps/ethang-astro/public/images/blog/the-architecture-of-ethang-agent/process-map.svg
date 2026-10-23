@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="pm-title pm-desc" font-family="Inter, sans-serif">
+  <title id="pm-title">The eThang Agent process map: the desktop app process, one ChildHost process per conversation over a named pipe, a ComputerUse broker process behind another pipe, and the shared SQLite database both hosts open as guests</title>
+  <desc id="pm-desc">Three process boxes and one database. The desktop app owns the UI and the composition root; it launches one ChildHost executable per conversation, connected by a named pipe carrying typed envelopes. A second named pipe connects the app to the ComputerUse broker, a killable process that holds the native UI-automation surface. Both the app and the ChildHost open the same app-owned SQLite database file: the app migrates and owns the schema, the host opens it as a guest without writing schema. The pipe protocol requires the app and its host to be one build, so the host executable ships next to the app.</desc>
+  <defs>
+    <linearGradient id="pm-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#111a2e"/>
+    </linearGradient>
+    <marker id="pm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#7dd3fc"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="700" fill="url(#pm-bg)"/>
+
+  <text x="60" y="58" fill="#7dd3fc" font-size="20" font-weight="600" letter-spacing="2">THREE PROCESSES, ONE DATABASE</text>
+  <text x="60" y="86" fill="#8fa0bd" font-size="16">Process independence is infrastructure; the domain's runtime seam holds over a wire unchanged.</text>
+
+  <!-- app process -->
+  <rect x="60" y="120" width="440" height="200" rx="14" fill="#16233c" stroke="#e879f9" stroke-width="2"/>
+  <rect x="60" y="120" width="440" height="10" rx="5" fill="#e879f9"/>
+  <text x="84" y="158" fill="#f0abfc" font-size="13" font-weight="700" letter-spacing="2">PROCESS 1 · THE APP</text>
+  <text x="84" y="186" fill="#e6edf7" font-size="17" font-weight="600">eThangAgent.Desktop</text>
+  <text x="84" y="212" fill="#9fb0cc" font-size="14">Avalonia UI · view models · streaming bridge</text>
+  <text x="84" y="234" fill="#9fb0cc" font-size="14">session factory · host supervisor · watchdog loop</text>
+  <text x="84" y="256" fill="#9fb0cc" font-size="14">renders what the wire delivers</text>
+  <text x="84" y="292" fill="#6f809c" font-size="13">owns the database schema (migrations run here)</text>
+
+  <!-- child host -->
+  <rect x="700" y="120" width="440" height="200" rx="14" fill="#16233c" stroke="#5eead4" stroke-width="2"/>
+  <rect x="700" y="120" width="440" height="10" rx="5" fill="#5eead4"/>
+  <text x="724" y="158" fill="#5eead4" font-size="13" font-weight="700" letter-spacing="2">PROCESS 2 · ONE PER CONVERSATION</text>
+  <text x="724" y="186" fill="#e6edf7" font-size="17" font-weight="600">eThangAgent.ChildHost</text>
+  <text x="724" y="212" fill="#9fb0cc" font-size="14">the real agent loop for the conversation's root</text>
+  <text x="724" y="234" fill="#9fb0cc" font-size="14">survives app restarts · re-attach on the same pipe</text>
+  <text x="724" y="256" fill="#9fb0cc" font-size="14">opens the database as a GUEST — never migrates</text>
+  <text x="724" y="292" fill="#6f809c" font-size="13">keyed by conversation id: pipe name + scratch folder</text>
+
+  <!-- broker -->
+  <rect x="700" y="360" width="440" height="150" rx="14" fill="#16233c" stroke="#f7b267" stroke-width="2"/>
+  <rect x="700" y="360" width="440" height="10" rx="5" fill="#f7b267"/>
+  <text x="724" y="398" fill="#ffd9a0" font-size="13" font-weight="700" letter-spacing="2">PROCESS 3 · KILLABLE BROKER</text>
+  <text x="724" y="426" fill="#e6edf7" font-size="17" font-weight="600">eThangAgent.ComputerUse.Host</text>
+  <text x="724" y="452" fill="#9fb0cc" font-size="14">Windows UIA · SendInput · clipboard · screenshots</text>
+  <text x="724" y="474" fill="#9fb0cc" font-size="14">a crash here never takes the app down</text>
+  <text x="724" y="496" fill="#6f809c" font-size="13">served over NDJSON on its own pipe</text>
+
+  <!-- pipes -->
+  <path d="M 500 190 L 700 190" fill="none" stroke="#7dd3fc" stroke-width="2.5" marker-end="url(#pm-arrow)"/>
+  <path d="M 700 230 L 500 230" fill="none" stroke="#7dd3fc" stroke-width="2.5" marker-end="url(#pm-arrow)"/>
+  <text x="600" y="176" fill="#bae6fd" font-size="13" text-anchor="middle">named pipe · typed envelopes</text>
+  <text x="600" y="252" fill="#bae6fd" font-size="13" text-anchor="middle">root turns + child runs</text>
+
+  <path d="M 500 300 L 540 300 L 540 420 L 700 420" fill="none" stroke="#f7b267" stroke-width="2.5" marker-end="url(#pm-arrow)"/>
+  <path d="M 700 450 L 570 450 L 570 320" fill="none" stroke="#f7b267" stroke-width="2.5" marker-end="url(#pm-arrow)"/>
+  <text x="548" y="292" fill="#ffd9a0" font-size="13">NDJSON pipe</text>
+  <text x="545" y="440" fill="#ffd9a0" font-size="12">observe · act · screenshot</text>
+
+  <!-- database -->
+  <rect x="60" y="360" width="440" height="150" rx="14" fill="#1b2b47" stroke="#38bdf8" stroke-width="2"/>
+  <text x="84" y="398" fill="#7dd3fc" font-size="13" font-weight="700" letter-spacing="2">ONE APP-OWNED DATABASE</text>
+  <text x="84" y="426" fill="#e6edf7" font-size="17" font-weight="600">SQLite · 17 versioned migrations</text>
+  <text x="84" y="452" fill="#9fb0cc" font-size="14">agents · transcripts · state · plans · skills · memories</text>
+  <text x="84" y="474" fill="#9fb0cc" font-size="14">watchdog audit · MCP servers · preferences</text>
+  <text x="84" y="496" fill="#6f809c" font-size="13">the app writes the schema; every other process is a guest</text>
+
+  <path d="M 280 320 L 280 360" fill="none" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#pm-arrow)"/>
+  <path d="M 920 320 L 920 360" fill="none" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#pm-arrow)"/>
+  <text x="296" y="346" fill="#bae6fd" font-size="13">owner</text>
+  <text x="936" y="346" fill="#bae6fd" font-size="13">guest</text>
+
+  <!-- one build note -->
+  <line x1="60" y1="548" x2="1140" y2="548" stroke="#22314e" stroke-width="1"/>
+  <text x="60" y="582" fill="#8fa0bd" font-size="14">The wire protocol is versioned by build and never negotiated: the host executable ships next to the app,</text>
+  <text x="60" y="604" fill="#8fa0bd" font-size="14">so the app and its hosts are always one build. A missing or silent host is a named failure, never a hang.</text>
+  <text x="60" y="650" fill="#8fa0bd" font-size="14">The same supervision pattern covers the broker: a dead broker is restarted; a crash there never takes the app down.</text>
+</svg>
