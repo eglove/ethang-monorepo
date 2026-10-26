@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="ratchetTitle ratchetDesc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="ratchetTitle">Two tracks converging: the writing track eliminated hand-written code in five waves, the legibility-and-checking track made code traceable and then made its checks executable, and both leave the same remainder</title>
+  <desc id="ratchetDesc">Two parallel rows. The writing track: 1954 machine coding eliminated by compilers, 1960s data processing eliminated by COBOL, 1980s CRUD applications eliminated by fourth-generation languages, 2010s glue code eliminated by low-code tools, 2020s production code eliminated by LLMs. The legibility and checking track: 1968 control flow made traceable by structured programming, 1994 a shared design vocabulary from patterns and object orientation, 2000 automated testing answering whether code still works, 2010 continuous delivery answering whether code can ship. Both tracks arrow down into one band reading: what is left is deciding what to build, specifying it, and checking the result, while hand-writing code is near zero and the job title survived every wave.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b1020"/>
+      <stop offset="100%" stop-color="#111a2e"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5eead4"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="700" fill="url(#bg)"/>
+  <text x="40" y="46" fill="#5eead4" font-size="20" font-weight="600" letter-spacing="2">TWO TRACKS, ONE REMAINDER</text>
+  <text x="40" y="72" fill="#8fa0bd" font-size="15">Every wave's claim of elimination was kept, not broken. Two different halves of the job were automated on parallel tracks.</text>
+  <text x="40" y="112" fill="#5eead4" font-size="13" font-weight="600" letter-spacing="1.5">THE WRITING TRACK</text>
+  <g>
+    <rect x="40" y="124" width="204" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="56" y="154" fill="#5eead4" font-size="18" font-weight="700">1954</text>
+    <text x="56" y="180" fill="#e6edf7" font-size="15">Machine coding</text>
+    <text x="56" y="204" fill="#8fa0bd" font-size="13">eliminated by compilers</text>
+  </g>
+  <g>
+    <rect x="269" y="124" width="204" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="285" y="154" fill="#5eead4" font-size="18" font-weight="700">1960s</text>
+    <text x="285" y="180" fill="#e6edf7" font-size="15">Data processing</text>
+    <text x="285" y="204" fill="#8fa0bd" font-size="13">eliminated by COBOL</text>
+  </g>
+  <g>
+    <rect x="498" y="124" width="204" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="514" y="154" fill="#5eead4" font-size="18" font-weight="700">1980s</text>
+    <text x="514" y="180" fill="#e6edf7" font-size="15">CRUD applications</text>
+    <text x="514" y="204" fill="#8fa0bd" font-size="13">eliminated by 4GLs</text>
+  </g>
+  <g>
+    <rect x="727" y="124" width="204" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="743" y="154" fill="#5eead4" font-size="18" font-weight="700">2010s</text>
+    <text x="743" y="180" fill="#e6edf7" font-size="15">Glue code</text>
+    <text x="743" y="204" fill="#8fa0bd" font-size="13">eliminated by low-code</text>
+  </g>
+  <g>
+    <rect x="956" y="124" width="204" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="972" y="154" fill="#5eead4" font-size="18" font-weight="700">2020s</text>
+    <text x="972" y="180" fill="#e6edf7" font-size="15">Production code</text>
+    <text x="972" y="204" fill="#8fa0bd" font-size="13">eliminated by LLMs</text>
+  </g>
+  <line x1="245" y1="176" x2="265" y2="176" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="474" y1="176" x2="494" y2="176" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="703" y1="176" x2="723" y2="176" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="932" y1="176" x2="952" y2="176" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="40" y="278" fill="#5eead4" font-size="13" font-weight="600" letter-spacing="1.5">THE LEGIBILITY-AND-CHECKING TRACK</text>
+  <g>
+    <rect x="40" y="290" width="260" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="56" y="320" fill="#5eead4" font-size="18" font-weight="700">1968</text>
+    <text x="56" y="346" fill="#e6edf7" font-size="15">Control flow</text>
+    <text x="56" y="370" fill="#8fa0bd" font-size="13">traceable: structured programming</text>
+  </g>
+  <g>
+    <rect x="326" y="290" width="260" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="342" y="320" fill="#5eead4" font-size="18" font-weight="700">1994</text>
+    <text x="342" y="346" fill="#e6edf7" font-size="15">Design vocabulary</text>
+    <text x="342" y="370" fill="#8fa0bd" font-size="13">patterns and object orientation</text>
+  </g>
+  <g>
+    <rect x="612" y="290" width="260" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="628" y="320" fill="#5eead4" font-size="18" font-weight="700">2000</text>
+    <text x="628" y="346" fill="#e6edf7" font-size="15">Does it still work?</text>
+    <text x="628" y="370" fill="#8fa0bd" font-size="13">automated testing</text>
+  </g>
+  <g>
+    <rect x="898" y="290" width="260" height="104" rx="9" fill="#16233c" stroke="#2b3d61"/>
+    <text x="914" y="320" fill="#5eead4" font-size="18" font-weight="700">2010</text>
+    <text x="914" y="346" fill="#e6edf7" font-size="15">Can it ship?</text>
+    <text x="914" y="370" fill="#8fa0bd" font-size="13">continuous delivery</text>
+  </g>
+  <line x1="301" y1="342" x2="322" y2="342" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="587" y1="342" x2="608" y2="342" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="873" y1="342" x2="894" y2="342" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="40" y="440" fill="#8fa0bd" font-size="14">Both tracks automate the same kind of thing: a check that used to need human judgment, moved into something a machine can run.</text>
+  <path d="M 170 394 V 486" fill="none" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 1028 394 V 486" fill="none" stroke="#5eead4" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="40" y="492" width="1120" height="130" rx="10" fill="#16233c" stroke="#5eead4"/>
+  <text x="64" y="528" fill="#5eead4" font-size="19" font-weight="700">What is left</text>
+  <text x="64" y="558" fill="#e6edf7" font-size="16">deciding what to build, specifying it, checking the result</text>
+  <text x="64" y="588" fill="#8fa0bd" font-size="14">the expensive-to-check side, which no rung has touched</text>
+  <text x="680" y="528" fill="#e6edf7" font-size="16" font-weight="600">hand-writing code</text>
+  <text x="680" y="556" fill="#5eead4" font-size="18" font-weight="700">near zero</text>
+  <text x="680" y="586" fill="#8fa0bd" font-size="14">the job title survived every wave</text>
+  <text x="40" y="662" fill="#8fa0bd" font-size="13" font-style="italic">The ratchet has no reverse gear: eliminated layers stay eliminated.</text>
+</svg>
