@@ -41,8 +41,8 @@ describe("navigation constants", () => {
   it(EXPECTED_COPY, () => {
     expect(navigation).toEqual({
       BLOG: "Blog",
-      COURSES: "Courses",
       HOME: "Home",
+      LEARN: "Learn",
       LOGGED_IN_AS: "Logged in as",
       LOGIN: "Login",
       LOGOUT: "Logout",

@@ -193,6 +193,10 @@ export default defineConfig({
   ],
   image: {},
   integrations: [mdx(), ...(isTest ? [] : [sitemap()])],
+  /*
+   * The Courses page became Learn. Keep the old path resolving rather than
+   * 404ing the links that pointed at it.
+   */
   markdown: {
     /*
      * Math and diagrams render at build time: KaTeX emits HTML in the rehype
@@ -227,6 +231,9 @@ export default defineConfig({
     // Astro highlights fences before user rehype plugins run, so mermaid must
     // be excluded or rehype-mermaid never sees the language-mermaid class.
     syntaxHighlight: { excludeLangs: ["mermaid"], type: "shiki" }
+  },
+  redirects: {
+    "/courses": "/learn"
   },
   site: SITE,
   vite: {

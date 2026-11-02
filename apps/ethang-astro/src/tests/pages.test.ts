@@ -16,8 +16,8 @@ vi.mock("cloudflare:workers", () => {
 
 import BlogIndex from "../pages/blog/index.astro";
 import BlogPage from "../pages/blog/page/[page].astro";
-import Courses from "../pages/courses.astro";
 import Index from "../pages/index.astro";
+import Learn from "../pages/learn.astro";
 import Login from "../pages/login.astro";
 import Rss from "../pages/rss.astro";
 import TipsIndex from "../pages/tips/index.astro";
@@ -104,9 +104,9 @@ describe("rss page", () => {
   });
 });
 
-describe("courses page", () => {
-  it("renders the courses heading with an empty list", async () => {
-    const html = await render(Courses);
-    expect(html).toContain("Courses");
+describe("learn page", () => {
+  it("renders the learn heading", async () => {
+    const html = await render(Learn);
+    expect(html).toContain("Learn");
   });
 });

@@ -1,7 +1,7 @@
 export const navigation = {
   BLOG: "Blog",
-  COURSES: "Courses",
   HOME: "Home",
+  LEARN: "Learn",
   LOGGED_IN_AS: "Logged in as",
   LOGIN: "Login",
   LOGOUT: "Logout",

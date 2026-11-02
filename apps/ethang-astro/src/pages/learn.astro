@@ -1,0 +1,185 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/ui/Card.astro";
+import MarkerBadge from "../components/ui/MarkerBadge.astro";
+import Heading from "../components/ui/Heading.astro";
+import InlineLink from "../components/ui/InlineLink.astro";
+import Page from "../components/ui/Page.astro";
+import {
+  entryCountLabel,
+  formatStageNumber,
+  LEARN_MARKERS,
+  learnStages,
+  MARKER_REGISTERS,
+  markerBadgeClass,
+  stageEntries,
+  stageMarkerSummary,
+  totalEntryCount,
+} from "../lib/learn.ts";
+
+const total = totalEntryCount(learnStages);
+
+const intro =
+  "The material that teaches the part a model cannot do for you: deciding what to build, specifying it so a machine can execute it, and checking the result. Work the stages in order, or jump to the one you are missing. Every stage mixes something you can follow along with and something worth returning to, and ends with a check you can run to know it landed.";
+---
+
+<BaseLayout
+  title="Learn"
+  description={intro}
+  canonicalPath="/learn"
+>
+  <Page>
+    <p class="section-kicker mb-2">what to learn / in what order</p>
+    <Heading as="h1" class="text-4xl">Learn</Heading>
+    <div class="section-rule mt-4"></div>
+
+    <p class="mt-5 max-w-3xl text-night-owl-fg">{intro}</p>
+
+    {/* The map first: ten stages, what each is for, and how much is in it. */}
+    <nav class="mt-8" aria-label="Stages">
+      <ol class="flex flex-col divide-y divide-night-owl-border/60 border-y border-night-owl-border">
+        {
+          learnStages.map((stage) => (
+            <li>
+              <a
+                href={`#${stage.slug}`}
+                class="group flex flex-wrap items-baseline gap-x-4 gap-y-1 px-1 py-3 transition-colors hover:bg-night-owl-surface"
+              >
+                <span class="font-mono text-xs text-night-owl-cyan">
+                  {formatStageNumber(stage.number)}
+                </span>
+                <span class="font-medium text-night-owl-fg group-hover:text-primary">
+                  {stage.title}
+                </span>
+                <span class="ml-auto shrink-0 font-mono text-xs text-night-owl-muted">
+                  {entryCountLabel(stageEntries(stage).length)}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    {/*
+      The formats are labelled once, where a reader first meets them, rather
+      than explained at every badge.
+    */}
+    <dl class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+      {
+        LEARN_MARKERS.map((marker) => (
+          <div class="flex items-baseline gap-2">
+            <dt>
+              <MarkerBadge marker={marker} />
+            </dt>
+            <dd class="text-night-owl-muted">{MARKER_REGISTERS[marker]}</dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <p class="mt-4 font-mono text-xs text-night-owl-muted">
+      {learnStages.length} stages / {total} sources
+    </p>
+
+    <div class="mt-12 flex flex-col gap-10">
+      {
+        learnStages.map((stage) => (
+          <section id={stage.slug} class="scroll-mt-8">
+            <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+              <span class="font-mono text-sm font-bold text-night-owl-cyan">
+                {formatStageNumber(stage.number)}
+              </span>
+              <Heading as="h2" class="text-2xl">{stage.title}</Heading>
+              <span class="flex items-center gap-2 text-xs text-night-owl-muted">
+                {stageMarkerSummary(stage).map(({ count, marker }) => (
+                  <MarkerBadge marker={marker} count={count} size={12} />
+                ))}
+              </span>
+            </div>
+            <div class="section-rule mt-3"></div>
+
+            <p class="mt-4 max-w-3xl text-night-owl-fg">{stage.lede}</p>
+
+            <div class="mt-5 flex flex-col gap-4">
+              {
+                stage.groups.map((group) => (
+                  <Card class="p-5 sm:p-6">
+                    {group.heading ? (
+                      <Heading as="h3" class="text-lg">{group.heading}</Heading>
+                    ) : null}
+                    {group.blurb ? (
+                      <p class="mt-2 max-w-3xl text-sm text-night-owl-muted">
+                        {group.blurb}
+                      </p>
+                    ) : null}
+                    <ul class="mt-4 flex flex-col divide-y divide-night-owl-border/60 border-t border-night-owl-border">
+                      {
+                        group.entries.map((entry) => (
+                          <li class="py-3">
+                            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                              <MarkerBadge marker={entry.marker} />
+                              <span class="font-medium text-night-owl-fg">
+                                {entry.url ? (
+                                  <InlineLink
+                                    href={entry.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    variant="underline"
+                                  >
+                                    {entry.title}
+                                  </InlineLink>
+                                ) : (
+                                  entry.title
+                                )}
+                              </span>
+                              {entry.by ? (
+                                <span class="text-sm text-night-owl-muted">
+                                  {entry.by}
+                                </span>
+                              ) : null}
+                              {
+                                entry.alsoIn?.map((number) => {
+                                  const other = learnStages.find(
+                                    (candidate) => candidate.number === number,
+                                  );
+                                  return other ? (
+                                    <a
+                                      href={`#${other.slug}`}
+                                      class="rounded-md border border-night-owl-cyan/30 px-2 py-0.5 font-mono text-xs text-night-owl-cyan transition-colors hover:border-night-owl-cyan"
+                                    >
+                                      also in {formatStageNumber(number)}
+                                    </a>
+                                  ) : null;
+                                })
+                              }
+                            </div>
+                            <p class="mt-1 max-w-3xl text-sm text-night-owl-muted">
+                              {entry.note}
+                            </p>
+                          </li>
+                        ))
+                      }
+                    </ul>
+                  </Card>
+                ))
+              }
+            </div>
+
+            <div class="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-l-2 border-night-owl-cyan/50 pl-4">
+              <p class="section-kicker">Done when</p>
+              <p class="max-w-3xl text-sm text-night-owl-fg">{stage.doneWhen}</p>
+            </div>
+
+            <p class="mt-4 max-w-3xl text-sm text-night-owl-muted">
+              <span class="font-mono text-xs tracking-[0.16em] text-night-owl-cyan uppercase">
+                Pair it with
+              </span>{" "}
+              {stage.pairWith}
+            </p>
+          </section>
+        ))
+      }
+    </div>
+  </Page>
+</BaseLayout>
